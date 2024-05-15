@@ -1,4 +1,75 @@
-url: ~
+title: VertexWiseR
+url: https://cogbrainhealthlab.github.io/VertexWiseR/
 template:
   bootstrap: 5
 
+reference:
+  - title: Requirements check
+    desc: >
+    contents:
+    - VWRfirstrun
+    
+  - title: Surface data extraction and smoothing
+    desc: >
+    contents:
+    - HIPvextract
+    - SURFvextract
+    - smooth_surf
+    
+  - title: Main analysis functions
+  - subtitle: Vertex-Wise analysis
+    desc: >
+    contents:
+    - vertex_analysis
+    - TFCE.vertex_analysis
+    - TFCE.vertex_analysis.mixed
+    - TFCE.threshold
+  
+  - subtitle: Plotting
+    desc: >
+    contents:
+    - plot_surf
+  
+  - title: Other functions
+  - subtitle: Atlas manipulations
+    desc: >
+    contents:
+    - atlas_to_fs5
+    - fs5_to_atlas
+    - hip_to_atlas
+    
+  - subtitle: Decoding surface data
+    desc: >
+    contents:
+    - decode_surf_data 
+     
+  - subtitle: Conversions
+    desc: >
+    contents:   
+    - fs5_to_fs6
+    - fs6_to_fs5
+    - surf_to_vol
+    
+  - title: Data objects
+  - subtitle: Edges
+    desc: >
+    contents:
+    - edgelistfs5
+    - edgelistfs6
+    - edgelistHIP
+    
+  - subtitle: Template maps
+    desc: >
+    contents:
+    - fs6_to_fs5_map
+    - hip_points_cells
+    - MNImap_fs5
+    - MNImap_fs6
+    - MNImap_hip
+    
+  - subtitle: Parcellation maps
+    desc: >
+    contents:
+    - ROImap_fs5
+    - ROImap_fs6
+    - ROImap_HIP

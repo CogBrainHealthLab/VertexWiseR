@@ -1,10 +1,9 @@
+
+
+
 Vertex-wise R functions for analyzing and visualizing cortical thickness 
 
 ![](man/figures/Flowchart.jpg)<!-- -->
-
-================
-Cognitive and Brain Health Laboratory
-2024-04-30
 
 ### Setting up for the first time
 
