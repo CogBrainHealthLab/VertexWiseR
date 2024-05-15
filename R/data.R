@@ -1,24 +1,24 @@
 #' Atlas parcellations of fsaverage5
 #'
-#' A list containing two data frames, 1) listing vertex coordinates for each atlas label in fsaverage5 template space, and 2) listing each available atlas and their corresponding labels (1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148). 
+#' A list containing two data frames, 1) listing vertex coordinates for each atlas label in fsaverage5 template space, and 2) listing each available atlas and their corresponding labels (1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400). 
 #'
 #' @format ## `ROImap_fs5`
 #' A list object with two data frame objects: () 
 #' \describe{
-#'   \item{vertices}{data frame with 20484 rows (vertices), 5 columns (atlases)}
-#'   \item{atlases}{data frame with 360 rows (labels, not all are filled depending on atlas), 5 columns (atlases)}
+#'   \item{vertices}{data frame with 20484 rows (vertices), 6 columns (atlases)}
+#'   \item{atlases}{data frame with 400 rows (labels, not all are filled depending on atlas), 6 columns (atlases)}
 #' }
 "ROImap_fs5"
 
 #' Atlas parcellations of fsaverage6
 #'
-#' A list containing two data frames, 1) listing vertex coordinates for each atlas label in fsaverage6 template space, and  2) listing each available atlas and their corresponding labels (1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148). 
+#' A list containing two data frames, 1) listing vertex coordinates for each atlas label in fsaverage6 template space, and  2) listing each available atlas and their corresponding labels (1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400). 
 #'
 #' @format ## `ROImap_fs6`
 #' A list object with two data frame objects: () 
 #' \describe{
-#'   \item{vertices}{data frame with 81924 rows (vertices), 5 columns (atlases)}
-#'   \item{atlases}{data frame with 360 rows (labels, not all are filled depending on atlas), 5 columns (atlases)}
+#'   \item{vertices}{data frame with 81924 rows (vertices), 6 columns (atlases)}
+#'   \item{atlases}{data frame with 400 rows (labels, not all are filled depending on atlas), 6 columns (atlases)}
 #' }
 "ROImap_fs6"
 
