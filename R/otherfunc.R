@@ -230,60 +230,136 @@ getClusters=function(surf_data)
 ############################################################################################################################
 ############################################################################################################################
 
-#' @title Fs5 to atlas
+#' @title Surface to atlas
 #'
-#' @description Returns the mean vertex-wise surface data in fsaverage5 space (20484 vertices) for each ROI of a selected atlas
-#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigmatoolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux}
+#' @description Returns the mean or sum of vertex-wise surface data for each ROI of a selected atlas
+#' @details The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigmatoolbox} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux}
+#' 
+#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in Hippunfold. See also \href{https://www.sciencedirect.com/science/article/pii/S105381191930919X}{DeKraker et al., 2020}.
 #'
-#' @param surf_data A matrix object containing the surface data in fsaverage5 space (20484 vertices), see SURFvextract() output format. 
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148. 
+#' @param surf_data A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the bigbrain hippocampal atlas is used by default and ignores the option.
+#' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
 #' @seealso \code{\link{atlas_to_fs5}}
 #' @examples
 #' CTv = runif(20484,min=0, max=100)
-#' fs5_to_atlas(CTv, 1)
+#' surf_to_atlas(CTv, 1)
 #' @export
 
-fs5_to_atlas=function(surf_data,atlas) 
+surf_to_atlas=function(surf_data,atlas,mode='mean') 
 {  
-  #check length of vector
-  if(length(surf_data)%%20484!=0) {stop("Length of surf_data is not a multiple of 20484")}
+  #check length of vector or ncol of matrix
+  if(max(dim(t(surf_data)))!=20484 & max(dim(t(surf_data)))!=81924 
+     & max(dim(t(surf_data)))!=14524) {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
   
-  if(missing("atlas")) {stop("Please specify an atlas number: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148")}
+  #atlas argument needed if not hippocampal data
+  if(missing("atlas") & max(dim(t(surf_data)))!=14524) {stop("Please specify an atlas number among the following: 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400")}
   
-  #load atlas mapping surf_data
-  ROImap <- get('ROImap_fs5')
-  
-  #init variables
-  nregions=max(ROImap[[1]][,atlas])
-  surf_data[is.na(surf_data)]=0
-  
-  #mapping fsaverage5 space vertice to atlas regions if surf_data is a 1x20484 vector
-  if(length(surf_data)==20484) 
+  #mapping fsaverage5 space vertice to atlas (Nx20484 vertices)
+  if(max(dim(t(surf_data)))==20484) 
   {
-    surf_data=matrix(surf_data,ncol=20484,nrow=1)  
-    ROI=rep(NA,nregions)
-    for (region in 1:nregions)  {ROI[region]=mean(surf_data[which(ROImap[[1]][,atlas]==region)])} #vertices are averaged within the atlas ROI
-  } else 
-  {
-  #mapping fsaverage5 space vertice to atlas regions if surf_data is a Nx20484 matrix
+    #load atlas mapping surf_data
+    ROImap <- get('ROImap_fs5')
+    #init variables
+    nregions=max(ROImap[[1]][,atlas])
+    #set NAs to 0
+    surf_data[is.na(surf_data)]=0 
+     
+    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=20484,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+     
     ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
-    for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,atlas]==region)])} #vertices are averaged within the atlas ROI
+    
+    if(mode=='mean') {
+      for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector"))  {ROI=ROI[1,]}
+    } 
+    else if (mode=='sum') 
+    {
+      for (region in 1:nregions)  {ROI[,region]=rowSums(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector")) {ROI=ROI[1,]} #removes empty row if it was vector
+    }
+    else 
+    {
+      stop('\nPlease indicate a mode: only "sum" or "mean" are available.')
+    }
+    return(ROI)
   }
-  return(ROI)
+  
+  
+  #mapping fsaverage6 space vertice to atlas (Nx81924 vertices)
+  if(max(dim(t(surf_data)))==81924) 
+  {
+    #load atlas mapping surf_data
+    ROImap <- get('ROImap_fs6')
+    #init variables
+    nregions=max(ROImap[[1]][,atlas])
+    #set NAs to 0
+    surf_data[is.na(surf_data)]=0 
+    
+    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=81924,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    
+    ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
+    
+    if(mode=='mean') {
+      for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector"))  {ROI=ROI[1,]}
+    } 
+    else if (mode=='sum') 
+    {
+      for (region in 1:nregions)  {ROI[,region]=rowSums(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector")) {ROI=ROI[1,]} #removes empty row if it was vector
+    }
+    else 
+    {
+      stop('\nPlease indicate a mode: only "sum" or "mean" are available.')
+    }
+    return(ROI)
+  }
+  
+  #mapping hippocampal space vertice to atlas (Nx14524 vertices)
+  if(max(dim(t(surf_data)))==14524) 
+  {
+    #load atlas mapping surf_data
+    ROImap <- get('ROImap_HIP')
+    #init variables
+    nregions=max(ROImap[[1]][,1])
+    #set NAs to 0
+    surf_data[is.na(surf_data)]=0 
+    
+    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=14524,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    
+    ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
+    
+    if(mode=='mean') {
+      for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,1]==region)])}
+      if (exists("isavector"))  {ROI=ROI[1,]}
+    } 
+    else if (mode=='sum') 
+    {
+      for (region in 1:nregions)  {ROI[,region]=rowSums(surf_data[,which(ROImap[[1]][,1]==region)])}
+      if (exists("isavector")) {ROI=ROI[1,]} #removes empty row if it was vector
+    }
+    else 
+    {
+      stop('\nPlease indicate a mode: only "sum" or "mean" are available.')
+    }
+    return(ROI)
+  }
+
 }
 
 
 #' @title Atlas to fsaverage5
 #'
-#' @description Maps average parcellation surface values (e.g. produced with the fs5_to_atlas() function) to the fsaverage5 space
-#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigma toolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_fs5() will automatically detect the atlas based on the number of columns.
+#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 space
+#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigma toolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_fs5() will automatically detect the atlas based on the number of columns.
 #'
-#' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the fs5_to_atlas() output format. 
+#' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
 #'
 #' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5 space
-#' @seealso \code{\link{fs5_to_atlas}}
+#' @seealso \code{\link{surf_to_atlas}}
 #' @examples
 #' parcel_data = t(runif(100,min=0, max=100))
 #' atlas_to_fs5(parcel_data)
@@ -296,12 +372,13 @@ atlas_to_fs5=function(parcel_data)
     
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
   {
-    if (ncol(parcel_data) == 70) {atlas=1} 
-    else if (ncol(parcel_data) == 100) {atlas=2} 
-    else if (ncol(parcel_data) == 200) {atlas=3} 
-    else if (ncol(parcel_data) == 360) {atlas=4} 
-    else if (ncol(parcel_data) == 148) {atlas=5} 
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Glasser-360, or Destrieux-148 atlases.')}
+   if (ncol(parcel_data) == 70) {atlas=1} 
+     else if (ncol(parcel_data) == 148) {atlas=2} 
+     else if (ncol(parcel_data) == 360) {atlas=3} 
+     else if (ncol(parcel_data) == 100) {atlas=4} 
+     else if (ncol(parcel_data) == 200) {atlas=5} 
+     else if (ncol(parcel_data) == 400) {atlas=6}
+    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
     
     #init variables
     nregions=max(ROImap[[1]][,atlas])
@@ -315,11 +392,12 @@ atlas_to_fs5=function(parcel_data)
   } else if(is.vector(parcel_data)==T) #if parcel_data is a vector
   {
     if (length(parcel_data) == 70) {atlas=1} 
-    else if (length(parcel_data) == 100) {atlas=2} 
-    else if (length(parcel_data) == 200) {atlas=3} 
-    else if (length(parcel_data) == 360) {atlas=4} 
-    else if (length(parcel_data) == 148) {atlas=5} 
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Glasser-360, or Destrieux-148 atlases.')}
+    else if (ncol(parcel_data) == 148) {atlas=2} 
+    else if (ncol(parcel_data) == 360) {atlas=3} 
+    else if (ncol(parcel_data) == 100) {atlas=4} 
+    else if (ncol(parcel_data) == 200) {atlas=5} 
+    else if (ncol(parcel_data) == 400) {atlas=6}
+    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
     
     #init variables
     nregions=max(ROImap[[1]][,atlas])
@@ -329,50 +407,6 @@ atlas_to_fs5=function(parcel_data)
     for (region in 1:nregions)  {fs5_dat[which(ROImap[[1]][,atlas]==region)]=parcel_data[region]}      
   }
   return(fs5_dat)
-}
-
-############################################################################################################################
-############################################################################################################################
-
-#' @title Hippocampal surface to atlas
-#'
-#' @description Returns the mean vertex-wise surface data for each ROI of the bigbrain hippocampal atlas
-#' @details The function currently only works with the "bigbrain" atlas integrated in Hippunfold. See also \href{https://www.sciencedirect.com/science/article/pii/S105381191930919X}{DeKraker et al., 2020}.
-#'
-#' @param surf_data A matrix object containing the hippocampal surface data  (14524 vertices), see HIPvextract() output format. 
-#'
-#' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
-#' @seealso \code{\link{fs5_to_atlas}}
-#' @examples
-#' CTv = runif(14524,min=0, max=100)
-#' hip_to_atlas(CTv)
-#' @export
-
-hip_to_atlas=function(surf_data) 
-{  
-  #check length of vector
-  if(length(surf_data)%%14524!=0) {stop("Length of surf_data is not a multiple of 14524")}
-  
-  #load atlas mapping surf_data
-  ROImap <- get('ROImap_HIP')
-  
-  #init variables
-  nregions=max(ROImap[[1]][,1])
-  surf_data[is.na(surf_data)]=0
-  
-  #mapping fsaverage5 space vertice to atlas regions if surf_data is a 1x14524 vector
-  if(length(surf_data)==14524) 
-  {
-    surf_data=matrix(surf_data,ncol=14524,nrow=1)  
-    ROI=rep(NA,nregions)
-    for (region in 1:nregions)  {ROI[region]=mean(surf_data[which(ROImap[[1]][,1]==region)])} #vertices are averaged within the atlas ROI
-  } else 
-  {
-    #mapping hippocampal space vertice to atlas regions if surf_data is a Nx14524 matrix
-    ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
-    for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,1]==region)])} #vertices are averaged within the atlas ROI
-  }
-  return(ROI)
 }
 
 ############################################################################################################################
