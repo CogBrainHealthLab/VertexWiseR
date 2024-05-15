@@ -7,3 +7,6 @@
 inst/demo_data/KLEPITS_ses1_CTv
 inst/demo_data/SPRENG_CTv
 inst/extdata/neurosynth_dataset.pkl.gz
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
