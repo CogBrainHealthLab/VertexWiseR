@@ -242,7 +242,7 @@ getClusters=function(surf_data)
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
-#' @seealso \code{\link{atlas_to_fs5}}
+#' @seealso \code{\link{atlas_to_surf}}
 #' @examples
 #' CTv = runif(20484,min=0, max=100)
 #' surf_to_atlas(CTv, 1)
@@ -351,24 +351,30 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 }
 
 
-#' @title Atlas to fsaverage5
+#' @title Atlas to surface
 #'
-#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 space
-#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigma toolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_fs5() will automatically detect the atlas based on the number of columns.
+#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 or fsaverage6 space
+#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigma toolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
+#' @param template A string object stating the surface space on which to map the data ('fsaverage5' or 'fsaverage6').
 #'
-#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5 space
+#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5 or fsaverage6 space
 #' @seealso \code{\link{surf_to_atlas}}
 #' @examples
-#' parcel_data = t(runif(100,min=0, max=100))
-#' atlas_to_fs5(parcel_data)
+#' parcel_data = t(runif(100,min=0, max=100));
+#' surf_data = atlas_to_surf(parcel_data, template='fsaverage5');
 #' @export
 
-atlas_to_fs5=function(parcel_data) 
+atlas_to_surf=function(parcel_data, template) 
   {
     #load atlas mapping surface data
-    ROImap <- get('ROImap_fs5')
+  if (template=='fsaverage5') { 
+    ROImap <- get('ROImap_fs5'); n_vert=20484; 
+  } else if (template=='fsaverage6') 
+  { ROImap <- get('ROImap_fs6'); n_vert=81924; 
+  } else { stop('The function currently only works with fsaverage5 and fsaverage6')}
+  
     
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
   {
@@ -382,31 +388,31 @@ atlas_to_fs5=function(parcel_data)
     
     #init variables
     nregions=max(ROImap[[1]][,atlas])
-    fs5_dat=matrix(NA,nrow = NROW(parcel_data), ncol=20484)
+    surf_dat=matrix(NA,nrow = NROW(parcel_data), ncol=n_vert)
     
     #mapping atlas label to fsaverage5 space
     for (sub in 1:NROW(parcel_data))
     {
-      for (region in 1:nregions)  {fs5_dat[sub,which(ROImap[[1]][,atlas]==region)]=parcel_data[sub,region]}      
+      for (region in 1:nregions)  {surf_dat[sub,which(ROImap[[1]][,atlas]==region)]=parcel_data[sub,region]}      
     }
   } else if(is.vector(parcel_data)==T) #if parcel_data is a vector
   {
     if (length(parcel_data) == 70) {atlas=1} 
-    else if (ncol(parcel_data) == 148) {atlas=2} 
-    else if (ncol(parcel_data) == 360) {atlas=3} 
-    else if (ncol(parcel_data) == 100) {atlas=4} 
-    else if (ncol(parcel_data) == 200) {atlas=5} 
-    else if (ncol(parcel_data) == 400) {atlas=6}
+    else if (length(parcel_data) == 148) {atlas=2} 
+    else if (length(parcel_data) == 360) {atlas=3} 
+    else if (length(parcel_data) == 100) {atlas=4} 
+    else if (length(parcel_data) == 200) {atlas=5} 
+    else if (length(parcel_data) == 400) {atlas=6}
     else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
     
     #init variables
     nregions=max(ROImap[[1]][,atlas])
-    fs5_dat=rep(NA,20484)
+    surf_dat=rep(NA,n_vert)
 
-    #mapping atlas label to fsaverage5 space
-    for (region in 1:nregions)  {fs5_dat[which(ROImap[[1]][,atlas]==region)]=parcel_data[region]}      
+    #mapping atlas label to the surface space
+    for (region in 1:nregions)  {surf_dat[which(ROImap[[1]][,atlas]==region)]=parcel_data[region]}      
   }
-  return(fs5_dat)
+  return(surf_dat)
 }
 
 ############################################################################################################################

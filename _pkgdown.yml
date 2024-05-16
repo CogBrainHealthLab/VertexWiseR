@@ -34,9 +34,8 @@ reference:
   - subtitle: Atlas manipulations
     desc: >
     contents:
-    - atlas_to_fs5
-    - fs5_to_atlas
-    - hip_to_atlas
+    - atlas_to_surf
+    - surf_to_atlas
     
   - subtitle: Decoding surface data
     desc: >

@@ -29,5 +29,5 @@ CTv = runif(20484,min=0, max=100)
 surf_to_atlas(CTv, 1)
 }
 \seealso{
-\code{\link{atlas_to_fs5}}
+\code{\link{atlas_to_surf}}
 }
