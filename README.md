@@ -1,7 +1,7 @@
 
 
 
-Vertex-wise R functions for analyzing and visualizing cortical thickness 
+VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R 
 
 ![](man/figures/Flowchart.jpg)<!-- -->
 
