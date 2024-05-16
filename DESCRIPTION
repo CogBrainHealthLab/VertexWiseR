@@ -4,9 +4,9 @@ Title: Run Vertex-Wise Statistical Analyses in Whole-Brain and Hippocampal
 Version: 1.0.0
 Date: 2024-05-14
 Authors@R: c(
-    person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = c("aut", "cre"),
+    person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
-    person("Charly", "Billaud", , "charly.billaud@ntu.edu.sg", role = "aut",
+    person("Charly", "Billaud", , "charly.billaud@ntu.edu.sg", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-3466-9963"))
   )
 Maintainer: Charly Billaud <charly.billaud@ntu.edu.sg>
