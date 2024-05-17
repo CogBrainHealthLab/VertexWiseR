@@ -698,9 +698,12 @@ surf_to_vol=function(surf_data, filename)
 ##CT image decoding
 decode_surf_data=function(surf_data,contrast="positive")
 {
-  #Check if required python dependencies and neurosynth are present
+  #Check if required python dependencies and neurosynth are present, nothing will happen if absent
   VWRfirstrun("neurosynth")
   
+  if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
+  {
+     
   ##checks length
     if(is.vector(surf_data)) {n_vert=length(surf_data)} else {n_vert=ncol(surf_data)}
     if(n_vert==20484) {template="fsaverage5"}
@@ -734,8 +737,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   stat_labels=reticulate::r_to_py(surf_data)
   stat_nii = interpolate$`_surf2vol`(template, stat_labels)
   
-  if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
-  {
+
   ##running the decoding procedure
   neurosynth_dset = nimare.dataset$Dataset$load(system.file("extdata/neurosynth_dataset.pkl.gz", package='VertexWiseR'))
   cat("Correlating input image with images in the neurosynth database. This may take a while...\n")
@@ -748,9 +750,9 @@ decode_surf_data=function(surf_data,contrast="positive")
   result=data.frame(row.names(decoder_df),round(as.numeric(decoder_df),3))
   colnames(result)=c("keyword","r")
   result=result[order(-result$r),]
-  } 
   
   return(result)
+  } 
 }  
 
 
