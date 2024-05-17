@@ -698,18 +698,19 @@ surf_to_vol=function(surf_data, filename)
 ##CT image decoding
 decode_surf_data=function(surf_data,contrast="positive")
 {
-  #Check if required python dependencies and libraries are  imported
-  VWRrequirements()
+  #Check if required python dependencies and neurosynth are present
+  VWRfirstrun("neurosynth")
   
-  ##checks
-    #check length of vector
-    n_vert=length(surf_data)
+  ##checks length
+    if(is.vector(surf_data)) {n_vert=length(surf_data)} else {n_vert=ncol(surf_data)}
     if(n_vert==20484) {template="fsaverage5"}
     else if (n_vert==81924) {stop("decoding of fsaverage6-space image is current not implemented, please resample the image to fsaverage5 space")} 
     else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) is accepted")}
 
     #check contrast
     if(contrast != "positive" & contrast != "negative")  {stop("contrast has to be either positive or negative")} 
+  
+  cat("Converting and interpolating the surface data...\n")
   
   ##import python libraries
   interpolate=reticulate::import("brainstat.mesh.interpolate", delay_load = TRUE)
@@ -733,42 +734,11 @@ decode_surf_data=function(surf_data,contrast="positive")
   stat_labels=reticulate::r_to_py(surf_data)
   stat_nii = interpolate$`_surf2vol`(template, stat_labels)
   
-  ##download neurosynth database if necessary 
-  if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==F)
-  {
-    cat("\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). The neurosynth database can be downloaded there.\n")
-    
-    if (interactive()==T) { #only works in interactive session
-    prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.9 MB) to be downloaded now?")
-    if (prompt==1) {
-      
-      #function to check if url exists
-      #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
-      #https://stackoverflow.com/a/60627969
-      valid_url <- function(url_in,t=2){
-        con <- url(url_in)
-        check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
-        suppressWarnings(try(close.connection(con),silent=T))
-        ifelse(is.null(check),TRUE,FALSE)}
-      
-      
-      #Check if URL works and avoid returning error but only print message as requested by CRAN:
-      url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
-      if(valid_url(url)) {
-          download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
-      } else { 
-        return("The neurosynth database (neurosynth_dataset.pkl.gz) could not be downloaded from the github VertexWiseR directory. Please check your internet connection or visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata to download the object.") #ends function
-      } 
-    } else  {stop("\nThis function can only work with the neurosynth database.\n") }
-    } else  {return("\nThis function can only work with the neurosynth database. Please run decode_surf_data() in an interactive R session so you can be prompted to download it.\n") }
-    
-  }
-  
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
   {
   ##running the decoding procedure
   neurosynth_dset = nimare.dataset$Dataset$load(system.file("extdata/neurosynth_dataset.pkl.gz", package='VertexWiseR'))
-  cat("Correlating input image with images in the neurosynth database. This may take a while\n")
+  cat("Correlating input image with images in the neurosynth database. This may take a while...\n")
   decoder = discrete$ROIAssociationDecoder(stat_nii)
   decoder$fit(neurosynth_dset)
 
@@ -788,10 +758,10 @@ decode_surf_data=function(surf_data,contrast="positive")
 ############################################################################################################################
 #' @title VertexWiseR system requirements installation
 #'
-#' @description Helps the user install all system requirements for VertexWiseR functions to work (miniconda, brainstat toolbox and libraries). If they are installed already nothing will be overwritten. 
+#' @description Helps the user install all system requirements for VertexWiseR functions to work (miniconda, brainstat toolbox and libraries). If they are installed already, nothing will be overwritten. 
 #'
-#' @details VertexWiseR imports and makes use of the R package reticulate. reticulate is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the brainstat python module. For reticulate to work properly with VertexWiseR, the latest version of miniconda needs to be installed with it — miniconda is a lightweight version of python, specifically for use within RStudio. Likewise, analyses of cortical surface require fsaverage templates as imported by brainstat.
-#' @param requirement String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'). Default is 'any' requirement and checks everything.
+#' @details VertexWiseR imports and makes use of the R package reticulate. reticulate is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the brainstat python module. For reticulate to work properly with VertexWiseR, the latest version of miniconda needs to be installed with it — miniconda is a lightweight version of python, specifically for use within RStudio. Likewise, analyses of cortical surface require fsaverage templates as imported by brainstat. The decode_surf_data() function also requires the neurosynth database to be downloaded.
+#' @param requirement String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
 #' @examples
 #' VWRfirstrun()
 #' @importFrom reticulate conda_binary py_module_available
@@ -861,6 +831,41 @@ if (interactive()==T) { #can only run interactively as it requires user's action
         {cat('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
   }
   
+  #Check if neurosynth database is present and download
+  if ((requirement=="any" | requirement=='neurosynth')==T 
+      & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
+  {
+    {
+      cat("\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n")
+      
+      if (interactive()==T) { #only works in interactive session
+        prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.5 MB) to be downloaded now?")
+        if (prompt==1) {
+          
+          #function to check if url exists
+          #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
+          #https://stackoverflow.com/a/60627969
+          valid_url <- function(url_in,t=2){
+            con <- url(url_in)
+            check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
+            suppressWarnings(try(close.connection(con),silent=T))
+            ifelse(is.null(check),TRUE,FALSE)}
+          
+          
+          #Check if URL works and avoid returning error but only print message as requested by CRAN:
+          url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
+          if(valid_url(url)) {
+            download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
+          } else { 
+            return("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
+          } 
+        } else if (requirement=="neurosynth") {stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
+         else if (requirement=="any") {cat("\ndecode_surf_data() can only work with the neurosynth database.\n")}
+          
+      } else  {return("\nThis function can only work with the neurosynth database. Please run decode_surf_data() in an interactive R session so you can be prompted to download it.\n") }
+      
+    }
+  }
   
 } 
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
@@ -869,7 +874,8 @@ else #if not interactive and any required file is missing, the script requires t
       !reticulate::py_module_available("brainstat") |
       ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) |
       ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  |
-      ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
+      ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) |
+      ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
     ) { return('Please run VWRfirstrun() in an interactive R session to check for system requirements and install them.\n')}
 }
 
