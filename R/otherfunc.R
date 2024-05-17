@@ -693,7 +693,6 @@ surf_to_vol=function(surf_data, filename)
 #' CTv = rbinom(20484, 1, 0.001) 
 #' decode_surf_data(CTv, 'positive')
 #' @importFrom reticulate import r_to_py
-#' @importFrom RCurl url.exists
 #' @export
 
 ##CT image decoding
@@ -743,9 +742,19 @@ decode_surf_data=function(surf_data,contrast="positive")
     prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.9 MB) to be downloaded now?")
     if (prompt==1) {
       
+      #function to check if url exists
+      #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
+      #https://stackoverflow.com/a/60627969
+      valid_url <- function(url_in,t=2){
+        con <- url(url_in)
+        check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
+        suppressWarnings(try(close.connection(con),silent=T))
+        ifelse(is.null(check),TRUE,FALSE)}
+      
+      
       #Check if URL works and avoid returning error but only print message as requested by CRAN:
       url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
-      if(RCurl::url.exists(url)) {
+      if(valid_url(url)) {
           download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
       } else { 
         return("The neurosynth database (neurosynth_dataset.pkl.gz) could not be downloaded from the github VertexWiseR directory. Please check your internet connection or visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata to download the object.") #ends function
