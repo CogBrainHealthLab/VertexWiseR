@@ -38,6 +38,5 @@ Imports:
     grDevices,
     igraph,
     methods,
-    RCurl,
     reticulate,
     utils
