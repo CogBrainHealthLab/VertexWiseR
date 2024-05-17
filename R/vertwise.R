@@ -31,8 +31,7 @@
 #'"SPRENG_CTv.rds?raw=TRUE")))[1:100,]
 #'
 #'vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
-#'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
-#'smooth_FWHM = 10)
+#'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05)
 #'print(vertexwise_model$cluster_level_results)
 #' @importFrom reticulate import r_to_py
 #' @export
