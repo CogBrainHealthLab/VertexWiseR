@@ -787,8 +787,8 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   #check if brainstat is installed
   if(!reticulate::py_module_available("brainstat")) 
   {
-    cat('Brainstat could not be found in the environment. \n')
-    prompt = utils::menu(c("Yes", "No"), title=" Do you want brainstat to be installed now?")
+    cat('Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work.\n')
+    prompt = utils::menu(c("Yes", "No"), title=" Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
     if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} else {stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
   
