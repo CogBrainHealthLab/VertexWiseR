@@ -143,7 +143,7 @@ smooth_surf=function(surf_data, FWHM)
   if(n_vert==20484) 
   {
     edgelist<- get('edgelistfs5') 
-    FWHM=FWHM/3 #converting mm to mesh units
+    FWHM=FWHM/3.5 #converting mm to mesh units
   } else if(n_vert==81924) 
   {
     edgelist<- get('edgelistfs6') 
