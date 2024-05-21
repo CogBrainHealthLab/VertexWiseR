@@ -1,5 +1,6 @@
 Package: VertexWiseR
-Title: VertexWiseR: a Package for Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal Surface in R
+Title: VertexWiseR: a Package for Simplified Vertex-Wise Analyses of
+    Whole-Brain and Hippocampal Surface in R
 Version: 1.0.0
 Date: 2024-05-16
 Authors@R: c(
@@ -26,7 +27,7 @@ RoxygenNote: 7.2.3
 SystemRequirements: Miniconda3 (>= 23.10.0); brainstat (reticulate
     installation, >=0.4.2)
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.0.0)
 Imports: 
     doParallel,
     doSNOW,
