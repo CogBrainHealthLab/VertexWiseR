@@ -112,8 +112,8 @@
 #' @returns A matrix object with smoothed vertex-wise values
 #' @examples
 #' surf_data = readRDS(file = url(paste0("https://github.com",
-#'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-#'"SPRENG_CTv.rds?raw=TRUE")))[1:3,]
+  #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
+  #'"FINK_CTv.rds?raw=TRUE")))[[2]][1:3,]
 #' smooth_surf(surf_data, 10)
 #' @importFrom reticulate source_python
 #' @export
