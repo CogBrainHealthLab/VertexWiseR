@@ -4,17 +4,17 @@
 \alias{decode_surf_data}
 \title{Decode surface data}
 \usage{
-decode_surf_data(surf_data, contrast = "positive", keyword_list = F)
+decode_surf_data(surf_data, contrast = "positive", keywords_list = F)
 }
 \arguments{
 \item{surf_data}{a numeric vector with a length of 20484}
 
 \item{contrast}{A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')}
 
-\item{keyword_list}{A boolean stating whether to return the full list of keywords in the imported neurosynth database}
+\item{keywords_list}{A boolean stating whether to return the full list of keywords in the imported neurosynth database}
 }
 \value{
-A data.frame object listing the keywords and their Pearson's R values
+A data.frame object listing the keywords and their Pearson's R values. If keywords_list is TRUE, a list containing the same data.frame object and the list of all the database keywords.
 }
 \description{
 Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
