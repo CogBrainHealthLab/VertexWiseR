@@ -188,21 +188,32 @@ extract.t=function(mod,row)
 getClusters=function(surf_data)
 { 
   n_vert=length(surf_data)
-  
+
   #listing out non-zero vertices
   vert=which(surf_data!=0)
   
   #visible binding for edgelist object
   edgelist <- get("edgelist")
+    
+  ##narrow down to left or right hemisphere only to speed up matching process
+  if(max(vert,na.rm = T)<=(n_vert/2))
+  {
+    nedgerow=min(which(edgelist>(n_vert/2)))-1
+    edgelist=edgelist[1:nedgerow,]
+  } else if(min(vert,na.rm = T)>(n_vert/2))
+  {
+    nedgerow=min(which(edgelist>(n_vert/2)))-1
+    edgelist=edgelist[(nedgerow+1):NROW(edgelist),]
+  }
   
   #matching non-zero vertices with adjacency matrices to obtain list of edges connecting between the non-zero vertices
   edgelist0=edgelist[!is.na(match(edgelist[,1],vert)),]
   if(length(edgelist0)>2)  {edgelist1=edgelist0[!is.na(match(edgelist0[,2],vert)),]} 
   else if (length(edgelist0)==2)  ##if only a single edge was identified, edgelist will no longer be a Nx2 matrix, hence need to reshape it into a matrix
-    { 
+  { 
     edgelist0=matrix(edgelist0,ncol=2,nrow=1)
     edgelist1=edgelist0[!is.na(match(edgelist0[,2],vert)),]
-    } else {edgelist1=0}
+  } else {edgelist1=0}
   remove(surf_data,vert,edgelist0)
   
   if(length(edgelist1)>2) #if at least 2 edges are identified
@@ -214,7 +225,7 @@ getClusters=function(surf_data)
     #cluster mappings
     clust.map=rep(NA,n_vert)
     clust.map[as.numeric(names(com$membership))]=com$membership
-  
+    
   } else if(length(edgelist1)==2) #bypass cluster extraction procedure if only 1 edge is identified
   {
     clust.size=2

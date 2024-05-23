@@ -198,10 +198,8 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     surf_data[is.na(surf_data)]=0
   
   ##import python libaries
-  brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
-  brainstat.stats.SLM=reticulate::import("brainstat.stats.SLM", delay_load = TRUE)
-  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
-  
+  brainstat.stats=reticulate::import("brainstat.stats", delay_load = TRUE)
+
   ##fitting model
   #preparing mask for model
   mask=array(rep(T,NCOL(surf_data)))
@@ -209,9 +207,9 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   mask[which(colSums(surf_data != 0) == 0)]=F
   
   #fit model
-  if(missing("random")) {model0=brainstat.stats.terms$FixedEffect(model, "_check_categorical" = F)}
-  else {model0=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = F)}
-  model=brainstat.stats.SLM$SLM(model = model0,
+  if(missing("random")) {model0=brainstat.stats$terms$FixedEffect(model, "_check_categorical" = F)}
+  else {model0=brainstat.stats$terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = F)}
+  model=brainstat.stats$SLM$SLM(model = model0,
                                 contrast=contrast,
                                 surf = template,
                                 mask=mask,
