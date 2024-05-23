@@ -75,14 +75,6 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
     random=match(random,unique(random))
   }
   
-  #check if required packages are installed
-  packages=c("foreach","doParallel","parallel","doSNOW","reticulate")
-  new.packages = packages[!(packages %in% installed.packages()[,"Package"])]
-  if(length(new.packages)) 
-  {
-    cat(paste("The following package(s) are required and will be installed:\n",new.packages,"\n"))
-    install.packages(new.packages)
-  }  
   #check if nrow is consistent for model and surf_data
   if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
   if(length(random)!=NROW(model))  {stop(paste("The number of rows for random (",length(random),") and model (",NROW(model),") are not the same",sep=""))}
@@ -219,12 +211,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   tmap.orig[inc.vert.idx]=as.numeric(model.fit$t)  
   
   TFCE.multicore = utils::getFromNamespace("TFCE.multicore", "VertexWiseR")
-    
-    ##nthread > 4 does not lead to quicker completion
-    if(nthread>4) {nthread1=4} 
-    else {nthread1=nthread}
-    
-  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=nthread1, envir=edgelistenv)
+  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2) envir=edgelistenv) #divide by 2 because more threads made things slower
   
   end=Sys.time()
   
