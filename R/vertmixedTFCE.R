@@ -67,10 +67,6 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   
   if(inherits(contrast,"integer")==T) {contrast=as.numeric(contrast)}
   
-  ##load other TFCE and vertex-wise functions (not needed when package is in library)
-  #source("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/R/vertTFCE.r?raw=TRUE")
-  #source("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/R/otherfunc.r?raw=TRUE")
-  
   ##checks
   #check random variable and recode to numeric
   if(missing("random"))  {stop("random variable is missing")}
