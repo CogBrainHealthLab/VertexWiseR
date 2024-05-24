@@ -673,7 +673,7 @@ surf_to_vol=function(surf_data, filename)
   }
   
   #check length of vector
-    n_vert=ncol(surf_data)
+    n_vert=length(surf_data)
     if(n_vert==20484) {template="fsaverage5"}
     else if (n_vert==81924) {template="fsaverage6"} 
     else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) or 81924 (fsaverage6) is accepted")}
