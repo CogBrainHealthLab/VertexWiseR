@@ -4,23 +4,21 @@
 \alias{decode_surf_data}
 \title{Decode surface data}
 \usage{
-decode_surf_data(surf_data, contrast = "positive", keywords_list = F)
+decode_surf_data(surf_data, contrast = "positive")
 }
 \arguments{
 \item{surf_data}{a numeric vector with a length of 20484}
 
 \item{contrast}{A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')}
-
-\item{keywords_list}{A boolean stating whether to return the full list of keywords in the imported neurosynth database}
 }
 \value{
-A data.frame object listing the keywords and their Pearson's R values. If keywords_list is TRUE, a list containing the same data.frame object and the list of all the database keywords.
+A data.frame object listing the keywords and their Pearson's R values
 }
 \description{
 Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
 }
 \details{
-The \href{https://nimare.readthedocs.io/en/stable/index.html}{NiMARE} python module is used for the imaging decoding and is imported via the reticulate package. The function needs the \href{https://github.com/neurosynth/neurosynth-data}{neurosynth} database in the package's inst/extdata directory to be downloaded (~8 Mb) for the analysis. To maximise the speed of processing, keywords were excluded from the original database if they were: the name of an anatomical brain region, protocol-specific descriptive words that are not meaningful out of context (e.g., “studied”, “clips”, “engaged”), and broad categories that do not specifically point to a content (“disorder”, “psychological”, “cognitive”). A full list can be obtained with the keyword_list argument.
+The \href{https://nimare.readthedocs.io/en/stable/index.html}{NiMARE} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{neurosynth} database in the package's inst/extdata direcotry (~8 Mb) for the analysis.
 }
 \examples{
 CTv = rbinom(20484, 1, 0.001) 
