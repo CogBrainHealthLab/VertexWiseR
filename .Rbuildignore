@@ -4,7 +4,7 @@
 ^vertwise\.r$
 ^vertTFCE\.r$
 ^vertmixedTFCE\.R$
-inst/demo_data/FINK_CTv
+inst/demo_data/FINK_Tv
 inst/demo_data/SPRENG_CTv
 inst/extdata/neurosynth_dataset.pkl.gz
 ^_pkgdown\.yml$
