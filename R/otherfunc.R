@@ -113,7 +113,7 @@
 #' @examples
 #' surf_data = readRDS(file = url(paste0("https://github.com",
   #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-  #'"FINK_Tv.rds?raw=TRUE")))[[2]][1:3,]
+  #'"FINK_Tv_ses13.rds?raw=TRUE")))[[2]][1:3,]
 #' smooth_surf(surf_data, 10)
 #' @importFrom reticulate source_python
 #' @export

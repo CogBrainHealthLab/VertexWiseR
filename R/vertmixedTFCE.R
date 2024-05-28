@@ -22,11 +22,10 @@
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
 #' @examples
-#' demodata = read.csv(system.file('demo_data/SPRENG_behdata.csv',
-#' package = 'VertexWiseR'))[1:5,]
+#' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-#'"SPRENG_CTv.rds?raw=TRUE")))[1:5,]
+#'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 #'
 #'TFCE.pos=TFCE.vertex_analysis.mixed(model=demodata[,c(2,7)],
 #'contrast=demodata[,7], surf_data,random=demodata[,1], 

@@ -33,8 +33,7 @@ VWRfirstrun()
 For this example, we use Spreng and colleagues's neurocognitive aging [openneuro dataset ds003592](https://openneuro.org/datasets/ds003592/versions/1.0.13):
 
 ``` r 
-demodata = read.csv(system.file('demo_data/SPRENG_behdata.csv',
-package = 'VertexWiseR'))
+demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))
 ``` 
 
 The dataset T1 weighted images were preprocessed using the recon-all [Freesurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki) pipeline. This tutorial will not reiterate these steps and simply explain how, from a given Freesurfer subject directory, VertexWiseR extracts surface-based measures and synthesies the whole-sample data into a compact matrix object (.rds) for later analyses. 
@@ -48,7 +47,7 @@ HIPvextract(sdirpath = "MY_SUBJECTS_DIR/", filename = "SPRENG_CTv.rds", measure 
 A CT matrix object extracted from this dataset is included in the VertexWiseR git repository and can be downloaded with the following code:
 
 ``` r 
-SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv.rds?raw=TRUE"))
+SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
 ``` 
 #### Smoothing the surface data
 

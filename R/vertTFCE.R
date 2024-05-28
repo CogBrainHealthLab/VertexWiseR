@@ -21,11 +21,11 @@
 #' @seealso \code{\link{TFCE.threshold}}
 #'  
 #' @examples
-#' demodata = read.csv(system.file('demo_data/SPRENG_behdata.csv',
+#' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 #'package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-#'"SPRENG_CTv.rds?raw=TRUE")))[1:5,]
+#'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 #'model=demodata[,c(2,7)]
 #'contrast=demodata[,7]
 #'
