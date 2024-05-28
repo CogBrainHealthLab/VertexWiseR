@@ -216,7 +216,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   end=Sys.time()
   
   cat(paste("Completed in",round(difftime(end,start, units="secs"),1),"secs\nEstimating permuted TFCE images...\n",sep=" "))
-  closeAllConnections()
+
   ##permuted model
   #generating permutation sequences  
   set.seed(123)
