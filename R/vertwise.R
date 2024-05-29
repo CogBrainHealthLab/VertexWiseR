@@ -40,8 +40,13 @@
 vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smooth_FWHM)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   
-  #Check if required python dependencies and libraries are  imported
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session
+  . <- non_interactive <- NULL 
   VWRrequirements(ncol(surf_data))
+  if (exists("non_interactive")) { 
+    return(cat(non_interactive)) }
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

@@ -47,8 +47,13 @@
 
 TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row")
 {
-  #Check if required python dependencies and libraries are  imported
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session 
+  . <- non_interactive <- NULL 
   VWRrequirements(ncol(surf_data))
+  if (exists("non_interactive")) { 
+  return(cat(non_interactive)) }
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
@@ -101,7 +106,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
         if(identical(contrast,model[,colno]))  {break} 
       } else 
       {
-        if(identical(as.numeric(contrast),as.numeric(model[,colno])))  {break}
+        if(identical(suppressWarnings(as.numeric(contrast)),suppressWarnings(as.numeric(model[,colno]))))  {break}
       }
     }
   }  else

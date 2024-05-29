@@ -709,8 +709,14 @@ surf_to_vol=function(surf_data, filename)
 ##CT image decoding
 decode_surf_data=function(surf_data,contrast="positive") 
 {
-  #Check if required python dependencies and neurosynth are present, nothing will happen if absent
+  
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session
+  . <- non_interactive <- NULL 
   VWRfirstrun("neurosynth")
+  if (exists("non_interactive")) { 
+    return(cat(non_interactive)) }
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
   {
@@ -883,13 +889,25 @@ if (interactive()==T) { #can only run interactively as it requires user's action
 } 
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
 { 
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError' | 
-      !reticulate::py_module_available("brainstat") |
+  if (
+    #miniconda missing?
+    is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError' | 
+    #brainstat missing
+    !reticulate::py_module_available("brainstat") |
+    #fsaverage5 missing
       ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) |
+    #fsaverage6 missing
       ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  |
+    #yeo parcels missing
       ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) |
+   #neurosynth data missing
       ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
-    ) { return('Please run VWRfirstrun() in an interactive R session to check for system requirements and install them.\n')}
+      
+  ) { 
+    #creates the following object to warn upper functions that it's a non-interactive session and that files are missing
+    non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.'
+    return(non_interactive)  
+    }
 }
 
 }
