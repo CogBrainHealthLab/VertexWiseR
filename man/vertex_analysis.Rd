@@ -48,7 +48,8 @@ Output definitions:
 }
 }
 \examples{
-demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:100,]
+demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
+package = 'VertexWiseR'))[1:100,]
 CTv = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 "SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
