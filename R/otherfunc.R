@@ -797,7 +797,7 @@ VWRfirstrun=function(requirement="any")
 {
 if (interactive()==T) { #can only run interactively as it requires user's action
   
-  cat('Checking for VertexWiseR system requirements ...\n\n')
+  cat('Checking for VertexWiseR system requirements ...\n')
   #check if miniconda is installed
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   {
@@ -859,11 +859,8 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   if ((requirement=="any" | requirement=='neurosynth')==T 
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
   {
-    {
       cat("\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n")
-      
-      if (interactive()==T) { #only works in interactive session
-        prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.5 MB) to be downloaded now?")
+      prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.5 MB) to be downloaded now?")
         if (prompt==1) {
           
           #function to check if url exists
@@ -875,7 +872,6 @@ if (interactive()==T) { #can only run interactively as it requires user's action
             suppressWarnings(try(close.connection(con),silent=T))
             ifelse(is.null(check),TRUE,FALSE)}
           
-          
           #Check if URL works and avoid returning error but only print message as requested by CRAN:
           url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
           if(valid_url(url)) {
@@ -883,12 +879,10 @@ if (interactive()==T) { #can only run interactively as it requires user's action
           } else { 
             return("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
           } 
+          
+        #if user refuses, stops if required, just returns a message if optionnal at this stage
         } else if (requirement=="neurosynth") {stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
          else if (requirement=="any") {cat("\ndecode_surf_data() can only work with the neurosynth database.\n")}
-          
-      } else  {return("\nThis function can only work with the neurosynth database. Please run decode_surf_data() in an interactive R session so you can be prompted to download it.\n") }
-      
-    }
   }
   
 } 
