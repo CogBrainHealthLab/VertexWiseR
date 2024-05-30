@@ -2,7 +2,7 @@ Package: VertexWiseR
 Title: A Package for Simplified Vertex-Wise Analyses of Whole-Brain and
     Hippocampal Surface in R
 Version: 1.0.0
-Date: 2024-05-29
+Date: 2024-05-30
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
@@ -18,7 +18,7 @@ Description: Provides functions to run statistical analyses on
     the data values into a single file. The single file can then be used
     by the package for analyses independently from its base dataset and
     without need for its access.
-License: GPL-3 + file LICENSE
+License: GPL-3
 URL: https://cogbrainhealthlab.github.io/VertexWiseR/
 Encoding: UTF-8
 LazyData: true

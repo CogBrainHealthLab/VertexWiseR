@@ -12,3 +12,4 @@ inst/extdata/neurosynth_dataset.pkl.gz
 ^pkgdown$
 inst/demo_data/FINK_Tv_ses13.rds
 inst/demo_data/SPRENG_CTv_site1.rds
+LICENSE
