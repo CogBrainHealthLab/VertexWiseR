@@ -122,8 +122,13 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM)
 {
-  #Check if required python dependencies and libraries are  imported
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session 
+  . <- non_interactive <- NULL 
   VWRrequirements()
+  if (exists("non_interactive")) { 
+    return(cat(non_interactive)) }
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
