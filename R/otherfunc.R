@@ -122,13 +122,13 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM)
 {
-  #Check required python dependencies. If files missing:
-  #Will prompt the user to get them in interactive session 
-  #Will stop if it's a non-interactive session 
-  . <- non_interactive <- NULL 
-  VWRrequirements()
-  if (exists("non_interactive")) { 
-    return(cat(non_interactive)) }
+  #This script requires miniconda and reticulate
+  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
+  {
+    cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
+    prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
+    if (prompt==1) {reticulate::install_miniconda()} else {stop('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
+  } 
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -532,7 +532,7 @@ fs6_to_fs5=function(surf_data)
 plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=T, size, zoom)
 {
   #Check if required python dependencies and libraries are  imported
-  VWRrequirements()
+  VWRrequirements(max(dim(t(surf_data))))
   
   if (missing("filename")) {
     cat('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
@@ -653,7 +653,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
 #'
 #' @description Converts surface data to volumetric data (.nii file)
 #'
-#' @param surf_data A matrix object containing the surface data, either in fsaverage5 or fsaverage6 space. See SURFvextract() output format. 
+#' @param surf_data A vector object containing the surface data, either in fsaverage5 or fsaverage6 space. It can only be one row of vertices (no cohort surface data matrix). 
 #' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii').
 #'
 #' @returns A .nii volume file
@@ -916,7 +916,7 @@ else #if not interactive and any required file is missing, the script requires t
 #the n_vert argument ensures only the necessary fsaverage data is demanded 
 #' @importFrom utils menu
 
-VWRrequirements=function(n_vert="") 
+VWRrequirements=function(n_vert=0) 
 { #is miniconda installed?
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
   {VWRfirstrun()} 
