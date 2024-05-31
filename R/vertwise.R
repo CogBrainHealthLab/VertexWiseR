@@ -45,7 +45,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Will stop if it's a non-interactive session
   . <- non_interactive <- NULL 
   VWRrequirements(ncol(surf_data))
-  if (exists("non_interactive")) { 
+  if (!is.null(non_interactive)) { 
     return(cat(non_interactive)) }
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)

@@ -720,7 +720,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   #Will stop if it's a non-interactive session
   . <- non_interactive <- NULL 
   VWRfirstrun("neurosynth")
-  if (exists("non_interactive")) { 
+  if (!is.null(non_interactive)) { 
     return(cat(non_interactive)) }
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)

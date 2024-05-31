@@ -52,8 +52,8 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   #Will stop if it's a non-interactive session 
   . <- non_interactive <- NULL 
   VWRrequirements(max(dim(t(surf_data))))
-  if (exists("non_interactive")) { 
-  return(cat(non_interactive)) }
+  if (!is.null(non_interactive)) { 
+    return(cat(non_interactive)) }
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
