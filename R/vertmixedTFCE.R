@@ -51,7 +51,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
   . <- non_interactive <- NULL 
-  VWRrequirements(ncol(surf_data))
+  VWRrequirements(max(dim(t(surf_data))))
   if (exists("non_interactive")) { 
   return(cat(non_interactive)) }
   
@@ -160,6 +160,10 @@ If it is your random variable and it is non-binarizable, do not include it in th
   #creating local environment
   edgelistenv <- new.env()
   
+  #check if surf_data is a multiple-rows matrix and NOT a vector
+  if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
+  {stop("The surface data must be a matrix containing multiple participants (rows).")}
+  
   #check length of CT data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)
@@ -177,7 +181,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
     edgelist <- get('edgelistHIP')
     assign("edgelist", edgelist, envir = edgelistenv)
   }
-  else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
   
   ##smoothing
   n_vert=NCOL(surf_data)

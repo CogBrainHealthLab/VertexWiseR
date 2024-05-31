@@ -147,6 +147,10 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
       }      
     }
     
+    #check if surf_data is a multiple-rows matrix and NOT a vector
+    if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
+    {stop("The surface data must be a matrix containing multiple participants (rows).")}
+    
     #check length of CT data and load the appropriate fsaverage files
     n_vert=ncol(surf_data)
     if(n_vert==20484)

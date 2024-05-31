@@ -147,6 +147,10 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     #make internal invironment to save edgelist
     edgelistenv <- new.env()
     
+    #check if surf_data is a multiple-rows matrix and NOT a vector
+    if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
+    {stop("The surface data must be a matrix containing multiple participants (rows).")}
+    
     #check length of surface data and load the appropriate edgelist files
     n_vert=ncol(surf_data)
     if(n_vert==20484)  {
@@ -161,7 +165,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     edgelist <- get('edgelistHIP')
     assign("edgelist", edgelist, envir = edgelistenv)
     }
-    else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+    else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
     
     #check for collinearity
     if(NCOL(model)>1)
