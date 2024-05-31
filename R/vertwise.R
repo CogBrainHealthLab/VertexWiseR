@@ -44,7 +44,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
   . <- non_interactive <- NULL 
-  VWRrequirements(ncol(surf_data))
+  VWRrequirements(max(dim(t(surf_data))))
   if (!is.null(non_interactive)) { 
     return(cat(non_interactive)) }
   
