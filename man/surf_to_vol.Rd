@@ -18,8 +18,6 @@ A .nii volume file
 Converts surface data to volumetric data (.nii file)
 }
 \examples{
-if(interactive()){
 CTv = runif(20484,min=0, max=100);
 surf_to_vol(CTv, filename = 'volume.nii')
-}
 }

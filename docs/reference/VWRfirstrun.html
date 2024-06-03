@@ -42,13 +42,17 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">VWRfirstrun</span><span class="op">(</span>requirement <span class="op">=</span> <span class="st">"any"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">VWRfirstrun</span><span class="op">(</span>requirement <span class="op">=</span> <span class="st">"any"</span>, n_vert <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>requirement</dt>
 <dd><p>String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.</p></dd>
+
+
+<dt>n_vert</dt>
+<dd><p>Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -59,6 +63,7 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">VWRfirstrun</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Checking for VertexWiseR system requirements ...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -522,8 +522,8 @@ fs6_to_fs5=function(surf_data)
 #'
 #' @returns Outputs the plot as a .png image
 #' @examples
-#'results = runif(20484,min=0, max=1)
-#'plot_surf(surf_data = results, filename='output.png',title = 
+#' results = runif(20484,min=0, max=1) 
+#' plot_surf(surf_data = results, filename='output.png',title = 
 #' 'Cortical thickness', surface = 'inflated', cmap = 'Blues')
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb

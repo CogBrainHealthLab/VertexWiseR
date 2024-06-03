@@ -44,9 +44,7 @@ Outputs the plot as a .png image
 Plots surface data in a grid with one or multiple rows in a .png file
 }
 \examples{
-if(interactive()){
-results = runif(20484,min=0, max=1)
-plot_surf(results, filename='output.png',title = 
+results = runif(20484,min=0, max=1) 
+plot_surf(surf_data = results, filename='output.png',title = 
 'Cortical thickness', surface = 'inflated', cmap = 'Blues')
-}
 }
