@@ -46,7 +46,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)}
+  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

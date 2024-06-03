@@ -535,7 +535,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)}
+  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
   if (missing("filename")) {
     cat('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
@@ -674,7 +674,7 @@ surf_to_vol=function(surf_data, filename)
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
   check = VWRfirstrun(requirement="miniconda/brainstat")
-  if (!is.null(check)) {return(check)}
+  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
   if (missing("filename")) {
     cat('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
@@ -723,7 +723,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
   check = VWRfirstrun(requirement="neurosynth")
-  if (!is.null(check)) {return(check)}
+  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
   {
@@ -813,7 +813,7 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   {requirement='yeo_parcels'} 
   
   
-  cat('Checking for VertexWiseR system requirements ...\n')
+  cat('Checking for VertexWiseR system requirements ... ')
   #check if miniconda is installed
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   {
