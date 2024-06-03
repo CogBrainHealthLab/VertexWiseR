@@ -4,10 +4,12 @@
 \alias{VWRfirstrun}
 \title{VertexWiseR system requirements installation}
 \usage{
-VWRfirstrun(requirement = "any")
+VWRfirstrun(requirement = "any", n_vert = 0)
 }
 \arguments{
 \item{requirement}{String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.}
+
+\item{n_vert}{Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for}
 }
 \description{
 Helps the user install all system requirements for VertexWiseR functions to work (miniconda, brainstat toolbox and libraries). If they are installed already, nothing will be overwritten.

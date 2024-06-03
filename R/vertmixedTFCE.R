@@ -50,10 +50,8 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  . <- non_interactive <- NULL 
-  VWRrequirements(max(dim(t(surf_data))))
-  if (!is.null(non_interactive)) { 
-    return(cat(non_interactive)) }
+  check=VWRfirstrun(n_vert=max(dim(t(surf_data))))
+  if (!is.null(check)) {return(check)}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

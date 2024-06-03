@@ -32,7 +32,9 @@
 #'
 #'vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
 #'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05)
-#'print(vertexwise_model$cluster_level_results)
+#' 
+#' #Description of the output:
+#' #vertexwise_model$cluster_level_results
 #' @importFrom reticulate import r_to_py
 #' @export
 
@@ -43,10 +45,8 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  . <- non_interactive <- NULL 
-  VWRrequirements(max(dim(t(surf_data))))
-  if (!is.null(non_interactive)) { 
-    return(cat(non_interactive)) }
+  check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+  if (!is.null(check)) {return(check)}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

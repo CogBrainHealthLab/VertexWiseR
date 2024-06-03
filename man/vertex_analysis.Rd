@@ -56,5 +56,7 @@ CTv = readRDS(file = url(paste0("https://github.com",
 
 vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
 contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05)
-print(vertexwise_model$cluster_level_results)
+
+#Description of the output:
+#vertexwise_model$cluster_level_results
 }

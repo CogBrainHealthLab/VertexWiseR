@@ -124,11 +124,13 @@ smooth_surf=function(surf_data, FWHM)
 {
   #This script requires miniconda and reticulate
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
-  {
-    cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
-    prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
-    if (prompt==1) {reticulate::install_miniconda()} else {stop('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
-  } 
+  { cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
+    #Will simply stop if not interactive session 
+    if (interactive()==T) { 
+      prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
+      if (prompt==1) {reticulate::install_miniconda()} else {return('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
+    } else { return('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
+  }
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -531,8 +533,11 @@ fs6_to_fs5=function(surf_data)
 
 plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=T, size, zoom)
 {
-  #Check if required python dependencies and libraries are  imported
-  VWRrequirements(max(dim(t(surf_data))))
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session 
+  check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+  if (!is.null(check)) {return(check)}
   
   if (missing("filename")) {
     cat('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
@@ -669,8 +674,11 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
 
 surf_to_vol=function(surf_data, filename)
   {
-  #Check if required python dependencies and libraries are  imported
-  VWRrequirements()
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session 
+  check = VWRfirstrun()
+  if (!is.null(check)) {return(check)}
   
   if (missing("filename")) {
     cat('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
@@ -718,10 +726,8 @@ decode_surf_data=function(surf_data,contrast="positive")
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  . <- non_interactive <- NULL 
-  VWRfirstrun("neurosynth")
-  if (!is.null(non_interactive)) { 
-    return(cat(non_interactive)) }
+  check = VWRfirstrun(requirement="neurosynth")
+  if (!is.null(check)) {return(check)}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
   {
@@ -786,16 +792,30 @@ decode_surf_data=function(surf_data,contrast="positive")
 #'
 #' @details VertexWiseR imports and makes use of the R package reticulate. reticulate is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the brainstat python module. For reticulate to work properly with VertexWiseR, the latest version of miniconda needs to be installed with it — miniconda is a lightweight version of python, specifically for use within RStudio. Likewise, analyses of cortical surface require fsaverage templates as imported by brainstat. The decode_surf_data() function also requires the neurosynth database to be downloaded.
 #' @param requirement String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
+#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
 #' @examples
 #' VWRfirstrun()
 #' @importFrom reticulate conda_binary py_module_available
 #' @importFrom fs path_home
 #' @importFrom methods is 
+#' @importFrom utils menu
 #' @export
 
-VWRfirstrun=function(requirement="any") 
+VWRfirstrun=function(requirement="any", n_vert=0) 
 {
 if (interactive()==T) { #can only run interactively as it requires user's action
+  
+  #First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
+  #are fsaverage5 templates in brainstat_data?
+  if (n_vert==20484)
+  {requirement='fsaverage5'}  
+  #are fsaverage6 templates in brainstat_data?
+  if  (n_vert==81924)
+  {requirement='fsaverage6'}
+  #is yeo parcellation data in brainstat_data?
+  if (n_vert>0)
+  {requirement='yeo_parcels'} 
+  
   
   cat('Checking for VertexWiseR system requirements ...\n')
   #check if miniconda is installed
@@ -905,31 +925,9 @@ else #if not interactive and any required file is missing, the script requires t
   ) { 
     #creates the following object to warn upper functions that it's a non-interactive session and that files are missing
     non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.'
-    return(non_interactive)  
+    return(non_interactive)
     }
 }
 
 }
-############################################################################################################################
-############################################################################################################################
-#This function checks that any external system requirement is fulfilled before using the functions that need python libraries
-#the n_vert argument ensures only the necessary fsaverage data is demanded 
-#' @importFrom utils menu
 
-VWRrequirements=function(n_vert=0) 
-{ #is miniconda installed?
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
-  {VWRfirstrun()} 
-  #is brainstat installed?
-  if(!reticulate::py_module_available("brainstat")) 
-  {VWRfirstrun()} 
-  #are fsaverage5 templates in brainstat_data?
-  if (n_vert==20484 & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5')))
-  { VWRfirstrun(requirement='fsaverage5') }  
-  #are fsaverage6 templates in brainstat_data?
-  if  (n_vert==81924 & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))
-  {VWRfirstrun(requirement='fsaverage6')  }
-  #is yeo parcellation data in brainstat_data?
-  if (n_vert>0 & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
-  {VWRfirstrun(requirement='yeo_parcels')} 
-}
