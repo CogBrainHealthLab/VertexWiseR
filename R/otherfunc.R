@@ -522,11 +522,9 @@ fs6_to_fs5=function(surf_data)
 #'
 #' @returns Outputs the plot as a .png image
 #' @examples
-#'if(interactive()){
 #'results = runif(20484,min=0, max=1)
-#'plot_surf(results, filename='output.png',title = 
+#'plot_surf(surf_data = results, filename='output.png',title = 
 #' 'Cortical thickness', surface = 'inflated', cmap = 'Blues')
-#'}
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
 #' @export
@@ -663,10 +661,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
 #'
 #' @returns A .nii volume file
 #' @examples
-#' if(interactive()){
 #' CTv = runif(20484,min=0, max=100);
 #' surf_to_vol(CTv, filename = 'volume.nii')
-#' }
 #' @importFrom reticulate import
 #' @export
 
@@ -677,7 +673,7 @@ surf_to_vol=function(surf_data, filename)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  check = VWRfirstrun()
+  check = VWRfirstrun(requirement="miniconda/brainstat")
   if (!is.null(check)) {return(check)}
   
   if (missing("filename")) {
@@ -813,7 +809,7 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   if  (n_vert==81924)
   {requirement='fsaverage6'}
   #is yeo parcellation data in brainstat_data?
-  if (n_vert>0)
+  if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
   {requirement='yeo_parcels'} 
   
   
@@ -864,7 +860,7 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
   {
-      cat('VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by brainstat for vertex-wise linear models to run.')
+      cat('VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.')
       prompt = utils::menu(c("Yes", "No"), title=" Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
       if (prompt==1){    
         brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
