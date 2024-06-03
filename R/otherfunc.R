@@ -737,7 +737,7 @@ decode_surf_data=function(surf_data,contrast="positive")
     #check contrast
     if(contrast != "positive" & contrast != "negative")  {stop("contrast has to be either positive or negative")} 
   
-  cat("Converting and interpolating the surface data...\n")
+  cat("Converting and interpolating the surface data ... ")
   
   ##import python libraries
   interpolate=reticulate::import("brainstat.mesh.interpolate", delay_load = TRUE)
@@ -764,7 +764,7 @@ decode_surf_data=function(surf_data,contrast="positive")
 
   ##running the decoding procedure
   neurosynth_dset = nimare.dataset$Dataset$load(system.file("extdata/neurosynth_dataset.pkl.gz", package='VertexWiseR'))
-  cat("Correlating input image with images in the neurosynth database. This may take a while...\n")
+  cat("\u2713 \n Correlating input image with images in the neurosynth database. This may take a while ... ")
   decoder = discrete$ROIAssociationDecoder(stat_nii)
   decoder$fit(neurosynth_dset)
 
@@ -774,7 +774,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   result=data.frame(row.names(decoder_df),round(as.numeric(decoder_df),3))
   colnames(result)=c("keyword","r")
   result=result[order(-result$r),]
-  
+  cat("\u2713 \n")
   return(result)
   } 
 }  
