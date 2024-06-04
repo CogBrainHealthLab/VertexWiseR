@@ -799,9 +799,9 @@ decode_surf_data=function(surf_data,contrast="positive")
 
 VWRfirstrun=function(requirement="any", n_vert=0) 
 {
-if (interactive()==T) { #can only run interactively as it requires user's action
   
-  #First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
+  
+#First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
   #are fsaverage5 templates in brainstat_data?
   if (n_vert==20484)
   {requirement='fsaverage5'}  
@@ -812,6 +812,8 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
   {requirement='yeo_parcels'} 
   
+  
+if (interactive()==T) { #can only run interactively as it requires user's action
   
   cat('Checking for VertexWiseR system requirements ... ')
   #check if miniconda is installed
