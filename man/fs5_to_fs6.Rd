@@ -16,8 +16,8 @@ A matrix object containing vertex-wise surface data mapped in fsaverage6 space
 Remaps vertex-wise surface data in fsaverage5 space to fsaverage6 space using the nearest neighbor approach
 }
 \examples{
-CTv = runif(20484,min=0, max=100)
-fs5_to_fs6(CTv)
+CTv = runif(20484,min=0, max=100);
+CTv_fs6 = fs5_to_fs6(CTv);
 }
 \seealso{
 \code{\link{fs6_to_fs5}}

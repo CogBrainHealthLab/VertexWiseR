@@ -22,5 +22,6 @@ The \href{https://nimare.readthedocs.io/en/stable/index.html}{NiMARE} python mod
 }
 \examples{
 CTv = rbinom(20484, 1, 0.001) 
-decode_surf_data(CTv, 'positive')
+decoding = decode_surf_data(CTv, 'positive');
+head(decoding)
 }
