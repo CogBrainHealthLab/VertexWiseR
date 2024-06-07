@@ -39,4 +39,5 @@ Imports:
     igraph,
     methods,
     reticulate,
+    stats,
     utils

@@ -7,7 +7,7 @@
 fs5_to_fs6(surf_data)
 }
 \arguments{
-\item{surf_data}{A matrix object containing the surface data, see SURFvextract() output format.}
+\item{surf_data}{A numeric vector or matrix object containing the surface data, see SURFvextract() output format.}
 }
 \value{
 A matrix object containing vertex-wise surface data mapped in fsaverage6 space

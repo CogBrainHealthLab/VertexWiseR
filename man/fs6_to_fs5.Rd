@@ -7,7 +7,7 @@
 fs6_to_fs5(surf_data)
 }
 \arguments{
-\item{surf_data}{A matrix object containing the surface data, see SURFvextract() output format.}
+\item{surf_data}{A numeric vector or matrix object containing the surface data, see SURFvextract() output format.}
 }
 \value{
 A matrix object containing vertex-wise surface data mapped in fsaverage5 space
@@ -16,9 +16,8 @@ A matrix object containing vertex-wise surface data mapped in fsaverage5 space
 Remaps vertex-wise surface data in fsaverage6 space to fsaverage5 space using the nearest neighbor approach
 }
 \examples{
-CTv = runif(81924,min=0, max=100);
-fs6_to_fs5(CTv)
-
+surf_data = runif(81924,min=0, max=100);
+fs5_data=fs6_to_fs5(surf_data)
 }
 \seealso{
 \code{\link{fs5_to_fs6}}

@@ -441,7 +441,7 @@ atlas_to_surf=function(parcel_data, template)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage5 space to fsaverage6 space using the nearest neighbor approach 
 #'
-#' @param surf_data A matrix object containing the surface data, see SURFvextract() output format. 
+#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage6 space
 #' @seealso \code{\link{fs6_to_fs5}}
@@ -470,34 +470,42 @@ fs5_to_fs6=function(surf_data)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage6 space to fsaverage5 space using the nearest neighbor approach
 #'
-#' @param surf_data A matrix object containing the surface data, see SURFvextract() output format. 
+#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage5 space
 #' @seealso \code{\link{fs5_to_fs6}}
 #' @examples
-#' CTv = runif(81924,min=0, max=100);
-#' fs6_to_fs5(CTv)
-#' 
+#' surf_data = runif(81924,min=0, max=100);
+#' fs5_data=fs6_to_fs5(surf_data)
+#' @importFrom stats aggregate
 #' @export
+
 
 fs6_to_fs5=function(surf_data)
 {
   #check length of vector
-  if(length(surf_data)%%81924!=0) {stop("Length of surf_data is not a multiple of 81924")}
+  if(max(dim(t(surf_data)))%%81924!=0) {stop("Length of surf_data is not a multiple of 81924")}
   
   #load atlas mapping surf_data
   fs6_to_fs5_map <- get('fs6_to_fs5_map')
   
-  if(length(surf_data)==81924) #mapping fsaverage6 to fsaverage5 space if surf_data is a Nx81924 matrix
+  if(max(dim(t(surf_data)))==81924) #mapping fsaverage6 to fsaverage5 space if surf_data is a Nx81924 matrix
   {
-    surf_data=matrix(surf_data,ncol=81924,nrow=1)  
-    surf_data.fs5=matrix(NA,ncol=20484,nrow=1)
+    vert.idx=data.frame(fs6_to_fs5_map)
     
-    for (vert in 1:20484)  {surf_data.fs5[vert]=mean(surf_data[fs6_to_fs5_map==vert],na.rm = T)} 
-  } else #mapping fsaverage6 to fsaverage5 space if surf_data is a Nx20484 matrix
-  {
-    surf_data.fs5=matrix(NA,ncol=20484,nrow=NROW(surf_data))
-    for (vert in 1:20484)  {surf_data.fs5[,vert]=rowMeans(surf_data[,fs6_to_fs5_map==vert],na.rm = T)} 
+    if(inherits(surf_data, 'numeric'))
+    {
+      surf_data.fs5=aggregate(surf_data, list(vert.idx$fs6_to_fs5_map), FUN=mean)[,2] 
+    }
+    else if(inherits(surf_data, 'matrix'))
+    {
+      surf_data.fs5=matrix(NA,ncol=20484,nrow=nrow(surf_data))
+      #if matrix, loops across rows
+      for (i in 1:nrow(surf_data))
+      {surf_data.fs5[i,]=aggregate(surf_data[i,], list(vert.idx$fs6_to_fs5_map), FUN=mean)[,2] 
+      }
+      
+    }
   }
   return(surf_data.fs5)
 }
