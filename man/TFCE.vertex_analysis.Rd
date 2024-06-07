@@ -39,6 +39,7 @@ Fits a linear model with the cortical or hippocampal surface data as the predict
 This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{nilearn python library}.
 }
 \examples{
+if(interactive()){
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 package = 'VertexWiseR'))[1:5,]
 surf_data = readRDS(file = url(paste0("https://github.com",
@@ -50,8 +51,9 @@ contrast=demodata[,7]
 TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, nperm=5, nthread = 2)
 
 #To threshold the results, you may then run:
-#results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)
-#results$cluster_level_results
+results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)
+results$cluster_level_results
+}
 
 }
 \seealso{

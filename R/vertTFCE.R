@@ -21,6 +21,7 @@
 #' @seealso \code{\link{TFCE.threshold}}
 #'  
 #' @examples
+#' if(interactive()){
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 #'package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
@@ -32,8 +33,9 @@
 #' TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, nperm=5, nthread = 2)
 #' 
 #' #To threshold the results, you may then run:
-#' #results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)
-#' #results$cluster_level_results
+#' results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)
+#' results$cluster_level_results
+#' }
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach %dopar%
