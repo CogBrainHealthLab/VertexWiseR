@@ -917,25 +917,33 @@ if (interactive()==T) { #can only run interactively as it requires user's action
 } 
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
 { 
-  if (
-    #miniconda missing?
-    is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError' | 
-    #brainstat missing
-    !reticulate::py_module_available("brainstat") |
-    #fsaverage5 missing
-      ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) |
-    #fsaverage6 missing
-      ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  |
-    #yeo parcels missing
-      ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) |
+  #creates the following object to warn upper functions that it's a non-interactive session when files are missing
+  non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.';
+  
+  #miniconda missing?
+  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
+  {return(non_interactive)} 
+  
+  #brainstat missing
+  if (!reticulate::py_module_available("brainstat")) 
+  {return(non_interactive)}
+  
+  #fsaverage5 missing
+  if ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
+  {return(non_interactive)}
+  
+  #fsaverage6 missing
+  if ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
+  {return(non_interactive)}
+  
+  #yeo parcels missing
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
+  {return(non_interactive)}
+  
    #neurosynth data missing
-      ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
+   if ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
+     {return(non_interactive)}
       
-  ) { 
-    #creates the following object to warn upper functions that it's a non-interactive session and that files are missing
-    non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.'
-    return(non_interactive)
-    }
 }
 
 }
