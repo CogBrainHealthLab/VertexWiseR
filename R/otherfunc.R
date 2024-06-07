@@ -112,9 +112,9 @@
 #' @returns A matrix object with smoothed vertex-wise values
 #' @examples
 #' surf_data = readRDS(file = url(paste0("https://github.com",
-  #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-  #'"FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
-#' smooth_surf(surf_data, 10)
+#'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
+#'"FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
+#' surf_data_smoothed=smooth_surf(surf_data, 10);
 #' @importFrom reticulate source_python
 #' @export
 
@@ -446,8 +446,8 @@ atlas_to_surf=function(parcel_data, template)
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage6 space
 #' @seealso \code{\link{fs6_to_fs5}}
 #' @examples
-#' CTv = runif(20484,min=0, max=100)
-#' fs5_to_fs6(CTv)
+#' CTv = runif(20484,min=0, max=100);
+#' CTv_fs6 = fs5_to_fs6(CTv);
 #' @export
 
 #convert between fsaverage5 and fsaverage6 spacing
@@ -530,7 +530,7 @@ fs6_to_fs5=function(surf_data)
 #'
 #' @returns Outputs the plot as a .png image
 #' @examples
-#' results = runif(20484,min=0, max=1) 
+#' results = runif(20484,min=0, max=1);
 #' plot_surf(surf_data = results, filename='output.png',title = 
 #' 'Cortical thickness', surface = 'inflated', cmap = 'Blues')
 #' @importFrom reticulate tuple import np_array source_python
@@ -542,6 +542,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
+  cat('Checking for VertexWiseR system requirements ... ')
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
   if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
@@ -681,6 +682,7 @@ surf_to_vol=function(surf_data, filename)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
+  cat('Checking for VertexWiseR system requirements ... ')
   check = VWRfirstrun(requirement="miniconda/brainstat")
   if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
@@ -719,7 +721,8 @@ surf_to_vol=function(surf_data, filename)
 #' @returns A data.frame object listing the keywords and their Pearson's R values
 #' @examples
 #' CTv = rbinom(20484, 1, 0.001) 
-#' decode_surf_data(CTv, 'positive')
+#' decoding = decode_surf_data(CTv, 'positive');
+#' head(decoding)
 #' @importFrom reticulate import r_to_py
 #' @export
 
@@ -730,6 +733,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
+  cat('Checking for VertexWiseR system requirements ... ')
   check = VWRfirstrun(requirement="neurosynth")
   if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
@@ -823,7 +827,6 @@ VWRfirstrun=function(requirement="any", n_vert=0)
   
 if (interactive()==T) { #can only run interactively as it requires user's action
   
-  cat('Checking for VertexWiseR system requirements ... ')
   #check if miniconda is installed
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   {
