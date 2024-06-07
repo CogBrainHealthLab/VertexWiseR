@@ -122,8 +122,8 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM)
 {
-  #This script requires miniconda and reticulate
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
+  #This script requires miniconda. Fast check via module check (numpy is a default module and should be found if miniconda has been installed)
+  if (is(tryCatch(reticulate::import("numpy", delay_load=T), error=function(e) e))[1] == 'python.builtin.ModuleNotFoundError')
   { cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
     #Will simply stop if not interactive session 
     if (interactive()==T) { 
