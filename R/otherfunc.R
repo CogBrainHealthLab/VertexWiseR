@@ -920,13 +920,9 @@ else #if not interactive and any required file is missing, the script requires t
   #creates the following object to warn upper functions that it's a non-interactive session when files are missing
   non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.';
   
-  #miniconda missing?
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
-  {return(non_interactive)} 
-  
-  #brainstat missing
-  if (!reticulate::py_module_available("brainstat")) 
-  {return(non_interactive)}
+  #brainstat and miniconda missing
+ if (is(tryCatch(reticulate::import("brainstat", delay_load=T), error=function(e) e))[1] == 'python.builtin.ModuleNotFoundError')
+ {return(non_interactive)}
   
   #fsaverage5 missing
   if ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
