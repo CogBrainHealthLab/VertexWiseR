@@ -45,7 +45,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  cat('Checking for VertexWiseR system requirements ... ')
+  cat("Checking for VertexWiseR system requirements ... ")
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
   if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   

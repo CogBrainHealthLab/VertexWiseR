@@ -100,7 +100,8 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">demodata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'demo_data/SPRENG_behdata_site1.rds'</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">demodata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'demo_data/SPRENG_behdata_site1.rds'</span>,</span></span>
 <span class="r-in"><span>package <span class="op">=</span> <span class="st">'VertexWiseR'</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">surf_data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com"</span>,</span></span>
 <span class="r-in"><span><span class="st">"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/"</span>,</span></span>
@@ -109,16 +110,11 @@
 <span class="r-in"><span><span class="va">contrast</span><span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fl">7</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">TFCE.pos</span><span class="op">=</span><span class="fu">TFCE.vertex_analysis</span><span class="op">(</span><span class="va">model</span>, <span class="va">contrast</span>, <span class="va">surf_data</span>, tail<span class="op">=</span><span class="fl">1</span>, nperm<span class="op">=</span><span class="fl">5</span>, nthread <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The binary variable 'gender' will be recoded with F=0 and M=1 for the analysis</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Estimating unpermuted TFCE image...Completed in 3.7 secs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Estimating permuted TFCE images...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Completed in 0 minutes </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#To threshold the results, you may then run:</span></span></span>
-<span class="r-in"><span><span class="co">#results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)</span></span></span>
-<span class="r-in"><span><span class="co">#results$cluster_level_results</span></span></span>
+<span class="r-in"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="TFCE.threshold.html">TFCE.threshold</a></span><span class="op">(</span>TFCE.output<span class="op">=</span><span class="va">TFCE.pos</span>, p<span class="op">=</span><span class="fl">0.05</span>, atlas<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">results</span><span class="op">$</span><span class="va">cluster_level_results</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
