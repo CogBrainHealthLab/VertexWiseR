@@ -78,7 +78,7 @@ head(all_pred)
 
 The next code chunk runs the analysis. There is an optional `p`
 parameter for the `vertex_analysis()` function to specify the p
-threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Desikan (default), 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148). 
+threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.). 
 
 The second line displays the results.
 
