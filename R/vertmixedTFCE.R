@@ -22,7 +22,6 @@
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
 #' @examples
-#' if(interactive()){
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
@@ -33,9 +32,8 @@
 #'nperm =5,tail = 1, nthread = 2)
 #'
 #' #To get significant clusters, you may then run:
-#' results=TFCE.threshold(TFCE.output=TFCE.pos, p=0.05, atlas=1)
-#' results$cluster_level_results
-#' }
+#' #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
+#' #results$cluster_level_results
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach 
