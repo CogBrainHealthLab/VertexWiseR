@@ -123,7 +123,7 @@
 smooth_surf=function(surf_data, FWHM)
 {
   #This script requires miniconda. Fast check via module check (numpy is a default module and should be found if miniconda has been installed)
-  if (!reticulate::py_available(initialize = FALSE))
+  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   { cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
     #Will simply stop if not interactive session 
     if (interactive()==T) { 
