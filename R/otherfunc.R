@@ -958,15 +958,15 @@ if (interactive()==T) { #can only run interactively as it requires user's action
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
 { 
   #creates the following object to warn upper functions that it's a non-interactive session when files are missing
-  non_interactive='VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.';
+  non_interactive="If system requirements are missing, VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.";
   
   #miniconda missing?
   if (checklist[1,1] == FALSE) 
   {return(non_interactive)}
   
   #brainstat missing?
- if (checklist[2,1] == FALSE)
- {return(non_interactive)}
+  if (checklist[2,1] == FALSE)
+  {return(non_interactive)}
   
   #fsaverage5 missing?
   if ((requirement=="any" | requirement=='fsaverage5')==T 
