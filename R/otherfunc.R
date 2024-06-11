@@ -122,15 +122,12 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM)
 {
-  #This script requires miniconda. Fast check via module check (numpy is a default module and should be found if miniconda has been installed)
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
-  { cat('Miniconda could not be found in the environment. It is needed to run smooth_surf() which uses python functions.\n')
-    #Will simply stop if not interactive session 
-    if (interactive()==T) { 
-      prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
-      if (prompt==1) {reticulate::install_miniconda()} else {return(cat('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n'))}
-    } else { return('smooth_surf() will not work without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
-  }
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session 
+  cat("Checking for VertexWiseR system requirements ... ")
+  check = VWRfirstrun(requirement="miniconda only")
+  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -844,7 +841,7 @@ if (interactive()==T) { #can only run interactively as it requires user's action
   else {checklist[1,]=TRUE} 
   
   #check if brainstat is installed
-  if(!reticulate::py_module_available("brainstat")) 
+  if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {
     checklist[2,]=FALSE;
     cat('Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work.\n')
