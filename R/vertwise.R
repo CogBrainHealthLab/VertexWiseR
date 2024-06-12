@@ -52,18 +52,18 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
   if ('tbl_df' %in% class(contrast) == TRUE) {
-    if (inherits(contrast[[1]],"character")==T) {contrast = contrast[[1]]
+    if (inherits(contrast[[1]],"character")==TRUE) {contrast = contrast[[1]]
     } else {contrast = as.numeric(contrast[[1]])}
   } 
   if ('tbl_df' %in% class(model) == TRUE) {
     model=as.data.frame(model)
     if (NCOL(model)==1) {model = model[[1]]
     } else { for (c in 1:NCOL(model)) { 
-      if(inherits(model[,c],"double")==T) {model[,c] = as.numeric(model[,c])}
+      if(inherits(model[,c],"double")==TRUE) {model[,c] = as.numeric(model[,c])}
     }  }
   }
   
-  if(inherits(contrast,"integer")==T) {contrast=as.numeric(contrast)}
+  if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
   
   #recode random variale to numeric
     if(!missing("random"))
@@ -79,7 +79,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
       {
         if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
         
-        if(inherits(contrast,"character")==T) 
+        if(inherits(contrast,"character")==TRUE) 
         {
           if(identical(contrast,model[,colno]))  {break} 
         } else 
@@ -89,7 +89,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
       }
     }  else
     {
-      if(inherits(contrast,"character")==T) 
+      if(inherits(contrast,"character")==TRUE) 
       {
         if(identical(contrast,model))  {colno=1} 
         else  {warning("contrast is not contained within model")}
@@ -104,7 +104,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
     
     #incomplete data check
-    idxF=which(complete.cases(model)==F)
+    idxF=which(complete.cases(model)==FALSE)
     if(length(idxF)>0)
     {
       cat(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
@@ -119,7 +119,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     {
       for (column in 1:NCOL(model))
       {
-        if(inherits(model[,column],"character")==T) 
+        if(inherits(model[,column],"character")==TRUE) 
         {
           if(length(unique(model[,column]))==2)
           {
@@ -134,7 +134,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
       }
     } else
     {
-      if(inherits(model,"character")==T) 
+      if(inherits(model,"character")==TRUE) 
       {
         if(length(unique(model))==2)
         {
@@ -164,7 +164,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     ROImap <- get('ROImap_fs6')
     } else if (n_vert==14524)
     {
-      if(file.exists(system.file('extdata','hip_template.fs', package='VertexWiseR'))==F)
+      if(file.exists(system.file('extdata','hip_template.fs', package='VertexWiseR'))==FALSE)
       {
         cat("\nhip_template.fs is not detected in the current working directory. The hippocampus surface template will be downloaded\n\n")
         
@@ -173,8 +173,8 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
         #https://stackoverflow.com/a/60627969
         valid_url <- function(url_in,t=2){
           con <- url(url_in)
-          check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
-          suppressWarnings(try(close.connection(con),silent=T))
+          check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=TRUE)[1])
+          suppressWarnings(try(close.connection(con),silent=TRUE))
           ifelse(is.null(check),TRUE,FALSE)}
         
         #Check if URL works and avoid returning error but only print message as requested by CRAN:
@@ -212,13 +212,13 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
 
   ##fitting model
   #preparing mask for model
-  mask=array(rep(T,NCOL(surf_data)))
+  mask=array(rep(TRUE,NCOL(surf_data)))
   maskNA=which(colSums(surf_data != 0) == 0)
-  mask[which(colSums(surf_data != 0) == 0)]=F
+  mask[which(colSums(surf_data != 0) == 0)]=FALSE
   
   #fit model
-  if(missing("random")) {model0=brainstat.stats$terms$FixedEffect(model, "_check_categorical" = F)}
-  else {model0=brainstat.stats$terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = F)}
+  if(missing("random")) {model0=brainstat.stats$terms$FixedEffect(model, "_check_categorical" = FALSE)}
+  else {model0=brainstat.stats$terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
   model=brainstat.stats$SLM$SLM(model = model0,
                                 contrast=contrast,
                                 surf = template,

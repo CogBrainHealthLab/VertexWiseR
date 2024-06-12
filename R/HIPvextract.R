@@ -16,7 +16,7 @@
 #' @importFrom gifti readgii
 #' @export
 
-HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = T)
+HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRUE)
 {
   setwd(sdirpath)
   
@@ -26,7 +26,7 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = T)
   }
   
   ## get filelists and subject lists
-  lh.filelist=list.files(pattern=paste("_hemi-L_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""), recursive=T)
+  lh.filelist=list.files(pattern=paste("_hemi-L_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""), recursive=TRUE)
   rh.filelist=gsub(paste("_hemi-L_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""),
                    paste("_hemi-R_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""),
                    lh.filelist)
@@ -46,7 +46,7 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = T)
 
   ##output file depending on subj_ID==T
   hip_dat=hip_dat[order(sublist),]
-    if(subj_ID==T)
+    if(subj_ID==TRUE)
     {
     saveRDS(list(sublist,hip_dat), file=filename)
     } else

@@ -200,11 +200,11 @@ getClusters=function(surf_data)
   edgelist <- get("edgelist")
   
   ##narrow down to left or right hemisphere only to speed up matching process
-  if(max(vert,na.rm = T)<=(n_vert/2))
+  if(max(vert,na.rm = TRUE)<=(n_vert/2))
   {
     nedgerow=min(which(edgelist>(n_vert/2)))-1
     edgelist=edgelist[1:nedgerow,]
-  } else if(min(vert,na.rm = T)>(n_vert/2))
+  } else if(min(vert,na.rm = TRUE)>(n_vert/2))
   {
     nedgerow=min(which(edgelist>(n_vert/2)))-1
     edgelist=edgelist[(nedgerow+1):NROW(edgelist),]
@@ -223,7 +223,7 @@ getClusters=function(surf_data)
   if(length(edgelist1)>2) #if at least 2 edges are identified
   {
     #extracting cluster-related info from list of non-zero edges
-    com=igraph::components(igraph::graph_from_data_frame(edgelist1, directed = F))
+    com=igraph::components(igraph::graph_from_data_frame(edgelist1, directed = FALSE))
     clust.size=com$csize
     
     #cluster mappings
@@ -282,7 +282,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     #set NAs to 0
     surf_data[is.na(surf_data)]=0 
      
-    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=20484,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    if (is.vector(surf_data)==TRUE) {surf_data=rbind(matrix(surf_data,ncol=20484,nrow=1),NA); isavector=TRUE} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
      
     ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
     
@@ -313,7 +313,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     #set NAs to 0
     surf_data[is.na(surf_data)]=0 
     
-    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=81924,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    if (is.vector(surf_data)==TRUE) {surf_data=rbind(matrix(surf_data,ncol=81924,nrow=1),NA); isavector=TRUE} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
     
     ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
     
@@ -343,7 +343,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     #set NAs to 0
     surf_data[is.na(surf_data)]=0 
     
-    if (is.vector(surf_data)==T) {surf_data=rbind(matrix(surf_data,ncol=14524,nrow=1),NA); isavector=T} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    if (is.vector(surf_data)==TRUE) {surf_data=rbind(matrix(surf_data,ncol=14524,nrow=1),NA); isavector=TRUE} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
     
     ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
     
@@ -410,7 +410,7 @@ atlas_to_surf=function(parcel_data, template)
     {
       for (region in 1:nregions)  {surf_dat[sub,which(ROImap[[1]][,atlas]==region)]=parcel_data[sub,region]}      
     }
-  } else if(is.vector(parcel_data)==T) #if parcel_data is a vector
+  } else if(is.vector(parcel_data)==TRUE) #if parcel_data is a vector
   {
     if (length(parcel_data) == 70) {atlas=1} 
     else if (length(parcel_data) == 148) {atlas=2} 
@@ -534,7 +534,7 @@ fs6_to_fs5=function(surf_data)
 #' @importFrom grDevices col2rgb
 #' @export
 
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=T, size, zoom)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -572,13 +572,13 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
   if(missing("cmap"))
   {
-    if(range(surf_data,na.rm = T)[1]>=0)  {cmap="Reds"}
-    else if (range(surf_data,na.rm = T)[2]<=0)  {cmap="Blues_r"}
+    if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap="Reds"}
+    else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap="Blues_r"}
     else  {cmap="RdBu_r"}  
   }
 	
   #custom cmap— if a vector of hex color codes is specified
-  if(inherits(cmap,"colors")==T)
+  if(inherits(cmap,"colors")==TRUE)
   {
     matplotlib=reticulate::import("matplotlib")
     
@@ -592,11 +592,11 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   }
 	
   #setting color scale limits
-   maxlimit=max(abs(range(surf_data,na.rm = T)))
+   maxlimit=max(abs(range(surf_data,na.rm = TRUE)))
     if(missing("limits")) 
     {
-      if(range(surf_data,na.rm = T)[1]>=0) {limits=reticulate::tuple(0,range(surf_data,na.rm = T)[2])} ##if image contains all positive values
-      else if(range(surf_data,na.rm = T)[2]<=0) {limits=reticulate::tuple(range(surf_data,na.rm = T)[1],0)} ##if image contains all negative values
+      if(range(surf_data,na.rm = TRUE)[1]>=0) {limits=reticulate::tuple(0,range(surf_data,na.rm = TRUE)[2])} ##if image contains all positive values
+      else if(range(surf_data,na.rm = TRUE)[2]<=0) {limits=reticulate::tuple(range(surf_data,na.rm = TRUE)[1],0)} ##if image contains all negative values
       else {limits=reticulate::tuple(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
     } else {
       ##user specified limits
@@ -614,8 +614,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
     
     #loading fsaverage surface
-    left=brainstat.datasets$fetch_template_surface(template, join=F, layer=surface)[1]
-    right=brainstat.datasets$fetch_template_surface(template, join=F, layer=surface)[2]
+    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[1]
+    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[2]
     
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1920,rows*400)}
@@ -623,8 +623,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     
     surf_plot=brainspace.plotting$plot_hemispheres(left[[1]], right[[1]],  array_name=reticulate::np_array(surf_data),cmap=cmap, 
                                                 size=reticulate::tuple(as.integer(size)),nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),
-                                                return_plotter=T,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
-                                                label_text=title,interactive=F, color_bar=colorbar,  transparent_bg=FALSE)  ##disabling interactive mode because this causes RStudio to hang
+                                                return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
+                                                label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=FALSE)  ##disabling interactive mode because this causes RStudio to hang
   } else
   {
     #Solves the "no visible binding for global variable" issue
@@ -650,10 +650,10 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
       }
     
     surf_plot=surfplot_canonical_foldunfold(surf_data,hipdat =get('hip_points_cells'),color_bar=colorbar,share="row",nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),size=as.integer(size), zoom=zoom,
-                                         cmap=cmap,color_range=limits,label_text=title, return_plotter=T,interactive=F) ##disabling interactive mode because this causes RStudio to hang
+                                         cmap=cmap,color_range=limits,label_text=title, return_plotter=TRUE,interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
   }
   #output plot as a .png image
-  surf_plot$screenshot(filename=filename,transparent_bg = F)
+  surf_plot$screenshot(filename=filename,transparent_bg = FALSE)
 }
 ############################################################################################################################
 ############################################################################################################################
@@ -710,7 +710,7 @@ surf_to_vol=function(surf_data, filename)
 #'
 #' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
 #'
-#' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata direcotry (~8 Mb) for the analysis.
+#' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.
 #'
 #' @param surf_data a numeric vector with a length of 20484
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
@@ -734,7 +734,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   check = VWRfirstrun(requirement="neurosynth")
   if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
   
-  if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==T)
+  if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {
      
   ##checks length
@@ -826,7 +826,7 @@ VWRfirstrun=function(requirement="any", n_vert=0)
   {requirement='yeo_parcels'} 
   
   
-if (interactive()==T) { #can only run interactively as it requires user's action
+if (interactive()==TRUE) { #can only run interactively as it requires user's action
   
   #check if miniconda is installed
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
@@ -835,7 +835,7 @@ if (interactive()==T) { #can only run interactively as it requires user's action
     cat('Miniconda could not be found in the environment. \n')
     prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
     if (prompt==1) {reticulate::install_miniconda()}
-    else { write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+    else { write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not work properly without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
   } 
   else {checklist[1,]=TRUE} 
@@ -848,14 +848,14 @@ if (interactive()==T) { #can only run interactively as it requires user's action
     prompt = utils::menu(c("Yes", "No"), title=" Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
     if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} 
     else {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
   else {checklist[2,]=TRUE} 
   
   
   #check if brainstat fsaverage/parcellation templates are installed (stops only if function needs it)
-  if ((requirement=="any" | requirement=='fsaverage5')==T 
+  if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {     
     checklist[3,]=FALSE;
@@ -865,15 +865,15 @@ if (interactive()==T) { #can only run interactively as it requires user's action
       brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
       brainstat.datasets.base$fetch_template_surface("fsaverage5")
     } else if (requirement=='fsaverage5') {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')
     } else if (requirement=='any') {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       cat('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
   } 
   else {checklist[3,]=TRUE} 
   
-  if ((requirement=="any" | requirement=='fsaverage6')==T 
+  if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
   { 
     checklist[4,]=FALSE;
@@ -884,15 +884,15 @@ if (interactive()==T) { #can only run interactively as it requires user's action
       { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
         brainstat.datasets.base$fetch_template_surface("fsaverage6")
       } else if (requirement=='fsaverage6') { 
-        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
         stop('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')
       } else if (requirement=="any") {
-        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
         cat('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
   } 
   else {checklist[4,]=TRUE} 
   
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T 
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
   {
      checklist[5,]=FALSE;
@@ -900,20 +900,20 @@ if (interactive()==T) { #can only run interactively as it requires user's action
       prompt = utils::menu(c("Yes", "No"), title=" Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
       if (prompt==1){    
         brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=T)}  
+        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=TRUE)}  
         else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
         {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
           stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
         else if (requirement=="any") 
         {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
           cat('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
   }
   else {checklist[5,]=TRUE} 
   
   #Check if neurosynth database is present and download
-  if ((requirement=="any" | requirement=='neurosynth')==T 
+  if ((requirement=="any" | requirement=='neurosynth')==TRUE 
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
   {
       checklist[6,]=FALSE;
@@ -926,8 +926,8 @@ if (interactive()==T) { #can only run interactively as it requires user's action
           #https://stackoverflow.com/a/60627969
           valid_url <- function(url_in,t=2){
             con <- url(url_in)
-            check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
-            suppressWarnings(try(close.connection(con),silent=T))
+            check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=TRUE)[1])
+            suppressWarnings(try(close.connection(con),silent=TRUE))
             ifelse(is.null(check),TRUE,FALSE)}
           
           #Check if URL works and avoid returning error but only print message as requested by CRAN:
@@ -940,16 +940,16 @@ if (interactive()==T) { #can only run interactively as it requires user's action
           
         #if user refuses, stops if required, just returns a message if optionnal at this stage
         } else if (requirement=="neurosynth") {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
           stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
          else if (requirement=="any") {
-           write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+           write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
            cat("\ndecode_surf_data() can only work with the neurosynth database.\n")}
   }
   else {checklist[6,]=TRUE} 
   
   #update checklist csv
-  write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = T)
+  write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
   
 } 
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
@@ -966,22 +966,22 @@ else #if not interactive and any required file is missing, the script requires t
   {return(non_interactive)}
   
   #fsaverage5 missing?
-  if ((requirement=="any" | requirement=='fsaverage5')==T 
+  if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
       & checklist[3,1] == FALSE) 
   {return(non_interactive)}
   
   #fsaverage6 missing?
-  if ((requirement=="any" | requirement=='fsaverage6')==T 
+  if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
       & checklist[4,1] == FALSE)  
   {return(non_interactive)}
   
   #yeo parcels missing?
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T 
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
       & checklist[5,1] == FALSE) 
   {return(non_interactive)}
   
    #neurosynth data missing?
-   if ((requirement=="any" | requirement=='neurosynth')==T 
+   if ((requirement=="any" | requirement=='neurosynth')==TRUE 
        & checklist[6,1] == FALSE) 
      {return(non_interactive)}
       

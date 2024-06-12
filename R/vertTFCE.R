@@ -58,15 +58,15 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     if (inherits(contrast, "character") == TRUE) {contrast = contrast[[1]]
     } else {contrast = as.numeric(contrast[[1]])}
   } 
-  if ('tbl_df' %in% class(model) == T) {
+  if ('tbl_df' %in% class(model) == TRUE) {
     model=as.data.frame(model)
     if (NCOL(model)==1) {model = model[[1]]
     } else { for (c in 1:NCOL(model)) { 
-      if(inherits(model[,c], "double")==T) {model[,c] = as.numeric(model[,c])}
+      if(inherits(model[,c], "double")==TRUE) {model[,c] = as.numeric(model[,c])}
     }  }
   }
   
-  if(inherits(contrast,"integer")==T) {contrast=as.numeric(contrast)}
+  if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
   ##load other vertex-wise functions (not needed when package is in library)
   #source("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/R/otherfunc.R?raw=TRUE")
   
@@ -75,7 +75,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
     
     #incomplete data check
-    idxF=which(complete.cases(model)==F)
+    idxF=which(complete.cases(model)==FALSE)
     if(length(idxF)>0)
     {
       cat(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
@@ -91,7 +91,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       {
         if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
         
-        if (inherits(contrast, "character")== T) 
+        if (inherits(contrast, "character")==TRUE) 
         {
           if(identical(contrast,model[,colno]))  {break} 
         } else 
@@ -101,7 +101,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       }
     }  else
     {
-      if (inherits(contrast,"character")==T) 
+      if (inherits(contrast,"character")==TRUE) 
       {
         if(identical(contrast,model))  {colno=1} 
         else  {warning("contrast is not contained within model")}
@@ -117,7 +117,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     {
       for (column in 1:NCOL(model))
       {
-        if(inherits(model[,column],"character")==T) 
+        if(inherits(model[,column],"character")==TRUE) 
         {
           if(length(unique(model[,column]))==2)
           {
@@ -132,7 +132,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       }
     } else
     {
-      if (inherits(model,"character")==T) 
+      if (inherits(model,"character")==TRUE) 
       {
         if(length(unique(model))==2)
         {
@@ -175,9 +175,9 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       cormat=cor(model,use = "pairwise.complete.obs")
       cormat.0=cormat
       cormat.0[cormat.0==1]=NA
-      if(max(abs(cormat.0),na.rm = T) >0.5)
+      if(max(abs(cormat.0),na.rm = TRUE) >0.5)
       {
-        warning(paste("correlations among variables in model are observed to be as high as ",round(max(abs(cormat.0),na.rm = T),2),", suggesting potential collinearity among predictors.\nAnalysis will continue...\n",sep=""))
+        warning(paste("correlations among variables in model are observed to be as high as ",round(max(abs(cormat.0),na.rm = TRUE),2),", suggesting potential collinearity among predictors.\nAnalysis will continue...\n",sep=""))
       }
     }
     
@@ -279,15 +279,15 @@ TFCE=function(data,tail=tail)
   if (tail==2) 
   {
     signs = c(-1, 1)
-    max_score = max(abs(data),na.rm = T)
+    max_score = max(abs(data),na.rm = TRUE)
   } else if(tail==1)
   {
     signs = 1
-    max_score = max(data,na.rm = T)
+    max_score = max(data,na.rm = TRUE)
   } else if(tail==-1)
   {
     signs = -1
-    max_score = max(-data,na.rm = T)
+    max_score = max(-data,na.rm = TRUE)
   }
   
   #define TFCE parameters
@@ -337,15 +337,15 @@ TFCE.multicore=function(data,tail=tail,nthread,envir)
   if (tail==2) 
   {
     signs = c(-1, 1)
-    max_score = max(abs(data),na.rm = T)
+    max_score = max(abs(data),na.rm = TRUE)
   } else if(tail==1)
   {
     signs = 1
-    max_score = max(data,na.rm = T)
+    max_score = max(data,na.rm = TRUE)
   } else if(tail==-1)
   {
     signs = -1
-    max_score = max(-data,na.rm = T)
+    max_score = max(-data,na.rm = TRUE)
   }
   
   #define TFCE parameters
@@ -535,14 +535,14 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
         colnames(pos.clust.results)=c("clusid","nverts","P","X","Y","Z","tstat","region")
         clust.idx=1
         
-        for(clust.no in order(pos.clusters[[2]],decreasing = T))
+        for(clust.no in order(pos.clusters[[2]],decreasing = TRUE))
         {
           clust.vert.idx=which(pos.clusters[[1]]==clust.no)
           pos.clustermap[clust.vert.idx]=clust.idx
           
           pos.clust.results[clust.idx,1]=clust.idx
           pos.clust.results[clust.idx,2]=length(clust.vert.idx)
-          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = T))[1]]
+          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
           pos.clust.results[clust.idx,3]=round(tfce.p[max.vert.idx],3)
           if(pos.clust.results[clust.idx,3]==0) {pos.clust.results[clust.idx,3]=paste("<",1/nperm,sep="")}
           pos.clust.results[clust.idx,c(4,5,6)]=round(MNImap[,max.vert.idx],1)
@@ -601,14 +601,14 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
         colnames(neg.clust.results)=c("clusid","nverts","P","X","Y","Z","tstat","region")
         clust.idx=1
         
-        for(clust.no in order(neg.clusters[[2]],decreasing = T))
+        for(clust.no in order(neg.clusters[[2]],decreasing = TRUE))
         {
           clust.vert.idx=which(neg.clusters[[1]]==clust.no)
           neg.clustermap[clust.vert.idx]=clust.idx
           
           neg.clust.results[clust.idx,1]=clust.idx
           neg.clust.results[clust.idx,2]=length(clust.vert.idx)
-          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = T))[1]]
+          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
           neg.clust.results[clust.idx,3]=round(tfce.p[max.vert.idx],3)
           if(neg.clust.results[clust.idx,3]==0) {neg.clust.results[clust.idx,3]=paste("<",1/nperm,sep="")}
           neg.clust.results[clust.idx,c(4,5,6)]=round(MNImap[,max.vert.idx],1)
@@ -641,17 +641,17 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
   
   ##combining positive and negative cluster maps
   #when significant clusters exist in both directions
-  if (inherits(pos.clustermap,"character")!=T & inherits(neg.clustermap,"character")!=T) {
+  if (inherits(pos.clustermap,"character")!=TRUE & inherits(neg.clustermap,"character")!=TRUE) {
     posc = as.matrix(as.numeric(pos.clustermap))
     negc = as.matrix(as.numeric(neg.clustermap))*-1
     posc[!is.na(negc!=0),] <- negc[!is.na(negc!=0),]
     posc[posc==0 & negc==0,] <- NA
     bi.clusterIDmap = posc
-  } else if (inherits(pos.clustermap,"character")!=T) {
+  } else if (inherits(pos.clustermap,"character")!=TRUE) {
     bi.clusterIDmap=pos.clustermap
-  } else if (inherits(neg.clustermap,"character")!=T) {
+  } else if (inherits(neg.clustermap,"character")!=TRUE) {
     bi.clusterIDmap=neg.clustermap 
-  } else if (inherits(pos.clustermap,"character")==T & inherits(neg.clustermap,"character")==T) {
+  } else if (inherits(pos.clustermap,"character")==TRUE & inherits(neg.clustermap,"character")==TRUE) {
     bi.clusterIDmap="No significant clusters"
   }
   

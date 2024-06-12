@@ -57,18 +57,18 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
   if ('tbl_df' %in% class(contrast) == TRUE) {
-    if (inherits(contrast[[1]],"character")==T) {contrast = contrast[[1]]
+    if (inherits(contrast[[1]],"character")==TRUE) {contrast = contrast[[1]]
     } else {contrast = as.numeric(contrast[[1]])}
   } 
   if ('tbl_df' %in% class(model) == TRUE) {
     model=as.data.frame(model)
     if (NCOL(model)==1) {model = model[[1]]
     } else { for (c in 1:NCOL(model)) { 
-      if(inherits(model[,c],"double")==T | inherits(model[,c],"integer")==T) {model[,c] = as.numeric(model[,c])}
+      if(inherits(model[,c],"double")==TRUE | inherits(model[,c],"integer")==TRUE) {model[,c] = as.numeric(model[,c])}
     }  }
   }
   
-  if(inherits(contrast,"integer")==T) {contrast=as.numeric(contrast)}
+  if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
   
   ##checks
   #check random variable and recode to numeric
@@ -83,7 +83,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   if(length(random)!=NROW(model))  {stop(paste("The number of rows for random (",length(random),") and model (",NROW(model),") are not the same",sep=""))}
   
   #incomplete data check
-  idxF=which(complete.cases(model)==F)
+  idxF=which(complete.cases(model)==FALSE)
   if(length(idxF)>0)
   {
     cat(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
@@ -100,7 +100,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
     {
       if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
       
-      if (inherits(contrast,"character")==T) 
+      if (inherits(contrast,"character")==TRUE) 
       {
         if(identical(contrast,model[,colno]))  {break} 
       } else 
@@ -110,7 +110,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
     }
   }  else
   {
-    if (inherits(contrast,"character")==T) 
+    if (inherits(contrast,"character")==TRUE) 
     {
       if(identical(contrast,model))  {colno=1} 
       else  {warning("contrast is not contained within model")}
@@ -126,7 +126,7 @@ TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100
   {
     for (column in 1:NCOL(model))
     {
-      if(inherits(model[,column],"character")==T)
+      if(inherits(model[,column],"character")==TRUE)
       {
         if(length(unique(model[,column]))==2)
         {
@@ -142,7 +142,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
     }
   } else
   {
-    if (inherits(model,"character")==T) 
+    if (inherits(model,"character")==TRUE) 
     {
       if(length(unique(model))==2)
       {
@@ -206,7 +206,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   cat("Estimating unpermuted TFCE image...")
   brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
   brainstat.stats.SLM=reticulate::import("brainstat.stats.SLM", delay_load = TRUE)
-  terms=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = F)
+  terms=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
   
   model.fit=brainstat.stats.SLM$SLM(model = terms,contrast=contrast,correction="None",cluster_threshold=1)
   
@@ -266,7 +266,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
       brainstat.stats.SLM=reticulate::import("brainstat.stats.SLM", delay_load = TRUE)
       
       ##fit permuted models
-      terms=brainstat.stats.terms$MixedEffect(ran = random,fix = model,"_check_categorical" = F)
+      terms=brainstat.stats.terms$MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
       model.fit=brainstat.stats.SLM$SLM(model = terms,contrast=contrast,correction="None",cluster_threshold=1)
       model.fit$fit(surf_data[permseq[,perm],inc.vert.idx])
       
