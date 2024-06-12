@@ -21,7 +21,7 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   setwd(sdirpath)
   
   if (missing("filename")) {
-    cat(paste0('No filename argument was given. The matrix object "hip_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
+    warning(paste0('No filename argument was given. The matrix object "hip_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
     filename=paste0(tempdir(),'/hip_',measure,'.rds')
   }
   

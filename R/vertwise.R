@@ -45,9 +45,9 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  cat("Checking for VertexWiseR system requirements ... ")
+  message("Checking for VertexWiseR system requirements ... ")
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
+  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
@@ -107,7 +107,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     idxF=which(complete.cases(model)==FALSE)
     if(length(idxF)>0)
     {
-      cat(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
+      message(paste("The model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
       model=model[-idxF,]
       contrast=contrast[-idxF]
       surf_data=surf_data[-idxF,]
@@ -123,7 +123,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
         {
           if(length(unique(model[,column]))==2)
           {
-            cat(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
+            message(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
             
             recode=rep(0,NROW(model))
             recode[model[,column]==unique(model[,column])[2]]=1
@@ -138,7 +138,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
       {
         if(length(unique(model))==2)
         {
-          cat(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+          message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
           
           recode=rep(0,NROW(model))
           recode[model==unique(model)[2]]=1
@@ -166,7 +166,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     {
       if(file.exists(system.file('extdata','hip_template.fs', package='VertexWiseR'))==FALSE)
       {
-        cat("\nhip_template.fs is not detected in the current working directory. The hippocampus surface template will be downloaded\n\n")
+        warning("\nhip_template.fs is not detected in the current working directory. The hippocampus surface template will be downloaded\n\n")
         
         #function to check if url exists
         #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
@@ -182,7 +182,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
         if(valid_url(url)) {
           download.file(url, destfile=paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'),mode = "wb")
         } else { 
-          cat("\nhip_template.fs could not be downloaded from the github VertexWiseR directory and the url may be broken. Please check your internet connection or visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata to download the object.")
+          warning("\nhip_template.fs could not be downloaded from the github VertexWiseR directory and the url may be broken. Please check your internet connection or visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata to download the object.")
           return() #ends function
         }
       }
@@ -196,13 +196,13 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     n_vert=NCOL(surf_data)
     if(missing("smooth_FWHM"))
     {
-     cat("smooth_FWHM argument was not given. surf_data will not be smoothed here.\n")
+     message("smooth_FWHM argument was not given. surf_data will not be smoothed here.\n")
     } else if(smooth_FWHM==0) 
     {
-     cat("smooth_FWHM set to 0: surf_data will not be smoothed here.\n")
+      message("smooth_FWHM set to 0: surf_data will not be smoothed here.\n")
     } else if(smooth_FWHM>0) 
     {
-      cat(paste("surf_data will be smoothed using a ",smooth_FWHM,"mm FWHM kernel", sep=""))
+      message(paste("surf_data will be smoothed using a ",smooth_FWHM,"mm FWHM kernel", sep=""))
       surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
     }
     surf_data[is.na(surf_data)]=0

@@ -78,7 +78,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     idxF=which(complete.cases(model)==FALSE)
     if(length(idxF)>0)
     {
-      cat(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
+      message(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
       model=model[-idxF,]
       contrast=contrast[-idxF]
       surf_data=surf_data[-idxF,]
@@ -121,7 +121,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
         {
           if(length(unique(model[,column]))==2)
           {
-            cat(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
+            message(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
             
             recode=rep(0,NROW(model))
             recode[model[,column]==unique(model[,column])[2]]=1
@@ -136,7 +136,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       {
         if(length(unique(model))==2)
         {
-          cat(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+          message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
           
           recode=rep(0,NROW(model))
           recode[model==unique(model)[2]]=1
@@ -185,13 +185,13 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   n_vert=NCOL(surf_data)
   if(missing("smooth_FWHM"))
   {
-    cat("smooth_FWHM argument was not given. surf_data will not be smoothed here.\n")
+    message("smooth_FWHM argument was not given. surf_data will not be smoothed here.\n")
   } else if(smooth_FWHM==0)   
   {
-    cat("smooth_FWHM set to 0: surf_data will not be smoothed here.\n")
+    message("smooth_FWHM set to 0: surf_data will not be smoothed here.\n")
   } else if(smooth_FWHM>0) 
   {
-    cat(paste("surf_data will be smoothed using a ", smooth_FWHM,"mm FWHM kernel\n", sep=""))
+    message(paste("surf_data will be smoothed using a ", smooth_FWHM,"mm FWHM kernel\n", sep=""))
     surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
   }
   
@@ -201,14 +201,14 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   
   #extract tstat and calculate tfce image
   start=Sys.time()
-  cat("Estimating unpermuted TFCE image...")
+  message("Estimating unpermuted TFCE image...")
   
   tmap.orig=extract.t(mod,colno+1)
   TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv))
   remove(mod)
   
   end=Sys.time()
-  cat(paste("Completed in",round(difftime(end,start, units="secs"),1),"secs\nEstimating permuted TFCE images...\n",sep=" "))
+  message(paste("Completed in",round(difftime(end,start, units="secs"),1),"secs\nEstimating permuted TFCE images...\n",sep=" "))
   
   ##permuted models
   #generating permutation sequences  
@@ -258,7 +258,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       return(max(abs(suppressWarnings(TFCE(data = tmap,tail = tail)))))
     }
   end=Sys.time()
-  cat(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
+  message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   unregister_dopar()
   
   

@@ -125,9 +125,9 @@ smooth_surf=function(surf_data, FWHM)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  cat("Checking for VertexWiseR system requirements ... ")
+  message("Checking for VertexWiseR system requirements ... ")
   check = VWRfirstrun(requirement="miniconda only")
-  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
+  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -539,12 +539,12 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  cat("Checking for VertexWiseR system requirements ...")
+  message("Checking for VertexWiseR system requirements ...")
   check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
+  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
   
   if (missing("filename")) {
-    cat('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
+    message('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
     filename=paste0(tempdir(),'/plot.png')
   }
   
@@ -679,12 +679,12 @@ surf_to_vol=function(surf_data, filename)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  cat("Checking for VertexWiseR system requirements ... ")
+  message("Checking for VertexWiseR system requirements ... ")
   check = VWRfirstrun(requirement="miniconda/brainstat")
-  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
+  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
   
   if (missing("filename")) {
-    cat('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
+    message('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
     filename=paste0(tempdir(),'/vol.nii')
   }
   
@@ -701,7 +701,7 @@ surf_to_vol=function(surf_data, filename)
   #convert and export .nii file
     stat_nii = interpolate$`_surf2vol`(template, surf_data)
     nibabel$save(stat_nii,filename)
-    cat(filename)
+    message(filename)
   }
 
 ############################################################################################################################
@@ -730,9 +730,9 @@ decode_surf_data=function(surf_data,contrast="positive")
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  cat("Checking for VertexWiseR system requirements ... ")
+  message("Checking for VertexWiseR system requirements ... ")
   check = VWRfirstrun(requirement="neurosynth")
-  if (!is.null(check)) {return(check)} else {cat("\u2713 \n")}
+  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {
@@ -746,7 +746,7 @@ decode_surf_data=function(surf_data,contrast="positive")
     #check contrast
     if(contrast != "positive" & contrast != "negative")  {stop("contrast has to be either positive or negative")} 
   
-  cat("Converting and interpolating the surface data ... ")
+  message("Converting and interpolating the surface data ... ")
   
   ##import python libraries
   interpolate=reticulate::import("brainstat.mesh.interpolate", delay_load = TRUE)
@@ -773,7 +773,7 @@ decode_surf_data=function(surf_data,contrast="positive")
 
   ##running the decoding procedure
   neurosynth_dset = nimare.dataset$Dataset$load(system.file("extdata/neurosynth_dataset.pkl.gz", package='VertexWiseR'))
-  cat("\u2713 \n Correlating input image with images in the neurosynth database. This may take a while ... ")
+  message("\u2713 \n Correlating input image with images in the neurosynth database. This may take a while ... ")
   decoder = discrete$ROIAssociationDecoder(stat_nii)
   decoder$fit(neurosynth_dset)
 
@@ -783,7 +783,7 @@ decode_surf_data=function(surf_data,contrast="positive")
   result=data.frame(row.names(decoder_df),round(as.numeric(decoder_df),3))
   colnames(result)=c("keyword","r")
   result=result[order(-result$r),]
-  cat("\u2713 \n")
+  message("\u2713 \n")
   return(result)
   } 
 }  
@@ -833,8 +833,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   {
     checklist[1,]=FALSE;
-    cat('Miniconda could not be found in the environment. \n')
-    prompt = utils::menu(c("Yes", "No"), title=" Do you want miniconda to be installed now?")
+    prompt = utils::menu(c("Yes", "No"), title="Miniconda could not be found in the environment. \n Do you want miniconda to be installed now?")
     if (prompt==1) {reticulate::install_miniconda()}
     else { write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not work properly without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
@@ -845,8 +844,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {
     checklist[2,]=FALSE;
-    cat('Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work.\n')
-    prompt = utils::menu(c("Yes", "No"), title=" Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
+    prompt = utils::menu(c("Yes", "No"), title="Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
     if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} 
     else {
       write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
@@ -860,8 +858,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {     
     checklist[3,]=FALSE;
-    cat('VertexWiseR could not find brainstat fsaverage5 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space.')  
-    prompt = utils::menu(c("Yes", "No"), title=" Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
+    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
     if (prompt==1){    
       brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
       brainstat.datasets.base$fetch_template_surface("fsaverage5")
@@ -870,7 +867,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       stop('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')
     } else if (requirement=='any') {
       write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-      cat('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
+      warning('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
   } 
   else {checklist[3,]=TRUE} 
   
@@ -878,8 +875,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
   { 
     checklist[4,]=FALSE;
-    cat('VertexWiseR could not find brainstat fsaverage6 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage6 space.')
-   prompt = utils::menu(c("Yes", "No"), title=" Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?")
+   prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage6 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?")
     
      if (prompt==1)
       { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
@@ -889,7 +885,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
         stop('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')
       } else if (requirement=="any") {
         write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-        cat('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
+        warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
   } 
   else {checklist[4,]=TRUE} 
   
@@ -897,8 +893,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
   {
      checklist[5,]=FALSE;
-      cat('VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.')
-      prompt = utils::menu(c("Yes", "No"), title=" Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
+      prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
       if (prompt==1){    
         brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
         try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=TRUE)}  
@@ -909,7 +904,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
         else if (requirement=="any") 
         {
           write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-          cat('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
+          warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
   }
   else {checklist[5,]=TRUE} 
   
@@ -918,8 +913,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
   {
       checklist[6,]=FALSE;
-      cat("\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n")
-      prompt = utils::menu(c("Yes", "No"), title="Do you want the neurosynth database (7.5 MB) to be downloaded now?")
+      prompt = utils::menu(c("Yes", "No"), title="\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n Do you want the neurosynth database (7.5 MB) to be downloaded now?")
         if (prompt==1) {
           
           #function to check if url exists
@@ -945,7 +939,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
           stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
          else if (requirement=="any") {
            write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-           cat("\ndecode_surf_data() can only work with the neurosynth database.\n")}
+           warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
   }
   else {checklist[6,]=TRUE} 
   

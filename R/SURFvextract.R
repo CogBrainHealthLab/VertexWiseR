@@ -22,7 +22,7 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
 { 
   
   if (missing("filename")) {
-    cat(paste0('No filename argument was given. The matrix object "brain_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
+    warning(paste0('No filename argument was given. The matrix object "brain_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
     filename=paste0(tempdir(),'/brain_',measure,'.rds')
   }
   
