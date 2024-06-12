@@ -10,14 +10,16 @@
 #'
 #' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or a data matrix object. The matrix can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the same order as 1) and contains the left to right hemispheres' vertex-wise values.
 #' @examples
-#' if(interactive()){
 #' HIPvextract(sdirpath = "./", filename = "hip_data.RDS", measure = "thickness") 
-#' } 
+#' 
 #' @importFrom gifti readgii
 #' @export
 
 HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRUE)
 {
+  oldwd <- getwd()
+  on.exit(setwd(oldwd)) #will restore user's working directory path on function break
+  
   setwd(sdirpath)
   
   if (missing("filename")) {
@@ -33,6 +35,10 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   sublist=gsub(paste("_hemi-L_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""), 
                "",
                basename(lh.filelist))
+  
+  ##Function stops if files not found
+  if (length(lh.filelist) == 0 | length(rh.filelist) == 0)
+  {return(message('Could not find HippUnfold data in the set sdirpath'))} 
 
   ##read data and save data for each subject as rows in a data matrix
   hip_dat=matrix(NA, nrow=NROW(sublist), ncol=14524)
