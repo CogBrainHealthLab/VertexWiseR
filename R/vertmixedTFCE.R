@@ -226,7 +226,6 @@ If it is your random variable and it is non-binarizable, do not include it in th
 
   ##permuted model
   #generating permutation sequences  
-  set.seed(123)
   permseq=matrix(NA, nrow=NROW(model), ncol=nperm)
   
   if(perm_type=="within_between") {for (perm in 1:nperm)  {permseq[,perm]=perm_within_between(random)}} 

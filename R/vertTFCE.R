@@ -212,7 +212,6 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   
   ##permuted models
   #generating permutation sequences  
-  set.seed(123)
   permseq=matrix(NA, nrow=NROW(model), ncol=nperm)
   for (perm in 1:nperm)  {permseq[,perm]=sample.int(NROW(model))}
   
