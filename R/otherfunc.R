@@ -804,17 +804,11 @@ decode_surf_data=function(surf_data,contrast="positive")
 #' @importFrom reticulate conda_binary py_module_available
 #' @importFrom fs path_home
 #' @importFrom methods is 
-#' @importFrom utils menu read.csv write.csv
+#' @importFrom utils menu
 #' @export
 
 VWRfirstrun=function(requirement="any", n_vert=0) 
 {
-
-#Loads the checklist which will store requirement checks results 
-#and modify accordingly
-  checklist = read.csv(paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = 1)
-  
-  
 #First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
   #are fsaverage5 templates in brainstat_data?
   if (n_vert==20484)
@@ -832,87 +826,68 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   #check if miniconda is installed
   if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
   {
-    checklist[1,]=FALSE;
     prompt = utils::menu(c("Yes", "No"), title="Miniconda could not be found in the environment. \n Do you want miniconda to be installed now?")
     if (prompt==1) {reticulate::install_miniconda()}
-    else { write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-      stop('VertexWiseR will not work properly without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
+    else { stop('VertexWiseR will not work properly without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
   } 
-  else {checklist[1,]=TRUE} 
   
   #check if brainstat is installed
   if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {
-    checklist[2,]=FALSE;
     prompt = utils::menu(c("Yes", "No"), title="Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
     if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} 
     else {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
-  else {checklist[2,]=TRUE} 
-  
   
   #check if brainstat fsaverage/parcellation templates are installed (stops only if function needs it)
   if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {     
-    checklist[3,]=FALSE;
     prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
     if (prompt==1){    
       brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
       brainstat.datasets.base$fetch_template_surface("fsaverage5")
     } else if (requirement=='fsaverage5') {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       stop('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')
     } else if (requirement=='any') {
-      write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
       warning('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
   } 
-  else {checklist[3,]=TRUE} 
   
   if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
   { 
-    checklist[4,]=FALSE;
    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage6 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?")
     
      if (prompt==1)
       { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
         brainstat.datasets.base$fetch_template_surface("fsaverage6")
       } else if (requirement=='fsaverage6') { 
-        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
         stop('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')
       } else if (requirement=="any") {
-        write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
         warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
   } 
-  else {checklist[4,]=TRUE} 
   
   if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
   {
-     checklist[5,]=FALSE;
       prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
       if (prompt==1){    
         brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
         try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=TRUE)}  
         else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
         {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
           stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
         else if (requirement=="any") 
         {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
-          warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
+          warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
+        }
   }
-  else {checklist[5,]=TRUE} 
   
   #Check if neurosynth database is present and download
   if ((requirement=="any" | requirement=='neurosynth')==TRUE 
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
   {
-      checklist[6,]=FALSE;
       prompt = utils::menu(c("Yes", "No"), title="\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n Do you want the neurosynth database (7.5 MB) to be downloaded now?")
         if (prompt==1) {
           
@@ -935,16 +910,10 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
           
         #if user refuses, stops if required, just returns a message if optionnal at this stage
         } else if (requirement=="neurosynth") {
-          write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
           stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
          else if (requirement=="any") {
-           write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
            warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
   }
-  else {checklist[6,]=TRUE} 
-  
-  #update checklist csv
-  write.csv(checklist, file=paste0(system.file(package='VertexWiseR'),'/extdata/requirements_checklist.csv'), row.names = TRUE)
   
 } 
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
@@ -953,32 +922,28 @@ else #if not interactive and any required file is missing, the script requires t
   non_interactive="System requirements are missing. VWRfirstrun() can only be run in an interactive R session to check for the missing system requirements and to install them.";
   
   #miniconda missing?
-  if (checklist[1,1] == FALSE) 
+  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
+  {return(non_interactive)} 
+  
+  #brainstat missing
+  if (!reticulate::py_module_available("brainstat")) 
   {return(non_interactive)}
   
-  #brainstat missing?
-  if (checklist[2,1] == FALSE)
+  #fsaverage5 missing
+  if ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {return(non_interactive)}
   
-  #fsaverage5 missing?
-  if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
-      & checklist[3,1] == FALSE) 
+  #fsaverage6 missing
+  if ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
   {return(non_interactive)}
   
-  #fsaverage6 missing?
-  if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
-      & checklist[4,1] == FALSE)  
+  #yeo parcels missing
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
   {return(non_interactive)}
   
-  #yeo parcels missing?
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
-      & checklist[5,1] == FALSE) 
+  #neurosynth data missing
+  if ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
   {return(non_interactive)}
-  
-   #neurosynth data missing?
-   if ((requirement=="any" | requirement=='neurosynth')==TRUE 
-       & checklist[6,1] == FALSE) 
-     {return(non_interactive)}
       
 }
 
