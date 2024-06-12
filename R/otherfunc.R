@@ -798,6 +798,7 @@ decode_surf_data=function(surf_data,contrast="positive")
 #' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, the latest version of 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. Likewise, analyses of cortical surface require fsaverage templates as imported by 'BrainStat' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
 #' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
 #' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
+#' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
 #' VWRfirstrun()
 #' @importFrom reticulate conda_binary py_module_available
@@ -935,7 +936,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
           if(valid_url(url)) {
             download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
           } else { 
-            return("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
+            warning("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
           } 
           
         #if user refuses, stops if required, just returns a message if optionnal at this stage
@@ -955,7 +956,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
 else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
 { 
   #creates the following object to warn upper functions that it's a non-interactive session when files are missing
-  non_interactive="If system requirements are missing, VWRfirstrun() can only be run in an interactive R session to check for system requirements and to install them.";
+  non_interactive="System requirements are missing. VWRfirstrun() can only be run in an interactive R session to check for the missing system requirements and to install them.";
   
   #miniconda missing?
   if (checklist[1,1] == FALSE) 
