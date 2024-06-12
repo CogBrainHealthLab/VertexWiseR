@@ -166,27 +166,6 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     {
       if(file.exists(system.file('extdata','hip_template.fs', package='VertexWiseR'))==FALSE)
       {
-        warning("\nhip_template.fs is not detected in the current working directory. The hippocampus surface template will be downloaded\n\n")
-        
-        #function to check if url exists
-        #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
-        #https://stackoverflow.com/a/60627969
-        valid_url <- function(url_in,t=2){
-          con <- url(url_in)
-          check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=TRUE)[1])
-          suppressWarnings(try(close.connection(con),silent=TRUE))
-          ifelse(is.null(check),TRUE,FALSE)}
-        
-        #Check if URL works and avoid returning error but only print message as requested by CRAN:
-        url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/hip_template.fs"
-        if(valid_url(url)) {
-          download.file(url, destfile=paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'),mode = "wb")
-        } else { 
-          warning("\nhip_template.fs could not be downloaded from the github VertexWiseR directory and the url may be broken. Please check your internet connection or visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata to download the object.")
-          return() #ends function
-        }
-      }
-        
         brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
         template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
         ROImap <- get('ROImap_HIP')
