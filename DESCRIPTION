@@ -13,7 +13,7 @@ Maintainer: Charly Billaud <charly.billaud@ntu.edu.sg>
 Description: Provides functions to run statistical analyses on
     surface-based neuroimaging data, computing measures including cortical
     thickness and surface area of the whole-brain and of the hippocampi.
-    It can make use of Freesurfer preprocessed datasets and Hippunfold
+    It can make use of 'FreeSurfer' preprocessed datasets and 'HippUnfold'
     hippocampal segmentation outputs for a given sample by restructuring
     the data values into a single file. The single file can then be used
     by the package for analyses independently from its base dataset and
@@ -24,7 +24,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-SystemRequirements: Miniconda3 (>= 23.10.0); brainstat (reticulate
+SystemRequirements: Miniconda3 (>= 23.10.0); BrainStat (reticulate
     installation, >=0.4.2)
 Depends: 
     R (>= 4.0.0)

@@ -4,7 +4,7 @@
 #'
 #' @description Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.
 #'
-#' @details The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{brainstat python library}. 
+#' @details The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BraiStat' Python library}. 
 #' 
 #' Output definitions:
 #' - `nverts`: number of vertices in the cluster

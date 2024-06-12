@@ -7,7 +7,7 @@
 #'
 #' @description Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and TFCE statistical maps for the selected contrast.
 #' 
-#' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{nilearn python library}. 
+#' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}. 
 #' 
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model
 #' @param contrast A numeric vector or object containing the values of the predictor of interest. The t-stat and TFCE maps will be estimated only for this predictor

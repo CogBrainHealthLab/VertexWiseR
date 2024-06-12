@@ -248,12 +248,12 @@ getClusters=function(surf_data)
 #' @title Surface to atlas
 #'
 #' @description Returns the mean or sum of vertex-wise surface data for each ROI of a selected atlas
-#' @details The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigmatoolbox} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux}
+#' @details The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{ 'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux}
 #' 
-#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in Hippunfold. See also \href{https://www.sciencedirect.com/science/article/pii/S105381191930919X}{DeKraker et al., 2020}.
+#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \href{https://doi.org/10.1016/j.neuroimage.2019.116328}{DeKraker et al., 2020}.
 #'
 #' @param surf_data A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the bigbrain hippocampal atlas is used by default and ignores the option.
+#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
@@ -369,7 +369,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 #' @title Atlas to surface
 #'
 #' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 or fsaverage6 space
-#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{enigma toolbox} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
+#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
 #' @param template A string object stating the surface space on which to map the data ('fsaverage5' or 'fsaverage6').
@@ -517,7 +517,7 @@ fs6_to_fs5=function(surf_data)
 #' @param filename A string object containing the desired name of the output .png file.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 #' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
-#' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{Matplotlib plotting library}. 
+#' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
 #' 
 #' Default cmap is set to `"Reds"` for positive values, `"Blues_r"` for negative values and `"RdBu"` when both positive and negative values exist. 
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. If the limits are specified, the same limits will be applied to all subplots. When left unspecified, the same symmetrical limits c(-max(abs(surf_dat),max(abs(surf_dat))) will be used for all subplots. If set to NULL, each subplot will have its own limits corresponding to their min and max values
@@ -710,7 +710,7 @@ surf_to_vol=function(surf_data, filename)
 #'
 #' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
 #'
-#' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{NiMARE} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{neurosynth} database in the package's inst/extdata direcotry (~8 Mb) for the analysis.
+#' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata direcotry (~8 Mb) for the analysis.
 #'
 #' @param surf_data a numeric vector with a length of 20484
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
@@ -793,10 +793,10 @@ decode_surf_data=function(surf_data,contrast="positive")
 ############################################################################################################################
 #' @title VertexWiseR system requirements installation
 #'
-#' @description Helps the user install all system requirements for VertexWiseR functions to work (miniconda, brainstat toolbox and libraries). If they are installed already, nothing will be overwritten. 
+#' @description Helps the user verify if VertexWisrR's system requirements are present and install them ('Miniconda', 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten. 
 #'
-#' @details VertexWiseR imports and makes use of the R package reticulate. reticulate is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the brainstat python module. For reticulate to work properly with VertexWiseR, the latest version of miniconda needs to be installed with it — miniconda is a lightweight version of python, specifically for use within RStudio. Likewise, analyses of cortical surface require fsaverage templates as imported by brainstat. The decode_surf_data() function also requires the neurosynth database to be downloaded.
-#' @param requirement String that specifies a requirement to enquire about (for specific brainstat libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
+#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, the latest version of 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. Likewise, analyses of cortical surface require fsaverage templates as imported by 'BrainStat' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
+#' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
 #' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
 #' @examples
 #' VWRfirstrun()
