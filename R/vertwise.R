@@ -51,7 +51,7 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
