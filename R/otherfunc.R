@@ -130,7 +130,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda only")
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -548,7 +548,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     message("Checking for VertexWiseR system requirements ...")
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
     message('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
@@ -691,7 +691,7 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda/brainstat")
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
     message('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
@@ -745,7 +745,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="neurosynth")
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {
@@ -929,7 +929,9 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   }
   
 } 
-else #if not interactive and any required file is missing, the script requires the user to run VWR interactively
+else if (exists("VWR_check")) 
+#If the session is non-interactive and any required file is missing, the script will stop and require the user to run VWR interactively.
+#non-interactive checks only work when VWRfirstrun() is called by another function (with VWR_check argument given), not on its own.
 { 
   #creates the following object to warn upper functions that it's a non-interactive session when files are missing
   non_interactive="System requirements are missing. VWRfirstrun() can only be run in an interactive R session to check for the missing system requirements and to install them.";
@@ -943,19 +945,19 @@ else #if not interactive and any required file is missing, the script requires t
   {return(non_interactive)}
   
   #fsaverage5 missing
-  if ((requirement=="any" | requirement=='fsaverage5')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
+  if ((requirement=="any" | requirement=='fsaverage5')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {return(non_interactive)}
   
   #fsaverage6 missing
-  if ((requirement=="any" | requirement=='fsaverage6')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
+  if ((requirement=="any" | requirement=='fsaverage6')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
   {return(non_interactive)}
   
   #yeo parcels missing
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==T & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
   {return(non_interactive)}
   
   #neurosynth data missing
-  if ((requirement=="any" | requirement=='neurosynth')==T & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
+  if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
   {return(non_interactive)}
       
 }
