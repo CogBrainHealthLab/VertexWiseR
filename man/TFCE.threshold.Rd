@@ -22,8 +22,9 @@ A list object containing the cluster level results, thresholded t-stat map, and 
 Threshold TFCE maps from the TFCE.vertex_analysis() output and identifies significant clusters at the desired threshold.
 }
 \examples{
-if(interactive()){
-TFCEanalysis_output=TFCE.threshold(TFCE.output, p=0.05, atlas=1)
-results$cluster_level_results
-}
+model1_TFCE=readRDS(system.file('demo_data/model1_TFCE.rds', 
+package = 'VertexWiseR'))
+
+TFCEanalysis_output=TFCE.threshold(model1_TFCE, p=0.05, atlas=1)
+TFCEanalysis_output$cluster_level_results
 }

@@ -59,7 +59,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda only")
     if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
@@ -445,7 +445,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir)
 #' package = 'VertexWiseR'))
 #' 
 #' TFCEanalysis_output=TFCE.threshold(model1_TFCE, p=0.05, atlas=1)
-#' results$cluster_level_results
+#' TFCEanalysis_output$cluster_level_results
 #' @export
 
 TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
