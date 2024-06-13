@@ -31,6 +31,7 @@ Extracts whole-brain vertex-wise surface-based measures for each subject in a 'F
 }
 \details{
 The function runs system shell commands that will produce in the set subjects directory: 1) a sorted list of subjects "sublist.txt"; 2) a link file to the selected surface fsaverage template. 3) left and right hemisphere .mgh maps outputted by 'FreeSurfer' 's mris_preproc.
+This function was currently not tested on a MacOS system.
 }
 \examples{
 SURFvextract(sdirpath = "freesurfer_subjdir", 
