@@ -108,26 +108,29 @@
 #'
 #' @param surf_data A matrix object containing the surface data, see SURFvextract() or HIPvextract() output format
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A matrix object with smoothed vertex-wise values
 #' @examples
 #' surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
-#' surf_data_smoothed=smooth_surf(surf_data, 10);
+#' surf_data_smoothed=smooth_surf(surf_data, 10, VWR_check=FALSE);
 #' @importFrom reticulate source_python
 #' @export
 
 ## smooth surface data 
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
-smooth_surf=function(surf_data, FWHM)
+smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  message("Checking for VertexWiseR system requirements ... ")
-  check = VWRfirstrun(requirement="miniconda only")
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(requirement="miniconda only")
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -250,7 +253,7 @@ getClusters=function(surf_data)
 #' @description Returns the mean or sum of vertex-wise surface data for each ROI of a selected atlas
 #' @details The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{ 'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux}
 #' 
-#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \href{https://doi.org/10.1016/j.neuroimage.2019.116328}{DeKraker et al., 2020}.
+#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
 #' @param surf_data A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.
@@ -514,7 +517,7 @@ fs6_to_fs5=function(surf_data)
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #'
 #' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract() as well as masks or vertex-wise results outputted by analyses functions.
-#' @param filename A string object containing the desired name of the output .png file.
+#' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 #' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
 #' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
@@ -524,24 +527,28 @@ fs6_to_fs5=function(surf_data)
 #' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
 #' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
 #' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns Outputs the plot as a .png image
 #' @examples
 #' results = runif(20484,min=0, max=1);
-#' plot_surf(surf_data = results, filename='output.png',title = 
-#' 'Cortical thickness', surface = 'inflated', cmap = 'Blues')
+#' plot_surf(surf_data = results, filename=paste0(tempdir(),"/output.png"),title = 
+#' 'Cortical thickness', surface = 'inflated', cmap = 'Blues',
+#' VWR_check=FALSE)
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
 #' @export
 
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  message("Checking for VertexWiseR system requirements ...")
-  check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ...")
+    check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
     message('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
@@ -663,29 +670,32 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
 #' @description Converts surface data to volumetric data (.nii file)
 #'
 #' @param surf_data A vector object containing the surface data, either in fsaverage5 or fsaverage6 space. It can only be one row of vertices (no cohort surface data matrix). 
-#' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii').
+#' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii' in the R temporary directory (tempdir())).
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A .nii volume file
 #' @examples
 #' CTv = runif(20484,min=0, max=100);
-#' surf_to_vol(CTv, filename = 'volume.nii')
+#' surf_to_vol(CTv, filename = paste0(tempdir(),'/volume.nii'), VWR_check=FALSE)
 #' @importFrom reticulate import
 #' @export
 
 ##converting surface to volumetric data and exporting it as a .nii file
 
-surf_to_vol=function(surf_data, filename)
+surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  message("Checking for VertexWiseR system requirements ... ")
-  check = VWRfirstrun(requirement="miniconda/brainstat")
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(requirement="miniconda/brainstat")
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
     message('No filename argument was given. The volume will be saved as "vol.nii" in R temporary directory (tempdir()).\n')
-    filename=paste0(tempdir(),'/vol.nii')
+    filename=paste0(tempdir(),'/output.nii')
   }
   
   #check length of vector
@@ -714,25 +724,28 @@ surf_to_vol=function(surf_data, filename)
 #'
 #' @param surf_data a numeric vector with a length of 20484
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A data.frame object listing the keywords and their Pearson's R values
 #' @examples
 #' CTv = rbinom(20484, 1, 0.001) 
-#' decoding = decode_surf_data(CTv, 'positive');
+#' decoding = decode_surf_data(CTv, 'positive', VWR_check=FALSE);
 #' head(decoding)
 #' @importFrom reticulate import r_to_py
 #' @export
 
 ##CT image decoding
-decode_surf_data=function(surf_data,contrast="positive") 
+decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE) 
 {
   
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  message("Checking for VertexWiseR system requirements ... ")
-  check = VWRfirstrun(requirement="neurosynth")
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(requirement="neurosynth")
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {

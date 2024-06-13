@@ -4,12 +4,14 @@
 \alias{decode_surf_data}
 \title{Decode surface data}
 \usage{
-decode_surf_data(surf_data, contrast = "positive")
+decode_surf_data(surf_data, contrast = "positive", VWR_check = TRUE)
 }
 \arguments{
 \item{surf_data}{a numeric vector with a length of 20484}
 
 \item{contrast}{A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A data.frame object listing the keywords and their Pearson's R values
@@ -18,10 +20,10 @@ A data.frame object listing the keywords and their Pearson's R values
 Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
 }
 \details{
-The \href{https://nimare.readthedocs.io/en/stable/index.html}{NiMARE} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{neurosynth} database in the package's inst/extdata direcotry (~8 Mb) for the analysis.
+The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.
 }
 \examples{
 CTv = rbinom(20484, 1, 0.001) 
-decoding = decode_surf_data(CTv, 'positive');
+decoding = decode_surf_data(CTv, 'positive', VWR_check=FALSE);
 head(decoding)
 }

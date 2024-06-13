@@ -20,6 +20,7 @@
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' 
@@ -31,7 +32,8 @@
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
 #'
 #'vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
-#'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05)
+#'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
+#'VWR_check=FALSE)
 #' 
 #' #Description of the output:
 #' #vertexwise_model$cluster_level_results
@@ -39,15 +41,17 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smooth_FWHM)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  message("Checking for VertexWiseR system requirements ... ")
-  check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
@@ -164,12 +168,11 @@ vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smo
     ROImap <- get('ROImap_fs6')
     } else if (n_vert==14524)
     {
-      if(file.exists(system.file('extdata','hip_template.fs', package='VertexWiseR'))==FALSE)
-      {
-        brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
-        template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
-        ROImap <- get('ROImap_HIP')
-    } else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+      brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
+      template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
+      ROImap <- get('ROImap_HIP')
+    } else 
+    {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
   
   ##smoothing
     n_vert=NCOL(surf_data)

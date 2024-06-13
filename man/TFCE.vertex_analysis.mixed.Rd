@@ -13,7 +13,8 @@ TFCE.vertex_analysis.mixed(
   tail = 2,
   nthread = 10,
   smooth_FWHM,
-  perm_type = "row"
+  perm_type = "row",
+  VWR_check = TRUE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ TFCE.vertex_analysis.mixed(
 \item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
 
 \item{perm_type}{A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row".}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
@@ -42,7 +45,7 @@ A list object containing the t-stat and the TFCE statistical maps which can then
 Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and TFCE statistical maps for the selected contrast.
 }
 \details{
-This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{nilearn python library}.
+This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}.
 }
 \examples{
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
@@ -52,7 +55,7 @@ surf_data = readRDS(file = url(paste0("https://github.com",
 
 TFCE.pos=TFCE.vertex_analysis.mixed(model=demodata[,c(2,7)],
 contrast=demodata[,7], surf_data,random=demodata[,1], 
-nperm =5,tail = 1, nthread = 2)
+nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 
 #To get significant clusters, you may then run:
 #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)

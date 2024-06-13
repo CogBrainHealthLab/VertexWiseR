@@ -11,7 +11,8 @@ vertex_analysis(
   surf_data,
   p = 0.05,
   atlas = 1,
-  smooth_FWHM
+  smooth_FWHM,
+  VWR_check = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ vertex_analysis(
 \item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.}
 
 \item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
@@ -36,7 +39,7 @@ A list object containing the cluster level results, thresholded t-stat map, and 
 Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.
 }
 \details{
-The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{brainstat python library}.
+The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BraiStat' Python library}.
 
 Output definitions:
 \itemize{
@@ -55,7 +58,8 @@ CTv = readRDS(file = url(paste0("https://github.com",
 "SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
 
 vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
-contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05)
+contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
+VWR_check=FALSE)
 
 #Description of the output:
 #vertexwise_model$cluster_level_results

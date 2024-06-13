@@ -18,6 +18,7 @@
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
 #' @param perm_type A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row". 
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
@@ -29,7 +30,7 @@
 #'
 #'TFCE.pos=TFCE.vertex_analysis.mixed(model=demodata[,c(2,7)],
 #'contrast=demodata[,7], surf_data,random=demodata[,1], 
-#'nperm =5,tail = 1, nthread = 2)
+#'nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 #'
 #' #To get significant clusters, you may then run:
 #' #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
@@ -45,14 +46,16 @@
 
 ##Main function
 
-TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row")
+TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
-  #Will stop if it's a non-interactive session 
-  message("Checking for VertexWiseR system requirements ... ")
-  check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-  if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  #Will stop if it's a non-interactive session
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

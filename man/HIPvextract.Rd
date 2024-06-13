@@ -9,7 +9,7 @@ HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
 \arguments{
 \item{sdirpath}{A string object containing the path to the 'HippUnfold' subjects directory. Default is the current working directory ("./").}
 
-\item{filename}{A string object containing the desired name of the output RDS file. Default is 'hip_\if{html}{\out{<measure>}}.rds' in the R temporary directory (tempdir()).}
+\item{filename}{A string object containing the desired name of the output RDS file. Default is 'hip_measure.rds' in the R temporary directory (tempdir()).}
 
 \item{measure}{A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.}
 

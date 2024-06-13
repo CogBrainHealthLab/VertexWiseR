@@ -4,12 +4,14 @@
 \alias{smooth_surf}
 \title{Smooth surface}
 \usage{
-smooth_surf(surf_data, FWHM)
+smooth_surf(surf_data, FWHM, VWR_check = TRUE)
 }
 \arguments{
 \item{surf_data}{A matrix object containing the surface data, see SURFvextract() or HIPvextract() output format}
 
 \item{FWHM}{A numeric vector object containing the desired smoothing width in mm}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A matrix object with smoothed vertex-wise values
@@ -21,5 +23,5 @@ Smooths surface data at defined full width at half maximum (FWHM) as per the cor
 surf_data = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 "FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
-surf_data_smoothed=smooth_surf(surf_data, 10);
+surf_data_smoothed=smooth_surf(surf_data, 10, VWR_check=FALSE);
 }

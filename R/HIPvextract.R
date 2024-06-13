@@ -4,7 +4,7 @@
 #' @details The function searches for the hippocampal surface data by listing out files with certain suffixes, extract the data from these files, and organize the left and right hippocampal vertex data for each subject as rows in a N x 14524 data matrix within a .rds object. 
 #'
 #' @param sdirpath A string object containing the path to the 'HippUnfold' subjects directory. Default is the current working directory ("./").
-#' @param filename A string object containing the desired name of the output RDS file. Default is 'hip_<measure>.rds' in the R temporary directory (tempdir()).
+#' @param filename A string object containing the desired name of the output RDS file. Default is 'hip_measure.rds' in the R temporary directory (tempdir()).
 #' @param measure A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.
 #' @param subj_ID A logical object stating whether to return a list object containing both subject ID and data matrix.
 #'

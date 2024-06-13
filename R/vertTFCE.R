@@ -16,12 +16,12 @@
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
 #' @seealso \code{\link{TFCE.threshold}}
 #'  
 #' @examples
-#' if(interactive()){
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 #'package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
@@ -30,12 +30,12 @@
 #'model=demodata[,c(2,7)]
 #'contrast=demodata[,7]
 #'
-#' TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, nperm=5, nthread = 2)
+#' TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, 
+#' nperm=5, nthread = 2, VWR_check=FALSE)
 #' 
 #' #To threshold the results, you may then run:
-#' results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
-#' results$cluster_level_results
-#' }
+#' #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
+#' #results$cluster_level_results
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach %dopar%
@@ -49,8 +49,18 @@
 
 ##Main function
 
-TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM)
+TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
 {
+  
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(requirement="miniconda only")
+    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+  } else if(interactive()==F) { return(message('Non-interactive sessions need requirement checks'))}
+  
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
@@ -431,10 +441,11 @@ TFCE.multicore=function(data,tail=tail,nthread,envir)
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' @examples
-#' if(interactive()){
-#' TFCEanalysis_output=TFCE.threshold(TFCE.output, p=0.05, atlas=1)
+#' model1_TFCE=readRDS(system.file('demo_data/model1_TFCE.rds', 
+#' package = 'VertexWiseR'))
+#' 
+#' TFCEanalysis_output=TFCE.threshold(model1_TFCE, p=0.05, atlas=1)
 #' results$cluster_level_results
-#' }
 #' @export
 
 TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)

@@ -11,7 +11,8 @@ TFCE.vertex_analysis(
   nperm = 100,
   tail = 2,
   nthread = 10,
-  smooth_FWHM
+  smooth_FWHM,
+  VWR_check = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ TFCE.vertex_analysis(
 \item{nthread}{A numeric integer object specifying the number of CPU threads to allocate}
 
 \item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
@@ -36,10 +39,9 @@ A list object containing the t-stat and the TFCE statistical maps which can then
 Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and TFCE statistical maps for the selected contrast.
 }
 \details{
-This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{nilearn python library}.
+This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}.
 }
 \examples{
-if(interactive()){
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 package = 'VertexWiseR'))[1:5,]
 surf_data = readRDS(file = url(paste0("https://github.com",
@@ -48,12 +50,12 @@ surf_data = readRDS(file = url(paste0("https://github.com",
 model=demodata[,c(2,7)]
 contrast=demodata[,7]
 
-TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, nperm=5, nthread = 2)
+TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, 
+nperm=5, nthread = 2, VWR_check=FALSE)
 
 #To threshold the results, you may then run:
-results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
-results$cluster_level_results
-}
+#results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
+#results$cluster_level_results
 
 }
 \seealso{
