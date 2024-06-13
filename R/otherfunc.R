@@ -941,7 +941,7 @@ else if (exists("VWR_check"))
   {return(non_interactive)} 
   
   #brainstat missing
-  if (!reticulate::py_module_available("brainstat")) 
+  if (!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {return(non_interactive)}
   
   #fsaverage5 missing
