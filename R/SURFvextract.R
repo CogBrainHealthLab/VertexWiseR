@@ -33,7 +33,7 @@ dircount = dir(path=sdirpath, recursive=TRUE, pattern="surf$", include.dirs = TR
 if (length(dircount)==0) { return(message('FreeSurfer surface folders could not be found in the set sdirpath')) }
   
 #list subject folders and excludes template folders
-alldirs=dir(path=sdirpath, pattern="surf", recursive=TRUE, include.dirs=TRUE) 
+alldirs=dir(path=sdirpath, pattern="surf$", recursive=TRUE, include.dirs=TRUE) 
 alldirs=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
 #checks subject with specific surf measure data (rh.measure file) 
 sublist=list.files(alldirs, pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
