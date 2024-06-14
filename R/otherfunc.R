@@ -808,7 +808,9 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #'
 #' @description Helps the user verify if VertexWisrR's system requirements are present and install them ('Miniconda', 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten. 
 #'
-#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, the latest version of 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. Likewise, analyses of cortical surface require fsaverage templates as imported by 'BrainStat' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
+#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. If for a reason Miniconda cannot be installed, the function gives the choice to install a reticulate-suitable Python environment.
+#' Vertex-wise statistical analyses of cortical surface require fsaverage and parcellation templates as imported by default in 'BrainStat'. 
+#' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
 #' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
 #' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
@@ -836,12 +838,18 @@ VWRfirstrun=function(requirement="any", n_vert=0)
   
 if (interactive()==TRUE) { #can only run interactively as it requires user's action
   
-  #check if miniconda is installed
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError')
+  #check if miniconda (or suitable python environment) is installed
+  #numpy being a dependency in both, this checks if either is present
+  if (!reticulate::py_module_available("numpy"))
   {
-    prompt = utils::menu(c("Yes", "No"), title="Miniconda could not be found in the environment. \n Do you want miniconda to be installed now?")
+    prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
+                           "Yes, install Python (if Miniconda could not be installed)", 
+                           "No"), 
+                         title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?")
+    
     if (prompt==1) {reticulate::install_miniconda()}
-    else { stop('VertexWiseR will not work properly without miniconda. reticulate::conda_list() should detect it on your system.\n\n')}
+    else if (prompt==2) {reticulate::install_python()}
+    else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
   } 
   
   #check if brainstat is installed
