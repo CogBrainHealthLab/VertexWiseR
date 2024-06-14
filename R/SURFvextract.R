@@ -26,17 +26,24 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
     warning(paste0('No filename argument was given. The matrix object "brain_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
     filename=paste0(tempdir(),'/brain_',measure,'.rds')
   }
+
   
-
-#check if sdirpath does contain freesurfer data (surf folder)
+#check if sdirpath contains freesurfer surf folders 
 dircount = dir(path=sdirpath, recursive=TRUE, pattern="surf$", include.dirs = TRUE)
-if (length(dircount)==0) { return(message('FreeSurfer surface data could not be found in the set sdirpath')) }
+if (length(dircount)==0) { return(message('FreeSurfer surface folders could not be found in the set sdirpath')) }
+  
+#list subject folders and excludes template folders
+alldirs=dir(path=sdirpath, pattern="surf", recursive=TRUE, include.dirs=TRUE) 
+alldirs=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
+#checks subject with specific surf measure data (rh.measure file) 
+sublist=list.files(alldirs, pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
+#flags subjects with no appropriate surf measure data inside surf/
+missinglist=dirname(alldirs[! alldirs %in% dirname(sublist)])
+if (length(missinglist) != 0) { warning(paste("Some of the subject directories do not contain the required surface files:", toString(missinglist)))}
 
-
-#finds specifically subject folders in the directory (checks if a surf folder is present) and stores their ordered IDs in a list  
-Sys.setenv(SUBJECTS_DIR=sdirpath)
-system("find $SUBJECTS_DIR -maxdepth 1 -type d -exec test -e '{}/surf' \\; -exec basename {} > $SUBJECTS_DIR/sublist.txt \\;");
-system("sort -n $SUBJECTS_DIR/sublist.txt -o $SUBJECTS_DIR/sublist.txt");
+#Stores subjects IDs with available data in sublist.txt
+sublist = dirname(dirname(sublist)) #remove path to files
+write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
 system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR \n
@@ -46,7 +53,7 @@ system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR \
 #Reads mgh files to stores and assign the thickness values to each subject in a matrix object usable by VertexWiseR. Appends a column with the subject IDs if required by the user.
 if (subj_ID == TRUE) 
 {
-sublist = utils::read.delim(paste0(sdirpath,"/sublist.txt"));
+sublist2 = utils::read.delim(paste0(sdirpath,"/sublist.txt"));
 SURFdata= t(rbind(drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"lh.mgh"))),drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"rh.mgh")))));
 SURFdata=list(sublist,SURFdata); 
 } else {
