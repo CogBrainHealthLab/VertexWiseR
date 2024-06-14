@@ -46,6 +46,7 @@ sublist = dirname(dirname(sublist)) #remove path to files
 write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
+Sys.setenv(SUBJECTS_DIR=sdirpath)
 system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR \n
        mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --out $SUBJECTS_DIR/lh.mgh \n 
        mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, " --out $SUBJECTS_DIR/rh.mgh"));
