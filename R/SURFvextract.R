@@ -34,6 +34,7 @@ if (length(dircount)==0) { return(message('FreeSurfer surface data could not be 
 
 
 #finds specifically subject folders in the directory (checks if a surf folder is present) and stores their ordered IDs in a list  
+Sys.setenv(SUBJECTS_DIR=sdirpath)
 system("find $SUBJECTS_DIR -maxdepth 1 -type d -exec test -e '{}/surf' \\; -exec basename {} > $SUBJECTS_DIR/sublist.txt \\;");
 system("sort -n $SUBJECTS_DIR/sublist.txt -o $SUBJECTS_DIR/sublist.txt");
 
