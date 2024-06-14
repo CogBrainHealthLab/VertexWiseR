@@ -1,8 +1,8 @@
 Package: VertexWiseR
 Title: Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal
     Surface
-Version: 1.0.0
-Date: 2024-06-13
+Version: 1.0.1
+Date: 2024-06-14
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
