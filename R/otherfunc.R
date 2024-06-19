@@ -192,26 +192,12 @@ extract.t=function(mod,row)
 #' @importFrom igraph components
 
 ##find clusters using edgelist
-getClusters=function(surf_data)
+getClusters=function(surf_data,edgelist)
 { 
   n_vert=length(surf_data)
   
   #listing out non-zero vertices
   vert=which(surf_data!=0)
-  
-  #visible binding for edgelist object
-  edgelist <- get("edgelist")
-  
-  ##narrow down to left or right hemisphere only to speed up matching process
-  if(max(vert,na.rm = TRUE)<=(n_vert/2))
-  {
-    nedgerow=min(which(edgelist>(n_vert/2)))-1
-    edgelist=edgelist[1:nedgerow,]
-  } else if(min(vert,na.rm = TRUE)>(n_vert/2))
-  {
-    nedgerow=min(which(edgelist>(n_vert/2)))-1
-    edgelist=edgelist[(nedgerow+1):NROW(edgelist),]
-  }
   
   #matching non-zero vertices with adjacency matrices to obtain list of edges connecting between the non-zero vertices
   edgelist0=edgelist[!is.na(match(edgelist[,1],vert)),]
@@ -243,7 +229,7 @@ getClusters=function(surf_data)
     clust.map="noclusters"
     clust.size="noclusters"
   }
-  return(list(clust.map,clust.size))
+  return(list(clust.map,clust.size,edgelist1))
 }
 ############################################################################################################################
 ############################################################################################################################

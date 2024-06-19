@@ -81,116 +81,116 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   #source("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/R/otherfunc.R?raw=TRUE")
   
   ##checks
-    #check if nrow is consistent for model and surf_data
-    if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
-    
-    #incomplete data check
-    idxF=which(complete.cases(model)==FALSE)
-    if(length(idxF)>0)
+  #check if nrow is consistent for model and surf_data
+  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
+  
+  #incomplete data check
+  idxF=which(complete.cases(model)==FALSE)
+  if(length(idxF)>0)
+  {
+    message(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
+    model=model[-idxF,]
+    contrast=contrast[-idxF]
+    surf_data=surf_data[-idxF,]
+  }
+  
+  #check contrast
+  if(NCOL(model)>1)
+  {
+    for(colno in 1:(NCOL(model)+1))
     {
-      message(paste("model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
-      model=model[-idxF,]
-      contrast=contrast[-idxF]
-      surf_data=surf_data[-idxF,]
-    }
-    
-    #check contrast
-    if(NCOL(model)>1)
-    {
-      for(colno in 1:(NCOL(model)+1))
+      if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
+      
+      if (inherits(contrast, "character")==TRUE) 
       {
-        if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
-        
-        if (inherits(contrast, "character")==TRUE) 
-        {
-          if(identical(contrast,model[,colno]))  {break} 
-        } else 
-        {
-          if(identical(suppressWarnings(as.numeric(contrast)),suppressWarnings(as.numeric(model[,colno]))))  {break}
-        }
-      }
-    }  else
-    {
-      if (inherits(contrast,"character")==TRUE) 
+        if(identical(contrast,model[,colno]))  {break} 
+      } else 
       {
-        if(identical(contrast,model))  {colno=1} 
-        else  {warning("contrast is not contained within model")}
-      } else
-      {
-        if(identical(as.numeric(contrast),as.numeric(model)))  {colno=1}
-        else  {warning("contrast is not contained within model")}
+        if(identical(suppressWarnings(as.numeric(contrast)),suppressWarnings(as.numeric(model[,colno]))))  {break}
       }
     }
-    
-    #check categorical and recode variable
-    if(NCOL(model)>1)
+  }  else
+  {
+    if (inherits(contrast,"character")==TRUE) 
     {
-      for (column in 1:NCOL(model))
-      {
-        if(inherits(model[,column],"character")==TRUE) 
-        {
-          if(length(unique(model[,column]))==2)
-          {
-            message(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
-            
-            recode=rep(0,NROW(model))
-            recode[model[,column]==unique(model[,column])[2]]=1
-            model[,column]=recode
-            contrast=model[,colno]
-          } else if(length(unique(model[,column]))>2)    {stop(paste("The categorical variable '",colnames(model)[column],"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
-        }      
-      }
+      if(identical(contrast,model))  {colno=1} 
+      else  {warning("contrast is not contained within model")}
     } else
     {
-      if (inherits(model,"character")==TRUE) 
+      if(identical(as.numeric(contrast),as.numeric(model)))  {colno=1}
+      else  {warning("contrast is not contained within model")}
+    }
+  }
+  
+  #check categorical and recode variable
+  if(NCOL(model)>1)
+  {
+    for (column in 1:NCOL(model))
+    {
+      if(inherits(model[,column],"character")==TRUE) 
       {
-        if(length(unique(model))==2)
+        if(length(unique(model[,column]))==2)
         {
-          message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+          message(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
           
           recode=rep(0,NROW(model))
-          recode[model==unique(model)[2]]=1
-          model=recode
-          model=model
-        } else if(length(unique(model))>2)    {stop(paste("The categorical variable '",colnames(model),"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
+          recode[model[,column]==unique(model[,column])[2]]=1
+          model[,column]=recode
+          contrast=model[,colno]
+        } else if(length(unique(model[,column]))>2)    {stop(paste("The categorical variable '",colnames(model)[column],"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
       }      
     }
-    
-    #make internal invironment to save edgelist
-    edgelistenv <- new.env()
-    
-    #check if surf_data is a multiple-rows matrix and NOT a vector
-    if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
-    {stop("The surface data must be a matrix containing multiple participants (rows).")}
-    
-    #check length of surface data and load the appropriate edgelist files
-    n_vert=ncol(surf_data)
-    if(n_vert==20484)  {
+  } else
+  {
+    if (inherits(model,"character")==TRUE) 
+    {
+      if(length(unique(model))==2)
+      {
+        message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+        
+        recode=rep(0,NROW(model))
+        recode[model==unique(model)[2]]=1
+        model=recode
+        model=model
+      } else if(length(unique(model))>2)    {stop(paste("The categorical variable '",colnames(model),"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
+    }      
+  }
+  
+  #make internal invironment to save edgelist
+  edgelistenv <- new.env()
+  
+  #check if surf_data is a multiple-rows matrix and NOT a vector
+  if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
+  {stop("The surface data must be a matrix containing multiple participants (rows).")}
+  
+  #check length of surface data and load the appropriate edgelist files
+  n_vert=ncol(surf_data)
+  if(n_vert==20484)  {
     edgelist <- get('edgelistfs5')
     assign("edgelist", edgelist, envir = edgelistenv)
-    }
-    else if (n_vert==81924)  {
+  }
+  else if (n_vert==81924)  {
     edgelist <- get('edgelistfs6')
     assign("edgelist", edgelist, envir = edgelistenv)
-    }
-    else if (n_vert==14524)  {
+  }
+  else if (n_vert==14524)  {
     edgelist <- get('edgelistHIP')
     assign("edgelist", edgelist, envir = edgelistenv)
-    }
-    else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
-    
-    #check for collinearity
-    if(NCOL(model)>1)
+  }
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
+  
+  #check for collinearity
+  if(NCOL(model)>1)
+  {
+    cormat=cor(model,use = "pairwise.complete.obs")
+    cormat.0=cormat
+    cormat.0[cormat.0==1]=NA
+    if(max(abs(cormat.0),na.rm = TRUE) >0.5)
     {
-      cormat=cor(model,use = "pairwise.complete.obs")
-      cormat.0=cormat
-      cormat.0[cormat.0==1]=NA
-      if(max(abs(cormat.0),na.rm = TRUE) >0.5)
-      {
-        warning(paste("correlations among variables in model are observed to be as high as ",round(max(abs(cormat.0),na.rm = TRUE),2),", suggesting potential collinearity among predictors.\nAnalysis will continue...\n",sep=""))
-      }
+      warning(paste("correlations among variables in model are observed to be as high as ",round(max(abs(cormat.0),na.rm = TRUE),2),", suggesting potential collinearity among predictors.\nAnalysis will continue...\n",sep=""))
     }
-    
+  }
+  
   ##smoothing
   n_vert=NCOL(surf_data)
   if(missing("smooth_FWHM"))
@@ -315,7 +315,18 @@ TFCE=function(data,tail=tail)
       temp_data[temp_data < score_threshs[thresh.no]] = 0
       if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
       {
-        clust.dat=getClusters(temp_data)
+        if (thresh.no>1)
+        {
+          if(length(clust.dat[[3]])<3)
+          {
+            clust.dat[[3]]=matrix(clust.dat[[3]],ncol = 2)
+          }
+          clust.dat=getClusters(temp_data,clust.dat[[3]])
+        } else
+        {
+          clust.dat=getClusters(temp_data,edgelist)  
+        }
+        
         if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
         {
           non_zero_inds = which(clust.dat[[1]] >0)
@@ -324,10 +335,11 @@ TFCE=function(data,tail=tail)
           tfce_step_values = rep(0, length(clust.dat[[1]]))
           tfce_step_values[non_zero_inds] = cluster_tfces[labeled_non_zero]
           tfce[non_zero_inds]=tfce_step_values[non_zero_inds]+tfce[non_zero_inds] #cumulatively add up all TFCE values at each vertex
-          remove(clust.dat,non_zero_inds,cluster_tfces,tfce_step_values, labeled_non_zero)
+          remove(non_zero_inds,cluster_tfces,tfce_step_values, labeled_non_zero)
         }
       }
     }
+    remove(clust.dat)
     #combine results from positive and negative tails if necessary 
     if(sign.idx==1){tfce_step_values.all=tfce}
     else if (sign.idx==2){tfce_step_values.all=tfce_step_values.all+tfce}
@@ -394,7 +406,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir)
         temp_data[temp_data < score_threshs[thresh.no]] = 0
         if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
         {
-          clust.dat=getClusters(temp_data)
+          clust.dat=getClusters(temp_data,edgelist)
           if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
           {
             non_zero_inds = which(clust.dat[[1]] >0)
@@ -523,18 +535,18 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
     if(length(which(pos.t_stat.thresholdedP!=0))>1) #skip if no clusters detected
     {
       
-      pos.clusters0=with_env(getClusters)(pos.t_stat.thresholdedP) ## 1st getClusters() to identify all clusters with no. vertices > 1
+      pos.clusters0=with_env(getClusters)(pos.t_stat.thresholdedP,edgelist) ## 1st getClusters() to identify all clusters with no. vertices > 1
       #applying k thresholding
       pos.clustID.remove=which(pos.clusters0[[2]]<k)
       pos.clusters0[[1]][which(!is.na(match(pos.clusters0[[1]],pos.clustID.remove)))]=NA
       
       #generating mask
-      pos.clusters=with_env(getClusters)(pos.clusters0[[1]]) ## 2nd getClusters() to identify all clusters from the k-thresholded clustermap
+      pos.clusters=with_env(getClusters)(pos.clusters0[[1]],edgelist) ## 2nd getClusters() to identify all clusters from the k-thresholded clustermap
       pos.clusters[[1]][is.na(pos.clusters[[1]])]=0
       pos.mask=rep(0,n_vert)
       ROImap[[1]][, atlas]
       ROImap=list(data.matrix(ROImap[[1]]),ROImap[[2]])
-
+      
       #results table
       pos.clustermap=rep(NA,n_vert)
       
@@ -591,13 +603,13 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
     
     if(length(which(neg.t_stat.thresholdedP!=0))>1) #skip if no clusters detected
     {
-      neg.clusters0=with_env(getClusters)(neg.t_stat.thresholdedP) ## 1st getCluster() to identify all clusters with no. vertices > 1
+      neg.clusters0=with_env(getClusters)(neg.t_stat.thresholdedP,edgelist) ## 1st getCluster() to identify all clusters with no. vertices > 1
       #applying k thresholding
       neg.clustID.remove=which(neg.clusters0[[2]]<k)
       neg.clusters0[[1]][which(!is.na(match(neg.clusters0[[1]],neg.clustID.remove)))]=NA
       
       #generating mask
-      neg.clusters=with_env(getClusters)(neg.clusters0[[1]]) ## 2nd getCluster() to identify all clusters from the k-thresholded clustermap
+      neg.clusters=with_env(getClusters)(neg.clusters0[[1]],edgelist) ## 2nd getCluster() to identify all clusters from the k-thresholded clustermap
       neg.clusters[[1]][is.na(neg.clusters[[1]])]=0
       neg.mask=rep(0,n_vert)
       
