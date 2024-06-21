@@ -214,7 +214,7 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   message("Estimating unpermuted TFCE image...")
   
   tmap.orig=extract.t(mod,colno+1)
-  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv))
+  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv, edgelist=edgelist))
   remove(mod)
   
   end=Sys.time()
@@ -264,7 +264,8 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
       
       . <- model.permuted <- NULL #visible binding needed if commented out 
       remove(mod.permuted,model.permuted)
-      return(max(abs(suppressWarnings(TFCE(data = tmap,tail = tail)))))
+      return(max(abs(suppressWarnings(TFCE(data = tmap,tail = tail,
+                                           edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
@@ -282,8 +283,9 @@ TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
 
 ##TFCE single core— for estimating permuted TFCE statistics
 ##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
-TFCE=function(data,tail=tail)
+TFCE=function(data,tail=tail,edgelist)
 {
+  
   #selecting tail type
   if (tail==2) 
   {
@@ -352,8 +354,9 @@ TFCE=function(data,tail=tail)
 
 ##TFCE multicore— for estimating unpermuted TFCE statistics
 ##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
-TFCE.multicore=function(data,tail=tail,nthread,envir)
+TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 {
+  
   #selecting tail type
   if (tail==2) 
   {

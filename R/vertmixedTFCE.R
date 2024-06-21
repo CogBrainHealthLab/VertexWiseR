@@ -221,7 +221,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   tmap.orig[inc.vert.idx]=as.numeric(model.fit$t)  
   
   TFCE.multicore = utils::getFromNamespace("TFCE.multicore", "VertexWiseR")
-  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2), envir=edgelistenv) #divide by 2 because more threads made things slower
+  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2), envir=edgelistenv, edgelist=edgelist) #divide by 2 because more threads made things slower
   
   end=Sys.time()
   
@@ -275,7 +275,8 @@ If it is your random variable and it is non-binarizable, do not include it in th
       tmap.perm=rep(0,n_vert)
       tmap.perm[inc.vert.idx]=as.numeric(model.fit$t)  
         
-      return(max(abs(suppressWarnings(TFCE(data = tmap.perm,tail = tail)))))
+      return(max(abs(suppressWarnings(TFCE(data = tmap.perm,tail = tail,
+                                           edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
