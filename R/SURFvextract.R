@@ -16,7 +16,7 @@
 #' filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5", 
 #' measure="curv") 
 #' @importFrom freesurferformats read.fs.mgh
-#' @importFrom utils read.delim
+#' @importFrom utils read.delim write.table
 #' @export
 
 SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 'thickness', subj_ID = TRUE) 
