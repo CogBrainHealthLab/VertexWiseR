@@ -842,7 +842,11 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {
     prompt = utils::menu(c("Yes", "No"), title="Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
-    if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} 
+    if (prompt==1)
+    {	    ##by default the latest numpy, which is incompatible, will be installed and then uninstalled, before an older version is installed. Specifying numpy==1.26.4 will skip these steps and shorten the installation process
+	    reticulate::py_install("numpy==1.26.4",pip=TRUE) 
+	    reticulate::py_install("brainstat",pip=TRUE)
+    } 
     else {
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
