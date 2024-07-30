@@ -513,6 +513,7 @@ fs6_to_fs5=function(surf_data)
 #' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
 #' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
 #' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
+#' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns Outputs the plot as a .png image
@@ -523,9 +524,11 @@ fs6_to_fs5=function(surf_data)
 #' VWR_check=FALSE)
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
+#' @importFrom png readPNG
+#' @importFrom grid grid.raster
 #' @export
 
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, VWR_check=TRUE)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, show.plot.window=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -647,6 +650,11 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   }
   #output plot as a .png image
   surf_plot$screenshot(filename=filename,transparent_bg = FALSE)
+  if(show.plot.window==T)
+	{
+		img=png::readPNG(source =filename)
+	  grid::grid.raster(img)
+	}
 }
 ############################################################################################################################
 ############################################################################################################################
