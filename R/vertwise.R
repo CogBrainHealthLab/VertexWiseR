@@ -31,7 +31,7 @@
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
 #'
-#'vertexwise_model=vertex_analysis(model=demodata[,c(2,7)], 
+#'vertexwise_model=RFT_vertex_analysis(model=demodata[,c(2,7)], 
 #'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
 #'VWR_check=FALSE)
 #' 
@@ -41,7 +41,7 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   
   #Check required python dependencies. If files missing:

@@ -83,7 +83,7 @@ threshold; default p is set to 0.05. The atlas with which to label the significa
 The second line displays the results.
 
 ``` r
-results=vertex_analysis(model = all_pred, contrast =all_pred$age, surf_data = SPRENG_CTv, atlas = 1)
+results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$age, surf_data = SPRENG_CTv, atlas = 1)
 print(results$cluster_level_results)
 ```
 
