@@ -10,12 +10,12 @@ VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hi
 VertexWiseR can be installed and loaded using the following code in R:
 
 ``` r 
-install.packages("devtools")
-devtools::install_github("CogBrainHealthLab/VertexWiseR")
+install.packages('VertexWiseR')
 library(VertexWiseR)
 
-##not yet available on CRAN at the moment
-    #install.packages('VertexWiseR')
+##Alternatively
+#install.packages("devtools")
+#devtools::install_github("CogBrainHealthLab/VertexWiseR")
 ``` 
 
 VertexWiseR imports and makes use of the R package `reticulate`. `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the `brainstat` python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
