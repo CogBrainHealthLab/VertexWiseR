@@ -18,11 +18,11 @@ RFT_vertex_analysis(
 \arguments{
 \item{model}{An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model. This data.frame should not include the random effects variable.}
 
-\item{contrast}{A numeric vector or object containing the values of the predictor of interest. The cluster-thresholded t-stat maps will be estimated only for this predictor}
+\item{contrast}{A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The cluster-thresholded t-stat maps will be estimated only for this predictor.}
 
-\item{random}{An object containing the values of the random variable (optional)}
+\item{random}{A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (and can be a single column from model).}
 
-\item{surf_data}{A matrix object containing the surface data, see SURFvextract() or HIPvextract() output format.}
+\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
 
 \item{p}{A numeric object specifying the p-value to threshold the results (Default is 0.05)}
 

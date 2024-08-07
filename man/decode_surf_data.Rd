@@ -7,7 +7,7 @@
 decode_surf_data(surf_data, contrast = "positive", VWR_check = TRUE)
 }
 \arguments{
-\item{surf_data}{a numeric vector with a length of 20484}
+\item{surf_data}{A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix).}
 
 \item{contrast}{A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')}
 
@@ -17,7 +17,7 @@ decode_surf_data(surf_data, contrast = "positive", VWR_check = TRUE)
 A data.frame object listing the keywords and their Pearson's R values
 }
 \description{
-Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
+Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words. Decoding currently works with surfaces in fsaverage5 space only."
 }
 \details{
 The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.

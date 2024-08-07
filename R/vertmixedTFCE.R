@@ -10,9 +10,9 @@
 #' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}. 
 #' 
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model.This data.frame should not include the random effects variable.
-#' @param contrast A numeric vector or object containing the values of the predictor of interest. The t-stat and TFCE maps will be estimated only for this predictor
-#' @param surf_data A matrix object containing the surface data, see SURFvextract() or HIPvextract()  output format. 
-#' @param random An object or vector containing the values of the random variable 
+#' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param random A N x 1 numeric vector or object containing the values of the random variable. Its length should equal the number of subjects in model (and can be a single column from model). 
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 

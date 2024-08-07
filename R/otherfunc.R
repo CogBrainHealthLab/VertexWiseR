@@ -106,7 +106,7 @@
 #'
 #' @description Smooths surface data at defined full width at half maximum (FWHM) as per the corresponding template of surface data
 #'
-#' @param surf_data A matrix object containing the surface data, see SURFvextract() or HIPvextract() output format
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -241,7 +241,7 @@ getClusters=function(surf_data,edgelist)
 #' 
 #' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
-#' @param surf_data A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
@@ -427,7 +427,7 @@ atlas_to_surf=function(parcel_data, template)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage5 space to fsaverage6 space using the nearest neighbor approach 
 #'
-#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices)  space. See also SURFvextract() output format. 
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage6 space
 #' @seealso \code{\link{fs6_to_fs5}}
@@ -456,7 +456,7 @@ fs5_to_fs6=function(surf_data)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage6 space to fsaverage5 space using the nearest neighbor approach
 #'
-#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
+#' @param A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage6 (81924 vertices) space. See also SURFvextract() output format.  
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage5 space
 #' @seealso \code{\link{fs5_to_fs6}}
@@ -663,7 +663,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
 #'
 #' @description Converts surface data to volumetric data (.nii file)
 #'
-#' @param surf_data A vector object containing the surface data, either in fsaverage5 or fsaverage6 space. It can only be one row of vertices (no cohort surface data matrix). 
+#' @param surf_data A numeric vector or object containing the surface data, either in fsaverage5 (1 x 20484 vertices) or fsaverage6 (1 x 81924 vertices) space. It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii' in the R temporary directory (tempdir())).
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -712,11 +712,11 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
 ############################################################################################################################
 #' @title Decode surface data
 #'
-#' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
+#' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words. Decoding currently works with surfaces in fsaverage5 space only."
 #'
 #' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.
 #'
-#' @param surf_data a numeric vector with a length of 20484
+#' @param surf_data A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -952,7 +952,10 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   if ((requirement=="any" | requirement=='neurosynth')==TRUE 
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
   {
-      prompt = utils::menu(c("Yes", "No"), title="\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n Do you want the neurosynth database (7.5 MB) to be downloaded now?")
+      prompt = utils::menu(c("Yes", "No"), title=paste0(
+        "\nneurosynth_dataset.pkl is not detected inside VertexWiseR's installed package directory (", 
+        system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'), 
+        "). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n\nDo you want the neurosynth database (7.5 MB) to be downloaded now?"))
         if (prompt==1) {
           
           #function to check if url exists

@@ -7,7 +7,7 @@
 fs6_to_fs5(surf_data)
 }
 \arguments{
-\item{surf_data}{A numeric vector or matrix object containing the surface data, see SURFvextract() output format.}
+\item{A}{N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage6 (81924 vertices) space. See also SURFvextract() output format.}
 }
 \value{
 A matrix object containing vertex-wise surface data mapped in fsaverage5 space
