@@ -829,27 +829,72 @@ VWRfirstrun=function(requirement="any", n_vert=0)
   if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
   {requirement='yeo_parcels'} 
   
-  
+# If custom installation paths have been defined by the user, source
+# them from their define directory:
+Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+
+#default time limit to download is 60s which can be too short:
+options(timeout=500); #set to 500s instead
+
 if (interactive()==TRUE) { #can only run interactively as it requires user's action
   
+  ##################################################################
   #check if miniconda (or suitable python environment) is installed
-  #numpy being a dependency in both, this checks if either is present
-  if (!reticulate::py_module_available("numpy"))
+  #conda_env is a default package 
+  if (!reticulate::py_module_available("conda_env"))
   {
     prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
                            "Yes, install Python (if Miniconda could not be installed)", 
                            "No"), 
                          title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?")
     
-    if (prompt==1) {reticulate::install_miniconda()}
+    if (prompt==1) 
+    {
+      defaultpath=reticulate:::miniconda_path_default()
+      
+      #give the choices to specify path
+      choice = utils::menu(c("Default", "Custom"), 
+                           title=paste0("Miniconda's default installation path is ", defaultpath,". Type \"Default\" if you want to install Miniconda in the default Path. \nYou can, alternatively, type the path (note that the Miniconda installer does not support paths containing spaces)."))
+        
+        if (choice==1) {
+          reticulate::install_miniconda()}
+      
+        else {
+        userpath <- readline("Enter your custom path:")
+        
+        #will store path in .Renviron in tools::R_user_dir() 
+        #location specified by CRAN, create it if not existing:
+        envpath=tools::R_user_dir(package='VertexWiseR')
+        if (!dir.exists(envpath)) {dir.create(envpath) }
+        #make .Renviron file there and set conda/python paths:
+        renviron_path <- file.path(envpath, ".Renviron")
+        env_vars <- c(
+          paste0("RETICULATE_PYTHON=",paste0('"',userpath,'python.exe"')),
+          paste0("RETICULATE_MINICONDA_PATH=",paste0('"', userpath, '"')))
+        # Write to the .Renviron file
+        cat(paste(env_vars, collapse = "\n"), file = renviron_path, 
+            sep = "\n", append = TRUE)
+        #now everytime VWRfirstrun() is called, the .Renviron file is read and the custom path accessed:
+        readRenviron(renviron_path)
+        message(paste0("FYI, your custom path has been saved in ", 
+                       renviron_path))
+        
+        #Install miniconda in the new path
+        message('Installing miniconda ...')
+        reticulate::install_miniconda() #uses miniconda_path()
+        }
+      
+  }
     else if (prompt==2) {reticulate::install_python()}
     else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
   } 
   
-  #check if brainstat is installed
+  ##################################################################
+  ###check if brainstat is installed
   if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
   {
-    prompt = utils::menu(c("Yes", "No"), title="Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
+    prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed within your Python library with it.")
     if (prompt==1)
     {	
 	    reticulate::py_install("brainstat",pip=TRUE)
@@ -858,6 +903,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
   
+  ##################################################################
   #check if brainstat fsaverage/parcellation templates are installed (stops only if function needs it)
   if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
