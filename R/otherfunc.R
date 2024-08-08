@@ -851,7 +851,20 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
     
     if (prompt==1) 
     {
-      defaultpath=reticulate:::miniconda_path_default()
+      
+      
+      #define default path 
+      #mimicking reticulate's non-exported miniconda_path_default()
+      if (.Platform$OS.type == "mac") {
+        # on macOS, different path for arm64 miniconda
+        if (Sys.info()[["machine"]] == "arm64") {defaultpath="~/Library/r-miniconda-arm64"} else {defaultpath="~/Library/r-miniconda"}
+        } else {
+      # otherwise, use rappdirs default
+      root <- normalizePath(rappdirs::user_data_dir(), winslash = "/",
+                            mustWork = FALSE); 
+      defaultpath=file.path(root, "r-miniconda")}
+      
+      
       
       #give the choices to specify path
       choice = utils::menu(c("Default", "Custom"), 
