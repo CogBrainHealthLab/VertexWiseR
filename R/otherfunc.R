@@ -814,6 +814,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #' @importFrom fs path_home
 #' @importFrom methods is 
 #' @importFrom utils menu
+#' @importFrom rappdirs user_data_dir
 #' @export
 
 VWRfirstrun=function(requirement="any", n_vert=0) 
