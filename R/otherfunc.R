@@ -896,12 +896,35 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
         #Install miniconda in the new path
         message('Installing miniconda ...')
         reticulate::install_miniconda() #uses miniconda_path()
+        reticulate::py_install("numpy==1.26.4") 
+        #posterior numpy versions break python functions
         }
       
   }
-    else if (prompt==2) {reticulate::install_python()}
+    else if (prompt==2) {
+      reticulate::install_python()
+      reticulate::py_install("numpy==1.26.4")
+      #posterior numpy versions break python functions
+      }
     else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
   } 
+  
+  
+  
+  ##################################################################
+  ###check if correct numpy version is installed in Python
+  #if numpy is installed
+  if(reticulate::py_module_available("numpy")==TRUE)
+  { 
+  #check numpy version
+    numpyv=listpackages$version[which(listpackages$package=="numpy")] 
+    #warn to install 1.26.2 if current version is superior  
+    numpyv=gsub("\\.", "", numpyv);
+    if (as.numeric(numpyv)/(10 ^ (nchar(numpyv) - 1)) > 1.264)
+    { 
+     warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package. Run 'reticulate::py_install(\"numpy==1.26.4\")' to fix it.")
+    }
+   }
   
   ##################################################################
   ###check if brainstat is installed
