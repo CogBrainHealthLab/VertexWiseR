@@ -519,8 +519,10 @@ fs6_to_fs5=function(surf_data)
 #' @returns Outputs the plot as a .png image
 #' @examples
 #' results = runif(20484,min=0, max=1);
-#' plot_surf(surf_data = results, filename=paste0(tempdir(),"/output.png"),title = 
-#' 'Cortical thickness', surface = 'inflated', cmap = 'Blues',
+#' plot_surf(surf_data = results, 
+#' filename=paste0(tempdir(),"/output.png"),
+#' title = 'Cortical thickness', 
+#' surface = 'inflated', cmap = 'Blues',
 #' VWR_check=FALSE)
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
@@ -807,6 +809,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
 #' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
 #' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
+#' @param promptless A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
 #' VWRfirstrun()
@@ -817,7 +820,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #' @importFrom rappdirs user_data_dir
 #' @export
 
-VWRfirstrun=function(requirement="any", n_vert=0) 
+VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE) 
 {
 #First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
   #are fsaverage5 templates in brainstat_data?
@@ -838,11 +841,11 @@ if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
 #default time limit to download is 60s which can be too short:
 options(timeout=500); #set to 500s instead
 
-if (interactive()==TRUE) { #can only run interactively as it requires user's action
+if (interactive()==TRUE & promptless==FALSE) { 
+  #can only run interactively as it requires user's action
   
   ##################################################################
   #check if miniconda (or suitable python environment) is installed
-  #conda_env is a default package 
   if(is.null(reticulate::py_discover_config()) |
      is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
   {
@@ -1065,37 +1068,95 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   }
   
 } 
-else if (exists("VWR_check")) 
-#If the session is non-interactive and any required file is missing, the script will stop and require the user to run VWR interactively.
-#non-interactive checks only work when VWRfirstrun() is called by another function (with VWR_check argument given), not on its own.
+
+#############################################################
+#If the session is non-interactive and any required file is missing, the script will stop and require the user to run VWRfirstrun() interactively.
+#non-interactive checks proceed when VWRfirstrun() is called by a function with the argument VWR_check defined.
+
+#If the session is interactive but has the promptless option set as TRUE, the same checks will be run to inform of what is missing while not prompting for any action from the user.
+
+else if (exists("VWR_check") | 
+         (interactive()==TRUE & promptless==TRUE)) 
 { 
-  #creates the following object to warn upper functions that it's a non-interactive session when files are missing
-  non_interactive="System requirements are missing. VWRfirstrun() can only be run in an interactive R session to check for the missing system requirements and to install them.";
-  
-  #miniconda missing?
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
-  {return(non_interactive)} 
+  #creates the 'non_interactive' message to inform upper functions that the non-interactive session cannot proceed when files are missing
+  non_interactive="Run VWRfirstrun() in an interactive R session to check for the missing system requirements and to install them."
+    
+  #miniconda or python missing?
+  if(is.null(reticulate::py_discover_config()) |
+     is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
+  {
+    missingobj="Miniconda or a suitable version of Python for reticulate could not be found in the environment.\n"
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+      return(non_interactive)
+    } else {message(missingobj)}
+  } 
   
   #brainstat missing
   if (!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
-  {return(non_interactive)}
+  {
+    missingobj="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work.\n";
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+      return(non_interactive)
+    } else {message(missingobj)}
+  } 
+  
   
   #fsaverage5 missing
   if ((requirement=="any" | requirement=='fsaverage5')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
-  {return(non_interactive)}
+  {
+    missingobj="VertexWiseR could not find brainstat fsaverage5 templates in the brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage5 space.\n";
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+      return(non_interactive)
+    } else {message(missingobj)}
+  } 
   
   #fsaverage6 missing
   if ((requirement=="any" | requirement=='fsaverage6')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
-  {return(non_interactive)}
+  {
+    missingobj="VertexWiseR could not find brainstat fsaverage6 templates in the brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage6 space.\n";
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+    return(non_interactive)
+    } else {message(missingobj)}
+  } 
+  
   
   #yeo parcels missing
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
-  {return(non_interactive)}
+  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
+      & !file.exists(paste0(fs::path_home(),
+                          '/brainstat_data/parcellation_data/'))) 
+  {
+    missingobj="VertexWiseR could not find brainstat yeo parcellation data in the brainstat_data/ directory. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.\n";
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+    return(non_interactive)
+    } else {message(missingobj)}
+  } 
   
   #neurosynth data missing
   if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
-  {return(non_interactive)}
-      
+  {
+    missingobj=paste0("neurosynth_dataset.pkl is not detected inside VertexWiseR's installed package directory (", system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'), "). It is needed to be able to run decode_surf_data().\n");
+    
+    if (interactive()==FALSE)
+    { non_interactive=paste0(missingobj,non_interactive)
+    return(non_interactive)
+    } else {message(missingobj)}
+  } 
+  
+  #If nothing is missing, missingobj will not have been created
+  #thus allowing the function to inform that no (specified) requirements are missing
+  if (promptless==TRUE) { if(!exists('missingobj'))
+  { message('No system requirements are missing. \u2713') }}
+  
 }
 
 }
