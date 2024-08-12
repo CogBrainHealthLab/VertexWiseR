@@ -843,14 +843,15 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   ##################################################################
   #check if miniconda (or suitable python environment) is installed
   #conda_env is a default package 
-  if (!reticulate::py_module_available("conda_env"))
+  if(is.null(reticulate::py_discover_config()) |
+     is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
   {
     prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
                            "Yes, install Python (if Miniconda could not be installed)", 
                            "No"), 
                          title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?")
     
-    if (prompt==1) 
+    if (prompt==1) #Install Miniconda
     {
       
       
@@ -869,13 +870,14 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
       
       #give the choices to specify path
       choice = utils::menu(c("Default", "Custom"), 
-                           title=paste0("Miniconda's default installation path is ", defaultpath,". Type \"Default\" if you want to install Miniconda in the default Path. \nYou can, alternatively, type the path (note that the Miniconda installer does not support paths containing spaces)."))
+                           title=paste0("Miniconda's default installation path is ", defaultpath,". Type \"1\" or \"Default\" if you want to install Miniconda in the default Path. \nYou can, alternatively, type your own path (note that the Miniconda installer does not support paths containing spaces)."))
         
-        if (choice==1) {
-          reticulate::install_miniconda()}
+        if (choice==1) #Install Miniconda within default path
+          { reticulate::install_miniconda()}
       
-        else {
-        userpath <- readline("Enter your custom path:")
+        else {        #Install Miniconda within custom path
+        
+        userpath <- readline("Enter the full path:")
         
         #will store path in .Renviron in tools::R_user_dir() 
         #location specified by CRAN, create it if not existing:
@@ -884,57 +886,100 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
         #make .Renviron file there and set conda/python paths:
         renviron_path <- file.path(envpath, ".Renviron")
         env_vars <- c(
-          paste0("RETICULATE_PYTHON=",paste0('"',userpath,'python.exe"')),
-          paste0("RETICULATE_MINICONDA_PATH=",paste0('"', userpath, '"')))
+          paste0('RETICULATE_PYTHON="',userpath,'python.exe"'),
+          paste0('RETICULATE_MINICONDA_PATH="',userpath,'"'))
         # Write to the .Renviron file
         cat(paste(env_vars, collapse = "\n"), file = renviron_path, 
             sep = "\n", append = TRUE)
-        #now everytime VWRfirstrun() is called, the .Renviron file is read and the custom path accessed:
+        #now everytime VWRfirstrun() is called, the .Renviron file 
+        #is read and the custom path accessed:
         readRenviron(renviron_path)
         message(paste0("FYI, your custom path has been saved in ", 
                        renviron_path))
         
         #Install miniconda in the new path
         message('Installing miniconda ...')
-        reticulate::install_miniconda() #uses miniconda_path()
+        reticulate::install_miniconda() #uses miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
         reticulate::py_install("numpy==1.26.4") 
         #posterior numpy versions break python functions
         }
       
   }
-    else if (prompt==2) {
-      reticulate::install_python()
-      reticulate::py_install("numpy==1.26.4")
+    else if (prompt==2) #Install Python instead of Miniconda
+    { 
+    
+      #give the choices to specify path
+      choice = utils::menu(c("Default", "Custom"), 
+                           title=paste0("Reticulate's Python default installation is done within 'r-reticulate' in your OS libraries, via install_python(). Type \"1\" or \"Default\" if you want the default installation. \nYou can, alternatively, specify the path where Python will be installed."))
+      
+      if (choice==1) #Install Python within default path
+        {reticulate::install_python()}
+      
+      else {        #Install Python within custom path
+      
+      userpath <- readline("Enter the full path:")
+      
+      message(paste('Installing Python in',userpath,'...\n'))
+      
+      python_custominstall(userpath)
+      
+      #Read new python enviroment
+      Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+      if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+      
+      message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
+      system('pip install numpy==1.26.4') #pip instead of install_py as it will use a virtual environment
       #posterior numpy versions break python functions
       }
-    else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
+  }
+  else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
   } 
   
   
   
   ##################################################################
-  ###check if correct numpy version is installed in Python
-  #if numpy is installed
-  if(reticulate::py_module_available("numpy")==TRUE)
+  ###if Python installation can be found by reticulate, check numpy version
+  if(!is.null(reticulate::py_discover_config()) |
+     !is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
   { 
-  #check numpy version
+    
+    # check if numpy is in the default python environment
+    listpackages=reticulate::py_list_packages()
+    #check numpy version
     numpyv=listpackages$version[which(listpackages$package=="numpy")] 
-    #warn to install 1.26.2 if current version is superior  
-    numpyv=gsub("\\.", "", numpyv);
-    if (as.numeric(numpyv)/(10 ^ (nchar(numpyv) - 1)) > 1.264)
-    { 
-     warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package. Run 'reticulate::py_install(\"numpy==1.26.4\")' to fix it.")
+    
+    if (length(numpyv) > 0) #if numpy exists at all 
+    {
+        #warn to install 1.26.2 if current version is superior  
+        numpyv=gsub("\\.", "", numpyv);
+        
+        if (as.numeric(numpyv)/(10 ^ (nchar(numpyv) - 1)) > 1.264)
+        { 
+         warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package.")
+        }
     }
    }
   
   ##################################################################
   ###check if brainstat is installed
-  if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
+    
+  #check everywhere brainstat could be installed
+  if( !reticulate::py_module_available("brainstat") 
+      & requirement!="miniconda only") 
   {
-    prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed within your Python library with it.")
+    prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
     if (prompt==1)
     {	
-	    reticulate::py_install("brainstat",pip=TRUE)
+      
+      #if miniconda exists, use reticulate to install
+      if (tryCatch(file.exists(reticulate::conda_binary()), error = function(e) FALSE)) {
+        reticulate::py_install("brainstat",pip=TRUE) 
+      }
+      else { #if only Python, install via pip
+        system('pip install brainstat') 
+        #install_py would use make virtual environment
+      }
+      
     } 
     else {
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
@@ -945,7 +990,7 @@ if (interactive()==TRUE) { #can only run interactively as it requires user's act
   if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
       & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {     
-    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
+    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $HOME/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
     if (prompt==1){    
       brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
       brainstat.datasets.base$fetch_template_surface("fsaverage5")
