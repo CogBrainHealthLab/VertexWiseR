@@ -145,4 +145,8 @@ fallback <- paste0('RETICULATE_PYTHON_FALLBACK="',pythonpath,'"')
 cat(paste(fallback, collapse = "\n"), file = renviron_path, 
     sep = "\n", append = TRUE)
 
+
+message(paste0("Your custom Python path is set in ", 
+               renviron_path))
+
 }
