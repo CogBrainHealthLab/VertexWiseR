@@ -30,9 +30,11 @@ if (.Platform$OS.type=='windows')
              ignore.stdout = TRUE, ignore.stderr = TRUE)
     }
   
+    oldwd <- getwd()
+    on.exit(setwd(oldwd)) #will restore user's working directory path on function break
+    
     # ensure up-to-date
-    owd <- setwd(root);
-    on.exit(setwd(owd), add = TRUE);
+    setwd(root)
     system("git pull", ignore.stdout = TRUE)
     
     # path to pyenv binary
