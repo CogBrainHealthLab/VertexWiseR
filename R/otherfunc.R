@@ -903,7 +903,7 @@ if (interactive()==TRUE & promptless==FALSE) {
         #Install miniconda in the new path
         message('Installing miniconda ...')
         reticulate::install_miniconda() #uses miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
-        reticulate::py_install("numpy==1.26.4") 
+        reticulate::py_install("numpy==1.26.4", pip=TRUE) 
         #posterior numpy versions break python functions
         }
       
