@@ -204,17 +204,36 @@ If it is your random variable and it is non-binarizable, do not include it in th
   #preparing mask for model
   inc.vert.idx=which(colSums(surf_data) != 0)
   
+
   #construct model
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
   brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
-  brainstat.stats.SLM=reticulate::import("brainstat.stats.SLM", delay_load = TRUE)
   terms=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
+  #read version of SLM that allows to specify the directory for the
+  #fetch_template_surface option
+  reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   
-  model.fit=brainstat.stats.SLM$SLM(model = terms,contrast=contrast,correction="None",cluster_threshold=1)
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  model.fit=SLM(model = terms,
+                contrast=contrast,
+                correction="None",
+                cluster_threshold=1, 
+                data_dir=data_dir)
+  
+  #fit will fetch parcellation data in a different place
+  model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
   
   #fit model
-  model.fit$fit(surf_data[,inc.vert.idx])
+  SLM$fit(model.fit,surf_data[,inc.vert.idx])
   
   #compute unpermuted TFCE stats
   tmap.orig=rep(0,n_vert)
@@ -265,12 +284,32 @@ If it is your random variable and it is non-binarizable, do not include it in th
     {
       #load python libraries within each foreach loop
       brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
-      brainstat.stats.SLM=reticulate::import("brainstat.stats.SLM", delay_load = TRUE)
+      #read version of SLM that allows to specify the directory for the
+      #fetch_template_surface option
+      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+      
+      #Brainstat data, will either be stored in default $HOME path or 
+      #custom if it's been set via VWRfirstrun()
+      if (Sys.getenv('BRAINSTAT_DATA')=="")
+      {brainstat_data_path=fs::path_home()} else if 
+      (!Sys.getenv('BRAINSTAT_DATA')=="") 
+      {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+      #convert path to pathlib object for brainstat
+      data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
       
       ##fit permuted models
       terms=brainstat.stats.terms$MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
-      model.fit=brainstat.stats.SLM$SLM(model = terms,contrast=contrast,correction="None",cluster_threshold=1)
-      model.fit$fit(surf_data[permseq[,perm],inc.vert.idx])
+      model.fit=SLM(model = terms,
+                    contrast=contrast,
+                    correction="None",
+                    cluster_threshold=1, 
+                    data_dir=data_dir)
+      
+      #fit will fetch parcellation data in a different place
+      model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
+      
+      #fit model
+      SLM$fit(model.fit,surf_data[permseq[,perm],inc.vert.idx])
       
       tmap.perm=rep(0,n_vert)
       tmap.perm[inc.vert.idx]=as.numeric(model.fit$t)  

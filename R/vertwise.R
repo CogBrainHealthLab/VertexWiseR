@@ -198,16 +198,36 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
   maskNA=which(colSums(surf_data != 0) == 0)
   mask[which(colSums(surf_data != 0) == 0)]=FALSE
   
-  #fit model
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  #define model to fit
   if(missing("random")) {model0=brainstat.stats$terms$FixedEffect(model, "_check_categorical" = FALSE)}
   else {model0=brainstat.stats$terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
-  model=brainstat.stats$SLM$SLM(model = model0,
-                                contrast=contrast,
-                                surf = template,
-                                mask=mask,
-                                correction=c("fdr", "rft"),
-                                cluster_threshold=p)
-  model$fit(surf_data)
+  
+  #read version of SLM that allows to specify the directory for the
+  #fetch_template_surface option
+  reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+  
+  model=SLM(model = model0,
+            contrast=contrast,
+            surf = template,
+            mask=mask,
+            correction=c("fdr", "rft"),
+            cluster_threshold=p,
+            data_dir=data_dir)
+  
+  #fit will fetch parcellation data in a different place
+  model$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
+  
+  #fit model
+  SLM$fit(model,surf_data)
   
   #extracting tstats
   tstat=model$t

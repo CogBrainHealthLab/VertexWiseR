@@ -818,6 +818,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #' @importFrom methods is 
 #' @importFrom utils menu
 #' @importFrom rappdirs user_data_dir
+#' @importFrom tools R_user_dir
 #' @export
 
 VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE) 
@@ -834,7 +835,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   {requirement='yeo_parcels'} 
   
 # If custom installation paths have been defined by the user, source
-# them from their define directory:
+# them from the package directory:
 Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
 if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
 
@@ -845,9 +846,14 @@ if (interactive()==TRUE & promptless==FALSE) {
   #can only run interactively as it requires user's action
   
   ##################################################################
+  ##################################################################
   #check if miniconda (or suitable python environment) is installed
-  if(is.null(reticulate::py_discover_config()) |
-     is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
+  message('Checking for Miniconda or Python environment...')
+  
+  if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
+  {
+  if (is.null(reticulate::py_discover_config()) |
+     is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
   {
     prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
                            "Yes, install Python (if Miniconda could not be installed)", 
@@ -889,15 +895,15 @@ if (interactive()==TRUE & promptless==FALSE) {
         #make .Renviron file there and set conda/python paths:
         renviron_path <- file.path(envpath, ".Renviron")
         env_vars <- c(
-          paste0('RETICULATE_PYTHON="',userpath,'python.exe"'),
+          paste0('RETICULATE_PYTHON="',userpath,'/python.exe"'),
           paste0('RETICULATE_MINICONDA_PATH="',userpath,'"'))
         # Write to the .Renviron file
-        cat(paste(env_vars, collapse = "\n"), file = renviron_path, 
-            sep = "\n", append = TRUE)
+        cat(paste(env_vars, "\n", collapse = "\n"), 
+            file = renviron_path, sep = "\n", append = TRUE)
         #now everytime VWRfirstrun() is called, the .Renviron file 
         #is read and the custom path accessed:
         readRenviron(renviron_path)
-        message(paste0("FYI, your custom path has been saved in ", 
+        message(paste0("Your custom Miniconda path is set in ", 
                        renviron_path))
         
         #Install miniconda in the new path
@@ -907,7 +913,7 @@ if (interactive()==TRUE & promptless==FALSE) {
         #posterior numpy versions break python functions
         }
       
-  }
+    }
     else if (prompt==2) #Install Python instead of Miniconda
     { 
     
@@ -936,16 +942,17 @@ if (interactive()==TRUE & promptless==FALSE) {
       }
   }
   else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
-  } 
-  
+
+  }} 
   
   
   ##################################################################
-  ###if Python installation can be found by reticulate, check numpy version
-  if(!is.null(reticulate::py_discover_config()) |
-     !is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
-  { 
-    
+  ##################################################################
+  ###if Python installation could be found by reticulate, check numpy version
+  
+  if(!is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError')
+  {
+    message('Checking Numpy\'s version...')
     # check if numpy is in the default python environment
     listpackages=reticulate::py_list_packages()
     #check numpy version
@@ -963,10 +970,11 @@ if (interactive()==TRUE & promptless==FALSE) {
     }
    }
   
+  #################################################################
   ##################################################################
-  ###check if brainstat is installed
-    
-  #check everywhere brainstat could be installed
+  ###check if BrainStat is installed
+  message('Checking for BrainStat package...')
+  
   if( !reticulate::py_module_available("brainstat") 
       & requirement!="miniconda only") 
   {
@@ -988,43 +996,120 @@ if (interactive()==TRUE & promptless==FALSE) {
       stop('VertexWiseR will not work properly without brainstat.\n\n')}
   } 
   
-  ##################################################################
-  #check if brainstat fsaverage/parcellation templates are installed (stops only if function needs it)
+
+###############################################################################################################################
+  #check if BrainStat fsaverage/parcellation templates are installed (stops only if function needs it)
+  
+  #if no path to BrainStat's data path is defined yet
+  #and no default $HOME/brainstat_data folder exists,
+  #prompt for user to define a path or set default
+  if (Sys.getenv('BRAINSTAT_DATA')=="" & 
+      !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))) 
+  {
+      
+      choice = utils::menu(c("Default", "Custom"), title='By Default, BrainStat stores data required for analyses in $HOME_DIR/brainstat_data/. Alternatively, you may want to specify your own custom path for the BrainStat data. Where do you want BrainStat data to be saved?\n')
+      if (choice==1)  #set path to $HOME_DIR by default
+      {
+        message(paste('The brainstat_data directory will be located in',
+                       fs::path_home()))
+        brainstat_data_path=fs::path_home()
+      }
+      else if (choice==2) #set custom path
+      {
+        brainstat_data_usrpath <- readline("Enter the full path to store Brainstat data:")
+        message(paste('The path to BrainStat data is now',
+                      brainstat_data_usrpath,'.'))
+        dir.create(brainstat_data_usrpath, showWarnings = FALSE)
+        
+        if (!dir.exists(brainstat_data_usrpath))
+        {stop('No directory could be found or created via dir.create()  within the given path. Please try typing it again.')}
+        
+        brainstat_data_path=brainstat_data_usrpath
+      }
+      
+      #Write it in a local .Renviron file 
+      envpath=tools::R_user_dir(package='VertexWiseR')
+      if (!dir.exists(envpath)) {dir.create(envpath) }
+      #make .Renviron file there and set conda/python paths:
+      renviron_path <- file.path(envpath, ".Renviron")
+      env_vars <- paste0('BRAINSTAT_DATA="',brainstat_data_path,'"')
+      # Write to the .Renviron file
+      cat(paste0(env_vars, "\n", collapse = "\n"), 
+          file = renviron_path, sep = "\n", append = TRUE)
+      #now everytime VWRfirstrun() is called, the .Renviron file 
+      #is read and the custom path accessed:
+      readRenviron(renviron_path)
+
+      message(paste0("The path where BrainStat data will be stored is set in ", renviron_path))
+      
+      
+  #if no path set but brainstat_data folder is already here, it stays as default:
+  } else if (Sys.getenv('BRAINSTAT_DATA')=="" & 
+             dir.exists(paste0(fs::path_home(),'/brainstat_data/')))
+  {
+  brainstat_data_path=fs::path_home()
+  } else if (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  #if a path has been set, it is read in the .Renviron local file as BRAINSTAT_DATA variable
+  {
+  brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
+  }
+  
+  
+  #create brainstat_data folder substructure if not already in 
+  #the default or custom path 
+  #(this allows later downloads to be specifically located)
+  dir.create(paste0(brainstat_data_path,'/brainstat_data/'),
+             showWarnings = FALSE)
+  dir.create(paste0(brainstat_data_path, '/brainstat_data/surface_data/'), showWarnings = FALSE)
+  dir.create(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/'), showWarnings = FALSE)
+  
+  
+  #for each required data, it will now check the set path (default or custom) and prompt for download if they are missing
+  message('Checking BrainStat\'s analysis data...')
+  #fsaverage5 data
   if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
+      & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {     
-    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $HOME/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
+    prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fsaverage5 templates in", brainstat_data_path, ". They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?"))
+    
     if (prompt==1){    
       brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-      brainstat.datasets.base$fetch_template_surface("fsaverage5")
+      brainstat.datasets.base$fetch_template_surface(template = "fsaverage5", data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))
+      
     } else if (requirement=='fsaverage5') {
       stop('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')
     } else if (requirement=='any') {
       warning('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
   } 
   
+  #Fsaverage6 data
   if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
+      & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
   { 
-   prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage6 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?")
+   prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fsaverage6 templates in", brainstat_data_path, ".  They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?"))
     
      if (prompt==1)
       { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        brainstat.datasets.base$fetch_template_surface("fsaverage6")
+      brainstat.datasets.base$fetch_template_surface(template = "fsaverage6", data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))
+      
       } else if (requirement=='fsaverage6') { 
         stop('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')
       } else if (requirement=="any") {
         warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
   } 
   
+  #Yeo parcellatio data
   if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
+      & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
   {
-      prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
+      prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's yeo parcellation data in", brainstat_data_path, ". They are fetched by default by BrainStat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?"))
+      
       if (prompt==1){    
         brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=TRUE)}  
-        else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
+        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7, data_dir = paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')), 
+            silent=TRUE)}  
+      
+      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
         {
           stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
         else if (requirement=="any") 
@@ -1033,6 +1118,10 @@ if (interactive()==TRUE & promptless==FALSE) {
         }
   }
   
+  
+  
+#####################################################################
+#####################################################################
   #Check if neurosynth database is present and download
   if ((requirement=="any" | requirement=='neurosynth')==TRUE 
       & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
@@ -1082,8 +1171,10 @@ else if (exists("VWR_check") |
   non_interactive="Run VWRfirstrun() in an interactive R session to check for the missing system requirements and to install them."
     
   #miniconda or python missing?
-  if(is.null(reticulate::py_discover_config()) |
-     is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError')
+  if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
+  {
+  if (is.null(reticulate::py_discover_config()) |
+        is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
   {
     missingobj="Miniconda or a suitable version of Python for reticulate could not be found in the environment.\n"
     
@@ -1091,7 +1182,7 @@ else if (exists("VWR_check") |
     { non_interactive=paste0(missingobj,non_interactive)
       return(non_interactive)
     } else {message(missingobj)}
-  } 
+  }} 
   
   #brainstat missing
   if (!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
@@ -1104,11 +1195,23 @@ else if (exists("VWR_check") |
     } else {message(missingobj)}
   } 
   
+  #For brainstat data, it will look either in default $HOME path or 
+  #custom if it's been set
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  { 
+    brainstat_data_path=fs::path_home()
+  } 
+  else if (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {
+    brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
+  }
+
+  
   
   #fsaverage5 missing
-  if ((requirement=="any" | requirement=='fsaverage5')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
+  if ((requirement=="any" | requirement=='fsaverage5')==TRUE & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
   {
-    missingobj="VertexWiseR could not find brainstat fsaverage5 templates in the brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage5 space.\n";
+    missingobj=paste0("VertexWiseR could not find brainstat fsaverage5 templates in the ",brainstat_data_path,"/brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage5 space.\n");
     
     if (interactive()==FALSE)
     { non_interactive=paste0(missingobj,non_interactive)
@@ -1117,9 +1220,9 @@ else if (exists("VWR_check") |
   } 
   
   #fsaverage6 missing
-  if ((requirement=="any" | requirement=='fsaverage6')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
+  if ((requirement=="any" | requirement=='fsaverage6')==TRUE & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
   {
-    missingobj="VertexWiseR could not find brainstat fsaverage6 templates in the brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage6 space.\n";
+    missingobj=paste0("VertexWiseR could not find brainstat fsaverage6 templates in the ",brainstat_data_path,"/brainstat_data/ directory. They are needed if you want to analyse cortical surface in fsaverage6 space.\n");
     
     if (interactive()==FALSE)
     { non_interactive=paste0(missingobj,non_interactive)
@@ -1130,10 +1233,10 @@ else if (exists("VWR_check") |
   
   #yeo parcels missing
   if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
-      & !file.exists(paste0(fs::path_home(),
-                          '/brainstat_data/parcellation_data/'))) 
+      & !file.exists(paste0(brainstat_data_path,
+        '/brainstat_data/parcellation_data/__MACOSX/'))) 
   {
-    missingobj="VertexWiseR could not find brainstat yeo parcellation data in the brainstat_data/ directory. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.\n";
+    missingobj=paste0("VertexWiseR could not find brainstat yeo parcellation data in the ",brainstat_data_path,"/brainstat_data/ directory. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.\n");
     
     if (interactive()==FALSE)
     { non_interactive=paste0(missingobj,non_interactive)
@@ -1154,7 +1257,7 @@ else if (exists("VWR_check") |
   
   #If nothing is missing, missingobj will not have been created
   #thus allowing the function to inform that no (specified) requirements are missing
-  if (promptless==TRUE) { if(!exists('missingobj'))
+  if (promptless==TRUE) {if(!exists('missingobj'))
   { message('No system requirements are missing. \u2713') }}
   
 }
