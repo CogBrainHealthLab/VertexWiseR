@@ -51,7 +51,9 @@ Plots surface data in a grid with one or multiple rows in a .png file
 }
 \examples{
 results = runif(20484,min=0, max=1);
-plot_surf(surf_data = results, filename=paste0(tempdir(),"/output.png"),title = 
-'Cortical thickness', surface = 'inflated', cmap = 'Blues',
+plot_surf(surf_data = results, 
+filename=paste0(tempdir(),"/output.png"),
+title = 'Cortical thickness', 
+surface = 'inflated', cmap = 'Blues',
 VWR_check=FALSE)
 }

@@ -4,12 +4,14 @@
 \alias{VWRfirstrun}
 \title{VertexWiseR system requirements installation}
 \usage{
-VWRfirstrun(requirement = "any", n_vert = 0)
+VWRfirstrun(requirement = "any", n_vert = 0, promptless = FALSE)
 }
 \arguments{
 \item{requirement}{String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.}
 
 \item{n_vert}{Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for}
+
+\item{promptless}{A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.}
 }
 \value{
 No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
