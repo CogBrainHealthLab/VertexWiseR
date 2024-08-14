@@ -21,19 +21,22 @@
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #'
-#' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
+#' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
+#' 
+#' @seealso \code{\link{RFT_vertex_analysis}}, \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_threshold}}
+#' 
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
 #'surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 #'
-#'TFCE.pos=TFCE.vertex_analysis.mixed(model=demodata[,c(2,7)],
+#'TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c(2,7)],
 #'contrast=demodata[,7], surf_data,random=demodata[,1], 
 #'nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 #'
 #' #To get significant clusters, you may then run:
-#' #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
+#' #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #' #results$cluster_level_results
 #'
 #' @importFrom reticulate import r_to_py
@@ -46,7 +49,7 @@
 
 ##Main function
 
-TFCE.vertex_analysis.mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
+TFCE_vertex_analysis_mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 

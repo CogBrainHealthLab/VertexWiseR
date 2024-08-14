@@ -24,6 +24,8 @@
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' 
+#' @seealso \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}
+#' 
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
 #' package = 'VertexWiseR'))[1:100,]

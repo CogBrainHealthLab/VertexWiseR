@@ -18,8 +18,8 @@
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
-#' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE.threshold()
-#' @seealso \code{\link{TFCE.threshold}}
+#' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
+#' @seealso \code{\link{RFT_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}, \code{\link{TFCE_threshold}}
 #'  
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
@@ -30,11 +30,11 @@
 #'model=demodata[,c(2,7)]
 #'contrast=demodata[,7]
 #'
-#' TFCE.pos=TFCE.vertex_analysis(model, contrast, surf_data, tail=1, 
+#' TFCEpos=TFCE_vertex_analysis(model, contrast, surf_data, tail=1, 
 #' nperm=5, nthread = 2, VWR_check=FALSE)
 #' 
 #' #To threshold the results, you may then run:
-#' #results=TFCE.threshold(TFCE.pos, p=0.05, atlas=1)
+#' #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #' #results$cluster_level_results
 #'
 #' @importFrom reticulate import r_to_py
@@ -49,7 +49,7 @@
 
 ##Main function
 
-TFCE.vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
+TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
 {
   
   #Check required python dependencies. If files missing:
@@ -447,9 +447,9 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 ############################################################################################################################
 #' @title Thresholding TFCE output
 #'
-#' @description Threshold TFCE maps from the TFCE.vertex_analysis() output and identifies significant clusters at the desired threshold. 
+#' @description Threshold TFCE maps from the TFCE_vertex_analysis() output and identifies significant clusters at the desired threshold. 
 #' 
-#' @param TFCE.output An object containing the output from TFCE.vertex_analysis()
+#' @param TFCEoutput An object containing the output from TFCE_vertex_analysis()
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)
 #' @param k Cluster-forming threshold (Default is 20)
@@ -459,13 +459,13 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' model1_TFCE=readRDS(system.file('demo_data/model1_TFCE.rds', 
 #' package = 'VertexWiseR'))
 #' 
-#' TFCEanalysis_output=TFCE.threshold(model1_TFCE, p=0.05, atlas=1)
+#' TFCEanalysis_output=TFCE_threshold(model1_TFCE, p=0.05, atlas=1)
 #' TFCEanalysis_output$cluster_level_results
 #' @export
 
-TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
+TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
 {
-  nperm=length(TFCE.output$TFCE.max)
+  nperm=length(TFCEoutput$TFCE.max)
   
   #check if number of permutations is adequate
   if(nperm<1/p)  {warning(paste("Not enough permutations were carried out to estimate the p<",p," threshold precisely\nConsider setting an nperm to at least ",ceiling(1/p),sep=""))}
@@ -481,7 +481,7 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
   }
   
   #check which template is used and load appropriate template files
-  n_vert=length(TFCE.output$t_stat)
+  n_vert=length(TFCEoutput$t_stat)
   if(n_vert==20484) 
   {    
     edgelist <- get('edgelistfs5')
@@ -518,18 +518,18 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
   } 
   ##generating p map
   tfce.p=rep(NA,n_vert)
-  TFCE.output$t_stat[is.na(TFCE.output$t_stat)]=0
-  for (vert in 1:n_vert)  {tfce.p[vert]=length(which(TFCE.output$TFCE.max>abs(TFCE.output$TFCE.orig[vert])))/nperm}
+  TFCEoutput$t_stat[is.na(TFCEoutput$t_stat)]=0
+  for (vert in 1:n_vert)  {tfce.p[vert]=length(which(TFCEoutput$TFCE.max>abs(TFCEoutput$TFCE.orig[vert])))/nperm}
   
   ##generating thresholded t-stat map
-  TFCE.output$t_stat[is.na(TFCE.output$t_stat)]=0
+  TFCEoutput$t_stat[is.na(TFCEoutput$t_stat)]=0
   
-  t_stat.thresholdedP=TFCE.output$t_stat
+  t_stat.thresholdedP=TFCEoutput$t_stat
   t_stat.thresholdedP[tfce.p>p]=0
   
   ##Cluster level results
   ##positive cluster
-  if(TFCE.output$tail==1 |TFCE.output$tail==2)
+  if(TFCEoutput$tail==1 |TFCEoutput$tail==2)
   {
     #applying p thresholding
     pos.t_stat.thresholdedP=t_stat.thresholdedP
@@ -567,11 +567,11 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
           
           pos.clust.results[clust.idx,1]=clust.idx
           pos.clust.results[clust.idx,2]=length(clust.vert.idx)
-          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
+          max.vert.idx=clust.vert.idx[which(abs(TFCEoutput$t_stat[clust.vert.idx])==max(abs(TFCEoutput$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
           pos.clust.results[clust.idx,3]=round(tfce.p[max.vert.idx],3)
           if(pos.clust.results[clust.idx,3]==0) {pos.clust.results[clust.idx,3]=paste("<",1/nperm,sep="")}
           pos.clust.results[clust.idx,c(4,5,6)]=round(MNImap[,max.vert.idx],1)
-          pos.clust.results[clust.idx,7]=round(abs(TFCE.output$t_stat[max.vert.idx]),2)
+          pos.clust.results[clust.idx,7]=round(abs(TFCEoutput$t_stat[max.vert.idx]),2)
           
           atlas.idx=ROImap[[1]][,atlas][max.vert.idx]
           if(atlas.idx>0) {pos.clust.results[clust.idx,8]=ROImap[[2]][,atlas][atlas.idx] } ##to deal with desikan atlas missing vertex mappings
@@ -590,7 +590,7 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
       pos.clustermap="No significant clusters"
       pos.mask=rep(0,n_vert)
     }
-  } else if(TFCE.output$tail==-1)
+  } else if(TFCEoutput$tail==-1)
   {
     pos.clust.results="Positive contrast not analyzed, only negative one-tailed TFCE statistics were estimated"
     pos.clustermap="No significant clusters"
@@ -598,7 +598,7 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
   } 
   
   ##negative cluster
-  if(TFCE.output$tail==-1 |TFCE.output$tail==2)
+  if(TFCEoutput$tail==-1 |TFCEoutput$tail==2)
   {
     #applying p thresholding
     neg.t_stat.thresholdedP=t_stat.thresholdedP
@@ -633,11 +633,11 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
           
           neg.clust.results[clust.idx,1]=clust.idx
           neg.clust.results[clust.idx,2]=length(clust.vert.idx)
-          max.vert.idx=clust.vert.idx[which(abs(TFCE.output$t_stat[clust.vert.idx])==max(abs(TFCE.output$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
+          max.vert.idx=clust.vert.idx[which(abs(TFCEoutput$t_stat[clust.vert.idx])==max(abs(TFCEoutput$t_stat[clust.vert.idx]),na.rm = TRUE))[1]]
           neg.clust.results[clust.idx,3]=round(tfce.p[max.vert.idx],3)
           if(neg.clust.results[clust.idx,3]==0) {neg.clust.results[clust.idx,3]=paste("<",1/nperm,sep="")}
           neg.clust.results[clust.idx,c(4,5,6)]=round(MNImap[,max.vert.idx],1)
-          neg.clust.results[clust.idx,7]=round(abs(TFCE.output$t_stat[max.vert.idx]),2)
+          neg.clust.results[clust.idx,7]=round(abs(TFCEoutput$t_stat[max.vert.idx]),2)
           
           atlas.idx=ROImap[[1]][,atlas][max.vert.idx]
           if(atlas.idx>0) {neg.clust.results[clust.idx,8]=ROImap[[2]][,atlas][atlas.idx] } ##to deal with desikan atlas missing vertex mappings
@@ -657,7 +657,7 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
       neg.mask=rep(0,n_vert)
     }
   }
-  else if(TFCE.output$tail==1)
+  else if(TFCEoutput$tail==1)
   {
     neg.clust.results="Negative contrast not analyzed, only negative one-tailed TFCE statistics were estimated"
     neg.clustermap="No significant clusters"
@@ -684,7 +684,7 @@ TFCE.threshold=function(TFCE.output, p=0.05, atlas=1, k=20)
   cluster_level_results=list(pos.clust.results,neg.clust.results)
   names(cluster_level_results)=c("Positive contrast", "Negative contrasts")
   
-  t_stat.thresholdedPK=TFCE.output$t_stat*(pos.mask+neg.mask)
+  t_stat.thresholdedPK=TFCEoutput$t_stat*(pos.mask+neg.mask)
   #setting 0s to NA to make vertex with t=0 empty in plots
   t_stat.thresholdedPK[t_stat.thresholdedPK==0]=NA
   

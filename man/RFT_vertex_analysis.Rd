@@ -64,3 +64,6 @@ VWR_check=FALSE)
 #Description of the output:
 #vertexwise_model$cluster_level_results
 }
+\seealso{
+\code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}
+}
