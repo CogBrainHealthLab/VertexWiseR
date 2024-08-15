@@ -16,7 +16,7 @@
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model. This data.frame should not include the random effects variable.
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The cluster-thresholded t-stat maps will be estimated only for this predictor. 
 #' @param random A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (and can be a single column from model).
-#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
@@ -165,6 +165,11 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
       template="fsaverage5"
       ROImap_fs5 <- get('ROImap_fs5')
       ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
+    } else if (n_vert==64984)
+    {
+      template="fslr32k"
+      ROImap_fslr32k <- get('ROImap_fslr32k')
+      ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
     } else if (n_vert==81924)
     {
       template="fsaverage6"
