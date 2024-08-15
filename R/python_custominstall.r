@@ -8,9 +8,20 @@
 
 python_custominstall=function(custompath) {
 
+#This installation requires git
+if (Sys.which("git") == "") { stop("Git is needed for your system to install Python instead of Miniconda. Please install Git first and ensure it is on your PATH. You may set git in R by typing:\n Sys.setenv(PATH = paste(\"[path\\to\\git]\\bin\", Sys.getenv(\"PATH\"), sep=\";\"))") }
+  
+  
+if (missing(custompath))  #default installation
+{
+  
+root=reticulate::install_python(version = "3.10:latest")
+
+} else #a custom path was specified
+{
+
 #example of custom path
 #root='C:/Users/john.doe/Desktop/Python'
-
 root=custompath
 
 ##########################Installs Pyenv in the custom path##
@@ -19,10 +30,7 @@ root=custompath
 
 if (.Platform$OS.type=='windows') 
 {
-    
-    #requires git
-    if (Sys.which("git") == "") { stop("Git is needed for your system to install Python instead of Miniconda. Please install Git first and ensure it is on your PATH. You may set git in R by typing:\n Sys.setenv(PATH = paste(\"[path\\to\\git]\\bin\", Sys.getenv(\"PATH\"), sep=\";\"))") }
-    
+
     #clone if necessary
     if (!file.exists(root)) {
       url <- "https://github.com/pyenv-win/pyenv-win"
@@ -49,7 +57,6 @@ if (.Platform$OS.type=='windows')
 
 } else { #########linux and mac installation##########################
 
-    if (Sys.which("git") == "") { stop("Please install git and ensure it is on your PATH. You may set it by running in R:\n Sys.setenv(PATH = paste(\"[path\\to\\git]\\bin\", Sys.getenv(\"PATH\"), sep=\";\"))") }
     
     # move to tempdir
     owd <- setwd(tempdir())
@@ -121,6 +128,8 @@ if (.Platform$OS.type=='windows')
   
 #################Saves Python path in a local R environment##############
 
+} #the path is saved for both default and custom path installations
+  
 #will store path in .Renviron in tools::R_user_dir() 
 #location specified by CRAN, create it if not existing:
 envpath=tools::R_user_dir(package='VertexWiseR')
@@ -129,13 +138,24 @@ if (!dir.exists(envpath)) {dir.create(envpath) }
 #make .Renviron file there and set conda/python paths in it:
 renviron_path <- file.path(envpath, ".Renviron")
 
-#list python executables and save path to the one in the main directory
-pythonfile=list.files(path = root, recursive = TRUE, full.names = TRUE)
-pattern <- "\\d/python.exe"; 
-pythonpath=pythonfile[stringr::str_detect(pythonfile, pattern)]
 
-if (!length(pythonpath) > 0) { stop('Python installation failed.') 
-  } else { message('Installation successful!')}
+if (!missing(custompath)) 
+{
+   #list python executables and save path to the one 
+   #in the main installation directory
+    pythonfile=list.files(path = root, recursive = TRUE, full.names = TRUE)
+    pattern <- "\\d/python.exe"; 
+    pythonpath=pythonfile[stringr::str_detect(pythonfile, pattern)]
+    
+    if (!length(pythonpath) > 0) { stop('Python installation failed.') 
+    } else { message('Installation successful!')}
+
+} else #the path to .exe is directly returned by default reticulate install_python() function
+{ 
+    pythonpath=root
+    if (!file.exists(pythonpath)) { stop('Python installation failed.') 
+    } else { message('Installation successful!')}
+}
 
 # Write to the .Renviron file
 env_vars <- paste0('RETICULATE_PYTHON="',pythonpath,'"')

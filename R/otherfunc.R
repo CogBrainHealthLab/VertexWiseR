@@ -939,24 +939,25 @@ if (interactive()==TRUE & promptless==FALSE) {
                            title=paste0("Reticulate's Python default installation is done within 'r-reticulate' in your OS libraries, via install_python(). Type \"1\" or \"Default\" if you want the default installation. \nYou can, alternatively, specify the path where Python will be installed."))
       
       if (choice==1) #Install Python within default path
-        {reticulate::install_python()}
-      
-      else {        #Install Python within custom path
-      
-      userpath <- readline("Enter the full path:")
-      
-      message(paste('Installing Python in',userpath,'...\n'))
-      
-      python_custominstall(userpath)
+      {
+        python_custominstall()
+      }
+      else 
+      {        #Install Python within custom path
+        userpath <- readline("Enter the full path:")
+        message(paste('Installing Python in',userpath,'...\n'))
+        python_custominstall(userpath)
+      }
       
       #Read new python enviroment
       Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
       if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
       
       message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
-      system('pip install numpy==1.26.4') #pip instead of install_py as it will use a virtual environment
+      #pip instead of install_py as it will use a virtual environment
+      system('pip install numpy==1.26.4') 
       #posterior numpy versions break python functions
-      }
+      
   }
   else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
 
@@ -970,13 +971,15 @@ if (interactive()==TRUE & promptless==FALSE) {
   if(!is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError')
   {
     message('Checking Numpy\'s version...')
-    # check if numpy is in the default python environment
-    listpackages=reticulate::py_list_packages()
-    #check numpy version
-    numpyv=listpackages$version[which(listpackages$package=="numpy")] 
     
-    if (length(numpyv) > 0) #if numpy exists at all 
+    #check config
+    pyconfig=reticulate::py_config()
+    # check if numpy is in the default python environment
+    numpy=pyconfig$numpy
+    
+    if (!is.null(numpy)) #if numpy exists at all 
     {
+        numpyv=pyconfig$numpy[[2]]
         #warn to install 1.26.2 if current version is superior  
         numpyv=gsub("\\.", "", numpyv);
         
