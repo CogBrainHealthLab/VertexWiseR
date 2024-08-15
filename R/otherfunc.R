@@ -619,9 +619,18 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
     brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
     
+    #Brainstat data, will either be stored in default $HOME path or 
+    #custom if it's been set via VWRfirstrun()
+    if (Sys.getenv('BRAINSTAT_DATA')=="")
+    {brainstat_data_path=fs::path_home()} else if 
+    (!Sys.getenv('BRAINSTAT_DATA')=="") 
+    {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+    #convert path to pathlib object for brainstat
+    data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+    
     #loading fsaverage surface
-    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[1]
-    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[2]
+    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface, data_dir=data_dir)[1]
+    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface, data_dir=data_dir)[2]
     
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1920,rows*400)}
