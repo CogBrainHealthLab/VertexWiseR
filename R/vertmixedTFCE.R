@@ -173,17 +173,20 @@ If it is your random variable and it is non-binarizable, do not include it in th
   n_vert=ncol(surf_data)
   if(n_vert==20484)
   {
-    edgelist<- get('edgelistfs5') 
+    edgelist_fs5<- get('edgelist_fs5') 
+    edgelist <- edgelist_fs5@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==81924)
   {
-    edgelist <- get('edgelistfs6') 
+    edgelist_fs6 <- get('edgelist_fs6') 
+    edgelist <- edgelist_fs6@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==14524)
   {
-    edgelist <- get('edgelistHIP')
+    edgelist_hip <- get('edgelist_hip')
+    edgelist <- edgelist_hip@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}

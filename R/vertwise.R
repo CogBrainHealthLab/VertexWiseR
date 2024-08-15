@@ -162,17 +162,20 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
     n_vert=ncol(surf_data)
     if(n_vert==20484)
     {
-    template="fsaverage5"
-     ROImap <- get('ROImap_fs5')
+      template="fsaverage5"
+      ROImap_fs5 <- get('ROImap_fs5')
+      ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     } else if (n_vert==81924)
     {
       template="fsaverage6"
-    ROImap <- get('ROImap_fs6')
+      ROImap_fs6 <- get('ROImap_fs6')
+      ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
     } else if (n_vert==14524)
     {
       brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
       template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
-      ROImap <- get('ROImap_HIP')
+      ROImap_hip <- get('ROImap_hip')
+      ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     } else 
     {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
   

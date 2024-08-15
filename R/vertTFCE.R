@@ -166,15 +166,18 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   #check length of surface data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)  {
-    edgelist <- get('edgelistfs5')
+    edgelist_fs5 <- get('edgelist_fs5')
+    edgelist <- edgelist_fs5@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==81924)  {
-    edgelist <- get('edgelistfs6')
+    edgelist_fs6 <- get('edgelist_fs6')
+    edgelist <- edgelist_fs6@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==14524)  {
-    edgelist <- get('edgelistHIP')
+    edgelist_hip <- get('edgelist_hip')
+    edgelist <- edgelist_hip@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
@@ -484,36 +487,45 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
   n_vert=length(TFCEoutput$t_stat)
   if(n_vert==20484) 
   {    
-    edgelist <- get('edgelistfs5')
+    edgelist_fs5 <- get('edgelist_fs5')
+    edgelist <- edgelist_fs5@data
     assign("edgelist", edgelist, envir = internalenv)
     
-    ROImap <- get('ROImap_fs5')
+    ROImap_fs5 <- get('ROImap_fs5')
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
-    MNImap <- get('MNImap_fs5')
+    MNImap_fs5 <- get('MNImap_fs5')
+    MNImap <- MNImap_fs5@data
     assign("MNImap", MNImap, envir = internalenv)
   }
   else if (n_vert==81924) 
   {
-    edgelist <- get('edgelistfs6')
+    edgelist_fs6 <- get('edgelist_fs6')
+    edgelist <- edgelist_fs6@data
     assign("edgelist", edgelist, envir = internalenv)
     
-    ROImap <- get('ROImap_fs6')
+    ROImap_fs6 <- get('ROImap_fs6')
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
-    MNImap <- get('MNImap_fs6')
+    MNImap_fs6 <- get('MNImap_fs6')
+    MNImap <- MNImap_fs6@data
     assign("MNImap", MNImap, envir = internalenv)
   } 
   else if (n_vert==14524) 
   {
-    ROImap <- get('ROImap_HIP')
+    edgelist_hip <- get('edgelist_hip')
+    edgelist <- edgelist_hip@data
+    assign("edgelist", edgelist, envir = internalenv)
+    
+    ROImap_hip <- get('ROImap_hip')
+    ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     ROImap=list(data.matrix(ROImap[[1]]),ROImap[[2]])
     assign("ROImap", ROImap, envir = internalenv)
     
-    edgelist <- get('edgelistHIP')
-    assign("edgelist", edgelist, envir = internalenv)
-    
     MNImap <- get('MNImap_hip')
+    MNImap <- MNImap@data
     assign("MNImap", MNImap, envir = internalenv)
   } 
   ##generating p map

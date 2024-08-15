@@ -149,15 +149,18 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   
   if(n_vert==20484) 
   {
-    edgelist<- get('edgelistfs5') 
+    edgelist_fs5 <- get('edgelist_fs5') 
+    edgelist <- edgelist_fs5@data
     FWHM=FWHM/3.5 #converting mm to mesh units
   } else if(n_vert==81924) 
   {
-    edgelist<- get('edgelistfs6') 
+    edgelist_fs6 <- get('edgelist_fs6') 
+    edgelist <- edgelist_fs6@data
     FWHM=FWHM/1.4 #converting mm to mesh units
   } else if(n_vert==14524) 
   {
-    edgelist<- get('edgelistHIP') 
+    edgelist_hip <- get('edgelist_hip') 
+    edgelist <- edgelist_hip@data
     FWHM=FWHM/0.5 #converting m to mesh units
   } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
   
@@ -265,7 +268,8 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
   if(max(dim(t(surf_data)))==20484) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_fs5')
+    ROImap_fs5 <- get('ROImap_fs5')
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     #set NAs to 0
@@ -296,7 +300,8 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
   if(max(dim(t(surf_data)))==81924) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_fs6')
+    ROImap_fs6 <- get('ROImap_fs6')
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     #set NAs to 0
@@ -326,7 +331,8 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
   if(max(dim(t(surf_data)))==14524) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_HIP')
+    ROImap_hip <- get('ROImap_hip')
+    ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     #init variables
     nregions=max(ROImap[[1]][,1])
     #set NAs to 0
@@ -374,9 +380,11 @@ atlas_to_surf=function(parcel_data, template)
   {
     #load atlas mapping surface data
   if (template=='fsaverage5') { 
-    ROImap <- get('ROImap_fs5'); n_vert=20484; 
+    ROImap_fs5 <- get('ROImap_fs5'); n_vert=20484; 
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
   } else if (template=='fsaverage6') 
-  { ROImap <- get('ROImap_fs6'); n_vert=81924; 
+  { ROImap_fs6 <- get('ROImap_fs6'); n_vert=81924; 
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
   } else { stop('The function currently only works with fsaverage5 and fsaverage6')}
   
     
