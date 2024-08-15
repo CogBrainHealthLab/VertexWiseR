@@ -182,7 +182,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     edgelist <- edgelist_hip@data
     assign("edgelist", edgelist, envir = edgelistenv)
   }
-  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns.")}
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
   
   #check for collinearity
   if(NCOL(model)>1)
