@@ -166,11 +166,15 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   #check length of surface data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)  {
-    edgelist <- get_edgelist('edgelist_fs5') 
+    edgelist <- get_edgelist('fsaverage5') 
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==81924)  {
-    edgelist <- get_edgelist('edgelist_fs6') 
+    edgelist <- get_edgelist('fsaverage6') 
+    assign("edgelist", edgelist, envir = edgelistenv)
+  }
+  else if (n_vert==64984)  {
+    edgelist <- get_edgelist('fslr32k') 
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==14524)  {
@@ -485,7 +489,7 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
   n_vert=length(TFCEoutput$t_stat)
   if(n_vert==20484) 
   {    
-    edgelist <- get_edgelist('edgelist_fs5') 
+    edgelist <- get_edgelist('fsaverage5') 
     assign("edgelist", edgelist, envir = internalenv)
     
     ROImap_fs5 <- get('ROImap_fs5')
@@ -495,9 +499,21 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
     MNImap <- get_MNIcoords('fsaverage5')
     assign("MNImap", MNImap, envir = internalenv)
   }
+  else if (n_vert==64984) 
+  {
+    edgelist <- get_edgelist('fslr32k') 
+    assign("edgelist", edgelist, envir = internalenv)
+    
+    ROImap_fs6 <- get('ROImap_fslr32k')
+    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k6@atlases)
+    assign("ROImap", ROImap, envir = internalenv)
+    
+    MNImap <- get_MNIcoords('fslr32k')
+    assign("MNImap", MNImap, envir = internalenv)
+  } 
   else if (n_vert==81924) 
   {
-    edgelist <- get_edgelist('edgelist_fs6') 
+    edgelist <- get_edgelist('fsaverage6') 
     assign("edgelist", edgelist, envir = internalenv)
     
     ROImap_fs6 <- get('ROImap_fs6')
