@@ -1,3 +1,36 @@
+#' @title Surface plotter
+#'
+#' @description Plots surface data in a grid with one or multiple rows in a .png file
+#'
+#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract() as well as masks or vertex-wise results outputted by analyses functions.
+#' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).
+#' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
+#' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
+#' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
+#' 
+#' Default cmap is set to `"Reds"` for positive values, `"Blues_r"` for negative values and `"RdBu"` when both positive and negative values exist. 
+#' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. If the limits are specified, the same limits will be applied to all subplots. When left unspecified, the same symmetrical limits c(-max(abs(surf_dat),max(abs(surf_dat))) will be used for all subplots. If set to NULL, each subplot will have its own limits corresponding to their min and max values
+#' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
+#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
+#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
+#' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
+#'
+#' @returns Outputs the plot as a .png image
+#' @examples
+#' results = runif(20484,min=0, max=1);
+#' plot_surf(surf_data = results, 
+#' filename=paste0(tempdir(),"/output.png"),
+#' title = 'Cortical thickness', 
+#' surface = 'inflated', cmap = 'Blues',
+#' VWR_check=FALSE)
+#' @importFrom reticulate tuple import np_array source_python
+#' @importFrom grDevices col2rgb
+#' @importFrom png readPNG
+#' @importFrom grid grid.raster
+#' @export
+######################################################################################################################################################
+######################################################################################################################################################
 plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, show.plot.window=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
