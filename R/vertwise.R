@@ -182,7 +182,7 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
       ROImap_hip <- get('ROImap_hip')
       ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     } else 
-    {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+    {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
   
   ##smoothing
     n_vert=NCOL(surf_data)
