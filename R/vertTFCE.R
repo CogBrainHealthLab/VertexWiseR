@@ -11,7 +11,7 @@
 #' 
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
-#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
@@ -504,7 +504,7 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
     edgelist <- get_edgelist('fslr32k') 
     assign("edgelist", edgelist, envir = internalenv)
     
-    ROImap_fs6 <- get('ROImap_fslr32k')
+    ROImap_fslr32k <- get('ROImap_fslr32k')
     ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k6@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
