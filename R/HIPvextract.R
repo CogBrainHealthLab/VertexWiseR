@@ -49,15 +49,16 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
     rh=gifti::readgii(rh.filelist[sub])
     hip_dat[sub,]=c(lh$data$normal,rh$data$normal)
   }
-
-  ##output file depending on subj_ID==T
+  
   hip_dat=hip_dat[order(sublist),]
-    if(subj_ID==TRUE)
-    {
-    saveRDS(list(sublist,hip_dat), file=filename)
-    } else
-    {
-    saveRDS(hip_dat, file=filename)
-    }
+  
+  ##If subj_ID==TRUE, the surface data is saved as a list object with the  with subject list appended
+  if(subj_ID==TRUE)
+  {
+    hip_dat=list(sublist,hip_dat);
+  } 
+  
+saveRDS(hip_dat, file=filename)
+return(hip_dat)
 }
 

@@ -61,4 +61,5 @@ SURFdata=t(rbind(drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"lh.mgh")))
 }
 
 saveRDS(SURFdata, file=filename)
+return(SURFdata)
 }
