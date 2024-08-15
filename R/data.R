@@ -34,30 +34,6 @@
 #' }
 "ROImap_hip"
 
-#' fsaverage5 surface in MNI space
-#'
-#' A matrix with 20484 columns corresponding to the fsaverage5 vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
-#'
-#' @format ## `MNImap_fs5`
-#' A 3x20494 matrix object
-#' \describe{
-#'   \item{coordinates}{20484 rows (vertices), 3 columns (X,Y,Z coordinates)}
-#' }
-"MNImap_fs5"
-
-
-#' fsaverage6 surface in MNI space
-#'
-#' A matrix with 81924 columns corresponding to the fsaverage6 vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
-#'
-#' @format ## `MNImap_fs6`
-#' A 3x81924 matrix object
-#' \describe{
-#'   \item{coordinates}{81924 rows (vertices), 3 columns (X,Y,Z coordinates)}
-#' }
-"MNImap_fs6"
-
-
 #' Hippocampal surface in MNI space
 #'
 #' A matrix with 14524 columns corresponding to the hippocampal template vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
@@ -68,26 +44,6 @@
 #'   \item{coordinates}{14524 rows (vertices), 3 columns (X,Y,Z coordinates)}
 #' }
 "MNImap_hip"
-
-#' List of edges for the fsaverage5 template
-#'
-#' A Nx2 matrix object listing each vertex of the fsaverage5 template and the vertices adjacent to it (making an edge together).
-#'
-#' @format ## `edgelist_fs5`
-#' \describe{
-#'   \item{Nx2 matrix object}{Matrix with two columns and N rows corresponding to the unique edges in the fsaverage5 surface}
-#' }
-"edgelist_fs5"
-
-#' List of edges for the fsaverage6 template
-#'
-#' A Nx2 matrix object listing each vertex of the fsaverage5 template and the vertices adjacent to it (making an edge together).
-#'
-#' @format ## `edgelist_fs6`
-#' \describe{
-#'   \item{Nx2 matrix object}{Matrix with two columns and N rows corresponding to the unique edges in the fsaverage6 surface}
-#' }
-"edgelist_fs6"
 
 #' List of edges for the hippocampal template
 #'
@@ -110,7 +66,6 @@
 #' }
 #' @docType data
 "hip_points_cells"
-
 
 #' fsaverage6 template object for nearest neighbor conversion in fs6_to_fs5()
 #'
