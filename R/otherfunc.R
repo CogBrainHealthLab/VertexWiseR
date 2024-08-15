@@ -813,3 +813,69 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
   return(result)
   } 
 }  
+
+
+############################################################################################################################
+############################################################################################################################
+
+#' @title Edge list fetcher
+#' @description Functions that allows to download edge list for vertices of a given surface template from the BrainStat database
+#' @param template A string object referring to a brain surface template. VertexWiseR currently works with: 'fsaverage5', 'fsaverage6' and 'fslr32k'.
+#' @returns A Nx2 matrix object listing each vertex of the surface template and the vertices adjacent to it (making an edge together).
+#' @examples
+#' edgelist=get_edgelist("fslr32k")
+
+get_edgelist=function(template)
+{
+  #Load brainstat tools
+  brainstat.datasets=reticulate::import("brainstat.datasets")  
+  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
+  
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  #Loads template surfaces
+  surf_template=brainstat.datasets$fetch_template_surface(template, join=TRUE, data_dir=data_dir)
+  
+  #Returns edge list
+  return(brainstat.mesh.utils$mesh_edges(surf_template)+1)
+}
+
+#' @title MNI coordinates fetcher
+#' @description Functions that allows to download MNI coordinates of a given surface template
+#' @param template A string object referring to a brain surface template. VertexWiseR currently works with: 'fsaverage5', 'fsaverage6' and 'fslr32k'.
+#' @returns A matrix with X columns corresponding to the template's vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
+#' @examples
+#' MNImap = get_MNIcoords("fslr32k")
+
+get_MNIcoords=function(template)
+{
+  #Load brainstat tools
+  brainstat.datasets=reticulate::import("brainstat.datasets")  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  #Loads template surfaces
+  surf.template=brainstat.datasets$fetch_template_surface(template=template, join=TRUE, data_dir=data_dir)
+  
+  #Returns MNI coordinates
+  return(t(brainspace.mesh.mesh_elements$get_points(surf.template)))
+}
+
+
+
+
