@@ -173,14 +173,12 @@ If it is your random variable and it is non-binarizable, do not include it in th
   n_vert=ncol(surf_data)
   if(n_vert==20484)
   {
-    edgelist_fs5<- get('edgelist_fs5') 
-    edgelist <- edgelist_fs5@data
+    edgelist <- get_edgelist('edgelist_fs5') 
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==81924)
   {
-    edgelist_fs6 <- get('edgelist_fs6') 
-    edgelist <- edgelist_fs6@data
+    edgelist <- get_edgelist('edgelist_fs6') 
     assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==14524)
