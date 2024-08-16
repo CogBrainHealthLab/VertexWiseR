@@ -31,7 +31,7 @@ FSLRvextract=function(sdirpath="./", wb_path,MSMAll=TRUE, filename, measure="thi
   stop("Invalid measure entered. Please enter one of the following in the measure argument—'thickness_MSMAll','sulc_MSMAll','thickness','sulc'")
   }
   
-  if(MSMAll==T) {measure=paste0(measure,"_MSMAll")}
+  if(MSMAll==TRUE) {measure=paste0(measure,"_MSMAll")}
   
   ## filename check
   if (missing("filename")) {
@@ -57,21 +57,23 @@ FSLRvextract=function(sdirpath="./", wb_path,MSMAll=TRUE, filename, measure="thi
   
   for (sub in 1:NROW(sublist))
   {
-    if(silent==F) {message(paste0("Processing (",sub,"/",NROW(sublist),") ",filelist[sub]," ..."))}
+    if(silent==FALSE) {message(paste0("Processing (",sub,"/",NROW(sublist),") ",filelist[sub]," ..."))}
     
     dat.temp=ciftiTools::readcii(filelist[sub],brainstructures = c("left","right"))
-    LH.idx=which(dat.temp$meta$cortex$medial_wall_mask$left==T)
-    RH.idx=which(dat.temp$meta$cortex$medial_wall_mask$right==T)+32492
+    LH.idx=which(dat.temp$meta$cortex$medial_wall_mask$left==TRUE)
+    RH.idx=which(dat.temp$meta$cortex$medial_wall_mask$right==TRUE)+32492
     fslr32k_dat[,c(LH.idx,RH.idx)]=c(dat.temp$data$cortex_left,dat.temp$data$cortex_right)
     remove(dat.temp)
   }
   
-  if(silent==F) {message(paste0("Saving output as ",filename))}
+  if(silent==FALSE) {message(paste0("Saving output as ",filename))}
   ##output file depending on subj_ID==T
   fslr32k_dat=fslr32k_dat[order(sublist),]
   
   if(subj_ID==TRUE) {saveRDS(list(sublist,fslr32k_dat), file=filename)} 
   else  {saveRDS(fslr32k_dat, file=filename)}
   
-  if(silent==F) {message("done!")}
+  if(silent==FALSE) {message("done!")}
+  
+  return(fslr32k_dat)
 }
