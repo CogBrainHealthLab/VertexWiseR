@@ -18,6 +18,6 @@ A list object with two data frame objects: ()
 ROImap_fs6
 }
 \description{
-A list containing two data frames, 1) listing vertex coordinates for each atlas label in fsaverage6 template space, and  2) listing each available atlas and their corresponding labels (1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400).
+A list containing two data frames, 1) listing fsaverage6 vertices and each atlas parcellation number they correspond to, and 2) listing each available atlas and their corresponding labels (1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400).
 }
 \keyword{datasets}

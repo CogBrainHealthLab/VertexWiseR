@@ -22,7 +22,7 @@ TFCE_vertex_analysis_mixed(
 
 \item{contrast}{A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor}
 
-\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
+\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
 
 \item{random}{A N x 1 numeric vector or object containing the values of the random variable. Its length should equal the number of subjects in model (and can be a single column from model).}
 

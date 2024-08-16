@@ -22,7 +22,7 @@ RFT_vertex_analysis(
 
 \item{random}{A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (and can be a single column from model).}
 
-\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
+\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
 
 \item{p}{A numeric object specifying the p-value to threshold the results (Default is 0.05)}
 
