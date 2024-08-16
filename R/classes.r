@@ -19,6 +19,7 @@ ROI_map <- function(data,atlases)
   if (nrow(data)==20484) {templatename='fsaverage5'}
   if (nrow(data)==81924) {templatename='fsaverage6'}
   if (nrow(data)==14524) {templatename='CITI168'}
+  if (nrow(data)==64984) {templatename='fslr32k'}
   
   new("ROImap", data = data, atlases = atlases, name = templatename)
 }
