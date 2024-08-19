@@ -34,7 +34,9 @@ if (length(dircount)==0) { return(message('FreeSurfer surface folders could not 
   
 #list subject folders and excludes template folders
 alldirs=dir(path=sdirpath, pattern="surf$", recursive=TRUE, include.dirs=TRUE) 
-alldirs=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
+#remove paths that lead to the fsaverage template, if they are included
+onlysubjsurf=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
+if(length(onlysubjsurf) > 0) {alldirs=onlysubjsurf}
 #checks subject with specific surf measure data (rh.measure file) 
 sublist=list.files(alldirs, pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
 #flags subjects with no appropriate surf measure data inside surf/
