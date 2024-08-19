@@ -17,10 +17,18 @@
 #' measure="curv") 
 #' @importFrom freesurferformats read.fs.mgh
 #' @importFrom utils read.delim write.table
+#' @importFrom stringr str_remove()
 #' @export
 
 SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 'thickness', subj_ID = TRUE) 
 { 
+  
+  #check if FREESURFER_HOME has been set  
+  if(Sys.getenv('FREESURFER_HOME')=="") {stop('No FREESURFER_HOME variable has been set. SURFvextract() will not be able to work without FreeSurfer.')}
+  #check if FreeSurfer has been setup (test freeview command)
+  testFS <- suppressWarnings(try(system("which freesurfer", intern = TRUE, ignore.stderr = TRUE),silent=TRUE))
+  if  (!length(testFS) > 0) {stop('It seems that FreeSurfer has not been set up in your environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.')}
+  
   
   if (missing("filename")) {
     warning(paste0('No filename argument was given. The matrix object "brain_', measure,'.rds will be saved in R temporary directory (tempdir()).\n'))
@@ -38,13 +46,16 @@ alldirs=dir(path=sdirpath, pattern="surf$", recursive=TRUE, include.dirs=TRUE)
 onlysubjsurf=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
 if(length(onlysubjsurf) > 0) {alldirs=onlysubjsurf}
 #checks subject with specific surf measure data (rh.measure file) 
-sublist=list.files(alldirs, pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
+sublist=list.files(paste0(sdirpath, alldirs), pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
 #flags subjects with no appropriate surf measure data inside surf/
-missinglist=dirname(alldirs[! alldirs %in% dirname(sublist)])
+missinglist=dirname(alldirs[! paste0(sdirpath, alldirs) 
+                            %in% dirname(sublist)])
 if (length(missinglist) != 0) { warning(paste("Some of the subject directories do not contain the required surface files:", toString(missinglist)))}
 
-#Stores subjects IDs with available data in sublist.txt
-sublist = dirname(dirname(sublist)) #remove path to files
+#Extract subjects IDs from folders with available data in sublist.txt
+sublist = dirname(dirname(sublist)) #remove subfolders
+sublist = stringr::str_remove(sublist, 
+                                 pattern=sdirpath) #remove full path
 write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
