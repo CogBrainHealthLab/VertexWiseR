@@ -24,8 +24,8 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-SystemRequirements: Miniconda3 (>= 23.10.0); BrainStat (reticulate
-    installation, >=0.4.2); Numpy (<= 1.26.4)
+SystemRequirements: Miniconda3 (v23.10.0); BrainStat (reticulate
+    installation, v0.4.2); Numpy (v1.26.4)
 Depends: 
     R (>= 4.0.0)
 Imports: 
@@ -41,4 +41,5 @@ Imports:
     methods,
     reticulate,
     stats,
+    stringr,
     utils

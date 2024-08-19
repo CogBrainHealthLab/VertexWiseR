@@ -183,16 +183,16 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if( !reticulate::py_module_available("brainstat") 
         & requirement!="miniconda only") 
     {
-      prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
+      prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
       if (prompt==1)
       {	
         
         #if miniconda exists, use reticulate to install
         if (tryCatch(file.exists(reticulate::conda_binary()), error = function(e) FALSE)) {
-          reticulate::py_install("brainstat",pip=TRUE) 
+          reticulate::py_install("brainstat==0.4.2",pip=TRUE) 
         }
         else { #if only Python, install via pip
-          system('pip install brainstat') 
+          system('pip install brainstat==0.4.2') 
           #install_py would use make virtual environment
         }
         
