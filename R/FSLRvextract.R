@@ -14,7 +14,7 @@
 #'  \item `.sulc.32k_fs_LR.dscalar.nii` (HCP legacy pipeline)
 #'  \item `_space-fsLR_den-91k_thickness.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)
 #'  \item `_space-fsLR_den-91k_curv.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)
-#'  \item `_space-fsLR_den-91k_sulc.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)
+#'  \item `_space-fsLR_den-91k_sulc.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)}
 #' @param subj_ID A logical object to determine whether to return a list object containing both subject ID and data matrix.
 #' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
 #' 

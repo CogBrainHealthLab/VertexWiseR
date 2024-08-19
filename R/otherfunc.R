@@ -459,6 +459,7 @@ fs5_to_fs6=function(surf_data)
   if(length(surf_data)==20484) {surf_data.fs6=surf_data[fs6_to_fs5_map]} 
   #mapping fsaverage5 to fsaverage6 space if surf_data is a Nx20484 matrix
   else {surf_data.fs6=surf_data[,fs6_to_fs5_map]}
+  surf_data.fs6[is.na(surf_data.fs6)]=0
   return(surf_data.fs6)
 }
 
