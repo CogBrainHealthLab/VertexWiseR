@@ -7,38 +7,43 @@
 FSLRvextract(
   sdirpath = "./",
   wb_path,
-  MSMAll = TRUE,
   filename,
-  measure = "thickness",
+  dscalar,
   subj_ID = TRUE,
   silent = FALSE
 )
 }
 \arguments{
-\item{sdirpath}{A string object containing the path to the HCP preprocessed directory. Default is the current working directory ("./").}
+\item{sdirpath}{A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").}
 
 \item{wb_path}{The filepath to the workbench folder that you have previously downloaded and unzipped}
 
-\item{MSMAll}{A logical object to determine whether the filename of the dscalar file includes the "MSMAll", which will be the case if the data is preprocessed using the more recent HCP MSMAll pipeline. Set to 'TRUE' by default}
-
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).}
-
-\item{measure}{A string object containing the name of the measure of interest. Options are 'thickness' or 'sulc'. Default is 'thickness'.}
 
 \item{subj_ID}{A logical object to determine whether to return a list object containing both subject ID and data matrix.}
 
 \item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
+
+\item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. The examples of thee filename suffixes are shown below
+\itemize{
+\item \code{.thickness_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
+\item \code{.sulc_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
+\item \code{.thickness.32k_fs_LR.dscalar.nii} (HCP legacy pipeline)
+\item \code{.sulc.32k_fs_LR.dscalar.nii} (HCP legacy pipeline)
+\item \verb{_space-fsLR_den-91k_thickness.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
+\item \verb{_space-fsLR_den-91k_curv.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
+\item \verb{_space-fsLR_den-91k_sulc.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)}}
 }
 \value{
 A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
-Extracts vertex-wise surface-based measures for each subject from HCP preprocessed directory, and stores it as a single .RDS file.
+Extracts vertex-wise surface-based measures for each subject from HCP and fMRIprep preprocessed directory, and stores it as a single .RDS file.
 }
 \details{
 The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extract the data from these files, and organize the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
 }
 \examples{
-FSLRvextract(sdirpath = "./", filename = paste0(tempdir(),"/fslr32k.RDS"), measure = "thickness") 
+dat_fslr32k=FSLRvextract(sdirpath="./", wb_path="/path/to/workbench", filename="dat_fslr32k.rds",dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", subj_ID = TRUE, silent=FALSE)
 
 }

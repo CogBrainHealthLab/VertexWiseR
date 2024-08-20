@@ -17,7 +17,7 @@
 #' measure="curv") 
 #' @importFrom freesurferformats read.fs.mgh
 #' @importFrom utils read.delim write.table
-#' @importFrom stringr str_remove()
+#' @importFrom stringr str_remove
 #' @export
 
 SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 'thickness', subj_ID = TRUE) 

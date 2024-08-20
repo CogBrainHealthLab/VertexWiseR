@@ -2,7 +2,7 @@
 % Please edit documentation in R/vertmixedTFCE.R
 \name{TFCE_vertex_analysis_mixed}
 \alias{TFCE_vertex_analysis_mixed}
-\title{Vertex-wise analysis with TFCE (mixed effect)}
+\title{Vertex-wise analysis with threshold-free cluster enhancement (mixed effect)}
 \usage{
 TFCE_vertex_analysis_mixed(
   model,
@@ -42,7 +42,7 @@ TFCE_vertex_analysis_mixed(
 A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
 }
 \description{
-Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and TFCE statistical maps for the selected contrast.
+Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
 }
 \details{
 This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}.

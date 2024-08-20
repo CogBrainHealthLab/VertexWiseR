@@ -2,7 +2,7 @@
 % Please edit documentation in R/vertwise.R
 \name{RFT_vertex_analysis}
 \alias{RFT_vertex_analysis}
-\title{Vertex-wise analysis}
+\title{Vertex-wise analysis with random field theory cluster correction}
 \usage{
 RFT_vertex_analysis(
   model,
@@ -39,7 +39,7 @@ A list object containing the cluster level results, thresholded t-stat map, and 
 Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.
 }
 \details{
-The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BraiStat' Python library}.
+The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BraiStat' Python library}. \n By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply run the non-TFCE analysis functions and set ‘p=1’.
 
 Output definitions:
 \itemize{

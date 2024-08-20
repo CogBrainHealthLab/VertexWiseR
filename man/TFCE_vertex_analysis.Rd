@@ -2,7 +2,7 @@
 % Please edit documentation in R/vertTFCE.R
 \name{TFCE_vertex_analysis}
 \alias{TFCE_vertex_analysis}
-\title{Vertex-wise analysis with TFCE (fixed effect)}
+\title{Vertex-wise analysis with threshold-free cluster enhancement (fixed effect)}
 \usage{
 TFCE_vertex_analysis(
   model,
@@ -36,7 +36,7 @@ TFCE_vertex_analysis(
 A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
 }
 \description{
-Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and TFCE statistical maps for the selected contrast.
+Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
 }
 \details{
 This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}.
