@@ -54,6 +54,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     
     if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
+      missingobj=1
+      
       if (is.null(reticulate::py_discover_config()) |
           is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
       {
@@ -183,6 +185,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if( !reticulate::py_module_available("brainstat") 
         & requirement!="miniconda only") 
     {
+      missingobj=1
+      
       prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
       if (prompt==1)
       {	
@@ -211,6 +215,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if (Sys.getenv('BRAINSTAT_DATA')=="" & 
         !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))) 
     {
+      missingobj=1
       
       choice = utils::menu(c("Default", "Custom"), title='By Default, BrainStat stores data required for analyses in $HOME_DIR/brainstat_data/. Alternatively, you may want to specify your own custom path for the BrainStat data. Where do you want BrainStat data to be saved?\n')
       if (choice==1)  #set path to $HOME_DIR by default
@@ -274,7 +279,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     #fsaverage5 data
     if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
-    {     
+    { 
+      missingobj=1
+      
       prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fsaverage5 templates in", brainstat_data_path, ". They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?"))
       
       if (prompt==1){    
@@ -291,6 +298,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
     { 
+      missingobj=1
+      
       prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fsaverage6 templates in", brainstat_data_path, ".  They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?"))
       
       if (prompt==1)
@@ -307,6 +316,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
     {
+      missingobj=1
+      
       prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's yeo parcellation data in", brainstat_data_path, ". They are fetched by default by BrainStat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?"))
       
       if (prompt==1){    
@@ -331,6 +342,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if ((requirement=="any" | requirement=='neurosynth')==TRUE 
         & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
     {
+      missingobj=1
+      
       prompt = utils::menu(c("Yes", "No"), title=paste0(
         "\nneurosynth_dataset.pkl is not detected inside VertexWiseR's installed package directory (", 
         system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'), 
@@ -361,8 +374,15 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
     }
     
+    if(!exists('missingobj'))
+    { message('No system requirements are missing. \u2713') }
+    
   } 
   
+  
+  
+  #############################################################
+  #############################################################
   #############################################################
   #If the session is non-interactive and any required file is missing, the script will stop and require the user to run VWRfirstrun() interactively.
   #non-interactive checks proceed when VWRfirstrun() is called by a function with the argument VWR_check defined.

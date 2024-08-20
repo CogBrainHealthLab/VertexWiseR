@@ -129,7 +129,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda only")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
@@ -534,7 +534,7 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda/brainstat")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
@@ -588,7 +588,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="neurosynth")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)

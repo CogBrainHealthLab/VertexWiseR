@@ -58,7 +58,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="miniconda only")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   

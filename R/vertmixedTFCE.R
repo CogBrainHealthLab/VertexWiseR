@@ -57,7 +57,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, surf_data, random, nperm=100
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)

@@ -52,7 +52,7 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)}
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
