@@ -289,7 +289,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   #fitting permuted model and extracting max-TFCE values in parallel streams
 
   start=Sys.time()
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export=c("edgelist","getClusters"),.options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export="getClusters",.options.snow = opts)  %dopar%
     {
       #load python libraries within each foreach loop
       brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
