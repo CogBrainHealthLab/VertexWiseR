@@ -375,7 +375,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     }
     
     if(!exists('missingobj'))
-    { message('No system requirements are missing. \u2713') }
+    { message('No system requirements are missing. \u2713 \n') }
     
   } 
   
@@ -483,7 +483,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     #If nothing is missing, missingobj will not have been created
     #thus allowing the function to inform that no (specified) requirements are missing
     if (promptless==TRUE) {if(!exists('missingobj'))
-    { message('No system requirements are missing. \u2713') }}
+    { message('No system requirements are missing. \u2713 \n') }}
     
   }
   
