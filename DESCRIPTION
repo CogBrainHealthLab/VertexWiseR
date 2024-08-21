@@ -20,6 +20,10 @@ Description: Provides functions to run statistical analyses on
     without need for its access.
 License: GPL-3
 URL: https://cogbrainhealthlab.github.io/VertexWiseR/
+Suggests: 
+    R.rsp
+VignetteBuilder: 
+    R.rsp
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

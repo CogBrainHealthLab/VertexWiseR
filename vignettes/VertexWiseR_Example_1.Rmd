@@ -1,0 +1,112 @@
+---
+title: "Example analyses with VertexWiseR - Example 1"
+author: "Charly Billaud, Junhong Yu"
+date: "2024-08-12"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Installing VertexWiseR and checking for requirements
+
+The following code installs the package and makes sure all requirements, prompting the user to install dependencies, in order to allow analyses to work.
+
+```{r, results = 'hide', eval = FALSE}
+install.packages("VertexWiseR") 
+```
+
+```{r, results = 'hide'}
+library(VertexWiseR)
+```
+
+VWRfirstrun() checks all system requiremements for specific functions, and gives the opportunity to download and install each of them.
+
+```{r, results = 'hide'}
+VWRfirstrun()
+```
+
+## Example analysis 1: linear model of age and cortical thickness, and meta-analytic decoding
+
+The first stage of the analysis assumes that a preprocessed Freesurfer subjects directory is present. However, this code makes use of an already-extracted cortical thickness (CT) dataset made available on the VertexWiseR git repository.
+
+The following commented out code is the script which was used to produce this demo data with the SPRENG dataset:
+
+```{r}
+
+#SURFvextract(sdirpath = SUBJECTS_DIR, filename = "SPRENG_CTv", template='fsaverage5', measure = 'thickness', subj_ID = T)
+
+```
+
+The surface can be loaded straight from the online repository and then smoothed :
+
+```{r}
+SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
+
+SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
+```
+
+The SPRENG behavioural data (SPRENG_behdata_site1.csv) is accessible from the VertexWiseR package internal data:
+
+```{r}
+dat_beh=readRDS(system.file(package='VertexWiseR', '/demo_data/SPRENG_behdata_site1.rds')) 
+```
+
+To run the vertex-wise model analysis with random field theory-based cluster correction, testing for the effect of age, controlling for sex, on CT:
+
+```{r, results = 'hide'}
+
+model1_RFT=RFT_vertex_analysis(model = dat_beh[,c("gender","age")], 
+  contrast = dat_beh[,"age"], surf_data = SPRENG_CTv_smoothed, p = 0.05)
+```
+
+```{r}
+model1_RFT$cluster_level_results
+```
+
+To run the vertex-wise model analysis with threshold-free cluster enhancement-based cluster correction, testing for the effect of age, controlling for sex, on CT; with 1000 permutations:
+
+```{r, results = 'hide'}
+
+model1_TFCE=TFCE_vertex_analysis(model= dat_beh[,c("gender","age")], 
+                                 contrast = dat_beh[,"age"],
+                                 surf_data=SPRENG_CTv_smoothed,
+                                 nperm=1000, 
+                                 nthread=4) 
+
+TFCEoutput = TFCE_threshold(model1_TFCE, p=0.05)
+```
+
+```{r}
+TFCEoutput$cluster_level_results
+```
+
+To plot the results of both models on an inflated fsaverage5 surface:
+
+```{r, results = 'hide'}
+tmaps = rbind(model1_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
+plot_surf(surf_data = tmaps, 
+          filename ='SPRENG_tstatmaps.png', 
+          surface = 'inflated', 
+          title=c("RFT-corrected\nclusters", "TFCE-corrected\nclusters"),
+          cmap='RdBu_r',
+          show.plot.window=FALSE)
+```
+```{r, echo=FALSE, fig.align="center", out.width="100%"}
+knitr::include_graphics('SPRENG_tstatmaps.png')
+```
+
+To run meta-analytic decoding of the significant negative clusters (the neurosynth dataset needs to be installed as VWRfirstrun() allows):
+
+```{r,results = 'hide'}
+surf_decoding=decode_surf_data(TFCEoutput$thresholded_tstat_map, contrast="negative")
+```
+
+```{r}
+head(surf_decoding)
+```
