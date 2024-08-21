@@ -24,10 +24,10 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
 { 
   
   #check if FREESURFER_HOME has been set  
-  if(Sys.getenv('FREESURFER_HOME')=="") {stop('No FREESURFER_HOME variable has been set. SURFvextract() will not be able to work without FreeSurfer.')}
+  if(Sys.getenv('FREESURFER_HOME')=="") {return(message('No FREESURFER_HOME variable has been set. SURFvextract() will not be able to work without FreeSurfer.'))}
   #check if FreeSurfer has been setup (test freeview command)
   testFS <- suppressWarnings(try(system("which freesurfer", intern = TRUE, ignore.stderr = TRUE),silent=TRUE))
-  if  (!length(testFS) > 0) {stop('It seems that FreeSurfer has not been set up in your environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.')}
+  if  (!length(testFS) > 0) {return(message('It seems that FreeSurfer has not been set up in your environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.'))}
   
   
   if (missing("filename")) {
