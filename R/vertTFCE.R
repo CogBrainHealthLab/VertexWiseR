@@ -505,7 +505,7 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
     assign("edgelist", edgelist, envir = internalenv)
     
     ROImap_fslr32k <- get('ROImap_fslr32k')
-    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k6@atlases)
+    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
     MNImap <- get_MNIcoords('fslr32k')
