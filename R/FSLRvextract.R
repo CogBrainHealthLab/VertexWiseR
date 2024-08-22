@@ -62,11 +62,14 @@ FSLRvextract=function(sdirpath="./", wb_path,filename,dscalar, subj_ID = TRUE, s
     fslr32k_dat[,c(LH.idx,RH.idx)]=c(dat.temp$data$cortex_left,dat.temp$data$cortex_right)
     remove(dat.temp)
   }
+  fslr32k_dat=fslr32k_dat[order(sublist),]
+  
+  ##recode NAs to 0 because NA values will result in warnings for some of the package's functions
+  fslr32k_dat[is.na(fslr32k_dat)]=0
   
   if(silent==FALSE) {message(paste0("Saving output as ",filename))}
   ##output file depending on subj_ID==T
-  fslr32k_dat=fslr32k_dat[order(sublist),]
-  
+
   if(subj_ID==TRUE) {saveRDS(list(sublist,fslr32k_dat), file=filename)} 
   else  {saveRDS(fslr32k_dat, file=filename)}
   
