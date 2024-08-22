@@ -51,7 +51,7 @@ SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/bl
 ``` 
 #### Smoothing the surface data
 
-VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
+VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
 
 ``` r 
 SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)
@@ -77,7 +77,7 @@ head(all_pred)
 #### The actual analysis
 
 The next code chunk runs the analysis. There is an optional `p`
-parameter for the `vertex_analysis()` function to specify the p
+parameter for the `RFT_vertex_analysis()` function to specify the p
 threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.). 
 
 The second line displays the results.
@@ -222,7 +222,7 @@ head(all_pred)
 ### Vertex-wise analysis
 
 ``` r
-results=vertex_analysis(model = all_pred, contrast =all_pred$sex_recode, surf_data = dat_CT)
+results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex_recode, surf_data = dat_CT)
 results$cluster_level_results
 ```
 

@@ -38,6 +38,13 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
+    <a class="dropdown-item" href="articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+  </div>
+</li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
@@ -85,7 +92,7 @@
 <div class="section level4">
 <h4 id="smoothing-the-surface-data">Smoothing the surface data<a class="anchor" aria-label="anchor" href="#smoothing-the-surface-data"></a>
 </h4>
-<p>VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:</p>
+<p>VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="reference/smooth_surf.html">smooth_surf</a></span><span class="op">(</span><span class="va">SPRENG_CTv</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -107,10 +114,10 @@
 <div class="section level4">
 <h4 id="the-actual-analysis">The actual analysis<a class="anchor" aria-label="anchor" href="#the-actual-analysis"></a>
 </h4>
-<p>The next code chunk runs the analysis. There is an optional <code>p</code> parameter for the <code><a href="reference/vertex_analysis.html">vertex_analysis()</a></code> function to specify the p threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.).</p>
+<p>The next code chunk runs the analysis. There is an optional <code>p</code> parameter for the <code><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis()</a></code> function to specify the p threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.).</p>
 <p>The second line displays the results.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/vertex_analysis.html">vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">age</span>, surf_data <span class="op">=</span> <span class="va">SPRENG_CTv</span>, atlas <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">age</span>, surf_data <span class="op">=</span> <span class="va">SPRENG_CTv</span>, atlas <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">cluster_level_results</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="do">##   clusid nverts     P     X    Y   Z tstat          region</span></span>
@@ -218,7 +225,7 @@
 <h3 id="vertex-wise-analysis">Vertex-wise analysis<a class="anchor" aria-label="anchor" href="#vertex-wise-analysis"></a>
 </h3>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/vertex_analysis.html">vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">sex_recode</span>, surf_data <span class="op">=</span> <span class="va">dat_CT</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">sex_recode</span>, surf_data <span class="op">=</span> <span class="va">dat_CT</span><span class="op">)</span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="do">## [1] "No significant clusters"</span></span>

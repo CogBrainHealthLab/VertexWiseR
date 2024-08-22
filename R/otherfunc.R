@@ -655,7 +655,8 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 #' @returns A Nx2 matrix object listing each vertex of the surface template and the vertices adjacent to it (making an edge together).
 #' @examples
 #' edgelist=get_edgelist("fslr32k")
-
+#' @noRd
+#' 
 get_edgelist=function(template)
 {
   #Load brainstat tools
@@ -684,6 +685,7 @@ get_edgelist=function(template)
 #' @returns A matrix with X columns corresponding to the template's vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
 #' @examples
 #' MNImap = get_MNIcoords("fslr32k")
+#' @noRd
 
 get_MNIcoords=function(template)
 {

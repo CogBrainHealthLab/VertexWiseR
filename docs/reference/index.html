@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -73,9 +80,19 @@
         <dd>SURFvextract</dd>
       </dl><dl><dt>
           
+          <code><a href="FSLRvextract.html">FSLRvextract()</a></code> 
+        </dt>
+        <dd>FSLRvextract</dd>
+      </dl><dl><dt>
+          
           <code><a href="smooth_surf.html">smooth_surf()</a></code> 
         </dt>
         <dd>Smooth surface</dd>
+      </dl><dl><dt>
+          
+          <code><a href="fs_stats.html">fs_stats()</a></code> 
+        </dt>
+        <dd>fs_stats()</dd>
       </dl></div><div class="section level2">
       <h2 id="main-analysis-functions">Main analysis functions<a class="anchor" aria-label="anchor" href="#main-analysis-functions"></a></h2>
       
@@ -95,22 +112,22 @@
 
       <dl><dt>
           
-          <code><a href="vertex_analysis.html">vertex_analysis()</a></code> 
+          <code><a href="RFT_vertex_analysis.html">RFT_vertex_analysis()</a></code> 
         </dt>
-        <dd>Vertex-wise analysis</dd>
+        <dd>Vertex-wise analysis with random field theory cluster correction</dd>
       </dl><dl><dt>
           
-          <code><a href="TFCE.vertex_analysis.html">TFCE.vertex_analysis()</a></code> 
+          <code><a href="TFCE_vertex_analysis.html">TFCE_vertex_analysis()</a></code> 
         </dt>
-        <dd>Vertex-wise analysis with TFCE (fixed effect)</dd>
+        <dd>Vertex-wise analysis with threshold-free cluster enhancement (fixed effect)</dd>
       </dl><dl><dt>
           
-          <code><a href="TFCE.vertex_analysis.mixed.html">TFCE.vertex_analysis.mixed()</a></code> 
+          <code><a href="TFCE_vertex_analysis_mixed.html">TFCE_vertex_analysis_mixed()</a></code> 
         </dt>
-        <dd>Vertex-wise analysis with TFCE (mixed effect)</dd>
+        <dd>Vertex-wise analysis with threshold-free cluster enhancement (mixed effect)</dd>
       </dl><dl><dt>
           
-          <code><a href="TFCE.threshold.html">TFCE.threshold()</a></code> 
+          <code><a href="TFCE_threshold.html">TFCE_threshold()</a></code> 
         </dt>
         <dd>Thresholding TFCE output</dd>
       </dl></div><div class="section level2">
@@ -206,6 +223,32 @@
       
     </div><div class="section level2">
       
+      <h3 id="object-classes">Object classes<a class="anchor" aria-label="anchor" href="#object-classes"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="MNIsurface-class.html">MNIsurface-class</a></code> 
+        </dt>
+        <dd>MNI surface map object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="edgelist-class.html">edgelist-class</a></code> 
+        </dt>
+        <dd>Edge list object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ROImap-class.html">ROImap-class</a></code> 
+        </dt>
+        <dd>Region-of-Interest mapping object</dd>
+      </dl></div><div class="section level2">
+      
       <h3 id="edges">Edges<a class="anchor" aria-label="anchor" href="#edges"></a></h3>
       
 
@@ -217,17 +260,7 @@
 
       <dl><dt>
           
-          <code><a href="edgelistfs5.html">edgelistfs5</a></code> 
-        </dt>
-        <dd>List of edges for the fsaverage5 template</dd>
-      </dl><dl><dt>
-          
-          <code><a href="edgelistfs6.html">edgelistfs6</a></code> 
-        </dt>
-        <dd>List of edges for the fsaverage6 template</dd>
-      </dl><dl><dt>
-          
-          <code><a href="edgelistHIP.html">edgelistHIP</a></code> 
+          <code><a href="edgelist_hip.html">edgelist_hip</a></code> 
         </dt>
         <dd>List of edges for the hippocampal template</dd>
       </dl></div><div class="section level2">
@@ -251,16 +284,6 @@
           <code><a href="hip_points_cells.html">hip_points_cells</a></code> 
         </dt>
         <dd>points and cells data required to build the hippocampus surface template</dd>
-      </dl><dl><dt>
-          
-          <code><a href="MNImap_fs5.html">MNImap_fs5</a></code> 
-        </dt>
-        <dd>fsaverage5 surface in MNI space</dd>
-      </dl><dl><dt>
-          
-          <code><a href="MNImap_fs6.html">MNImap_fs6</a></code> 
-        </dt>
-        <dd>fsaverage6 surface in MNI space</dd>
       </dl><dl><dt>
           
           <code><a href="MNImap_hip.html">MNImap_hip</a></code> 
@@ -289,9 +312,14 @@
         <dd>Atlas parcellations of fsaverage6</dd>
       </dl><dl><dt>
           
-          <code><a href="ROImap_HIP.html">ROImap_HIP</a></code> 
+          <code><a href="ROImap_fslr32k.html">ROImap_fslr32k</a></code> 
         </dt>
-        <dd>Atlas parcellations of the hippocampus</dd>
+        <dd>Atlas parcellations of FS_LR32k</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ROImap_hip.html">ROImap_hip</a></code> 
+        </dt>
+        <dd>Atlas parcellations of the hippocampus (CITI168)</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
