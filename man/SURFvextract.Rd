@@ -35,6 +35,6 @@ This function was currently not tested on a MacOS system.
 }
 \examples{
 SURFvextract(sdirpath = "freesurfer_subjdir", 
-filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5", 
+filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5",
 measure="curv") 
 }

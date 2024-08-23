@@ -13,7 +13,7 @@
 #' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 #' @examples
 #' SURFvextract(sdirpath = "freesurfer_subjdir", 
-#' filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5", 
+#' filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5",
 #' measure="curv") 
 #' @importFrom freesurferformats read.fs.mgh
 #' @importFrom utils read.delim write.table

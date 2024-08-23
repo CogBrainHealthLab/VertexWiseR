@@ -24,7 +24,7 @@ FSLRvextract(
 
 \item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
 
-\item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. The examples of thee filename suffixes are shown below
+\item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 \itemize{
 \item \code{.thickness_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
 \item \code{.sulc_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)

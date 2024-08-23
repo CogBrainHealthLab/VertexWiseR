@@ -6,7 +6,7 @@
 #' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
 #' @param wb_path The filepath to the workbench folder that you have previously downloaded and unzipped
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).
-#' @param dscaler A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. The examples of thee filename suffixes are shown below
+#' @param dscaler A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 #' \itemize{
 #'  \item `.thickness_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
 #'  \item `.sulc_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
