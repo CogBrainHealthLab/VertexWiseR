@@ -66,13 +66,13 @@ all_pred=demodata[,c(2,7)]
 head(all_pred)
 ```
 
-    ##   gender age
-    ## 1      F  21
-    ## 2      F  73
-    ## 3      F  77
-    ## 4      M  68
-    ## 5      F  60
-    ## 6      F  71
+    ##   sex age
+    ## 1 F   21
+    ## 2 F   73
+    ## 3 F   77
+    ## 4 M   68
+    ## 5 F   60
+    ## 6 F   71
 
 #### The actual analysis
 
@@ -205,7 +205,7 @@ dat_CT=SPRENG_CTv[demodata$agegroup=="Y",]
 
 ##recoding categorical variables into numeric form for the vertex-wise analysis
 dat_beh$sex_recode=0
-dat_beh$sex_recode[dat_beh$gender=="F"]=1
+dat_beh$sex_recode[dat_beh$sex=="F"]=1
 all_pred=dat_beh[,c(3,7,72)]
 
 head(all_pred)

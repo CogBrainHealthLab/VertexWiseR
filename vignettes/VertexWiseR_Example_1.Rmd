@@ -61,7 +61,7 @@ To run the vertex-wise model analysis with random field theory-based cluster cor
 
 ```{r, results = 'hide'}
 
-model1_RFT=RFT_vertex_analysis(model = dat_beh[,c("gender","age")], 
+model1_RFT=RFT_vertex_analysis(model = dat_beh[,c("sex","age")], 
   contrast = dat_beh[,"age"], surf_data = SPRENG_CTv_smoothed, p = 0.05)
 ```
 
@@ -73,7 +73,7 @@ To run the vertex-wise model analysis with threshold-free cluster enhancement-ba
 
 ```{r, results = 'hide'}
 
-model1_TFCE=TFCE_vertex_analysis(model= dat_beh[,c("gender","age")], 
+model1_TFCE=TFCE_vertex_analysis(model= dat_beh[,c("sex","age")], 
                                  contrast = dat_beh[,"age"],
                                  surf_data=SPRENG_CTv_smoothed,
                                  nperm=1000, 

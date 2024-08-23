@@ -103,13 +103,13 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_pred</span><span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">7</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_pred</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">##   gender age</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">## 1      F  21</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="do">## 2      F  73</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="do">## 3      F  77</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="do">## 4      M  68</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="do">## 5      F  60</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="do">## 6      F  71</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">##   sex age</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">## 1 F   21</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="do">## 2 F   73</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="do">## 3 F   77</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="do">## 4 M   68</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="do">## 5 F   60</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="do">## 6 F   71</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="the-actual-analysis">The actual analysis<a class="anchor" aria-label="anchor" href="#the-actual-analysis"></a>
@@ -209,7 +209,7 @@
 <span></span>
 <span><span class="co">##recoding categorical variables into numeric form for the vertex-wise analysis</span></span>
 <span><span class="va">dat_beh</span><span class="op">$</span><span class="va">sex_recode</span><span class="op">=</span><span class="fl">0</span></span>
-<span><span class="va">dat_beh</span><span class="op">$</span><span class="va">sex_recode</span><span class="op">[</span><span class="va">dat_beh</span><span class="op">$</span><span class="va">gender</span><span class="op">==</span><span class="st">"F"</span><span class="op">]</span><span class="op">=</span><span class="fl">1</span></span>
+<span><span class="va">dat_beh</span><span class="op">$</span><span class="va">sex_recode</span><span class="op">[</span><span class="va">dat_beh</span><span class="op">$</span><span class="va">sex</span><span class="op">==</span><span class="st">"F"</span><span class="op">]</span><span class="op">=</span><span class="fl">1</span></span>
 <span><span class="va">all_pred</span><span class="op">=</span><span class="va">dat_beh</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">7</span>,<span class="fl">72</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_pred</span><span class="op">)</span></span></code></pre></div>
