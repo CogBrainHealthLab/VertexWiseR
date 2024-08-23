@@ -167,11 +167,14 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
 
   #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
-  idx0=which(colSums(surf_data)==0)
-  edgelist0=edgelist[-which(!is.na(match(edgelist[,1],idx0))),]
-  edgelist1=edgelist0[-which(!is.na(match(edgelist0[,2],idx0))),]
-	
-  smoothed=mesh_smooth(surf_data,edgelist1, FWHM)
+  idx0=which(colSums(data.matrix(surf_data))==0)
+  if(length(idx0)>0)
+  {	  
+  edgelist=edgelist[-which(!is.na(match(edgelist[,1],idx0))),]
+  edgelist=edgelist[-which(!is.na(match(edgelist[,2],idx0))),]
+  }
+	  
+  smoothed=mesh_smooth(surf_data,edgelist, FWHM)
   smoothed[is.na(smoothed)]=0
   return(smoothed)
 }
