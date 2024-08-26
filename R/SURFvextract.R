@@ -35,6 +35,9 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
     filename=paste0(tempdir(),'/brain_',measure,'.rds')
   }
 
+#check if sdirpath contains last slash (will fail in unix if not)
+if (substr(sdirpath, nchar(sdirpath), nchar(sdirpath)) != '/')
+  {sdirpath=paste0(sdirpath,'/')}
   
 #check if sdirpath contains freesurfer surf folders 
 dircount = dir(path=sdirpath, recursive=TRUE, pattern="surf$", include.dirs = TRUE)
@@ -60,8 +63,8 @@ write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, 
 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
 Sys.setenv(SUBJECTS_DIR=sdirpath)
-system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR \n
-       mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --out $SUBJECTS_DIR/lh.mgh \n 
+system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR"), ignore.stderr = TRUE)
+system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --out $SUBJECTS_DIR/lh.mgh \n 
        mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, " --out $SUBJECTS_DIR/rh.mgh"));
 
 #Reads mgh files to stores and assign the thickness values to each subject in a matrix object usable by VertexWiseR. Appends a column with the subject IDs if required by the user.
