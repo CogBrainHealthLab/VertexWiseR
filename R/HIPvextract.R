@@ -20,6 +20,7 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   oldwd <- getwd()
   on.exit(setwd(oldwd)) #will restore user's working directory path on function break
   
+  if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
   
   if (missing("filename")) {

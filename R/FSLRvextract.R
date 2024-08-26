@@ -30,6 +30,7 @@ FSLRvextract=function(sdirpath="./", wb_path,filename,dscalar, subj_ID = TRUE, s
   oldwd <- getwd()
   on.exit(setwd(oldwd)) #will restore user's working directory path on function break
   
+  if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
   
   ## filename check
