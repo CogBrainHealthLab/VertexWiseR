@@ -54,11 +54,12 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     
     if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
-      missingobj=1
       
       if (is.null(reticulate::py_discover_config()) |
           is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
       {
+        missingobj=1
+        
         prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
                                "Yes, install Python (if Miniconda could not be installed)", 
                                "No"), 
