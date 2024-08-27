@@ -23,6 +23,7 @@ reference:
     desc: >
     contents:
     - RFT_vertex_analysis
+    - RFT_vertex_analysis_f
     - TFCE_vertex_analysis
     - TFCE_vertex_analysis_mixed
     - TFCE_threshold
