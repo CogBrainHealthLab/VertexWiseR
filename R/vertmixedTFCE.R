@@ -205,7 +205,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
   } else if(smooth_FWHM>0) 
   {
     message(paste("surf_data will be smoothed using a ", smooth_FWHM,"mm FWHM kernel\n", sep=""))
-    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
+    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM, VWR_check=FALSE)
   }
   surf_data[is.na(surf_data)]=0
   

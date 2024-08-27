@@ -207,7 +207,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   } else if(smooth_FWHM>0) 
   {
     message(paste("surf_data will be smoothed using a ", smooth_FWHM,"mm FWHM kernel\n", sep=""))
-    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
+    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM, VWR_check=FALSE)
   }
   
   ##unpermuted model
