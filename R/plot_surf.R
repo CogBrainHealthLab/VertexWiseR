@@ -39,7 +39,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ...")
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)}
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
@@ -113,9 +113,26 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
     brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
     
+    
+    #For brainstat data, it will look either in default $HOME path or 
+    #custom if it's been set
+    # If custom installation paths have been defined by the user, source
+    # them from the package directory:
+    Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+    if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+    
+    if (Sys.getenv('BRAINSTAT_DATA')=="")
+    { 
+      brainstat_data_path=fs::path_home()
+    } 
+    else if (!Sys.getenv('BRAINSTAT_DATA')=="") 
+    {
+      brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
+    }
+    
     #loading fsaverage surface
-    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[1]
-    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[2]
+    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[1]
+    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[2]
     
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1920,rows*400)}
