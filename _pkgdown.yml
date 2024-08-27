@@ -79,9 +79,3 @@ reference:
     - ROImap_fs6
     - ROImap_fslr32k
     - ROImap_hip
-
-  - title: internal 
-    desc: >
-    contents:  
-    - get_edgelist 
-    - get_MNIcoords

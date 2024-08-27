@@ -26,6 +26,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -130,7 +131,13 @@
 <span class="r-in"><span><span class="va">TFCEpos</span><span class="op">=</span><span class="fu">TFCE_vertex_analysis_mixed</span><span class="op">(</span>model<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">7</span><span class="op">)</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>contrast<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fl">7</span><span class="op">]</span>, <span class="va">surf_data</span>,random<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, </span></span>
 <span class="r-in"><span>nperm <span class="op">=</span><span class="fl">5</span>,tail <span class="op">=</span> <span class="fl">1</span>, nthread <span class="op">=</span> <span class="fl">2</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-interactive sessions need requirement checks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating unpermuted TFCE image...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 5 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating permuted TFCE images...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in getNamespace(iname):</span> attempt to use zero-length variable name</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#To get significant clusters, you may then run:</span></span></span>
 <span class="r-in"><span><span class="co">#results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)</span></span></span>

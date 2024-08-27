@@ -26,6 +26,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -72,7 +73,7 @@
 
 
 <dt>random</dt>
-<dd><p>A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (and can be a single column from model).</p></dd>
+<dd><p>A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (it should NOT be inside the model data.frame).</p></dd>
 
 
 <dt>surf_data</dt>
@@ -127,7 +128,8 @@
 <span class="r-in"><span><span class="va">vertexwise_model</span><span class="op">=</span><span class="fu">RFT_vertex_analysis</span><span class="op">(</span>model<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">7</span><span class="op">)</span><span class="op">]</span>, </span></span>
 <span class="r-in"><span>contrast<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fl">7</span><span class="op">]</span>, surf_data <span class="op">=</span> <span class="va">CTv</span>, atlas<span class="op">=</span><span class="fl">1</span>,p <span class="op">=</span> <span class="fl">0.05</span>, </span></span>
 <span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-interactive sessions need requirement checks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#Description of the output:</span></span></span>
 <span class="r-in"><span><span class="co">#vertexwise_model$cluster_level_results</span></span></span>
