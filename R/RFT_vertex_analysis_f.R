@@ -119,14 +119,17 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   
   #The models do not accept variables with more than 2 levels
   #check from the formula and stop if one var has that issue
-  for (var in 1:length(mod$xlevels)) 
+  if(length(mod$xlevels)!=0) ## if no categorical variables are entered in the formula, mod$xlevels will be empty
   {
+   for (var in 1:length(mod$xlevels)) 
+   {
      if (length(mod$xlevels[[var]]) > 2)
      {stop(paste("The categorical variable '", names(mod$xlevels[var]),"' contains more than 2 levels, please code it into binarized dummy variables.\n",sep=""))}
      else if (length(mod$xlevels[[var]]) == 2)
      {message(paste("The categorical variable '", names(mod$xlevels[var]),"' has been coded 0 for", mod$xlevels[[var]][1], "and 1 for", mod$xlevels[[var]][2], "respectively.\n"))}
+   }
   }
-
+  
   
   if (!exists('random_var')) { random = NULL }
   
