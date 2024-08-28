@@ -54,7 +54,7 @@
 <span>  sdirpath <span class="op">=</span> <span class="st">"./"</span>,</span>
 <span>  <span class="va">wb_path</span>,</span>
 <span>  <span class="va">filename</span>,</span>
-<span>  <span class="va">dscalar</span>,</span>
+<span>  <span class="va">dscaler</span>,</span>
 <span>  subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -74,14 +74,6 @@
 <dd><p>A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).</p></dd>
 
 
-<dt>subj_ID</dt>
-<dd><p>A logical object to determine whether to return a list object containing both subject ID and data matrix.</p></dd>
-
-
-<dt>silent</dt>
-<dd><p>A logical object to determine whether messages will be silenced. Set to 'FALSE' by default</p></dd>
-
-
 <dt>dscaler</dt>
 <dd><p>A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below</p><ul><li><p><code>.thickness_MSMAll.32k_fs_LR.dscalar.nii</code> (HCP MSMAll pipeline)</p></li>
 <li><p><code>.sulc_MSMAll.32k_fs_LR.dscalar.nii</code> (HCP MSMAll pipeline)</p></li>
@@ -91,6 +83,14 @@
 <li><p><code>_space-fsLR_den-91k_curv.dscalar.nii</code> (fMRIprep; using the <code>--cifti-output 91k</code> flag)</p></li>
 <li><p><code>_space-fsLR_den-91k_sulc.dscalar.nii</code> (fMRIprep; using the <code>--cifti-output 91k</code> flag)</p></li>
 </ul></dd>
+
+
+<dt>subj_ID</dt>
+<dd><p>A logical object to determine whether to return a list object containing both subject ID and data matrix.</p></dd>
+
+
+<dt>silent</dt>
+<dd><p>A logical object to determine whether messages will be silenced. Set to 'FALSE' by default</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -106,7 +106,11 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu">FSLRvextract</span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"./"</span>, wb_path<span class="op">=</span><span class="st">"/path/to/workbench"</span>, filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,dscalar<span class="op">=</span><span class="st">".thickness_MSMAll.32k_fs_LR.dscalar.nii"</span>, subj_ID <span class="op">=</span> <span class="cn">TRUE</span>, silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu">FSLRvextract</span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"./"</span>, </span></span>
+<span class="r-in"><span>wb_path<span class="op">=</span><span class="st">"/path/to/workbench"</span>,</span></span>
+<span class="r-in"><span>filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span></span>
+<span class="r-in"><span>dscaler<span class="op">=</span><span class="st">".thickness_MSMAll.32k_fs_LR.dscalar.nii"</span>, </span></span>
+<span class="r-in"><span>subj_ID <span class="op">=</span> <span class="cn">TRUE</span>, silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No *.thickness_MSMAll.32k_fs_LR.dscalar.nii files could be found in the set sdirpath</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
