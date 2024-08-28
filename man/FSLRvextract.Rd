@@ -44,6 +44,10 @@ Extracts vertex-wise surface-based measures for each subject from HCP and fMRIpr
 The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extract the data from these files, and organize the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
 }
 \examples{
-dat_fslr32k=FSLRvextract(sdirpath="./", wb_path="/path/to/workbench", filename="dat_fslr32k.rds",dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", subj_ID = TRUE, silent=FALSE)
+dat_fslr32k=FSLRvextract(sdirpath="./", 
+wb_path="/path/to/workbench",
+filename="dat_fslr32k.rds",
+dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+subj_ID = TRUE, silent=FALSE)
 
 }

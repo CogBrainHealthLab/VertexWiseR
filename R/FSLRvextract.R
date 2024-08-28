@@ -20,7 +20,11 @@
 #' 
 #' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 #' @examples
-#' dat_fslr32k=FSLRvextract(sdirpath="./", wb_path="/path/to/workbench", filename="dat_fslr32k.rds",dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", subj_ID = TRUE, silent=FALSE)
+#' dat_fslr32k=FSLRvextract(sdirpath="./", 
+#' wb_path="/path/to/workbench",
+#' filename="dat_fslr32k.rds",
+#' dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+#' subj_ID = TRUE, silent=FALSE)
 #' 
 #' @importFrom ciftiTools ciftiTools.setOption readcii
 #' @export
