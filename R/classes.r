@@ -9,7 +9,7 @@
 #' @export
 
 setClass("ROImap",
-         slots = list(data = "matrix", 
+         slots = list(matrix = "matrix", 
                       atlases = 'data.frame',
                       name = 'character')
         )
@@ -48,7 +48,7 @@ setMethod("show", "ROImap", function(object) {
 #' @export
 
 setClass("MNIsurface",
-         slots = list(data = "matrix", 
+         slots = list(matrix = "matrix", 
                       name = 'character')
          )
 
@@ -76,7 +76,7 @@ setMethod("show", "MNIsurface", function(object) {
 #' @export
 
 setClass("edgelist",
-slots = list(data = "matrix", 
+slots = list(matrix = "matrix", 
              name = 'character')
         )
 
