@@ -219,6 +219,9 @@ If it is your random variable and it is non-binarizable, do not include it in th
   message("Estimating unpermuted TFCE image...")
   brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
   terms=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
+  
+  #Solves the "no visible binding for global variable" issue
+  . <- SLM <- NULL 
   #read version of SLM that allows to specify the directory for the
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
