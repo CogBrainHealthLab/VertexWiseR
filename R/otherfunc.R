@@ -475,7 +475,7 @@ fs5_to_fs6=function(surf_data)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage6 space to fsaverage5 space using the nearest neighbor approach
 #'
-#' @param A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage6 (81924 vertices) space. See also SURFvextract() output format.  
+#' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage6 (81924 vertices) space. See also SURFvextract() output format.  
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage5 space
 #' @seealso \code{\link{fs5_to_fs6}}
