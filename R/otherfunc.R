@@ -731,8 +731,9 @@ get_MNIcoords=function(template)
 #'
 #' @returns A data.frame object with N columns per aseg.stats measures and N row per subjects.
 #' @examples
-#' fs_stat(sdirpath="freesurfer_subjdir")
+#' fs_stats(sdirpath="freesurfer_subjdir")
 #' @importFrom stringr str_split
+#'@importFrom utils read.table
 #' @export
 
 fs_stats=function(sdirpath="./", sublist, ROImeasure='Volume_mm3') 

@@ -46,7 +46,7 @@
 #' #vertexwise_model$cluster_level_results
 #' 
 #' @importFrom stringr str_split str_detect str_replace str_match
-#' @importFrom lme4 lmer
+#' @importFrom stats lm model.matrix runif
 #' @export
 
 RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE) 

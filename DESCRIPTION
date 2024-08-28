@@ -43,6 +43,8 @@ Imports:
     grDevices,
     igraph,
     methods,
+    png,
+    rappdirs,
     reticulate,
     stats,
     stringr,
