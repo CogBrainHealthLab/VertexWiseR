@@ -8,7 +8,7 @@ FSLRvextract(
   sdirpath = "./",
   wb_path,
   filename,
-  dscalar,
+  dscaler,
   subj_ID = TRUE,
   silent = FALSE
 )
@@ -20,10 +20,6 @@ FSLRvextract(
 
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).}
 
-\item{subj_ID}{A logical object to determine whether to return a list object containing both subject ID and data matrix.}
-
-\item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
-
 \item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 \itemize{
 \item \code{.thickness_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
@@ -33,6 +29,10 @@ FSLRvextract(
 \item \verb{_space-fsLR_den-91k_thickness.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
 \item \verb{_space-fsLR_den-91k_curv.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
 \item \verb{_space-fsLR_den-91k_sulc.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)}}
+
+\item{subj_ID}{A logical object to determine whether to return a list object containing both subject ID and data matrix.}
+
+\item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
 }
 \value{
 A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
@@ -47,7 +47,7 @@ The function searches for the HCP preprocessed directory by listing out files wi
 dat_fslr32k=FSLRvextract(sdirpath="./", 
 wb_path="/path/to/workbench",
 filename="dat_fslr32k.rds",
-dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+dscaler=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 subj_ID = TRUE, silent=FALSE)
 
 }

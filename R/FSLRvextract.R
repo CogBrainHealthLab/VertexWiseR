@@ -23,13 +23,13 @@
 #' dat_fslr32k=FSLRvextract(sdirpath="./", 
 #' wb_path="/path/to/workbench",
 #' filename="dat_fslr32k.rds",
-#' dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+#' dscaler=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 #' subj_ID = TRUE, silent=FALSE)
 #' 
 #' @importFrom ciftiTools ciftiTools.setOption readcii
 #' @export
 
-FSLRvextract=function(sdirpath="./", wb_path,filename,dscalar, subj_ID = TRUE, silent=FALSE)
+FSLRvextract=function(sdirpath="./", wb_path,filename,dscaler, subj_ID = TRUE, silent=FALSE)
 {
   oldwd <- getwd()
   on.exit(setwd(oldwd)) #will restore user's working directory path on function break
