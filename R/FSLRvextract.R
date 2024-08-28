@@ -29,7 +29,7 @@
 #' @importFrom ciftiTools ciftiTools.setOption readcii
 #' @export
 
-FSLRvextract=function(sdirpath="./", wb_path,filename,dscaler, subj_ID = TRUE, silent=FALSE)
+FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, silent=FALSE)
 {
   oldwd <- getwd()
   on.exit(setwd(oldwd)) #will restore user's working directory path on function break
@@ -44,12 +44,12 @@ FSLRvextract=function(sdirpath="./", wb_path,filename,dscaler, subj_ID = TRUE, s
   }
   
   ## get filelists and subject lists
-  filelist=list.files(pattern=dscalar, recursive=TRUE)
-  sublist=gsub(dscalar, "",basename(filelist))
+  filelist=list.files(pattern=dscaler, recursive=TRUE)
+  sublist=gsub(dscaler, "",basename(filelist))
   
   ##Function stops if files not found
   if (length(filelist) ==0)
-  {return(message(paste0('No *',dscalar, ' files could be found in the set sdirpath')))} 
+  {return(message(paste0('No *',dscaler, ' files could be found in the set sdirpath')))} 
   
   ##load and configure ciftitools
   ciftiTools::ciftiTools.setOption('wb_path', wb_path)
