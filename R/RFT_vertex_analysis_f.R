@@ -103,7 +103,7 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   { #dummy modelling of the formula 
     mod=lm(formula_str,data=data);
     #extracting variables as computed within formula
-    model=model.matrix(mod)[,2:ncol(model.matrix(mod))] #without intercept
+    model=model.matrix(mod,na.action=na.pass)[,2:ncol(model.matrix(mod))] #without intercept
   } else
   {
   #extract the name of the random variable in (1|var) or equivalent
@@ -117,7 +117,7 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   #run the model 
   mod=lm(formula_str,data=data);
   #extracting variables as computed within formula
-  model=model.matrix(mod)[,2:ncol(model.matrix(mod))] #without intercept
+  model=model.matrix(mod,na.action=na.pass)[,2:ncol(model.matrix(mod))] #without intercept
   }
   if (!exists('random_var')) { random = NULL }
   
@@ -133,10 +133,6 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
      {message(paste("The categorical variable '", names(mod$xlevels[var]),"' has been coded 0 for", mod$xlevels[[var]][1], "and 1 for", mod$xlevels[[var]][2], "respectively.\n"))}
    }
   }
-  
-  
-  #check if nrow is consistent for model and surf_data
-  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") does not match the number of observations in each variable of the dataset.",sep=""))}
   
   #Run the regular vertex analysis with the right objects
   RFTmodel=RFT_vertex_analysis(model=model,
