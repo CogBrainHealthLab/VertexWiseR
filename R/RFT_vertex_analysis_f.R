@@ -135,7 +135,7 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   
   #Run the regular vertex analysis with the right objects
   RFTmodel=RFT_vertex_analysis(model=model,
-                                     contrast=model[,1], #contrast is 1st IV
+                                     contrast=data.matrix(model[,1]), #contrast is 1st IV
                                      random=random,
                                      surf_data=surf_data, 
                                      p=p, 
