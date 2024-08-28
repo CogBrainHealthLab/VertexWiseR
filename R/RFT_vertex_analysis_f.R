@@ -107,14 +107,11 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   #remove the random_var, run normal lm, and save it as the random object
   formula_str <- stringr::str_replace(formula_str, pattern, "")
   random=data[,random_var]
-  colnames(random) <- random_var
   
   #run the model 
   mod=lm(formula_str,data=data);
   #extracting variables as computed within formula
   model=model.matrix(mod)[,2:ncol(model.matrix(mod))] #without intercept
-  model=cbind.data.frame(model,)   #append random var
-
   }
   
   #The models do not accept variables with more than 2 levels
