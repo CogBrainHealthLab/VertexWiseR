@@ -12,7 +12,7 @@
 #' - `region`: the region this highest -statistic vertex is located in, as determined/labelled by the selected atlas 
 #'
 #' @param formula A string or formula object describing the predictors to be fitted against the surface data:
-#' - The dependent variable can have any name, it will always be the surface data values. 
+#' - The dependent variable is not needed, as it will always be the surface data values. 
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param dataset A data.frame object where the independent variables or predictors are stored (each IV's column names has to match the formula names).
@@ -27,7 +27,7 @@
 #' @seealso \code{\link{RFT_vertex_analysis}}
 #' 
 #' @examples
-#' formula= as.formula("thickness ~ age + sex")
+#' formula= as.formula("~ age + sex")
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
 #'                               package = 'VertexWiseR'))
 #' CTv = readRDS(file = url(paste0("https://github.com",
@@ -82,13 +82,16 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   ###Run a dummy regression to define all variables from the
   ###formula (interactions, randoms etc.) and store them in a data.frame
   
-  #get the DV name to create a dummy DV
+  #if there is no wave, adds it   
   if (length(grep(x=formula_str, pattern="~"))==0)
-  {stop('The formula needs a dependent variable defined.\n')}
+  {formula_str=paste('~',formula_str)}
+  #if there is a DV defined in the formula, removes it
   DV=stringr::str_split(formula_str, pattern = "~")[[1]][1]
-  DV=gsub(" ", "", DV) #remove spaces
+  formula_str=gsub(DV, "", formula_str) 
+  #create dummy DV to formula as default
+  formula_str=paste('surfmeasure',formula_str)
   data=cbind(runif(length(dataset[,1]), min=1, max=100),dataset); 
-  colnames(data)[1]=DV;
+  colnames(data)[1]='surfmeasure';
   
   ##Run dummy model to create the data.frame
   #if has random variable, will be saved separately
@@ -139,7 +142,7 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
                                      atlas=atlas, 
                                      smooth_FWHM=smooth_FWHM, 
                                      VWR_check=FALSE)
-  RFTmodel$formula=formula_str
+  RFTmodel$formula=formula
   RFTmodel$model=model
 
 
