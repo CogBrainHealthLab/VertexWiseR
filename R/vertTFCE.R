@@ -458,7 +458,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)
 #' @param k Cluster-forming threshold (Default is 20)
-#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is FALSE.
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' @examples

@@ -7,7 +7,14 @@
 VWRfirstrun(requirement = "any", n_vert = 0, promptless = FALSE)
 }
 \arguments{
-\item{requirement}{String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.}
+\item{requirement}{String that specifies a requirement to enquire about:
+\itemize{
+\item For only Python/Conda installation: 'python/conda only'
+\item For Python/Conda and Brainstat installation: 'conda/brainstat'
+\item For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'
+\item For the neurosynth database: 'neurosynth'.
+Default is 'any' and checks everything.
+}}
 
 \item{n_vert}{Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for}
 

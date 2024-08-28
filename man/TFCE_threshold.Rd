@@ -4,7 +4,7 @@
 \alias{TFCE_threshold}
 \title{Thresholding TFCE output}
 \usage{
-TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20)
+TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20, VWR_check = TRUE)
 }
 \arguments{
 \item{TFCEoutput}{An object containing the output from TFCE_vertex_analysis()}
@@ -14,6 +14,8 @@ TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20)
 \item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)}
 
 \item{k}{Cluster-forming threshold (Default is 20)}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.

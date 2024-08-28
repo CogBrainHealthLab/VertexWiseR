@@ -17,7 +17,7 @@ RFT_vertex_analysis_f(
 \arguments{
 \item{formula}{A string or formula object describing the predictors to be fitted against the surface data:
 \itemize{
-\item The dependent variable can have any name, it will always be the surface data values.
+\item The dependent variable is not needed, as it will always be the surface data values.
 \item The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps.
 \item Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 }}
@@ -51,7 +51,7 @@ Output definitions:
 }
 }
 \examples{
-formula= as.formula("thickness ~ age + sex")
+formula= as.formula("~ age + sex")
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
                               package = 'VertexWiseR'))
 CTv = readRDS(file = url(paste0("https://github.com",
