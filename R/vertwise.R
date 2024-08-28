@@ -197,7 +197,7 @@ RFT_vertex_analysis=function(model,contrast, random, surf_data, p=0.05, atlas=1,
     } else if(smooth_FWHM>0) 
     {
       message(paste("surf_data will be smoothed using a ",smooth_FWHM,"mm FWHM kernel", sep=""))
-      surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM, VWR_check=FALSE)
+      surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
     }
     surf_data[is.na(surf_data)]=0
   

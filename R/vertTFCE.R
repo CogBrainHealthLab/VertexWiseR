@@ -207,7 +207,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   } else if(smooth_FWHM>0) 
   {
     message(paste("surf_data will be smoothed using a ", smooth_FWHM,"mm FWHM kernel\n", sep=""))
-    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM, VWR_check=FALSE)
+    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
   }
   
   ##unpermuted model
@@ -475,7 +475,7 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  if (VWR_check == TRUE){
+  if (VWR_check == TRUE & is.null(sys.calls())){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="conda/brainstat")
     if (!is.null(check)) {return(check)} 
