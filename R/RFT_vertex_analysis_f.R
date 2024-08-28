@@ -71,6 +71,9 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
     }  }
   }
   
+  # Replace empty cells with NA
+  dataset[dataset == ""] <- NA
+  
   #turns formula to string if formula object
   if (inherits(formula, 'formula'))
   {formula_str <- paste(deparse(formula), collapse = " ")
@@ -116,6 +119,7 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   #extracting variables as computed within formula
   model=model.matrix(mod)[,2:ncol(model.matrix(mod))] #without intercept
   }
+  if (!exists('random_var')) { random = NULL }
   
   #The models do not accept variables with more than 2 levels
   #check from the formula and stop if one var has that issue
@@ -131,7 +135,8 @@ RFT_vertex_analysis_f=function(formula, dataset, surf_data, p=0.05, atlas=1, smo
   }
   
   
-  if (!exists('random_var')) { random = NULL }
+  #check if nrow is consistent for model and surf_data
+  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") does not match the number of observations in each variable of the dataset.",sep=""))}
   
   #Run the regular vertex analysis with the right objects
   RFTmodel=RFT_vertex_analysis(model=model,
