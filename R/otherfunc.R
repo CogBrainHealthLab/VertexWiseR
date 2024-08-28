@@ -126,7 +126,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  if (VWR_check == TRUE){
+  if (VWR_check == TRUE & length(sys.calls()) <= 1){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="python/conda only")
     if (!is.null(check)) {return(check)} 
