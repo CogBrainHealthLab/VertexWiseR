@@ -128,7 +128,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   #Will stop if it's a non-interactive session 
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="miniconda only")
+    check = VWRfirstrun(requirement="python/conda only")
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
@@ -541,7 +541,7 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   #Will stop if it's a non-interactive session 
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="miniconda/brainstat")
+    check = VWRfirstrun(requirement="conda/brainstat")
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   

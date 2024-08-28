@@ -57,7 +57,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   #Will stop if it's a non-interactive session
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="miniconda only")
+    check = VWRfirstrun(requirement="python/conda only")
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
@@ -458,6 +458,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)
 #' @param k Cluster-forming threshold (Default is 20)
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is FALSE.
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' @examples
@@ -468,8 +469,18 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' TFCEanalysis_output$cluster_level_results
 #' @export
 
-TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20)
+TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
 {
+  
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ... ")
+    check = VWRfirstrun(requirement="conda/brainstat")
+    if (!is.null(check)) {return(check)} 
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  
   nperm=length(TFCEoutput$TFCE.max)
   
   #check if number of permutations is adequate

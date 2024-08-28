@@ -9,7 +9,12 @@
 #' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. If for a reason Miniconda cannot be installed, the function gives the choice to install a reticulate-suitable Python environment.
 #' Vertex-wise statistical analyses of cortical surface require fsaverage and parcellation templates as imported by default in 'BrainStat'. 
 #' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
-#' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
+#' @param requirement String that specifies a requirement to enquire about: 
+#' - For only Python/Conda installation: 'python/conda only'
+#' - For Python/Conda and Brainstat installation: 'conda/brainstat'
+#' - For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'
+#' - For the neurosynth database: 'neurosynth'. 
+#' Default is 'any' and checks everything.
 #' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
 #' @param promptless A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
@@ -181,10 +186,11 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     #################################################################
     ##################################################################
     ###check if BrainStat is installed
-    message('Checking for BrainStat package...')
+    if (requirement!="python/conda only")
+    {message('Checking for BrainStat package...')}
     
     if( !reticulate::py_module_available("brainstat") 
-        & requirement!="miniconda only") 
+        & requirement!="python/conda only")
     {
       missingobj=1
       
@@ -214,7 +220,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     #and no default $HOME/brainstat_data folder exists,
     #prompt for user to define a path or set default
     if (Sys.getenv('BRAINSTAT_DATA')=="" & 
-        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))) 
+        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))
+        & requirement!="python/conda only"
+        & requirement!='conda/brainstat') 
     {
       missingobj=1
       
@@ -276,7 +284,10 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     
     
     #for each required data, it will now check the set path (default or custom) and prompt for download if they are missing
-    message('Checking BrainStat\'s analysis data...')
+    
+    #only if parameters to only check conda and brainstat installations are absent
+    if (requirement!="python/conda only" & requirement!='conda/brainstat')
+    {message('Checking BrainStat\'s analysis data...')}
     #fsaverage5 data
     if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
@@ -411,7 +422,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       }} 
     
     #brainstat missing
-    if (!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
+    if (!reticulate::py_module_available("brainstat") 
+        & (requirement!="python/conda only" | requirement=="conda/brainstat")) 
     {
       missingobj="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work.\n";
       
