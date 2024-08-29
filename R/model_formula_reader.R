@@ -21,7 +21,7 @@
 #'   formula_dataset)
 #' 
 #' @importFrom stringr str_split str_detect str_replace str_match
-#' @importFrom stats lm model.matrix runif
+#' @importFrom stats lm model.matrix runif as.formula na.pass 
 #' @noRd
 
 model_formula_reader=function(formula, formula_dataset) 

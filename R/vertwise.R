@@ -53,6 +53,7 @@
 #' #formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
 #' #VWR_check=FALSE)
 #' @importFrom reticulate import r_to_py
+#' @importFrom stats as.formula na.pass 
 #' @export
 
 ##vertex wise analysis with mixed effects
