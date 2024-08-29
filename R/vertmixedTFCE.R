@@ -10,7 +10,8 @@
 #' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}. 
 #' 
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model.This data.frame should not include the random effects variable.
-#' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor
+#' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
+#' 
 #' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param random A N x 1 numeric vector or object containing the values of the random variable. Its length should equal the number of subjects in model (and can be a single column from model). 
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
@@ -31,13 +32,19 @@
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 #'
-#'TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c(2,7)],
-#'contrast=demodata[,7], surf_data,random=demodata[,1], 
-#'nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
+#'TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c("sex",
+#'"age")], contrast=demodata[,"age"], random=demodata[,"id"], 
+#'surf_data, nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 #'
 #' #To get significant clusters, you may then run:
 #' #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #' #results$cluster_level_results
+#'
+#' #Formula alternative:
+#' #formula= as.formula("~ age + sex + (1|id)")
+#' #TFCEpos=TFCE_vertex_analysis_mixed(formula=formula, 
+#' #formula_dataset=demodata, surf_data, tail=1, 
+#' nperm=5, nthread = 2, VWR_check=FALSE)
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach 
@@ -49,7 +56,7 @@
 
 ##Main function
 
-TFCE_vertex_analysis_mixed=function(model,contrast, surf_data, random, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
+TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -59,6 +66,18 @@ TFCE_vertex_analysis_mixed=function(model,contrast, surf_data, random, nperm=100
     check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  
+  #if the user chooses to use a formula, run the formula reader
+  #and output appropriate objects
+  if (!missing(formula) & !missing(formula_dataset))
+  {
+    formula_model=model_formula_reader(formula, formula_dataset) 
+    model=formula_model$model
+    contrast=formula_model$contrast
+    if (!is.null(formula_model$random)) 
+      {random=formula_model$random}
+  } else if ((missing(formula) & !missing(formula_dataset)) | (!missing(formula) & missing(formula_dataset)))
+  {stop('The formula and the formula_dataset arguments must both be provided to work.')}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types

@@ -11,6 +11,11 @@
 #' 
 #' @param model An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
+#' @param formula An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
+#' - The dependent variable is not needed, as it will always be the surface data values. 
+#' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
+#' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
+#' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
 #' @param surf_data A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
@@ -27,15 +32,20 @@
 #'surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
-#'model=demodata[,c(2,7)]
-#'contrast=demodata[,7]
 #'
-#' TFCEpos=TFCE_vertex_analysis(model, contrast, surf_data, tail=1, 
+#' TFCEpos=TFCE_vertex_analysis(model=demodata[,c("sex","age")], 
+#' contrast=demodata[,"age"], surf_data, tail=1, 
 #' nperm=5, nthread = 2, VWR_check=FALSE)
 #' 
 #' #To threshold the results, you may then run:
 #' #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #' #results$cluster_level_results
+#'
+#' #Formula alternative:
+#' #formula= as.formula("~ age + sex")
+#' #TFCEpos=TFCE_vertex_analysis(formula=formula, 
+#' #formula_dataset=demodata, surf_data, tail=1, 
+#' nperm=5, nthread = 2, VWR_check=FALSE)
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach %dopar%
@@ -49,7 +59,7 @@
 
 ##Main function
 
-TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
+TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
 {
   
   #Check required python dependencies. If files missing:
@@ -61,6 +71,15 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
+  #if the user chooses to use a formula, run the formula reader
+  #and output appropriate objects
+  if (!missing(formula) & !missing(formula_dataset))
+  {
+    formula_model=model_formula_reader(formula, formula_dataset) 
+    model=formula_model$model
+    contrast=formula_model$contrast
+  } else if ((missing(formula) & !missing(formula_dataset)) | (!missing(formula) & missing(formula_dataset)))
+  {stop('The formula and the formula_dataset arguments must both be provided to work.')}
   
   #If the contrast/model is a tibble (e.g., taken from a read_csv output)
   #converts the columns to regular data.frame column types
@@ -257,7 +276,7 @@ TFCE_vertex_analysis=function(model,contrast, surf_data, nperm=100, tail=2, nthr
   ##fitting permuted regression model and extracting t-stats in parallel streams
   start=Sys.time()
   
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export=c("getClusters","edgelist"), .options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export=c("getClusters"), .options.snow = opts)  %dopar%
     {
       ##commented out alternative method of permutation— permuting only the contrast variable
       #model.permuted=model

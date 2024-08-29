@@ -1,7 +1,7 @@
 
 #' @title Formula reader for RFT_vertex_analysis()
 #'
-#' @description Alternative function to RFT_vertex_analysis() where a dataset and formula arguments can be provided instead of contrast or model.
+#' @description Function reading dataset and formula arguments from RFT_vertex_analysis(), TFCE_vertex_analysis() or TFCE_vertex_analysis_mixed(); and deducing the contrast, random or model objects from a linear formula.
 #' @param formula A string or formula object describing the predictors to be fitted against the surface data:
 #' - The dependent variable is not needed, as it will always be the surface data values. 
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
@@ -74,9 +74,12 @@ model_formula_reader=function(formula, formula_dataset)
   #extract the name of the random variable in (1|var) or equivalent
   pattern <- "\\s*\\(1\\s*\\|\\s*(.*?)\\s*\\)"
   random_var <- stringr::str_match(formula_str, pattern)[,2]
-
-  #remove the random_var, run normal lm, and save it as the random object
+  
+  #remove the random_var from the formula
   formula_str <- stringr::str_replace(formula_str, pattern, "")
+  #make sure it doesn't end with + 
+  formula_str=stringr::str_remove(formula_str, '\\+\\s*$')
+  #save it as the random object separately
   random=data[,random_var]
   
   #run the model 

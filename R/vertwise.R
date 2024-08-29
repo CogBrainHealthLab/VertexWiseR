@@ -76,7 +76,8 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
     formula_model=model_formula_reader(formula, formula_dataset) 
     model=formula_model$model
     contrast=formula_model$contrast
-    if (!is.null(formula_model$random)) {random=random}
+    if (!is.null(formula_model$random)) 
+      {random=formula_model$random}
   } else if ((missing(formula) & !missing(formula_dataset)) | (!missing(formula) & missing(formula_dataset)))
   {stop('The formula and the formula_dataset arguments must both be provided to work.')}
   
