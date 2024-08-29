@@ -70,8 +70,8 @@ CTv = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 "SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
 
-vertexwise_model=RFT_vertex_analysis(model=demodata[,c(2,7)], 
-contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
+vertexwise_model=RFT_vertex_analysis(model=demodata[,c("sex","age")], 
+contrast=demodata[,"age"], surf_data = CTv, atlas=1,p = 0.05, 
 VWR_check=FALSE)
 
 #Description of the output:
@@ -79,8 +79,9 @@ VWR_check=FALSE)
 
 #Formula alternative:
 #formula= as.formula("~ age + sex")
-#vertexwise_model=RFT_vertex_analysis(formula=formula, formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
-VWR_check=FALSE)
+#vertexwise_model=RFT_vertex_analysis(formula=formula, 
+#formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
+#VWR_check=FALSE)
 }
 \seealso{
 \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}

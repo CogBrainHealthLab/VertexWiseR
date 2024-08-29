@@ -36,21 +36,22 @@
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
 #' package = 'VertexWiseR'))[1:100,]
-#'CTv = readRDS(file = url(paste0("https://github.com",
+#' CTv = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
 #'
-#'vertexwise_model=RFT_vertex_analysis(model=demodata[,c(2,7)], 
-#'contrast=demodata[,7], surf_data = CTv, atlas=1,p = 0.05, 
-#'VWR_check=FALSE)
+#' vertexwise_model=RFT_vertex_analysis(model=demodata[,c("sex","age")], 
+#' contrast=demodata[,"age"], surf_data = CTv, atlas=1,p = 0.05, 
+#' VWR_check=FALSE)
 #' 
 #' #Description of the output:
 #' #vertexwise_model$cluster_level_results
 #' 
 #' #Formula alternative:
 #' #formula= as.formula("~ age + sex")
-#' #vertexwise_model=RFT_vertex_analysis(formula=formula, formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
-#'VWR_check=FALSE)
+#' #vertexwise_model=RFT_vertex_analysis(formula=formula, 
+#' #formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
+#' #VWR_check=FALSE)
 #' @importFrom reticulate import r_to_py
 #' @export
 

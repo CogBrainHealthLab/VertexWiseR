@@ -54,6 +54,8 @@
 <span>  <span class="va">model</span>,</span>
 <span>  <span class="va">contrast</span>,</span>
 <span>  <span class="va">random</span>,</span>
+<span>  <span class="va">formula</span>,</span>
+<span>  <span class="va">formula_dataset</span>,</span>
 <span>  <span class="va">surf_data</span>,</span>
 <span>  p <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  atlas <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -74,6 +76,17 @@
 
 <dt>random</dt>
 <dd><p>A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should equal the number of subjects in model (it should NOT be inside the model data.frame).</p></dd>
+
+
+<dt>formula</dt>
+<dd><p>An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.</p><ul><li><p>The dependent variable is not needed, as it will always be the surface data values.</p></li>
+<li><p>The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps.</p></li>
+<li><p>Only one random regressor can be given and must be indicated as '(1|variable_name)'.</p></li>
+</ul></dd>
+
+
+<dt>formula_dataset</dt>
+<dd><p>An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).</p></dd>
 
 
 <dt>surf_data</dt>
@@ -125,14 +138,20 @@
 <span class="r-in"><span><span class="st">"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/"</span>,</span></span>
 <span class="r-in"><span><span class="st">"SPRENG_CTv_site1.rds?raw=TRUE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">vertexwise_model</span><span class="op">=</span><span class="fu">RFT_vertex_analysis</span><span class="op">(</span>model<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">7</span><span class="op">)</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>contrast<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fl">7</span><span class="op">]</span>, surf_data <span class="op">=</span> <span class="va">CTv</span>, atlas<span class="op">=</span><span class="fl">1</span>,p <span class="op">=</span> <span class="fl">0.05</span>, </span></span>
+<span class="r-in"><span><span class="va">vertexwise_model</span><span class="op">=</span><span class="fu">RFT_vertex_analysis</span><span class="op">(</span>model<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,<span class="st">"age"</span><span class="op">)</span><span class="op">]</span>, </span></span>
+<span class="r-in"><span>contrast<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="st">"age"</span><span class="op">]</span>, surf_data <span class="op">=</span> <span class="va">CTv</span>, atlas<span class="op">=</span><span class="fl">1</span>,p <span class="op">=</span> <span class="fl">0.05</span>, </span></span>
 <span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#Description of the output:</span></span></span>
 <span class="r-in"><span><span class="co">#vertexwise_model$cluster_level_results</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#Formula alternative:</span></span></span>
+<span class="r-in"><span><span class="co">#formula= as.formula("~ age + sex")</span></span></span>
+<span class="r-in"><span><span class="co">#vertexwise_model=RFT_vertex_analysis(formula=formula, </span></span></span>
+<span class="r-in"><span><span class="co">#formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, </span></span></span>
+<span class="r-in"><span><span class="co">#VWR_check=FALSE)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
