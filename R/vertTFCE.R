@@ -465,7 +465,8 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' model1_TFCE=readRDS(system.file('demo_data/model1_TFCE.rds', 
 #' package = 'VertexWiseR'))
 #' 
-#' TFCEanalysis_output=TFCE_threshold(model1_TFCE, p=0.05, atlas=1)
+#' TFCEanalysis_output=TFCE_threshold(model1_TFCE, p=0.05, atlas=1,
+#' VWR_check=FALSE)
 #' TFCEanalysis_output$cluster_level_results
 #' @export
 
