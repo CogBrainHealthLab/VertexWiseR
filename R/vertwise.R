@@ -231,6 +231,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   maskNA=which(colSums(surf_data != 0) == 0)
   mask[which(colSums(surf_data != 0) == 0)]=FALSE
   
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
   #Brainstat data, will either be stored in default $HOME path or 
   #custom if it's been set via VWRfirstrun()
   if (Sys.getenv('BRAINSTAT_DATA')=="")

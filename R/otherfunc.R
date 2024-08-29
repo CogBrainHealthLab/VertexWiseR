@@ -671,6 +671,9 @@ get_edgelist=function(template)
   brainstat.datasets=reticulate::import("brainstat.datasets")  
   brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
   
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
   #Brainstat data, will either be stored in default $HOME path or 
   #custom if it's been set via VWRfirstrun()
   if (Sys.getenv('BRAINSTAT_DATA')=="")
@@ -701,6 +704,9 @@ get_MNIcoords=function(template)
   brainstat.datasets=reticulate::import("brainstat.datasets")  
   brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
   
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
   #Brainstat data, will either be stored in default $HOME path or 
   #custom if it's been set via VWRfirstrun()
   if (Sys.getenv('BRAINSTAT_DATA')=="")

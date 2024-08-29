@@ -226,6 +226,9 @@ If it is your random variable and it is non-binarizable, do not include it in th
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
   #Brainstat data, will either be stored in default $HOME path or 
   #custom if it's been set via VWRfirstrun()
   if (Sys.getenv('BRAINSTAT_DATA')=="")
