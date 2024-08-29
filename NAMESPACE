@@ -3,7 +3,6 @@
 export(FSLRvextract)
 export(HIPvextract)
 export(RFT_vertex_analysis)
-export(RFT_vertex_analysis_f)
 export(SURFvextract)
 export(TFCE_threshold)
 export(TFCE_vertex_analysis)
