@@ -22,7 +22,7 @@
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
 #' 
-#' @seealso \code{\link{RFT_vertex_analysis}}, \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_threshold}}
+#' @seealso \code{\link{RFT_vertex_analysis}},  \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_threshold}}
 #' 
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
@@ -309,8 +309,10 @@ If it is your random variable and it is non-binarizable, do not include it in th
   progress=function(n) setTxtProgressBar(pb, n)
   opts=list(progress = progress)
   
+  #preset path to SLM
+  SLMpath= paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py')
+  
   #fitting permuted model and extracting max-TFCE values in parallel streams
-
   start=Sys.time()
   TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export="getClusters",.options.snow = opts)  %dopar%
     {
@@ -318,7 +320,7 @@ If it is your random variable and it is non-binarizable, do not include it in th
       brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
       #read version of SLM that allows to specify the directory for the
       #fetch_template_surface option
-      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+      reticulate::source_python(SLMpath)
       
       #Brainstat data, will either be stored in default $HOME path or 
       #custom if it's been set via VWRfirstrun()

@@ -71,5 +71,5 @@ surf_data=CTv, nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 
 }
 \seealso{
-\code{\link{RFT_vertex_analysis}}, \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_threshold}}
+\code{\link{RFT_vertex_analysis}},  \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_threshold}}
 }
