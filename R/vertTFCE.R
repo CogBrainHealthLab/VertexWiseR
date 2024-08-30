@@ -175,12 +175,13 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
     }      
   }
   
-  #make internal invironment to save edgelist
-  edgelistenv <- new.env()
   
   #check if surf_data is a multiple-rows matrix and NOT a vector
   if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
   {stop("The surface data must be a matrix containing multiple participants (rows).")}
+  
+  #make internal invironment to save edgelist
+  edgelistenv <- new.env()
   
   #check length of surface data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
