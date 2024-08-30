@@ -7,8 +7,10 @@
 TFCE_vertex_analysis_mixed(
   model,
   contrast,
-  surf_data,
   random,
+  formula,
+  formula_dataset,
+  surf_data,
   nperm = 100,
   tail = 2,
   nthread = 10,
@@ -20,11 +22,11 @@ TFCE_vertex_analysis_mixed(
 \arguments{
 \item{model}{An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model.This data.frame should not include the random effects variable.}
 
-\item{contrast}{A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor}
-
-\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
+\item{contrast}{A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.}
 
 \item{random}{A N x 1 numeric vector or object containing the values of the random variable. Its length should equal the number of subjects in model (and can be a single column from model).}
+
+\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
 
 \item{nperm}{A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)}
 
@@ -49,17 +51,23 @@ This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/bl
 }
 \examples{
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
-surf_data = readRDS(file = url(paste0("https://github.com",
+CTv = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 "SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 
-TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c(2,7)],
-contrast=demodata[,7], surf_data,random=demodata[,1], 
-nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
+TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c("sex",
+"age")], contrast=demodata[,"age"], random=demodata[,"id"], 
+surf_data=CTv, nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
 
 #To get significant clusters, you may then run:
 #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #results$cluster_level_results
+
+#Formula alternative:
+#formula= as.formula("~ age + sex + (1|id)")
+#TFCEpos=TFCE_vertex_analysis_mixed(formula=formula, 
+#formula_dataset=demodata, surf_data=CTv, tail=1, 
+#nperm=5, nthread = 2, VWR_check=FALSE) 
 
 }
 \seealso{

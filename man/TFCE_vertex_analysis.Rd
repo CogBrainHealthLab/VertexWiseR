@@ -7,6 +7,8 @@
 TFCE_vertex_analysis(
   model,
   contrast,
+  formula,
+  formula_dataset,
   surf_data,
   nperm = 100,
   tail = 2,
@@ -19,6 +21,15 @@ TFCE_vertex_analysis(
 \item{model}{An N X V data.frame object containing N rows for each subject and V columns for each predictor included in the model}
 
 \item{contrast}{A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.}
+
+\item{formula}{An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
+\itemize{
+\item The dependent variable is not needed, as it will always be the surface data values.
+\item The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps.
+\item Only one random regressor can be given and must be indicated as '(1|variable_name)'.
+}}
+
+\item{formula_dataset}{An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).}
 
 \item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.}
 
@@ -44,18 +55,23 @@ This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/bl
 \examples{
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 package = 'VertexWiseR'))[1:5,]
-surf_data = readRDS(file = url(paste0("https://github.com",
+CTv = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 "SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
-model=demodata[,c(2,7)]
-contrast=demodata[,7]
 
-TFCEpos=TFCE_vertex_analysis(model, contrast, surf_data, tail=1, 
+TFCEpos=TFCE_vertex_analysis(model=demodata[,c("sex","age")], 
+contrast=demodata[,"age"], surf_data=CTv, tail=1, 
 nperm=5, nthread = 2, VWR_check=FALSE)
 
 #To threshold the results, you may then run:
 #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
 #results$cluster_level_results
+
+#Formula alternative:
+#formula= as.formula("~ age + sex")
+#TFCEpos=TFCE_vertex_analysis(formula=formula, 
+#formula_dataset=demodata, surf_data=CTv, tail=1, 
+#nperm=5, nthread = 2, VWR_check=FALSE) 
 
 }
 \seealso{

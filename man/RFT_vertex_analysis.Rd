@@ -68,7 +68,7 @@ demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 package = 'VertexWiseR'))[1:100,]
 CTv = readRDS(file = url(paste0("https://github.com",
 "/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
-"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,]
+"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,] 
 
 vertexwise_model=RFT_vertex_analysis(model=demodata[,c("sex","age")], 
 contrast=demodata[,"age"], surf_data = CTv, atlas=1,p = 0.05, 

@@ -87,7 +87,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">model1_TFCE</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'demo_data/model1_TFCE.rds'</span>, </span></span>
 <span class="r-in"><span>package <span class="op">=</span> <span class="st">'VertexWiseR'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">TFCEanalysis_output</span><span class="op">=</span><span class="fu">TFCE_threshold</span><span class="op">(</span><span class="va">model1_TFCE</span>, p<span class="op">=</span><span class="fl">0.05</span>, atlas<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">TFCEanalysis_output</span><span class="op">=</span><span class="fu">TFCE_threshold</span><span class="op">(</span><span class="va">model1_TFCE</span>, p<span class="op">=</span><span class="fl">0.05</span>, atlas<span class="op">=</span><span class="fl">1</span>,</span></span>
+<span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">TFCEanalysis_output</span><span class="op">$</span><span class="va">cluster_level_results</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`Positive contrast`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "No significant clusters"</span>

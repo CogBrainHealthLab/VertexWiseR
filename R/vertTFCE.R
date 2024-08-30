@@ -29,12 +29,12 @@
 #' @examples
 #' demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
 #'package = 'VertexWiseR'))[1:5,]
-#'surf_data = readRDS(file = url(paste0("https://github.com",
+#'CTv = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
 #'
 #' TFCEpos=TFCE_vertex_analysis(model=demodata[,c("sex","age")], 
-#' contrast=demodata[,"age"], surf_data, tail=1, 
+#' contrast=demodata[,"age"], surf_data=CTv, tail=1, 
 #' nperm=5, nthread = 2, VWR_check=FALSE)
 #' 
 #' #To threshold the results, you may then run:
@@ -44,8 +44,8 @@
 #' #Formula alternative:
 #' #formula= as.formula("~ age + sex")
 #' #TFCEpos=TFCE_vertex_analysis(formula=formula, 
-#' #formula_dataset=demodata, surf_data, tail=1, 
-#' nperm=5, nthread = 2, VWR_check=FALSE)
+#' #formula_dataset=demodata, surf_data=CTv, tail=1, 
+#' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach %dopar%
