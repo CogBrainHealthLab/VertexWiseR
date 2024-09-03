@@ -344,7 +344,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
   if(max(dim(t(surf_data)))==64984) 
   {
     #load atlas mapping surf_data
-    ROImap_fs6 <- get('ROImap_fslr32k')
+    ROImap_fslr32k <- get('ROImap_fslr32k')
     ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
     #init variables
     nregions=max(ROImap[[1]][,atlas])
@@ -431,7 +431,7 @@ atlas_to_surf=function(parcel_data, template)
   { ROImap_fs6 <- get('ROImap_fs6'); n_vert=81924; 
     ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
   } else if (template=='fslr32k') 
-  { ROImap_fs6 <- get('ROImap_fslr32k'); n_vert=64984; 
+  { ROImap_fslr32k <- get('ROImap_fslr32k'); n_vert=64984; 
   ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
   } else { stop('The function currently only works with fsaverage5,  fsaverage6 and fslr32k')}
   
