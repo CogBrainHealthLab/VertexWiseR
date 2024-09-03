@@ -77,11 +77,22 @@
 
 
 <dt>random</dt>
-<dd><p>A N x 1 numeric vector or object containing the values of the random variable. Its length should equal the number of subjects in model (and can be a single column from model).</p></dd>
+<dd><p>A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should be equal to the number of subjects in model (it should NOT be inside the model data.frame).</p></dd>
+
+
+<dt>formula</dt>
+<dd><p>An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.</p><ul><li><p>The dependent variable is not needed, as it will always be the surface data values.</p></li>
+<li><p>The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps.</p></li>
+<li><p>Only one random regressor can be given and must be indicated as '(1|variable_name)'.</p></li>
+</ul></dd>
+
+
+<dt>formula_dataset</dt>
+<dd><p>An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).</p></dd>
 
 
 <dt>surf_data</dt>
-<dd><p>A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.</p></dd>
+<dd><p>A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.</p></dd>
 
 
 <dt>nperm</dt>
@@ -132,15 +143,15 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">TFCEpos</span><span class="op">=</span><span class="fu">TFCE_vertex_analysis_mixed</span><span class="op">(</span>model<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,</span></span>
 <span class="r-in"><span><span class="st">"age"</span><span class="op">)</span><span class="op">]</span>, contrast<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="st">"age"</span><span class="op">]</span>, random<span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="st">"id"</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>surf_data<span class="op">=</span><span class="va">CTv</span>, nperm <span class="op">=</span><span class="fl">5</span>,tail <span class="op">=</span> <span class="fl">1</span>, nthread <span class="op">=</span> <span class="fl">2</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> </span></span>
+<span class="r-in"><span>surf_data<span class="op">=</span><span class="va">CTv</span>, nperm <span class="op">=</span><span class="fl">5</span>,tail <span class="op">=</span> <span class="fl">1</span>, nthread <span class="op">=</span> <span class="fl">2</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating unpermuted TFCE image...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 4.9 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 5.4 secs</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating permuted TFCE images...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 1.1 minutes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 2.1 minutes </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#To get significant clusters, you may then run:</span></span></span>
 <span class="r-in"><span><span class="co">#results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)</span></span></span>
