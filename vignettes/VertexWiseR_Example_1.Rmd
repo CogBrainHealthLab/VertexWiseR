@@ -35,7 +35,7 @@ VWRfirstrun()
 
 The first stage of the analysis assumes that a preprocessed Freesurfer subjects directory is present. However, this code makes use of an already-extracted cortical thickness (CT) dataset made available on the VertexWiseR git repository.
 
-The following commented out code is the script which was used to produce this demo data with the SPRENG dataset:
+The following commented out code is the script which was used to produce this demo data with the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]:
 
 ```{r}
 
@@ -51,7 +51,7 @@ SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWise
 SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
 ```
 
-The SPRENG behavioural data (SPRENG_behdata_site1.csv) is accessible from the VertexWiseR package internal data:
+The SPRENG behavioural data (for participants in site 1, SPRENG_behdata_site1.csv) is accessible from the VertexWiseR package internal data:
 
 ```{r}
 dat_beh=readRDS(system.file(package='VertexWiseR', '/demo_data/SPRENG_behdata_site1.rds')) 
@@ -110,3 +110,4 @@ surf_decoding=decode_surf_data(TFCEoutput$thresholded_tstat_map, contrast="negat
 ```{r}
 head(surf_decoding)
 ```
+## References:

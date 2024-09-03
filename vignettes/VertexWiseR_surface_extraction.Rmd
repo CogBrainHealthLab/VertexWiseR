@@ -100,7 +100,7 @@ Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2 participants) and
 
 HIPvextract() extracts cortical data in CITI168 surface space from the HippUnfold preprocessing pipeline [@dekraker_evaluation_2023]. As opposed to the other two functions, HIPvextract() does not require any system requirement.
 
-For demonstration, we provide a subsample of 2 participants from the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) (site 1) [@fink_two-week_2021], after preprocessing their surface data using HippUnfold, keeping all output .gii files. The subsample (11.3 MB) can be downloaded from the repository as follows:
+For demonstration, we provide a subsample of 2 participants from the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021], after preprocessing their surface data using HippUnfold, keeping all output .gii files. The subsample (11.3 MB) can be downloaded from the repository as follows:
 
 ```{r, results = 'hide'}
 # download and unzip the surface data directory
