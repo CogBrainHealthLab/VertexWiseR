@@ -856,17 +856,17 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }  }
   }
   
+  #numerise contrast
   if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
   
+  #check if nrow is consistent for model and surf_data
+  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
   
-  #recode random variale to numeric
-  if(!is.null(random))
-  { #recoding subject variable
-    random=match(random,unique(random))
-  }
+  #recode random variable to numeric
+  if(!is.null(random)) { random=match(random,unique(random)) }
   
   ##checks
-  #check contrast
+  #check contrast for consistency with the model data.frame
   if(NCOL(model)>1)
   {
     for(colno in 1:(NCOL(model)+1))
@@ -894,14 +894,11 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }
   }
   
-  #check if nrow is consistent for model and surf_data
-  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
-  
   #incomplete data check
   idxF=which(complete.cases(model)==FALSE)
   if(length(idxF)>0)
   {
-    message(paste("The model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded in the current analysis\n"))
+    message(paste("The model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded from the current analysis\n"))
     model=model[-idxF,]
     contrast=contrast[-idxF]
     surf_data=surf_data[-idxF,]
@@ -942,11 +939,10 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }      
   }
   
+  
   #check if surf_data is a multiple-rows matrix and NOT a vector
   if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
   {stop("The surface data must be a matrix containing multiple participants (rows).")}
-  
-  
   
   ##smoothing
   n_vert=NCOL(surf_data)
@@ -965,10 +961,11 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
   
   
   
-  #######################################################################
+  ##########################################
   #Output the right elements to be analysed
     model_summary=list(model=model, contrast=contrast,
-                       random=random, surf_data=surf_data)
+                       random=random, surf_data=surf_data,
+                       colno=colno)
 
   
 
