@@ -5,8 +5,9 @@ date: "2024-08-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 1}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   %\VignetteEncoding{UTF-8}
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE} 
@@ -60,7 +61,6 @@ dat_beh=readRDS(system.file(package='VertexWiseR', '/demo_data/SPRENG_behdata_si
 To run the vertex-wise model analysis with random field theory-based cluster correction, testing for the effect of age, controlling for sex, on CT:
 
 ```{r, results = 'hide'}
-
 model1_RFT=RFT_vertex_analysis(model = dat_beh[,c("sex","age")], 
   contrast = dat_beh[,"age"], surf_data = SPRENG_CTv_smoothed, p = 0.05)
 ```
