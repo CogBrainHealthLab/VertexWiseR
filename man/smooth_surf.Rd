@@ -7,7 +7,7 @@
 smooth_surf(surf_data, FWHM, VWR_check = TRUE)
 }
 \arguments{
-\item{surf_data}{A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.}
+\item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.}
 
 \item{FWHM}{A numeric vector object containing the desired smoothing width in mm}
 

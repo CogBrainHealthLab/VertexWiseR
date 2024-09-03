@@ -269,11 +269,13 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 {  
   #check length of vector or ncol of matrix
   if(max(dim(t(surf_data)))!=20484 & max(dim(t(surf_data)))!=81924 
-     & max(dim(t(surf_data)))!=14524) {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
+     & max(dim(t(surf_data)))!=14524 & max(dim(t(surf_data)))!=64984) 
+    {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
   
   #atlas argument needed if not hippocampal data
   if(missing("atlas") & max(dim(t(surf_data)))!=14524) {stop("Please specify an atlas number among the following: 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400")}
   
+  ###
   #mapping fsaverage5 space vertice to atlas (Nx20484 vertices)
   if(max(dim(t(surf_data)))==20484) 
   {
@@ -305,7 +307,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     return(ROI)
   }
   
-  
+  ###
   #mapping fsaverage6 space vertice to atlas (Nx81924 vertices)
   if(max(dim(t(surf_data)))==81924) 
   {
@@ -337,6 +339,39 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     return(ROI)
   }
   
+  ###
+  #mapping fslr32k space vertice to atlas (Nx64984 vertices)
+  if(max(dim(t(surf_data)))==64984) 
+  {
+    #load atlas mapping surf_data
+    ROImap_fs6 <- get('ROImap_fslr32k')
+    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
+    #init variables
+    nregions=max(ROImap[[1]][,atlas])
+    #set NAs to 0
+    surf_data[is.na(surf_data)]=0 
+    
+    if (is.vector(surf_data)==TRUE) {surf_data=rbind(matrix(surf_data,ncol=64984,nrow=1),NA); isavector=TRUE} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    
+    ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
+    
+    if(mode=='mean') {
+      for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector"))  {ROI=ROI[1,]}
+    } 
+    else if (mode=='sum') 
+    {
+      for (region in 1:nregions)  {ROI[,region]=rowSums(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector")) {ROI=ROI[1,]} #removes empty row if it was vector
+    }
+    else 
+    {
+      stop('\nPlease indicate a mode: only "sum" or "mean" are available.')
+    }
+    return(ROI)
+  }
+  
+  ###
   #mapping hippocampal space vertice to atlas (Nx14524 vertices)
   if(max(dim(t(surf_data)))==14524) 
   {
@@ -373,13 +408,13 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 
 #' @title Atlas to surface
 #'
-#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 or fsaverage6 space
+#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5, fsaverage6 or fslr32k space
 #' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
-#' @param template A string object stating the surface space on which to map the data ('fsaverage5' or 'fsaverage6').
+#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6' or 'fslr32k').
 #'
-#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5 or fsaverage6 space
+#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6 or fslr32k space
 #' @seealso \code{\link{surf_to_atlas}}
 #' @examples
 #' parcel_data = t(runif(100,min=0, max=100));
@@ -395,7 +430,10 @@ atlas_to_surf=function(parcel_data, template)
   } else if (template=='fsaverage6') 
   { ROImap_fs6 <- get('ROImap_fs6'); n_vert=81924; 
     ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
-  } else { stop('The function currently only works with fsaverage5 and fsaverage6')}
+  } else if (template=='fslr32k') 
+  { ROImap_fs6 <- get('ROImap_fslr32k'); n_vert=64984; 
+  ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
+  } else { stop('The function currently only works with fsaverage5,  fsaverage6 and fslr32k')}
   
     
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
