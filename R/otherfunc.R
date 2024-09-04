@@ -637,9 +637,18 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
+  
+  # Check if all values are positive
+ if  (all(surf_data >= 0)==TRUE & contrast=="negative")
+ {stop('No negative cluster was identified in the surf_data.')}
+  # Check if all values are negative
+ if  (all(surf_data <= 0)==TRUE & contrast=="positive")
+ {stop('No positive cluster was identified in the surf_data.')}
+  
+  
+  #if neurosynth database is installed
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {
-     
   ##checks length
     if(is.vector(surf_data)) {n_vert=length(surf_data)} else {n_vert=ncol(surf_data)}
     if(n_vert==20484) {template="fsaverage5"}
