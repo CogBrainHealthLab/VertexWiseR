@@ -5,7 +5,7 @@ date: "2024-08-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 2}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
@@ -19,7 +19,7 @@ library(VertexWiseR)
 
 The first stage of the analysis assumes that a preprocessed Hippunfold subjects directory is present. Likewise, this code makes use of an already-extracted hippocampal thickness dataset made available on the VertexWiseR git repository.
 
-The following code is the script which was used to produce this demo data with the FINK dataset:
+The following code is the script which was used to produce this demo data with the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021]:
 
 ```{r}
 #HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = "FINK_Tv", measure = "thickness", subj_ID = T)

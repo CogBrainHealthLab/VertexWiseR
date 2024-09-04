@@ -43,6 +43,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
     <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a>
   </div>
 </li>
       </ul>
@@ -83,7 +84,8 @@ Hippunfold subjects directory is present. Likewise, this code makes use
 of an already-extracted hippocampal thickness dataset made available on
 the VertexWiseR git repository.</p>
 <p>The following code is the script which was used to produce this demo
-data with the FINK dataset:</p>
+data with the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0" class="external-link">Fink
+dataset</a> <span class="citation">(Fink et al. 2021)</span>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = "FINK_Tv", measure = "thickness", subj_ID = T)</span></span></code></pre></div>
 <p>The hippocampal surface can be loaded from the online VertexWiseR git
@@ -141,7 +143,7 @@ on hippocampal thickness, with subject ID as a random variable:</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## $`Negative contrasts`</span></span>
 <span><span class="co">##   clusid nverts     P     X    Y   Z tstat      region</span></span>
-<span><span class="co">## 1      1    115 0.011  13.3 33.1 4.1  2.85 R Subiculum</span></span>
+<span><span class="co">## 1      1    115 0.010  13.3 33.1 4.1  2.85 R Subiculum</span></span>
 <span><span class="co">## 2      2     54 0.036 -16.7 16.7 6.9  2.31       L CA1</span></span>
 <span><span class="co">## 3      3     31 0.045 -18.5 18.5 3.8  2.17       L CA1</span></span></code></pre>
 <p>To plot the significant clusters from both models on the CITI168
@@ -331,6 +333,13 @@ value</p>
 <h2 class="unnumbered" id="references">References:<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-fink_two-week_2021" class="csl-entry">
+Fink, Andreas, Karl Koschutnig, Thomas Zussner, Corinna M.
+Perchtold-Stefan, Christian Rominger, Mathias Benedek, and Ilona
+Papousek. 2021. <span>“A Two-Week Running Intervention Reduces Symptoms
+Related to Depression and Increases Hippocampal Volume in Young
+Adults.”</span> <em>Cortex</em> 144 (November): 70–81. <a href="https://doi.org/10.1016/j.cortex.2021.08.010" class="external-link">https://doi.org/10.1016/j.cortex.2021.08.010</a>.
+</div>
 <div id="ref-kuznetsova_lmertest_2017" class="csl-entry">
 Kuznetsova, Alexandra, Per B. Brockhoff, and Rune H. B. Christensen.
 2017. <span>“<span class="nocase">lmerTest</span> <span>Package</span>:
