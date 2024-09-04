@@ -1,7 +1,5 @@
 
-
-
-VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R 
+## VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R 
 
 ![](man/figures/Flowchart.jpg)<!-- -->
 
@@ -18,51 +16,53 @@ library(VertexWiseR)
 #devtools::install_github("CogBrainHealthLab/VertexWiseR")
 ``` 
 
-VertexWiseR imports and makes use of the R package `reticulate`. `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the `brainstat` python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
+VertexWiseR imports and makes use of the R package [reticulate](https://rstudio.github.io/reticulate/). `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the [BrainStat](https://brainstat.readthedocs.io/en/latest/) Python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
 
-For reticulate to work properly with VertexWiseR, the latest version of `miniconda` needs to be installed with it — miniconda is a lightweight version of python, specifically for use within RStudio. 
+For reticulate to work properly with VertexWiseR, the latest version of `Miniconda` needs to be installed with it — Miniconda is a lightweight version of Python, specifically for use within RStudio. Alternatively, a suitable version of Python must be installed.
 
-A function can be run to download and install all the system requirements (miniconda, brainstat, brainstat's fsaverage templates) if they are not installed yet:
+A function can be run to download and install all the system requirements (Miniconda, brainstat, BrainStat's fsaverage/parcellation templates) if they are not installed yet:
 
 ``` r
 VWRfirstrun()
 ```
 
-#### Load datasets
+#### Loading datasets
 
-For this example, we use Spreng and colleagues's neurocognitive aging [openneuro dataset ds003592](https://openneuro.org/datasets/ds003592/versions/1.0.13):
+For this example, we use Spreng and colleagues' neurocognitive aging [openneuro dataset ds003592](https://openneuro.org/datasets/ds003592/versions/1.0.13):
 
 ``` r 
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))
 ``` 
 
-The dataset T1 weighted images were preprocessed using the recon-all [Freesurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki) pipeline. This tutorial will not reiterate these steps and simply explain how, from a given Freesurfer subject directory, VertexWiseR extracts surface-based measures and synthesies the whole-sample data into a compact matrix object (.rds) for later analyses. 
+The dataset T1 weighted images were preprocessed using the recon-all [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki) pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, fMRIprep, HPC and HippUnfold outputs), see the [Extracting surface data in VertexWiseR](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html) article.
 
-HIPvextract() gives the opportuntity to extract surface-based measures including 'thickness', 'curv', 'sulc', and 'area'. Here, we are intersted in cortical thickness:
+Here, we explain how, from a given FreeSurfer subject directory, VertexWiseR extracts surface-based measures and synthesizes the whole-sample data into a compact matrix object (.rds) for later analyses. 
+
+SURFvextract() gives the opportunity to extract surface-based measures including 'thickness', 'curv', 'sulc', and 'area'. Here, we are interested in cortical thickness:
 
 ``` r 
-HIPvextract(sdirpath = "MY_SUBJECTS_DIR/", filename = "SPRENG_CTv.rds", measure = "thickness") 
+SURFvextract(sdirpath = "MY_SUBJECTS_DIR/", filename = "SPRENG_CTv.rds", measure = "thickness") 
 ``` 
 
-A CT matrix object extracted from this dataset is included in the VertexWiseR git repository and can be downloaded with the following code:
+A cortical thickness (CT) matrix object extracted from the Spreng dataset is included in the VertexWiseR git repository and can be loaded with the following code:
 
 ``` r 
 SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
 ``` 
 #### Smoothing the surface data
 
-VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
+VertexWiseR gives the option to smooth the surface data with a desired full width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
 
-``` r 
+```{r, results = 'hide'}
 SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)
 ``` 
 
 #### Preparing the model
 
-The vertex-wise analysis model works as a multiple regression model where the Dependent Variable/outcome is the cortical thickness (CT) at each vertex, and you will decide which Independent Variables/predictors to enter into the model to predict the vertices’ CT. In this example, we shall use `age` and `sex` to predict CT. Among these IVs, we are mostly interested in age, sex being entered into the model to control for its confounding influence on CT. We thus select those two variables and save them into a new data.frame called `all_pred`
+The vertex-wise analysis model works as a multiple regression model where the Dependent Variable/outcome is the CT at each vertex, and you will decide which Independent Variables/predictors to enter into the model to predict the vertices’ CT. In this example, we shall use `age` and `sex` to predict CT. Among these IVs, we are mostly interested in age, sex being entered into the model to control for its confounding influence on CT. We thus select those two variables and save them into a new data.frame called `all_pred`.
 
 ``` r
-all_pred=demodata[,c(2,7)]
+all_pred=demodata[,c("sex","age")]
 head(all_pred)
 ```
 
@@ -78,7 +78,7 @@ head(all_pred)
 
 The next code chunk runs the analysis. There is an optional `p`
 parameter for the `RFT_vertex_analysis()` function to specify the p
-threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.). 
+threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=aparc/Desikan-Killiany-70 (default), 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148). 
 
 The second line displays the results.
 
@@ -103,7 +103,7 @@ In the above results, the clusters that appear under the
 
 - `P`: p-value of the cluster
 
-- `X, Y and Z`: MNI coordinates of the vertex with the highest t-stat in the cluster.
+- `X, Y and Z`: MNI coordinates of the vertex with the highest t-stat in the cluster
 
 - `tstat`: t statistic of the vertex with the highest t-stat in the
   cluster
@@ -118,7 +118,7 @@ plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.jpg'
 
     ## [1] "C:\\Users\\Admin\\My Drive\\workspace for analyses\\sigcluster.jpg"
 
-- `surf_data`: A matrix object containing the surface data (N rows for participants and M columns for vertices). It can be the output from SURFvextract() as well as masks outputted by analyses functions.
+- `surf_data`: A matrix object containing the surface data (N rows for participants and V columns for vertices). It can be the output from SURFvextract()/HIPvextract()/FSLRvextract() as well as masks outputted by analyses functions.
 
 - `filename`: filename of the output image
 
@@ -138,8 +138,8 @@ plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.jpg'
 
 #### Extracting the CT values for each subject
 
-If you want to carry out some follow-up analyses (e.g., mediation), you might want to extract, for each subject in the dataset, the mean CT in the significant clusters colored in red (positive clusters). You can simply do a matrix multiplication (operator for matrix multiplication :`%*%`) between the CT data `SPRENG_CTv` and the positive mask `results$pos_mask` . A mask in the context of brain images refers to a vector of 1s and 0s. In this case, the vertices which are within the significant clusters are coded as 1s, vertices outside these significant clusters are coded as 0s. `sum(results$pos_mask)` gives you the sum of
-all the 1s, which essentially is the number of significant vertices.
+If you want to carry out some follow-up analyses (e.g., mediation), you might want to extract, for each subject in the dataset, the mean CT in the significant clusters colored in red (positive clusters). You can simply do a matrix multiplication (operator for matrix multiplication :`%*%`) between the CT data `SPRENG_CTv` and the positive mask `results$pos_mask` . A mask in the context of brain images refers to a vector of 1s and 0s. In this case, the vertices which are within the significant clusters are coded as 1s, vertices outside these significant clusters are coded as 0s. `sum(results$pos_mask)` gives you the sum of all the 1s, which essentially is the number of significant vertices.
+
 Thus, the `SPRENG_CTv %*% results$pos_mask` is divided by
 `sum(results$pos_mask)` to obtain an average CT value. Here, this average CT is saved into a new variable `sig_avCT` within the `demodata` dataframe.
 
@@ -156,7 +156,7 @@ head(demodata$sig_avCT)
     ## [5,] 3.169464
     ## [6,] 3.007699
 
-as a sanity check, these mean CT values should correlate with
+As a sanity check, these mean CT values should correlate with
 `age`
 
 ``` r
@@ -182,13 +182,12 @@ Image decoding
 
 After running the whole-brain vertex-wise analyses, you may be able to
 identify regions in the brain in which cortical thickness (CT) values
-are significantly different between groups or these CT values predict a certain IV significantly. How do we make sense of these regions? We can plot out the results using the `plot_surf()` function, but still, it may be difficult to interpret the results in terms of the functional relevance of the regions identified. So here’s a tool you can use to facilitate such interpretations.
+are significantly different between groups or these CT values predict a certain IV significantly. How do we make sense of these regions? We can plot out the results using the `plot_surf()` function, but still, it may be difficult to interpret the results in terms of the functional relevance of the regions identified. Here we present a tool that you can use to facilitate such interpretations.
 
-What this tool does is to correlate your input image (cortical surface
-maps obtained from an earlier vertex-wise analysis) with images from a
-large database of task-based fMRI and voxel-based morphometric studies. Each of these images in the database is tagged with a few keywords, describing the task and/or sample characteristics. The correlations that are carried out essentially measure how similar your input image is to each of the images in the database. Higher correlations would mean that your input image looks very similar to a certain image in the database, thus the keywords associated with that image in the database would be highly relevant to your input image.
+What this tool does is correlate your input image (cortical surface
+maps obtained from an earlier vertex-wise analysis, currently supporting fsaverage5 surface space) with images from a large database of task-based fMRI and voxel-based morphometric studies. Each of these images in the database is tagged with a few keywords, describing the task and/or sample characteristics. The correlations that are carried out essentially measure how similar your input image is to each of the images in the database. Higher correlations would mean that your input image looks very similar to a certain image in the database, thus the keywords associated with that image in the database would be highly relevant to your input image.
 
-In this worked example, we will first run a whole-brain vertex-wise
+In this example, we will first run a whole-brain vertex-wise
 analysis to compare the cortical thickness between males and females in the young adult population of the SPRENG dataset. The thresholded
 cortical surface maps obtained from this analysis will then be fed into an image-decoding procedure to identify keywords that are relevant to our results
 
@@ -203,26 +202,22 @@ The [NiMARE](https://nimare.readthedocs.io/en/stable/index.html) python module i
 dat_beh=demodata[demodata$agegroup=="Y",]
 dat_CT=SPRENG_CTv[demodata$agegroup=="Y",]
 
-##recoding categorical variables into numeric form for the vertex-wise analysis
-dat_beh$sex_recode=0
-dat_beh$sex_recode[dat_beh$sex=="F"]=1
-all_pred=dat_beh[,c(3,7,72)]
-
+all_pred=dat_beh[,c("site","age","sex")]
 head(all_pred)
 ```
 
-    ##    site age sex_recode
-    ## 1     1  21          1
-    ## 15    1  32          0
-    ## 16    1  20          0
-    ## 17    1  21          0
-    ## 18    1  24          0
-    ## 19    1  20          0
+    ##    site age sex
+    ## 1     1  21   1
+    ## 15    1  32   0
+    ## 16    1  20   0
+    ## 17    1  21   0
+    ## 18    1  24   0
+    ## 19    1  20   0
 
 ### Vertex-wise analysis
 
 ``` r
-results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex_recode, surf_data = dat_CT)
+results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex, surf_data = dat_CT)
 results$cluster_level_results
 ```
 
@@ -243,7 +238,7 @@ plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.jpg")
 
 ![](man/figures/sexdiff.jpg)
 
-According to these results, since the female sex is coded as 1 and males as 0, the regions colored in cyan are thicker in males
+According to these results, since the female sex is coded as 1 and males as 0 (sex was automatically recoded and flagged by RFT_vertex_analysis()), the regions colored in cyan are thicker in males.
 
 ### Image decoding
 
@@ -251,10 +246,9 @@ Now, let's enter the `thresholded_tstat_map` into the `decode_img()`
 function. The previous results only contained negative clusters. But in case of bidirectionality, the function requires to choose one direction with the contrast option. In this instance, we simply decode the negative clusters, by setting `contrast="negative"`.
 
 If you are running this for the first time, a ~8 MB file
-`neurosynth_dataset.pkl.gz` will be downloaded to your current
-directory. This file will contain the images from the
-[Neurosynth](https://neurosynth.org/) database that will be correlated
-with your input image.
+`neurosynth_dataset.pkl.gz` needs to be downloaded to your current
+directory for the decoding to work. This file will contain the images from the [Neurosynth](https://neurosynth.org/) database that will be correlated
+with your input image. Run VWRfirstrun(requirement='neurosynth') to assist you with the data's installation.
 
 ``` r
 keywords=decode_surf_data(surf_data=results$thresholded_tstat_map, contrast = "negative")
@@ -285,8 +279,7 @@ specifying the index within the square brackets `[1:10,]`. All 847
 keywords will be displayed.
 
 In your presentation slides or results section of your paper, you might
-want to illustrate these keywords using a wordcloud. You can set the
-size of the keyword to vary according to its r value
+want to illustrate these keywords using the [wordcloud package](https://www.rdocumentation.org/packages/wordcloud/versions/2.6). You can set the size of the keyword to vary according to its r value:
 
 ``` r
 #install.packages("wordcloud","paletteer")
