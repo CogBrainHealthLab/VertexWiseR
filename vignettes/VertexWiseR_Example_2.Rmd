@@ -1,0 +1,176 @@
+---
+title: "Example analyses with VertexWiseR - Example 2"
+author: "Charly Billaud, Junhong Yu"
+date: "2024-08-12"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 2}
+  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(VertexWiseR)
+```
+
+## Example 2: Mixed effect model of intervention-related changes on hippocampal thickness
+
+The first stage of the analysis assumes that a preprocessed Hippunfold subjects directory is present. Likewise, this code makes use of an already-extracted hippocampal thickness dataset made available on the VertexWiseR git repository.
+
+The following code is the script which was used to produce this demo data with the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021]:
+
+```{r}
+#HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = "FINK_Tv", measure = "thickness", subj_ID = T)
+```
+
+The hippocampal surface can be loaded from the online VertexWiseR git repository. 
+
+To load the thickness matrix:
+
+```{r}
+FINK_Tv_ses13 = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/FINK_Tv_ses13.rds?raw=TRUE"))
+```
+
+To smooth the surface data:
+
+```{r}
+FINK_Tv_smoothed_ses13 = smooth_surf(FINK_Tv_ses13, 5)
+```
+
+The FINK behavioural data (FINK_behdata_ses13.csv) can be loaded from the VertexWiseR package internal data. It contains one row per participant, for scanning sessions 1 and 3. 
+
+```{r}
+dat_beh_ses13 = readRDS(system.file(package='VertexWiseR', "/demo_data/FINK_behdata_ses13.rds"))
+```
+
+
+Here, we are interested in the interaction between session number (time) and group. To run the vertex-wise mixed model analysis with random field theory-based cluster correction, testing for the effect of session, group, session \* group interaction, on hippocampal thickness, with subject ID as a random variable:
+
+```{r, results = 'hide'}
+model2_RFT=RFT_vertex_analysis(
+  model = dat_beh_ses13[,c("session","group","session_x_group")],
+  contrast = dat_beh_ses13[,"session_x_group"],
+  surf_data=FINK_Tv_smoothed_ses13,
+  random=dat_beh_ses13[,"participant_id"], p=0.05)
+```
+```{r}
+model2_RFT$cluster_level_results
+```
+
+To run the vertex-wise mixed model analysis with threshold-free cluster enhancement-based cluster correction, with 1000 permutations, testing for the effect of session, group, session \* group interaction, on hippocampal thickness, with subject ID as a random variable:
+
+```{r, results = 'hide'}
+model2_TFCE=TFCE_vertex_analysis_mixed(
+  model = dat_beh_ses13[,c("session","group","session_x_group")], 
+  contrast = dat_beh_ses13[,"session_x_group"], 
+  surf_data= FINK_Tv_smoothed_ses13, 
+  nperm=1000, 
+  random = dat_beh_ses13[,"participant_id"], 
+  perm_type="within_between", 
+  nthread=1) 
+TFCEoutput = TFCE_threshold(model2_TFCE, p=0.05)
+```
+
+```{r}
+TFCEoutput$cluster_level_results
+```
+
+To plot the significant clusters from both models on the CITI168 hippocampal template surface:
+
+```{r, results = 'hide'}
+tmaps = rbind(model2_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
+plot_surf(surf_data = tmaps, 
+          filename = 'FINK_tstatmaps.png', 
+          title=c('RFT-corrected\nclusters','TFCE-corrected\nclusters'), 
+          cmap='RdBu_r',
+          show.plot.window=FALSE)
+```
+
+```{r, echo=FALSE, fig.align="center", out.width="100%"}
+knitr::include_graphics('FINK_tstatmaps.png')
+```
+
+## Example 2 follow-up: plotting and post-hoc analyses of hippocampal clusters across regression models
+
+The code below was used in R (v.4.3.3) to plot the cluster-wise values from the RFT and TFCE corrected analyses and validate them with additional mixed linear models.
+
+We produce a figure displaying the thickness of the positive and negative hippocampal clusters in relation to the group and session variables, in RFT and TFCE models, demonstrating a steeper curve toward group 2: 
+
+```{r, results = 'hide'}
+#We divide the cluster values by their sum to get the average thickness per vertex
+dat_beh_ses13$clustCTTFCE=(FINK_Tv_smoothed_ses13 %*% TFCEoutput$pos_mask)/sum(TFCEoutput$pos_mask>0)
+dat_beh_ses13$clustRFT=(FINK_Tv_smoothed_ses13 %*% model2_RFT$pos_mask)/sum(model2_RFT$pos_mask>0)
+dat_beh_ses13$neg.clustCTTFCE=(FINK_Tv_smoothed_ses13 %*% TFCEoutput$neg_mask)/sum(TFCEoutput$neg_mask>0)
+
+library(ggplot2)
+library(ggbeeswarm)
+library(cowplot)
+
+a=ggplot(data=dat_beh_ses13,aes(y=clustCTTFCE,x=as.factor(session), color=as.factor(group)))+
+  geom_quasirandom(dodge.width=0.5)+
+  geom_line(aes(group=participant_id), alpha=0.2)+
+  geom_smooth(aes(group=group), method="lm")+
+  labs(y="Mean thickness (mm)", x="session", color="group")+
+  guides(colour = "none")+
+  ggtitle("Positive cluster\n (TFCE-corrected)")+
+  ylim(1.1, 1.55)
+  
+b=ggplot(data=dat_beh_ses13,aes(y=clustRFT,x=as.factor(session), color=as.factor(group)))+
+  geom_quasirandom(dodge.width=0.5)+
+  geom_line(aes(group=participant_id), alpha=0.2)+
+  geom_smooth(aes(group=group), method="lm")+
+  labs(y="Mean thickness (mm)", x="session", color="group")+
+  guides(colour = "none")+
+  ggtitle("Positive cluster\n(RFT-corrected)")+ 
+  ylim(1.1, 1.55)
+
+c=ggplot(data=dat_beh_ses13,aes(y=neg.clustCTTFCE,x=as.factor(session), color=as.factor(group)))+
+  geom_quasirandom(dodge.width=0.5)+
+  geom_line(aes(group=participant_id), alpha=0.2)+
+  geom_smooth(aes(group=group), method="lm")+
+  labs(y="Mean thickness (mm)", x="session", color="group")+
+  ggtitle("Negative cluster\n(TFCE-corrected)")+
+  scale_color_discrete(name="Group",labels=c("group 1", "group 2"))+
+  ylim(1.1, 1.55)
+
+png(filename="traj.png", res=300, width=2500,height=1080)
+plots=plot_grid(a,b,c, nrow=1,rel_widths=c(0.3,0.3,0.43))
+print(plots)
+dev.off()
+```
+
+```{r, echo=FALSE, fig.align="center", out.width="100%"}
+knitr::include_graphics('traj.png')
+```
+
+As an additional validation of these results, these significant clusters were extracted as regions-of-interests and fitted in a linear mixed effects model using another R package— lmerTest [@kuznetsova_lmertest_2017]. 
+
+```{r,results = 'hide'}
+library(lmerTest)
+```
+
+Linear mixed effect testing the effect of session, group, and session * group interaction on the positive RFT clusters' average thickness value
+
+
+```{r}
+lme.RFT=lmer(clustRFT~session+group+session*group+(1|participant_id),data =dat_beh_ses13 )
+summary(lme.RFT)
+```
+
+Linear mixed effect testing the effect of session, group, and session * group interaction on the positive TFCE clusters' average thickness value
+
+```{r}
+lme.posTFCE=lmer(clustCTTFCE~session+group+session*group+(1|participant_id),data =dat_beh_ses13 )
+summary(lme.posTFCE)
+```
+
+Linear mixed effect testing the effect of session, group, and session * group interaction on the negative TFCE clusters' average thickness value
+
+```{r}
+lme.negTFCE=lmer(neg.clustCTTFCE~session+group+session*group+(1|participant_id),data =dat_beh_ses13 )
+summary(lme.negTFCE)
+```
+
+## References:

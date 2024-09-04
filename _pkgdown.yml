@@ -14,16 +14,18 @@ reference:
     contents:
     - HIPvextract
     - SURFvextract
+    - FSLRvextract
     - smooth_surf
+    - fs_stats
     
   - title: Main analysis functions
   - subtitle: Vertex-Wise analysis
     desc: >
     contents:
-    - vertex_analysis
-    - TFCE.vertex_analysis
-    - TFCE.vertex_analysis.mixed
-    - TFCE.threshold
+    - RFT_vertex_analysis
+    - TFCE_vertex_analysis
+    - TFCE_vertex_analysis_mixed
+    - TFCE_threshold
   
   - subtitle: Plotting
     desc: >
@@ -50,20 +52,24 @@ reference:
     - surf_to_vol
     
   - title: Data objects
+  
+  - subtitle: Object classes
+    desc: >
+    contents:
+    - MNIsurface-class
+    - edgelist-class
+    - ROImap-class
+  
   - subtitle: Edges
     desc: >
     contents:
-    - edgelistfs5
-    - edgelistfs6
-    - edgelistHIP
+    - edgelist_hip
     
   - subtitle: Template maps
     desc: >
     contents:
     - fs6_to_fs5_map
     - hip_points_cells
-    - MNImap_fs5
-    - MNImap_fs6
     - MNImap_hip
     
   - subtitle: Parcellation maps
@@ -71,4 +77,5 @@ reference:
     contents:
     - ROImap_fs5
     - ROImap_fs6
-    - ROImap_HIP
+    - ROImap_fslr32k
+    - ROImap_hip

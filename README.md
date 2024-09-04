@@ -10,12 +10,12 @@ VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hi
 VertexWiseR can be installed and loaded using the following code in R:
 
 ``` r 
-install.packages("devtools")
-devtools::install_github("CogBrainHealthLab/VertexWiseR")
+install.packages('VertexWiseR')
 library(VertexWiseR)
 
-##not yet available on CRAN at the moment
-    #install.packages('VertexWiseR')
+##Alternatively
+#install.packages("devtools")
+#devtools::install_github("CogBrainHealthLab/VertexWiseR")
 ``` 
 
 VertexWiseR imports and makes use of the R package `reticulate`. `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the `brainstat` python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
@@ -51,7 +51,7 @@ SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/bl
 ``` 
 #### Smoothing the surface data
 
-VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
+VertexWiseR gives the option to smooth the surface data with a desiredfull width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
 
 ``` r 
 SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)
@@ -66,24 +66,24 @@ all_pred=demodata[,c(2,7)]
 head(all_pred)
 ```
 
-    ##   gender age
-    ## 1      F  21
-    ## 2      F  73
-    ## 3      F  77
-    ## 4      M  68
-    ## 5      F  60
-    ## 6      F  71
+    ##   sex age
+    ## 1 F   21
+    ## 2 F   73
+    ## 3 F   77
+    ## 4 M   68
+    ## 5 F   60
+    ## 6 F   71
 
 #### The actual analysis
 
 The next code chunk runs the analysis. There is an optional `p`
-parameter for the `vertex_analysis()` function to specify the p
+parameter for the `RFT_vertex_analysis()` function to specify the p
 threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=Aparc (default), 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400.). 
 
 The second line displays the results.
 
 ``` r
-results=vertex_analysis(model = all_pred, contrast =all_pred$age, surf_data = SPRENG_CTv, atlas = 1)
+results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$age, surf_data = SPRENG_CTv, atlas = 1)
 print(results$cluster_level_results)
 ```
 
@@ -205,7 +205,7 @@ dat_CT=SPRENG_CTv[demodata$agegroup=="Y",]
 
 ##recoding categorical variables into numeric form for the vertex-wise analysis
 dat_beh$sex_recode=0
-dat_beh$sex_recode[dat_beh$gender=="F"]=1
+dat_beh$sex_recode[dat_beh$sex=="F"]=1
 all_pred=dat_beh[,c(3,7,72)]
 
 head(all_pred)
@@ -222,7 +222,7 @@ head(all_pred)
 ### Vertex-wise analysis
 
 ``` r
-results=vertex_analysis(model = all_pred, contrast =all_pred$sex_recode, surf_data = dat_CT)
+results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex_recode, surf_data = dat_CT)
 results$cluster_level_results
 ```
 

@@ -24,7 +24,7 @@ SURFvextract(
 \item{subj_ID}{A logical object stating whether to include subject IDs (folder names in the subjects directory) as a first column to the output matrix. Default is TRUE.}
 }
 \value{
-A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or a data matrix object. The matrix can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the same order as 1) and contains the left to right hemispheres' vertex-wise values.
+A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
 Extracts whole-brain vertex-wise surface-based measures for each subject in a 'FreeSurfer' output subjects directory, resamples the data to a common surface template, and stores it as a .rds file. This function requires the 'FreeSurfer' environment to be preset.
@@ -35,6 +35,6 @@ This function was currently not tested on a MacOS system.
 }
 \examples{
 SURFvextract(sdirpath = "freesurfer_subjdir", 
-filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5", 
+filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5",
 measure="curv") 
 }

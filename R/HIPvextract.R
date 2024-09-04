@@ -8,7 +8,7 @@
 #' @param measure A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.
 #' @param subj_ID A logical object stating whether to return a list object containing both subject ID and data matrix.
 #'
-#' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or a data matrix object. The matrix can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the same order as 1) and contains the left to right hemispheres' vertex-wise values.
+#' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' hippocampal vertex-wise values.
 #' @examples
 #' HIPvextract(sdirpath = "./", filename = paste0(tempdir(),"/hip_data.RDS"), measure = "thickness") 
 #' 
@@ -20,6 +20,7 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   oldwd <- getwd()
   on.exit(setwd(oldwd)) #will restore user's working directory path on function break
   
+  if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
   
   if (missing("filename")) {
@@ -49,15 +50,16 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
     rh=gifti::readgii(rh.filelist[sub])
     hip_dat[sub,]=c(lh$data$normal,rh$data$normal)
   }
-
-  ##output file depending on subj_ID==T
+  
   hip_dat=hip_dat[order(sublist),]
-    if(subj_ID==TRUE)
-    {
-    saveRDS(list(sublist,hip_dat), file=filename)
-    } else
-    {
-    saveRDS(hip_dat, file=filename)
-    }
+  
+  ##If subj_ID==TRUE, the surface data is saved as a list object with the  with subject list appended
+  if(subj_ID==TRUE)
+  {
+    hip_dat=list(sublist,hip_dat);
+  } 
+  
+saveRDS(hip_dat, file=filename)
+return(hip_dat)
 }
 

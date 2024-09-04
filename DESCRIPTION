@@ -2,7 +2,7 @@ Package: VertexWiseR
 Title: Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal
     Surface
 Version: 1.0.1
-Date: 2024-06-14
+Date: 2024-09-04
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
@@ -13,22 +13,27 @@ Maintainer: Charly Billaud <charly.billaud@ntu.edu.sg>
 Description: Provides functions to run statistical analyses on
     surface-based neuroimaging data, computing measures including cortical
     thickness and surface area of the whole-brain and of the hippocampi.
-    It can make use of 'FreeSurfer' preprocessed datasets and 'HippUnfold'
-    hippocampal segmentation outputs for a given sample by restructuring
-    the data values into a single file. The single file can then be used
-    by the package for analyses independently from its base dataset and
-    without need for its access.
+    It can make use of 'FreeSurfer', 'fMRIprep' and 'HCP' preprocessed
+    datasets and 'HippUnfold' hippocampal segmentation outputs for a given
+    sample by restructuring the data values into a single file. The single
+    file can then be used by the package for analyses independently from
+    its base dataset and without need for its access.
 License: GPL-3
 URL: https://cogbrainhealthlab.github.io/VertexWiseR/
+Suggests: 
+    R.rsp
+VignetteBuilder: 
+    R.rsp
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-SystemRequirements: Miniconda3 (>= 23.10.0); BrainStat (reticulate
-    installation, >=0.4.2)
+SystemRequirements: Miniconda3 (v23.10.0); BrainStat (reticulate
+    installation, v0.4.2); Numpy (v1.26.4)
 Depends: 
     R (>= 4.0.0)
 Imports: 
+    ciftiTools,
     doParallel,
     doSNOW,
     foreach,
@@ -38,6 +43,9 @@ Imports:
     grDevices,
     igraph,
     methods,
+    png,
+    rappdirs,
     reticulate,
     stats,
+    stringr,
     utils

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -48,11 +56,11 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>surf_data</dt>
-<dd><p>A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format.</p></dd>
+<dd><p>A N x M matrix object containing the surface data (N row for each subject, M for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.</p></dd>
 
 
 <dt>atlas</dt>
-<dd><p>A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the bigbrain hippocampal atlas is used by default and ignores the option.</p></dd>
+<dd><p>A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.</p></dd>
 
 
 <dt>mode</dt>
@@ -67,8 +75,9 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the <a href="https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations" class="external-link">enigmatoolbox</a> ; data for Destrieux came from <a href="https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py" class="external-link">nilearn.datasets.fetch_atlas_surf_destrieux</a></p>
-<p>For hippocampal data, the function currently works with the "bigbrain" atlas integrated in Hippunfold. See also <a href="https://www.sciencedirect.com/science/article/pii/S105381191930919X" class="external-link">DeKraker et al., 2020</a>.</p>
+    <p>The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the <a href="https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations" class="external-link">'ENIGMA toolbox'</a> ; data for Destrieux came from <a href="https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py" class="external-link"> 'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux</a></p>
+<p>For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also <a href="https://doi.org/10.1016/j.neuroimage.2019.116328" class="external-link">doi:10.1016/j.neuroimage.2019.116328</a>
+.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -79,15 +88,15 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">20484</span>,min<span class="op">=</span><span class="fl">0</span>, max<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">surf_to_atlas</span><span class="op">(</span><span class="va">CTv</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 49.92331 53.49355 47.22426 52.77122 51.15864 52.09127 50.01991 51.31866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] 50.28869 51.50557 50.09961 51.72056 53.05888 50.59699 47.78444 50.90100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17] 50.74526 49.69928 44.11279 50.14934 46.51242 47.83549 48.90736 50.63215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 50.04727 45.26273 51.54100 50.44109 48.27340 49.56037 50.57570 65.78174</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33] 50.54350 47.99889 48.97449 49.64571 50.78299 45.35281 51.13575 49.53441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] 43.19311 51.48077 49.23856 53.24017 48.55781 46.45040 48.17006 46.94278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49] 48.08163 49.23326 50.26257 46.32722 47.28163 50.78247 51.82155 49.48975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [57] 52.67509 48.32513 49.40488 51.88156 53.15854 49.17489 49.86591 50.19587</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [65] 50.51372 49.40957 54.74496 46.72882 56.40791 50.86727</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 45.72932 44.34862 53.54031 49.60858 49.86006 56.59735 50.88027 50.51858</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] 46.80343 51.76381 51.35240 50.41148 48.76973 54.24067 48.64380 47.20738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] 48.54893 48.09468 49.79374 49.90168 48.88657 51.77491 47.50300 50.54330</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] 51.62319 54.48460 50.40595 49.97549 50.44111 47.54905 50.35493 54.85516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] 50.50035 54.05510 50.66675 52.98030 49.54118 46.40953 51.78877 48.08507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] 45.02595 48.16279 50.03959 48.25885 49.48945 52.22231 46.48965 47.55242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] 53.16779 53.21792 50.09333 46.65931 50.22071 54.89919 49.28323 58.64723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57] 50.38342 48.37205 49.53495 48.71120 49.46788 48.40245 51.64617 49.07412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [65] 50.56137 52.34029 52.69197 47.87765 50.71478 50.13073</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

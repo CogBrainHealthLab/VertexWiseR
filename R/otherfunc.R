@@ -106,7 +106,7 @@
 #'
 #' @description Smooths surface data at defined full width at half maximum (FWHM) as per the corresponding template of surface data
 #'
-#' @param surf_data A matrix object containing the surface data, see SURFvextract() or HIPvextract() output format
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -126,10 +126,10 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  if (VWR_check == TRUE){
+  if (VWR_check == TRUE & length(sys.calls()) <= 1){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="miniconda only")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    check = VWRfirstrun(requirement="python/conda only")
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
@@ -149,18 +149,31 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   
   if(n_vert==20484) 
   {
-    edgelist<- get('edgelistfs5') 
+    edgelist <- get_edgelist('fsaverage5') 
     FWHM=FWHM/3.5 #converting mm to mesh units
   } else if(n_vert==81924) 
   {
-    edgelist<- get('edgelistfs6') 
+    edgelist <- get_edgelist('fsaverage6') 
     FWHM=FWHM/1.4 #converting mm to mesh units
+  } else if(n_vert==64984) 
+  {
+    edgelist <- get_edgelist('fslr32k') 
+    FWHM=FWHM/2 #converting mm to mesh units
   } else if(n_vert==14524) 
   {
-    edgelist<- get('edgelistHIP') 
+    edgelist_hip <- get('edgelist_hip') 
+    edgelist <- edgelist_hip@data
     FWHM=FWHM/0.5 #converting m to mesh units
   } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
-  
+
+  #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
+  idx0=which(colSums(data.matrix(surf_data))==0)
+  if(length(idx0)>0)
+  {	  
+  edgelist=edgelist[-which(!is.na(match(edgelist[,1],idx0))),]
+  edgelist=edgelist[-which(!is.na(match(edgelist[,2],idx0))),]
+  }
+	  
   smoothed=mesh_smooth(surf_data,edgelist, FWHM)
   smoothed[is.na(smoothed)]=0
   return(smoothed)
@@ -192,26 +205,12 @@ extract.t=function(mod,row)
 #' @importFrom igraph components
 
 ##find clusters using edgelist
-getClusters=function(surf_data)
+getClusters=function(surf_data,edgelist)
 { 
   n_vert=length(surf_data)
   
   #listing out non-zero vertices
   vert=which(surf_data!=0)
-  
-  #visible binding for edgelist object
-  edgelist <- get("edgelist")
-  
-  ##narrow down to left or right hemisphere only to speed up matching process
-  if(max(vert,na.rm = TRUE)<=(n_vert/2))
-  {
-    nedgerow=min(which(edgelist>(n_vert/2)))-1
-    edgelist=edgelist[1:nedgerow,]
-  } else if(min(vert,na.rm = TRUE)>(n_vert/2))
-  {
-    nedgerow=min(which(edgelist>(n_vert/2)))-1
-    edgelist=edgelist[(nedgerow+1):NROW(edgelist),]
-  }
   
   #matching non-zero vertices with adjacency matrices to obtain list of edges connecting between the non-zero vertices
   edgelist0=edgelist[!is.na(match(edgelist[,1],vert)),]
@@ -243,7 +242,7 @@ getClusters=function(surf_data)
     clust.map="noclusters"
     clust.size="noclusters"
   }
-  return(list(clust.map,clust.size))
+  return(list(clust.map,clust.size,edgelist1))
 }
 ############################################################################################################################
 ############################################################################################################################
@@ -255,7 +254,7 @@ getClusters=function(surf_data)
 #' 
 #' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
-#' @param surf_data A matrix object containing the surface data in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices) or hippocampal (14524 vertices) space. See also Hipvextract() or SURFvextract() output format. 
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
@@ -270,16 +269,19 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 {  
   #check length of vector or ncol of matrix
   if(max(dim(t(surf_data)))!=20484 & max(dim(t(surf_data)))!=81924 
-     & max(dim(t(surf_data)))!=14524) {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
+     & max(dim(t(surf_data)))!=14524 & max(dim(t(surf_data)))!=64984) 
+    {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
   
   #atlas argument needed if not hippocampal data
   if(missing("atlas") & max(dim(t(surf_data)))!=14524) {stop("Please specify an atlas number among the following: 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400")}
   
+  ###
   #mapping fsaverage5 space vertice to atlas (Nx20484 vertices)
   if(max(dim(t(surf_data)))==20484) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_fs5')
+    ROImap_fs5 <- get('ROImap_fs5')
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     #set NAs to 0
@@ -305,12 +307,13 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     return(ROI)
   }
   
-  
+  ###
   #mapping fsaverage6 space vertice to atlas (Nx81924 vertices)
   if(max(dim(t(surf_data)))==81924) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_fs6')
+    ROImap_fs6 <- get('ROImap_fs6')
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     #set NAs to 0
@@ -336,11 +339,45 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     return(ROI)
   }
   
+  ###
+  #mapping fslr32k space vertice to atlas (Nx64984 vertices)
+  if(max(dim(t(surf_data)))==64984) 
+  {
+    #load atlas mapping surf_data
+    ROImap_fslr32k <- get('ROImap_fslr32k')
+    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
+    #init variables
+    nregions=max(ROImap[[1]][,atlas])
+    #set NAs to 0
+    surf_data[is.na(surf_data)]=0 
+    
+    if (is.vector(surf_data)==TRUE) {surf_data=rbind(matrix(surf_data,ncol=64984,nrow=1),NA); isavector=TRUE} #if vector, converts to matrix, and adds empty NA row to make object 2 dims
+    
+    ROI=matrix(NA, nrow=NROW(surf_data), ncol=nregions)
+    
+    if(mode=='mean') {
+      for (region in 1:nregions)  {ROI[,region]=rowMeans(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector"))  {ROI=ROI[1,]}
+    } 
+    else if (mode=='sum') 
+    {
+      for (region in 1:nregions)  {ROI[,region]=rowSums(surf_data[,which(ROImap[[1]][,atlas]==region)])}
+      if (exists("isavector")) {ROI=ROI[1,]} #removes empty row if it was vector
+    }
+    else 
+    {
+      stop('\nPlease indicate a mode: only "sum" or "mean" are available.')
+    }
+    return(ROI)
+  }
+  
+  ###
   #mapping hippocampal space vertice to atlas (Nx14524 vertices)
   if(max(dim(t(surf_data)))==14524) 
   {
     #load atlas mapping surf_data
-    ROImap <- get('ROImap_HIP')
+    ROImap_hip <- get('ROImap_hip')
+    ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     #init variables
     nregions=max(ROImap[[1]][,1])
     #set NAs to 0
@@ -371,13 +408,13 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 
 #' @title Atlas to surface
 #'
-#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5 or fsaverage6 space
+#' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5, fsaverage6 or fslr32k space
 #' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
-#' @param template A string object stating the surface space on which to map the data ('fsaverage5' or 'fsaverage6').
+#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6' or 'fslr32k').
 #'
-#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5 or fsaverage6 space
+#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6 or fslr32k space
 #' @seealso \code{\link{surf_to_atlas}}
 #' @examples
 #' parcel_data = t(runif(100,min=0, max=100));
@@ -388,10 +425,15 @@ atlas_to_surf=function(parcel_data, template)
   {
     #load atlas mapping surface data
   if (template=='fsaverage5') { 
-    ROImap <- get('ROImap_fs5'); n_vert=20484; 
+    ROImap_fs5 <- get('ROImap_fs5'); n_vert=20484; 
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
   } else if (template=='fsaverage6') 
-  { ROImap <- get('ROImap_fs6'); n_vert=81924; 
-  } else { stop('The function currently only works with fsaverage5 and fsaverage6')}
+  { ROImap_fs6 <- get('ROImap_fs6'); n_vert=81924; 
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
+  } else if (template=='fslr32k') 
+  { ROImap_fslr32k <- get('ROImap_fslr32k'); n_vert=64984; 
+  ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
+  } else { stop('The function currently only works with fsaverage5,  fsaverage6 and fslr32k')}
   
     
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
@@ -441,7 +483,7 @@ atlas_to_surf=function(parcel_data, template)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage5 space to fsaverage6 space using the nearest neighbor approach 
 #'
-#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices)  space. See also SURFvextract() output format. 
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage6 space
 #' @seealso \code{\link{fs6_to_fs5}}
@@ -471,7 +513,7 @@ fs5_to_fs6=function(surf_data)
 #'
 #' @description Remaps vertex-wise surface data in fsaverage6 space to fsaverage5 space using the nearest neighbor approach
 #'
-#' @param surf_data A numeric vector or matrix object containing the surface data, see SURFvextract() output format. 
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage6 (81924 vertices) space. See also SURFvextract() output format.  
 #'
 #' @returns A matrix object containing vertex-wise surface data mapped in fsaverage5 space
 #' @seealso \code{\link{fs5_to_fs6}}
@@ -513,164 +555,11 @@ fs6_to_fs5=function(surf_data)
 ############################################################################################################################
 ############################################################################################################################
 
-#' @title Surface plotter
-#'
-#' @description Plots surface data in a grid with one or multiple rows in a .png file
-#'
-#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract() as well as masks or vertex-wise results outputted by analyses functions.
-#' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).
-#' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
-#' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
-#' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
-#' 
-#' Default cmap is set to `"Reds"` for positive values, `"Blues_r"` for negative values and `"RdBu"` when both positive and negative values exist. 
-#' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. If the limits are specified, the same limits will be applied to all subplots. When left unspecified, the same symmetrical limits c(-max(abs(surf_dat),max(abs(surf_dat))) will be used for all subplots. If set to NULL, each subplot will have its own limits corresponding to their min and max values
-#' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
-#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
-#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
-#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
-#'
-#' @returns Outputs the plot as a .png image
-#' @examples
-#' results = runif(20484,min=0, max=1);
-#' plot_surf(surf_data = results, filename=paste0(tempdir(),"/output.png"),title = 
-#' 'Cortical thickness', surface = 'inflated', cmap = 'Blues',
-#' VWR_check=FALSE)
-#' @importFrom reticulate tuple import np_array source_python
-#' @importFrom grDevices col2rgb
-#' @export
-
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, VWR_check=TRUE)
-{
-  #Check required python dependencies. If files missing:
-  #Will prompt the user to get them in interactive session 
-  #Will stop if it's a non-interactive session 
-  if (VWR_check == TRUE){
-    message("Checking for VertexWiseR system requirements ...")
-    check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
-  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
-  
-  if (missing("filename")) {
-    message('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
-    filename=paste0(tempdir(),'/plot.png')
-  }
-  
-  #format title for single row
-  if(is.null(nrow(surf_data)))
-  {
-    title=list('left'=list(title))
-    rows=1
-    surf_data=as.numeric(surf_data)
-  } else {rows=nrow(surf_data)}
-
-  #in a multi-row data scenario: insert a dummy title if title is missing  or repeat the title nrow times
-  if(rows>1) 
-    {
-       if(missing("title")) {title=rep(NULL,rows)}
-       else if (missing("title")) {title=rep(title,rows)}
-    }
-	  
-  #check length of vector
-  n_vert=length(surf_data)
-  if(n_vert%%20484==0) {template="fsaverage5"}
-  else if (n_vert%%81924==0) {template="fsaverage6"} 
-  else if (n_vert%%14524!=0) {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
-
-  #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
-  if(missing("cmap"))
-  {
-    if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap="Reds"}
-    else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap="Blues_r"}
-    else  {cmap="RdBu_r"}  
-  }
-	
-  #custom cmap— if a vector of hex color codes is specified
-  if(inherits(cmap,"colors")==TRUE)
-  {
-    matplotlib=reticulate::import("matplotlib")
-    
-    custom_colors=t(col2rgb(cmap)/255) # convert hex color codes to RGB codes, then divide by 255 to convert to RGBA codes
-    
-    #save as python cmap object
-    mymap = matplotlib$colors$LinearSegmentedColormap$from_list('my_colormap', custom_colors)
-    matplotlib$colormaps$unregister(name = "custom_cmap")
-    matplotlib$colormaps$register(cmap = mymap,name="custom_cmap")
-    cmap="custom_cmap"  
-  }
-	
-  #setting color scale limits
-   maxlimit=max(abs(range(surf_data,na.rm = TRUE)))
-    if(missing("limits")) 
-    {
-      if(range(surf_data,na.rm = TRUE)[1]>=0) {limits=reticulate::tuple(0,range(surf_data,na.rm = TRUE)[2])} ##if image contains all positive values
-      else if(range(surf_data,na.rm = TRUE)[2]<=0) {limits=reticulate::tuple(range(surf_data,na.rm = TRUE)[1],0)} ##if image contains all negative values
-      else {limits=reticulate::tuple(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
-    } else {
-      ##user specified limits
-      if(!is.null(limits))
-      {
-        limits=reticulate::tuple(limits[1],limits[2])  
-      }   
-    }
-  
-  if(n_vert%%14524!=0)
-  {
-  ##cortical surface fplots
-    #import python libraries
-    brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
-    brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
-    
-    #loading fsaverage surface
-    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[1]
-    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface)[2]
-    
-    #default cortical size and zoom parametes
-    if(missing("size")) { size=c(1920,rows*400)}
-    if(missing("zoom")) { zoom=1.25 }
-    
-    surf_plot=brainspace.plotting$plot_hemispheres(left[[1]], right[[1]],  array_name=reticulate::np_array(surf_data),cmap=cmap, 
-                                                size=reticulate::tuple(as.integer(size)),nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),
-                                                return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
-                                                label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=FALSE)  ##disabling interactive mode because this causes RStudio to hang
-  } else
-  {
-    #Solves the "no visible binding for global variable" issue
-    . <- surfplot_canonical_foldunfold  <- NULL 
-    internalenv <- new.env()
-    assign("surfplot_canonical_foldunfold", surfplot_canonical_foldunfold, envir = internalenv)
-    
-  ##hippocampal plots
-    #import python libraries
-    reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/hipp_plot.py'))
-    
-    #default hippocampal size and zoom parametes
-    if(missing("size")) { size=c(400,200)}
-    if(missing("zoom")) { zoom=1.2 }
-
-    #reshaping surf_data into a 7262 x 2 x N array
-    if(is.null(nrow(surf_data)))  {surf_data=cbind(surf_data[1:7262],surf_data[7263:14524])} #if N=1
-    else  
-      {
-        surf_data.3d=array(NA,c(7262,2,nrow(surf_data))) #if N>1
-        for (row in 1:nrow(surf_data))  {surf_data.3d[,,row]=cbind(surf_data[row,1:7262],surf_data[row,7263:14524])}
-        surf_data=surf_data.3d
-      }
-    
-    surf_plot=surfplot_canonical_foldunfold(surf_data,hipdat =get('hip_points_cells'),color_bar=colorbar,share="row",nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),size=as.integer(size), zoom=zoom,
-                                         cmap=cmap,color_range=limits,label_text=title, return_plotter=TRUE,interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
-  }
-  #output plot as a .png image
-  surf_plot$screenshot(filename=filename,transparent_bg = FALSE)
-}
-############################################################################################################################
-############################################################################################################################
-
 #' @title Surface to volume
 #'
 #' @description Converts surface data to volumetric data (.nii file)
 #'
-#' @param surf_data A vector object containing the surface data, either in fsaverage5 or fsaverage6 space. It can only be one row of vertices (no cohort surface data matrix). 
+#' @param surf_data A numeric vector or object containing the surface data, either in fsaverage5 (1 x 20484 vertices) or fsaverage6 (1 x 81924 vertices) space. It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii' in the R temporary directory (tempdir())).
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -690,8 +579,8 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   #Will stop if it's a non-interactive session 
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="miniconda/brainstat")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    check = VWRfirstrun(requirement="conda/brainstat")
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
@@ -719,11 +608,11 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
 ############################################################################################################################
 #' @title Decode surface data
 #'
-#' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words
+#' @description Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words. Decoding currently works with surfaces in fsaverage5 space only."
 #'
 #' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.
 #'
-#' @param surf_data a numeric vector with a length of 20484
+#' @param surf_data A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -745,7 +634,7 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
   if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="neurosynth")
-    if (!is.null(check)) {return(check)} else {message("\u2713 \n")}
+    if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
@@ -805,171 +694,318 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 
 ############################################################################################################################
 ############################################################################################################################
-#' @title VertexWiseR system requirements installation
-#'
-#' @description Helps the user verify if VertexWisrR's system requirements are present and install them ('Miniconda', 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten. 
-#'
-#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. If for a reason Miniconda cannot be installed, the function gives the choice to install a reticulate-suitable Python environment.
-#' Vertex-wise statistical analyses of cortical surface require fsaverage and parcellation templates as imported by default in 'BrainStat'. 
-#' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
-#' @param requirement String that specifies a requirement to enquire about (for specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'; for neurosynth database: "neurosynth"). Default is 'any' requirement and checks everything.
-#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
-#' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
+
+#' @title Edge list fetcher
+#' @description Functions that allows to download edge list for vertices of a given surface template from the BrainStat database
+#' @param template A string object referring to a brain surface template. VertexWiseR currently works with: 'fsaverage5', 'fsaverage6' and 'fslr32k'.
+#' @returns A Nx2 matrix object listing each vertex of the surface template and the vertices adjacent to it (making an edge together).
 #' @examples
-#' VWRfirstrun()
-#' @importFrom reticulate conda_binary py_module_available
-#' @importFrom fs path_home
-#' @importFrom methods is 
-#' @importFrom utils menu
+#' edgelist=get_edgelist("fslr32k")
+#' @noRd
+#' 
+get_edgelist=function(template)
+{
+  #Load brainstat tools
+  brainstat.datasets=reticulate::import("brainstat.datasets")  
+  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
+  
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  #Loads template surfaces
+  surf_template=brainstat.datasets$fetch_template_surface(template, join=TRUE, data_dir=data_dir)
+  
+  #Returns edge list
+  return(brainstat.mesh.utils$mesh_edges(surf_template)+1)
+}
+
+#' @title MNI coordinates fetcher
+#' @description Functions that allows to download MNI coordinates of a given surface template
+#' @param template A string object referring to a brain surface template. VertexWiseR currently works with: 'fsaverage5', 'fsaverage6' and 'fslr32k'.
+#' @returns A matrix with X columns corresponding to the template's vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
+#' @examples
+#' MNImap = get_MNIcoords("fslr32k")
+#' @noRd
+
+get_MNIcoords=function(template)
+{
+  #Load brainstat tools
+  brainstat.datasets=reticulate::import("brainstat.datasets")  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  
+  #Read new python enviroment
+  Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+  #Brainstat data, will either be stored in default $HOME path or 
+  #custom if it's been set via VWRfirstrun()
+  if (Sys.getenv('BRAINSTAT_DATA')=="")
+  {brainstat_data_path=fs::path_home()} else if 
+  (!Sys.getenv('BRAINSTAT_DATA')=="") 
+  {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
+  #convert path to pathlib object for brainstat
+  data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+  
+  #Loads template surfaces
+  surf.template=brainstat.datasets$fetch_template_surface(template=template, join=TRUE, data_dir=data_dir)
+  
+  #Returns MNI coordinates
+  return(t(brainspace.mesh.mesh_elements$get_points(surf.template)))
+}
+
+
+
+########################################################################################################################################################################################################################################################
+
+#' @title fs_stats()
+#'
+#' @description Extracts descriptive statistics, for the whole-brain and subcortical region-of-interests (ROI), within a FreeSurfer subjects directory. It reads them from the aseg.stats file, as generated by the default FreeSurfer preprocessing pipeline.
+#'
+#' @param sdirpath A string object indicating the path to the 'FreeSurfer' subjects directory. Default is the current working directory ("./").
+#' @param sublist A string object indicating the path to the subject list generated by SURFvextract as 'sublist.txt' (optional). This allows users to retrieve stats only from a selected list of subjects. The subject list is a list with 1 subject ID per line.
+#' @param ROImeasure A string object indicating what summary measure to extract for the subocrtical ROIs. Choices include: 'NVoxels', 'Volume_mm3', 'StructName', 'normMean', 'normStdDev', 'normMin', 'normMax', and 'normRange'. Default is 'Volume_mm3'.
+#'
+#' @returns A data.frame object with N columns per aseg.stats measures and N row per subjects.
+#' @examples
+#' fs_stats(sdirpath="freesurfer_subjdir")
+#' @importFrom stringr str_split
+#'@importFrom utils read.table
 #' @export
 
-VWRfirstrun=function(requirement="any", n_vert=0) 
+fs_stats=function(sdirpath="./", sublist, ROImeasure='Volume_mm3') 
 {
-#First checks the n_vert argument. This ensures only the necessary fsaverage data is demanded:
-  #are fsaverage5 templates in brainstat_data?
-  if (n_vert==20484)
-  {requirement='fsaverage5'}  
-  #are fsaverage6 templates in brainstat_data?
-  if  (n_vert==81924)
-  {requirement='fsaverage6'}
-  #is yeo parcellation data in brainstat_data?
-  if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
-  {requirement='yeo_parcels'} 
   
   
-if (interactive()==TRUE) { #can only run interactively as it requires user's action
+#check if sdirpath contains aseg.stats files 
+  dircount = dir(path=sdirpath, recursive=TRUE, pattern="aseg.stats", include.dirs = TRUE, full.names = TRUE)
+  if (length(dircount)==0) { return(message('aseg.stats files could not be found in the set sdirpath')) }
   
-  #check if miniconda (or suitable python environment) is installed
-  #numpy being a dependency in both, this checks if either is present
-  if (!reticulate::py_module_available("numpy"))
+#decide subject_IDs to retrieve if sublist argument given
+  if(!missing(sublist)) 
   {
-    prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
-                           "Yes, install Python (if Miniconda could not be installed)", 
-                           "No"), 
-                         title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?")
+    sublist=read.table(sublist)
     
-    if (prompt==1) {reticulate::install_miniconda()}
-    else if (prompt==2) {reticulate::install_python()}
-    else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
-  } 
+    #get parent directory of stats/aseg.stats
+    subdirs = stringr::str_split(dir(path=sdirpath, recursive=TRUE,
+                         pattern="aseg.stats"), pattern='/stats/') 
+    subdirs= unlist(lapply(subdirs, function(x) x[1]))
+
+    #select only subject IDs match that directory name and use that
+    dircount=dircount[which(subdirs %in% sublist[,1])==TRUE]
+
+  }  
+
   
-  #check if brainstat is installed
-  if(!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
+  
+#creates main data.frame
+FS_STAT=data.frame(matrix(ncol=1,nrow=length(dircount)))
+colnames(FS_STAT) <- 'subject_ID'
+
+#for each aseg stats, extracts measure values
+  for (i in dircount) 
   {
-    prompt = utils::menu(c("Yes", "No"), title="Brainstat could not be found in the environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries are dependencies that will automatically be installed with it.")
-    if (prompt==1){reticulate::py_install("brainstat",pip=TRUE)} 
-    else {
-      stop('VertexWiseR will not work properly without brainstat.\n\n')}
-  } 
-  
-  #check if brainstat fsaverage/parcellation templates are installed (stops only if function needs it)
-  if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
-  {     
-    prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage5 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage5 space. \n  Do you want the fsaverage5 templates (~7.81 MB) to be downloaded now?")
-    if (prompt==1){    
-      brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-      brainstat.datasets.base$fetch_template_surface("fsaverage5")
-    } else if (requirement=='fsaverage5') {
-      stop('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')
-    } else if (requirement=='any') {
-      warning('VertexWiseR will not be able to analyse fsaverage5 data without the brainstat templates.\n\n')}
-  } 
-  
-  if ((requirement=="any" | requirement=='fsaverage6')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6'))) 
-  { 
-   prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat fsaverage6 templates in $home/brainstat_data/. They are needed if you want to analyse cortical surface in fsaverage6 space. \n Do you want the fsaverage6 templates (~31.2 MB) to be downloaded now?")
+    #read aseg.stats (read.delim to export the first Measures)
+    stattable=read.delim(i, sep="\t")
     
-     if (prompt==1)
-      { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        brainstat.datasets.base$fetch_template_surface("fsaverage6")
-      } else if (requirement=='fsaverage6') { 
-        stop('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')
-      } else if (requirement=="any") {
-        warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
-  } 
-  
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
-      & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/')))
-  {
-      prompt = utils::menu(c("Yes", "No"), title="VertexWiseR could not find brainstat yeo parcellation data in $home/brainstat_data/. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?")
-      if (prompt==1){    
-        brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7), silent=TRUE)}  
-        else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
+      for (l in 1:nrow(stattable)) #for each line
+      {  
+        #if subjectname in the line store subject ID
+        if (grepl("subjectname", stattable[l,])) 
         {
-          stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
-        else if (requirement=="any") 
-        {
-          warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
+         subject_ID=stringr::str_split(stattable[l,],
+                      pattern="subjectname ")[[1]][2]
+         FS_STAT$subject_ID[which(dircount==i)]=subject_ID
         }
+        
+        #for each Measure, save name and value
+        if (grepl("Measure", stattable[l,])) 
+        {
+          measure=stringr::str_split(stattable[l,],pattern=",")
+          meas_name=stringr::str_split(measure[[1]][1], pattern="Measure ")[[1]][2]
+          #if no column for measure name create it
+          if (meas_name %in% colnames(FS_STAT)==FALSE)
+          {  FS_STAT[[meas_name]] <- NA }
+          #append measure value
+          meas_val=as.numeric(gsub("\\D", "", measure))
+          FS_STAT[[which(dircount==i),meas_name]] <- meas_val
+        }
+      }
+    
+    #read aseg.stats again (to easily get ROI mean volume)
+    stattable2=read.table(i)
+    
+      for (l2 in 1:nrow(stattable2))
+      {
+        #get ROI name
+        roi_name=stattable2[l2,5]
+        #if no column for measure name create it
+        if (roi_name %in% colnames(FS_STAT)==FALSE)
+        {  FS_STAT[[roi_name]] <- NA }
+        
+        #select column based on user-specified ROImeasure:
+        if(ROImeasure=='NVoxels'){r=3}
+        else if (ROImeasure=='Volume_mm3') {r=4}
+        else if (ROImeasure=='normMean') {r=6}
+        else if (ROImeasure=='normStdDev') {r=7}
+        else if (ROImeasure=='normMin') {r=8}
+        else if (ROImeasure=='normMax') {r=9}
+        else if (ROImeasure=='normRange') {r=10}
+        
+        #append measure value
+        roi_val=stattable2[l2,r]
+        FS_STAT[[which(dircount==i),roi_name]] <- roi_val
+      }
+    
   }
   
-  #Check if neurosynth database is present and download
-  if ((requirement=="any" | requirement=='neurosynth')==TRUE 
-      & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
+
+return(FS_STAT)  
+}
+
+############################################################################################################################
+############################################################################################################################
+
+#' @title Model structure check
+#' @description Ensures the surface, contrast, model and/or random objects in the analyses have the appropriate structures to enable vertex analyses to be run properly on the given variables. Also provides a default smoothing procedure if required by the user.
+#' @returns An error message if an issue or discrepancy is found.
+#' @noRd
+
+model_check=function(contrast, model, random, surf_data, smooth_FWHM)
+{
+  #If the contrast/model is a tibble (e.g., taken from a read_csv output)
+  #converts the columns to regular data.frame column types
+  if ('tbl_df' %in% class(contrast) == TRUE) {
+    if (inherits(contrast[[1]],"character")==TRUE) {contrast = contrast[[1]]
+    } else {contrast = as.numeric(contrast[[1]])}
+  } 
+  if ('tbl_df' %in% class(model) == TRUE) {
+    model=as.data.frame(model)
+    if (NCOL(model)==1) {model = model[[1]]
+    } else { for (c in 1:NCOL(model)) { 
+      if(inherits(model[,c],"double")==TRUE) {model[,c] = as.numeric(model[,c])}
+    }  }
+  }
+  
+  #numerise contrast
+  if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
+  
+  #check if nrow is consistent for model and surf_data
+  if(NROW(surf_data)!=NROW(model))  {stop(paste("The number of rows for surf_data (",NROW(surf_data),") and model (",NROW(model),") are not the same",sep=""))}
+  
+  #recode random variable to numeric
+  if(!is.null(random)) { random=match(random,unique(random)) }
+  
+  ##checks
+  #check contrast for consistency with the model data.frame
+  if(NCOL(model)>1)
   {
-      prompt = utils::menu(c("Yes", "No"), title="\nneurosynth_dataset.pkl.gz is not detected in the package's external data directory (/inst/extdata). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n Do you want the neurosynth database (7.5 MB) to be downloaded now?")
-        if (prompt==1) {
-          
-          #function to check if url exists
-          #courtesy of Schwarz, March 11, 2020, CC BY-SA 4.0:
-          #https://stackoverflow.com/a/60627969
-          valid_url <- function(url_in,t=2){
-            con <- url(url_in)
-            check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=TRUE)[1])
-            suppressWarnings(try(close.connection(con),silent=TRUE))
-            ifelse(is.null(check),TRUE,FALSE)}
-          
-          #Check if URL works and avoid returning error but only print message as requested by CRAN:
-          url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
-          if(valid_url(url)) {
-            download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
-          } else { 
-            warning("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
-          } 
-          
-        #if user refuses, stops if required, just returns a message if optionnal at this stage
-        } else if (requirement=="neurosynth") {
-          stop("\ndecode_surf_data() can only work with the neurosynth database.\n") }       
-         else if (requirement=="any") {
-           warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
+    for(colno in 1:(NCOL(model)+1))
+    {
+      if(colno==(NCOL(model)+1))  {warning("contrast is not contained within model")}
+      
+      if(inherits(contrast,"character")==TRUE) 
+      {
+        if(identical(contrast,model[,colno]))  {break} 
+      } else 
+      {
+        if(identical(suppressWarnings(as.numeric(contrast)),suppressWarnings(as.numeric(model[,colno]))))  {break}
+      }
+    }
+  }  else
+  {
+    if(inherits(contrast,"character")==TRUE) 
+    {
+      if(identical(contrast,model))  {colno=1} 
+      else  {warning("contrast is not contained within model")}
+    } else
+    {
+      if(identical(as.numeric(contrast),as.numeric(model)))  {colno=1}
+      else  {warning("contrast is not contained within model")}
+    }
   }
   
-} 
-else if (exists("VWR_check")) 
-#If the session is non-interactive and any required file is missing, the script will stop and require the user to run VWR interactively.
-#non-interactive checks only work when VWRfirstrun() is called by another function (with VWR_check argument given), not on its own.
-{ 
-  #creates the following object to warn upper functions that it's a non-interactive session when files are missing
-  non_interactive="System requirements are missing. VWRfirstrun() can only be run in an interactive R session to check for the missing system requirements and to install them.";
+  #incomplete data check
+  idxF=which(complete.cases(model)==FALSE)
+  if(length(idxF)>0)
+  {
+    message(paste("The model contains",length(idxF),"subjects with incomplete data. Subjects with incomplete data will be excluded from the current analysis\n"))
+    model=model[-idxF,]
+    contrast=contrast[-idxF]
+    surf_data=surf_data[-idxF,]
+    if(!is.null(random)) {random=random[-idxF]}
+  }
   
-  #miniconda missing?
-  if (is(tryCatch(reticulate::conda_binary(), error=function(e) e))[1] == 'simpleError') 
-  {return(non_interactive)} 
+  #check categorical and recode variable
+  if(NCOL(model)>1)
+  {
+    for (column in 1:NCOL(model))
+    {
+      if(inherits(model[,column],"character")==TRUE)
+      {
+        if(length(unique(model[,column]))==2)
+        {
+          message(paste("The binary variable '",colnames(model)[column],"' will be recoded with ",unique(model[,column])[1],"=0 and ",unique(model[,column])[2],"=1 for the analysis\n",sep=""))
+          
+          recode=rep(0,NROW(model))
+          recode[model[,column]==unique(model[,column])[2]]=1
+          model[,column]=recode
+          contrast=model[,colno]
+        } else if(length(unique(model[,column]))>2)    {stop(paste("The categorical variable '",colnames(model)[column],"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
+      }      
+    }
+  } else
+  {
+    if(inherits(model,"character")==TRUE) 
+    {
+      if(length(unique(model))==2)
+      {
+        message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+        
+        recode=rep(0,NROW(model))
+        recode[model==unique(model)[2]]=1
+        model=recode
+        contrast=model
+      } else if(length(unique(model))>2)    {stop(paste("The categorical variable '",colnames(model),"' contains more than 2 levels, please code it into binarized dummy variables",sep=""))}
+    }      
+  }
   
-  #brainstat missing
-  if (!reticulate::py_module_available("brainstat") & requirement!="miniconda only") 
-  {return(non_interactive)}
   
-  #fsaverage5 missing
-  if ((requirement=="any" | requirement=='fsaverage5')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
-  {return(non_interactive)}
+  #check if surf_data is a multiple-rows matrix and NOT a vector
+  if (is.null(nrow(surf_data)) | nrow(surf_data)==1)
+  {stop("The surface data must be a matrix containing multiple participants (rows).")}
   
-  #fsaverage6 missing
-  if ((requirement=="any" | requirement=='fsaverage6')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/surface_data/tpl-fsaverage/fsaverage6')))  
-  {return(non_interactive)}
+  ##smoothing
+  n_vert=NCOL(surf_data)
+  if(is.null(smooth_FWHM))
+  {
+    message("smooth_FWHM argument was not given. surf_data will not be smoothed here.\n")
+  } else if(smooth_FWHM==0) 
+  {
+    message("smooth_FWHM set to 0: surf_data will not be smoothed here.\n")
+  } else if(smooth_FWHM>0) 
+  {
+    message(paste("surf_data will be smoothed using a ",smooth_FWHM,"mm FWHM kernel", sep=""))
+    surf_data=smooth_surf(surf_data, FWHM=smooth_FWHM)
+  }
+  surf_data[is.na(surf_data)]=0
   
-  #yeo parcels missing
-  if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE & !file.exists(paste0(fs::path_home(),'/brainstat_data/parcellation_data/'))) 
-  {return(non_interactive)}
   
-  #neurosynth data missing
-  if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
-  {return(non_interactive)}
-      
-}
+  
+  ##########################################
+  #Output the right elements to be analysed
+    model_summary=list(model=model, contrast=contrast,
+                       random=random, surf_data=surf_data,
+                       colno=colno)
 
-}
+  
 
+ return(model_summary) 
+}

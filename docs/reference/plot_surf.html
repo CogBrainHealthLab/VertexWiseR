@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a>
+    <a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -49,9 +57,11 @@
 <span>  surface <span class="op">=</span> <span class="st">"inflated"</span>,</span>
 <span>  <span class="va">cmap</span>,</span>
 <span>  <span class="va">limits</span>,</span>
-<span>  colorbar <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  colorbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">size</span>,</span>
-<span>  <span class="va">zoom</span></span>
+<span>  <span class="va">zoom</span>,</span>
+<span>  show.plot.window <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  VWR_check <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -62,7 +72,7 @@
 
 
 <dt>filename</dt>
-<dd><p>A string object containing the desired name of the output .png file.</p></dd>
+<dd><p>A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).</p></dd>
 
 
 <dt>title</dt>
@@ -74,7 +84,7 @@
 
 
 <dt>cmap</dt>
-<dd><p>A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the <a href="https://matplotlib.org/stable/gallery/color/colormap_reference.html" class="external-link">Matplotlib plotting library</a>.</p>
+<dd><p>A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the <a href="https://matplotlib.org/stable/gallery/color/colormap_reference.html" class="external-link">'Matplotlib' plotting library</a>.</p>
 <p>Default cmap is set to <code>"Reds"</code> for positive values, <code>"Blues_r"</code> for negative values and <code>"RdBu"</code> when both positive and negative values exist.</p></dd>
 
 
@@ -93,6 +103,14 @@
 <dt>zoom</dt>
 <dd><p>A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.</p></dd>
 
+
+<dt>show.plot.window</dt>
+<dd><p>A logical object to determine if the generated plot is to be shown within RStudio's plot window</p></dd>
+
+
+<dt>VWR_check</dt>
+<dd><p>A boolean object specifying whether to check and validate system requirements. Default is TRUE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -104,10 +122,12 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">20484</span>,min<span class="op">=</span><span class="fl">0</span>, max<span class="op">=</span><span class="fl">1</span><span class="op">)</span>;</span></span>
-<span class="r-in"><span><span class="fu">plot_surf</span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span>, filename<span class="op">=</span><span class="st">'output.png'</span>,title <span class="op">=</span> </span></span>
-<span class="r-in"><span><span class="st">'Cortical thickness'</span>, surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'Blues'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Checking for VertexWiseR system requirements ...✓ </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\yourpath\\output.png"</span>
+<span class="r-in"><span><span class="fu">plot_surf</span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span>, </span></span>
+<span class="r-in"><span>filename<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"/output.png"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>title <span class="op">=</span> <span class="st">'Cortical thickness'</span>, </span></span>
+<span class="r-in"><span>surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'Blues'</span>,</span></span>
+<span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plot_surf-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

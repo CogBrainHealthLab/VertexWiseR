@@ -1,8 +1,10 @@
 pandoc: 3.1.13
 pkgdown: 2.0.9
 pkgdown_sha: ~
-articles: {}
-last_built: 2024-06-11T01:27Z
+articles:
+  VertexWiseR_Example_1: VertexWiseR_Example_1.html
+  VertexWiseR_Example_2: VertexWiseR_Example_2.html
+last_built: 2024-08-21T08:24Z
 urls:
   reference: https://cogbrainhealthlab.github.io/VertexWiseR/reference
   article: https://cogbrainhealthlab.github.io/VertexWiseR/articles
