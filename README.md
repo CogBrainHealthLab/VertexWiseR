@@ -278,7 +278,7 @@ specifying the index within the square brackets `[1:10,]`. All 715
 keywords will be displayed.
 
 In your presentation slides or results section of your paper, you might
-want to illustrate these keywords using the [wordcloud](https://www.rdocumentation.org/packages/wordcloud/versions/2.6) and [paletteer](https://cran.r-project.org/web/packages/paletteer/index.html) packages. You can set the size of the keyword to vary according to its r value:
+want to illustrate these keywords using the [wordcloud](https://www.rdocumentation.org/packages/wordcloud/versions/2.6) and [paletteer](https://CRAN.R-project.org/package=paletteer) packages. You can set the size of the keyword to vary according to its r value:
 
 ``` r
 #install.packages("wordcloud","paletteer")
