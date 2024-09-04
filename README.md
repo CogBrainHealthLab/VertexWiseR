@@ -53,7 +53,7 @@ SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/bl
 
 VertexWiseR gives the option to smooth the surface data with a desired full width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:
 
-```{r, results = 'hide'}
+```r
 SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)
 ``` 
 
@@ -88,16 +88,16 @@ print(results$cluster_level_results)
 ```
 
     ## $`Positive contrast`
-    ##   clusid nverts     P     X    Y   Z tstat          region
-    ## 1      1    173 0.002 -22.8 11.5 -42  7.98 lh-temporalpole
-    ## 
+    ## clusid nverts     P     X    Y   Z tstat          region
+    ## 1      1    142 0.015 -22.8 11.5 -42  6.45 lh-temporalpole
+
     ## $`Negative contrast`
-    ##   clusid nverts      P     X     Y    Z  tstat           region
-    ## 1      1   8163 <0.001  37.3 -31.6 16.3 -14.23 rh-supramarginal
-    ## 2      2   8052 <0.001 -34.0 -25.7 16.2 -15.29        lh-insula
+    ##   clusid nverts      P   X     Y     Z  tstat              region
+    ## 1      1   8039 <0.001  47   4.0 -16.6 -12.64 rh-superiortemporal
+    ## 2      2   7660 <0.001 -34 -25.7  16.2 -14.23           lh-insula
 
 In the above results, the clusters that appear under the
-`Positive contrast` section are clusters of vertices which correlate positively with your `contrast` variable, vice-versa for the `Negative contrast`. In this instance, there are no significant clusters in the `Negative contrast`.
+`Positive contrast` section are clusters of vertices which correlate positively with your `contrast` variable, vice-versa for the `Negative contrast`. 
 
 - `nverts`: number of vertices in the cluster
 
@@ -113,28 +113,22 @@ In the above results, the clusters that appear under the
 #### Plotting
 
 ``` r
-plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.jpg', surface = 'inflated', cmap = 'seismic')
+plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.png', surface = 'inflated', cmap = 'seismic')
 ```
 
-    ## [1] "C:\\Users\\Admin\\My Drive\\workspace for analyses\\sigcluster.jpg"
+- `surf_data`: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.
 
-- `surf_data`: A matrix object containing the surface data (N rows for participants and V columns for vertices). It can be the output from SURFvextract()/HIPvextract()/FSLRvextract() as well as masks outputted by analyses functions.
+- `filename`: A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
 
-- `filename`: filename of the output image
+- `cmap` (optional) : A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{Matplotlib plotting library}. 
 
-- `cmap` (optional) : A string object containing the colormap for the plot. Options are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{Matplotlib plotting library}. 
+  Default cmap is set to `"Reds"` for positive values, `"Blues_r"` for   negative values and `"RdBu"` when both positive and negative values    exist. 
 
-  Default cmap is set to `"Reds"` for positive values, `"Blues"` for
-  negative values and `"RdBu"` when both positive and negative values
-  exist. 
+- `title` (optional) : A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 
-- `title` (optional) : text label displayed on the left
-
-- `surface` (optional) : type of cortical surface background rendered.
-  Possible options include `"white"`, `"smoothwm"`,`"pial"` and
-  `"inflated"` (default)
+- `surface` (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include `"white"`, `"smoothwm"`,`"pial"` and `"inflated"` (default). The surface parameter is ignored for hippocampal surface data.
   
-![](man/figures/sigcluster.jpg)
+![](man/figures/sigcluster.png)
 
 #### Extracting the CT values for each subject
 
@@ -148,13 +142,13 @@ demodata$sig_avCT=SPRENG_CTv %*% results$pos_mask/sum(results$pos_mask)
 head(demodata$sig_avCT)
 ```
 
-    ##          [,1]
-    ## [1,] 2.728489
-    ## [2,] 2.974559
-    ## [3,] 2.573237
-    ## [4,] 2.886865
-    ## [5,] 3.169464
-    ## [6,] 3.007699
+    ##         [,1]
+    ##[1,] 2.769453
+    ##[2,] 3.003829
+    ##[3,] 2.586192
+    ##[4,] 2.851196
+    ##[5,] 3.199390
+    ##[6,] 3.050331
 
 As a sanity check, these mean CT values should correlate with
 `age`
@@ -164,16 +158,17 @@ cor.test(demodata$sig_avCT,demodata$age)
 ```
 
     ## 
-    ##  Pearson's product-moment correlation
-    ## 
-    ## data:  demodata$sig_avCT and demodata$age
-    ## t = 5.5789, df = 299, p-value = 5.423e-08
-    ## alternative hypothesis: true correlation is not equal to 0
-    ## 95 percent confidence interval:
-    ##  0.2009735 0.4060082
-    ## sample estimates:
-    ##       cor 
-    ## 0.3070495 
+    ##Pearson's product-moment correlation
+    ##
+    ##data:  demodata$sig_avCT and demodata$age
+    ##t = 4.826, df = 236, p-value = 2.502e-06
+    ##alternative hypothesis: true correlation is not equal to 0
+    ##95 percent confidence interval:
+    ## 0.1793792 0.4111954
+    ##sample estimates:
+    ##      cor 
+    ##0.2997047 
+
 
 Image decoding
 ================
@@ -207,12 +202,12 @@ head(all_pred)
 ```
 
     ##    site age sex
-    ## 1     1  21   1
-    ## 15    1  32   0
-    ## 16    1  20   0
-    ## 17    1  21   0
-    ## 18    1  24   0
-    ## 19    1  20   0
+    ## 1     1  21   F
+    ## 15    1  32   M
+    ## 16    1  20   M
+    ## 17    1  21   M
+    ## 18    1  24   M
+    ## 19    1  20   M
 
 ### Vertex-wise analysis
 
@@ -221,74 +216,73 @@ results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex, surf_data 
 results$cluster_level_results
 ```
 
+    ## The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis
+    ## 
+    ## smooth_FWHM argument was not given. surf_data will not be smoothed here.
+    ## 
     ## $`Positive contrast`
-    ## [1] "No significant clusters"
+    ##   clusid nverts      P     X     Y     Z tstat              region
+    ## 1      1    301 <0.001 -40.7 -13.0  16.5  5.06      lh-postcentral
+    ## 2      2    181  0.002  56.3  12.1 -10.1  4.43 rh-superiortemporal
+    ## 3      3    150  0.003  21.9 -51.6  -1.2  4.41          rh-lingual
     ## 
     ## $`Negative contrast`
-    ##   clusid nverts      P     X     Y    Z tstat                  region
-    ## 1      1    300 <0.001 -39.2 -12.6 16.2 -4.59               lh-insula
-    ## 2      2    157  0.007  40.0 -15.9 -5.7 -4.22               rh-insula
-    ## 3      3    103  0.009 -19.3  57.2 -6.2 -3.19 lh-rostralmiddlefrontal
+    ## [1] "No significant clusters"
 
 ``` r
-plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.jpg")
+plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.png")
 ```
 
-    ## [1] "C:\\Users\\Admin\\My Drive\\workspace for analyses\\sexdiff.jpg"
+![](man/figures/sexdiff.png)
 
-![](man/figures/sexdiff.jpg)
-
-According to these results, since the female sex is coded as 1 and males as 0 (sex was automatically recoded and flagged by RFT_vertex_analysis()), the regions colored in cyan are thicker in males.
+According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.
 
 ### Image decoding
 
 Now, let's enter the `thresholded_tstat_map` into the `decode_img()`
-function. The previous results only contained negative clusters. But in case of bidirectionality, the function requires to choose one direction with the contrast option. In this instance, we simply decode the negative clusters, by setting `contrast="negative"`.
+function. The previous results only contained positive clusters. But in case of bidirectionality, the function requires to choose one direction with the contrast option. In this instance, we simply decode the positive clusters, by setting `contrast="positive"`.
 
-If you are running this for the first time, a ~8 MB file
+If you are running this for the first time, a ~7.5 MB file
 `neurosynth_dataset.pkl.gz` needs to be downloaded to your current
-directory for the decoding to work. This file will contain the images from the [Neurosynth](https://neurosynth.org/) database that will be correlated
-with your input image. Run VWRfirstrun(requirement='neurosynth') to assist you with the data's installation.
+directory for the decoding to work. This file will contain the images from the [Neurosynth](https://neurosynth.org/) database that will be correlated with your input image. Run VWRfirstrun(requirement='neurosynth') to assist you with the data's installation.
 
 ``` r
-keywords=decode_surf_data(surf_data=results$thresholded_tstat_map, contrast = "negative")
+keywords=decode_surf_data(surf_data=results$thresholded_tstat_map, contrast = "positive")
 ```
 
-    ## Correlating input image with images in the neurosynth database. This may take a while
-
+    ##Converting and interpolating the surface data ... 
+    ##✓ 
+    ## Correlating input image with images in the neurosynth database. This may take a while ... 
+    ##
+    ##✓    
 ``` r
 print(keywords[1:10,])
 ```
 
-    ##    keyword     r
-    ## 524      pain 0.109
-    ## 57   auditory 0.088
-    ## 718    speech 0.087
-    ## 392 listening 0.084
-    ## 763  temporal 0.077
-    ## 525   painful 0.076
-    ## 460   musical 0.064
-    ## 459     music 0.062
-    ## 707    sounds 0.062
-    ## 661 secondary 0.057
+    ##      keyword     r
+    ##449      pain 0.099
+    ##50   auditory 0.098
+    ##648  temporal 0.093
+    ##617    speech 0.092
+    ##334 listening 0.089
+    ##607    sounds 0.070
+    ##450   painful 0.068
+    ##4    acoustic 0.062
+    ##397     music 0.062
+    ##398   musical 0.062
 
 The above procedure will display the top 10 keywords from images in the
 database that are the most correlated with your input image.
-According to these results, you can see that the negative clusters (which are thicker in males) are typically found to be associated with pain and auditory processing. If you simply run `keyword` without
-specifying the index within the square brackets `[1:10,]`. All 847
+According to these results, you can see that the positive clusters (which are thicker in males) are typically found to be associated with pain and auditory processing. If you simply run `keyword` without
+specifying the index within the square brackets `[1:10,]`. All 715
 keywords will be displayed.
 
 In your presentation slides or results section of your paper, you might
-want to illustrate these keywords using the [wordcloud package](https://www.rdocumentation.org/packages/wordcloud/versions/2.6). You can set the size of the keyword to vary according to its r value:
+want to illustrate these keywords using the [wordcloud](https://www.rdocumentation.org/packages/wordcloud/versions/2.6) and [paletteer](https://cran.r-project.org/web/packages/paletteer/index.html) packages. You can set the size of the keyword to vary according to its r value:
 
 ``` r
 #install.packages("wordcloud","paletteer")
 library(wordcloud)
-```
-
-    ## Loading required package: RColorBrewer
-
-``` r
 library(paletteer)
 
 wordcloud(words = keywords$keyword, ##keyword input
@@ -302,4 +296,4 @@ wordcloud(words = keywords$keyword, ##keyword input
 
 ![](man/figures/wordcloud.jpg)<!-- -->
 
-These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the negative clusters.
+These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the positive clusters.

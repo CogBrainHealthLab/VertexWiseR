@@ -79,7 +79,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/VWRfirstrun.html">VWRfirstrun</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
-<h4 id="load-datasets">Load datasets<a class="anchor" aria-label="anchor" href="#load-datasets"></a>
+<h4 id="loading-datasets">Loading datasets<a class="anchor" aria-label="anchor" href="#loading-datasets"></a>
 </h4>
 <p>For this example, we use Spreng and colleagues’ neurocognitive aging <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">openneuro dataset ds003592</a>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -97,40 +97,41 @@
 <h4 id="smoothing-the-surface-data">Smoothing the surface data<a class="anchor" aria-label="anchor" href="#smoothing-the-surface-data"></a>
 </h4>
 <p>VertexWiseR gives the option to smooth the surface data with a desired full width at half maximum (FWHM) value. It can also optionally directly be done as an option for RFT_vertex_analysis() which will be discussed below. Here, we smooth it before the analysis at 10 mm:</p>
-<p><code>{r, results = 'hide'} SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)</code></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="reference/smooth_surf.html">smooth_surf</a></span><span class="op">(</span><span class="va">SPRENG_CTv</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="preparing-the-model">Preparing the model<a class="anchor" aria-label="anchor" href="#preparing-the-model"></a>
 </h4>
 <p>The vertex-wise analysis model works as a multiple regression model where the Dependent Variable/outcome is the CT at each vertex, and you will decide which Independent Variables/predictors to enter into the model to predict the vertices’ CT. In this example, we shall use <code>age</code> and <code>sex</code> to predict CT. Among these IVs, we are mostly interested in age, sex being entered into the model to control for its confounding influence on CT. We thus select those two variables and save them into a new data.frame called <code>all_pred</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_pred</span><span class="op">=</span><span class="va">demodata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,<span class="st">"age"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_pred</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">##   sex age</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="do">## 1 F   21</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="do">## 2 F   73</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="do">## 3 F   77</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="do">## 4 M   68</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="do">## 5 F   60</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="do">## 6 F   71</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">##   sex age</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">## 1 F   21</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="do">## 2 F   73</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="do">## 3 F   77</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="do">## 4 M   68</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="do">## 5 F   60</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="do">## 6 F   71</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="the-actual-analysis">The actual analysis<a class="anchor" aria-label="anchor" href="#the-actual-analysis"></a>
 </h4>
 <p>The next code chunk runs the analysis. There is an optional <code>p</code> parameter for the <code><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis()</a></code> function to specify the p threshold; default p is set to 0.05. The atlas with which to label the significant clusters can also be set (1=aparc/Desikan-Killiany-70 (default), 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148).</p>
 <p>The second line displays the results.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">age</span>, surf_data <span class="op">=</span> <span class="va">SPRENG_CTv</span>, atlas <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">cluster_level_results</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="do">##   clusid nverts     P     X    Y   Z tstat          region</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="do">## 1      1    173 0.002 -22.8 11.5 -42  7.98 lh-temporalpole</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="do">## $`Negative contrast`</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="do">##   clusid nverts      P     X     Y    Z  tstat           region</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="do">## 1      1   8163 &lt;0.001  37.3 -31.6 16.3 -14.23 rh-supramarginal</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="do">## 2      2   8052 &lt;0.001 -34.0 -25.7 16.2 -15.29        lh-insula</span></span></code></pre></div>
-<p>In the above results, the clusters that appear under the <code>Positive contrast</code> section are clusters of vertices which correlate positively with your <code>contrast</code> variable, vice-versa for the <code>Negative contrast</code>. In this instance, there are no significant clusters in the <code>Negative contrast</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="do">## clusid nverts     P     X    Y   Z tstat          region</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="do">## 1      1    142 0.015 -22.8 11.5 -42  6.45 lh-temporalpole</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="do">## $`Negative contrast`</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="do">##   clusid nverts      P   X     Y     Z  tstat              region</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="do">## 1      1   8039 &lt;0.001  47   4.0 -16.6 -12.64 rh-superiortemporal</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="do">## 2      2   7660 &lt;0.001 -34 -25.7  16.2 -14.23           lh-insula</span></span></code></pre></div>
+<p>In the above results, the clusters that appear under the <code>Positive contrast</code> section are clusters of vertices which correlate positively with your <code>contrast</code> variable, vice-versa for the <code>Negative contrast</code>.</p>
 <ul>
 <li><p><code>nverts</code>: number of vertices in the cluster</p></li>
 <li><p><code>P</code>: p-value of the cluster</p></li>
@@ -142,20 +143,19 @@
 <div class="section level4">
 <h4 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, filename <span class="op">=</span> <span class="st">'sigcluster.jpg'</span>, surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'seismic'</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="do">## [1] "C:\\Users\\Admin\\My Drive\\workspace for analyses\\sigcluster.jpg"</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, filename <span class="op">=</span> <span class="st">'sigcluster.png'</span>, surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'seismic'</span><span class="op">)</span></span></code></pre></div>
 <ul>
-<li><p><code>surf_data</code>: A matrix object containing the surface data (N rows for participants and V columns for vertices). It can be the output from SURFvextract()/HIPvextract()/FSLRvextract() as well as masks outputted by analyses functions.</p></li>
-<li><p><code>filename</code>: filename of the output image</p></li>
+<li><p><code>surf_data</code>: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.</p></li>
+<li><p><code>filename</code>: A string object containing the desired name of the output .png. Default is ‘plot.png’ in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.</p></li>
 <li>
-<p><code>cmap</code> (optional) : A string object containing the colormap for the plot. Options are listed in the .</p>
-<p>Default cmap is set to <code>"Reds"</code> for positive values, <code>"Blues"</code> for negative values and <code>"RdBu"</code> when both positive and negative values exist.</p>
+<p><code>cmap</code> (optional) : A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the .</p>
+<p>Default cmap is set to <code>"Reds"</code> for positive values, <code>"Blues_r"</code> for negative values and <code>"RdBu"</code> when both positive and negative values exist.</p>
 </li>
-<li><p><code>title</code> (optional) : text label displayed on the left</p></li>
-<li><p><code>surface</code> (optional) : type of cortical surface background rendered. Possible options include <code>"white"</code>, <code>"smoothwm"</code>,<code>"pial"</code> and <code>"inflated"</code> (default)</p></li>
+<li><p><code>title</code> (optional) : A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting “\n”.</p></li>
+<li><p><code>surface</code> (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include <code>"white"</code>, <code>"smoothwm"</code>,<code>"pial"</code> and <code>"inflated"</code> (default). The surface parameter is ignored for hippocampal surface data.</p></li>
 </ul>
-<p><img src="reference/figures/sigcluster.jpg"></p>
+<p><img src="reference/figures/sigcluster.png"></p>
 </div>
 <div class="section level4">
 <h4 id="extracting-the-ct-values-for-each-subject">Extracting the CT values for each subject<a class="anchor" aria-label="anchor" href="#extracting-the-ct-values-for-each-subject"></a>
@@ -165,27 +165,27 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demodata</span><span class="op">$</span><span class="va">sig_avCT</span><span class="op">=</span><span class="va">SPRENG_CTv</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">results</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">demodata</span><span class="op">$</span><span class="va">sig_avCT</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">##          [,1]</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="do">## [1,] 2.728489</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="do">## [2,] 2.974559</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="do">## [3,] 2.573237</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="do">## [4,] 2.886865</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="do">## [5,] 3.169464</span></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="do">## [6,] 3.007699</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">##         [,1]</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="do">##[1,] 2.769453</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="do">##[2,] 3.003829</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="do">##[3,] 2.586192</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="do">##[4,] 2.851196</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="do">##[5,] 3.199390</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="do">##[6,] 3.050331</span></span></code></pre></div>
 <p>As a sanity check, these mean CT values should correlate with <code>age</code></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test</a></span><span class="op">(</span><span class="va">demodata</span><span class="op">$</span><span class="va">sig_avCT</span>,<span class="va">demodata</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">##  Pearson's product-moment correlation</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## data:  demodata$sig_avCT and demodata$age</span></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="do">## t = 5.5789, df = 299, p-value = 5.423e-08</span></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="do">## alternative hypothesis: true correlation is not equal to 0</span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="do">##  0.2009735 0.4060082</span></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="do">##       cor </span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="do">## 0.3070495 </span></span></code></pre></div>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">##Pearson's product-moment correlation</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">##data:  demodata$sig_avCT and demodata$age</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="do">##t = 4.826, df = 236, p-value = 2.502e-06</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="do">##alternative hypothesis: true correlation is not equal to 0</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="do">##95 percent confidence interval:</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="do">## 0.1793792 0.4111954</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="do">##sample estimates:</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="do">##      cor </span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="do">##0.2997047 </span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -215,12 +215,12 @@
 <span><span class="va">all_pred</span><span class="op">=</span><span class="va">dat_beh</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site"</span>,<span class="st">"age"</span>,<span class="st">"sex"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_pred</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="do">##    site age sex</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## 1     1  21   1</span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## 15    1  32   0</span></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="do">## 16    1  20   0</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="do">## 17    1  21   0</span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="do">## 18    1  24   0</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="do">## 19    1  20   0</span></span></code></pre></div>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="do">## 1     1  21   F</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="do">## 15    1  32   M</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="do">## 16    1  20   M</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="do">## 17    1  21   M</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="do">## 18    1  24   M</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="do">## 19    1  20   M</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="vertex-wise-analysis">Vertex-wise analysis<a class="anchor" aria-label="anchor" href="#vertex-wise-analysis"></a>
@@ -228,49 +228,54 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span><span class="op">=</span><span class="fu"><a href="reference/RFT_vertex_analysis.html">RFT_vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">all_pred</span>, contrast <span class="op">=</span><span class="va">all_pred</span><span class="op">$</span><span class="va">sex</span>, surf_data <span class="op">=</span> <span class="va">dat_CT</span><span class="op">)</span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="do">## [1] "No significant clusters"</span></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="do">## $`Negative contrast`</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="do">##   clusid nverts      P     X     Y    Z tstat                  region</span></span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="do">## 1      1    300 &lt;0.001 -39.2 -12.6 16.2 -4.59               lh-insula</span></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="do">## 2      2    157  0.007  40.0 -15.9 -5.7 -4.22               rh-insula</span></span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="do">## 3      3    103  0.009 -19.3  57.2 -6.2 -3.19 lh-rostralmiddlefrontal</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="do">## The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="do">## smooth_FWHM argument was not given. surf_data will not be smoothed here.</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="do">## $`Positive contrast`</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="do">##   clusid nverts      P     X     Y     Z tstat              region</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="do">## 1      1    301 &lt;0.001 -40.7 -13.0  16.5  5.06      lh-postcentral</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="do">## 2      2    181  0.002  56.3  12.1 -10.1  4.43 rh-superiortemporal</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="do">## 3      3    150  0.003  21.9 -51.6  -1.2  4.41          rh-lingual</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="do">## $`Negative contrast`</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] "No significant clusters"</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>,filename <span class="op">=</span> <span class="st">"sexdiff.jpg"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="do">## [1] "C:\\Users\\Admin\\My Drive\\workspace for analyses\\sexdiff.jpg"</span></span></code></pre></div>
-<p><img src="reference/figures/sexdiff.jpg"></p>
-<p>According to these results, since the female sex is coded as 1 and males as 0 (sex was automatically recoded and flagged by RFT_vertex_analysis()), the regions colored in cyan are thicker in males.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>,filename <span class="op">=</span> <span class="st">"sexdiff.png"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/sexdiff.png"></p>
+<p>According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.</p>
 </div>
 <div class="section level3">
 <h3 id="image-decoding-1">Image decoding<a class="anchor" aria-label="anchor" href="#image-decoding-1"></a>
 </h3>
-<p>Now, let’s enter the <code>thresholded_tstat_map</code> into the <code>decode_img()</code> function. The previous results only contained negative clusters. But in case of bidirectionality, the function requires to choose one direction with the contrast option. In this instance, we simply decode the negative clusters, by setting <code>contrast="negative"</code>.</p>
-<p>If you are running this for the first time, a ~8 MB file <code>neurosynth_dataset.pkl.gz</code> needs to be downloaded to your current directory for the decoding to work. This file will contain the images from the <a href="https://neurosynth.org/" class="external-link">Neurosynth</a> database that will be correlated with your input image. Run VWRfirstrun(requirement=‘neurosynth’) to assist you with the data’s installation.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">keywords</span><span class="op">=</span><span class="fu"><a href="reference/decode_surf_data.html">decode_surf_data</a></span><span class="op">(</span>surf_data<span class="op">=</span><span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, contrast <span class="op">=</span> <span class="st">"negative"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="do">## Correlating input image with images in the neurosynth database. This may take a while</span></span></code></pre></div>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p>Now, let’s enter the <code>thresholded_tstat_map</code> into the <code>decode_img()</code> function. The previous results only contained positive clusters. But in case of bidirectionality, the function requires to choose one direction with the contrast option. In this instance, we simply decode the positive clusters, by setting <code>contrast="positive"</code>.</p>
+<p>If you are running this for the first time, a ~7.5 MB file <code>neurosynth_dataset.pkl.gz</code> needs to be downloaded to your current directory for the decoding to work. This file will contain the images from the <a href="https://neurosynth.org/" class="external-link">Neurosynth</a> database that will be correlated with your input image. Run VWRfirstrun(requirement=‘neurosynth’) to assist you with the data’s installation.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">keywords</span><span class="op">=</span><span class="fu"><a href="reference/decode_surf_data.html">decode_surf_data</a></span><span class="op">(</span>surf_data<span class="op">=</span><span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, contrast <span class="op">=</span> <span class="st">"positive"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="do">##Converting and interpolating the surface data ... </span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="do">##✓ </span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="do">## Correlating input image with images in the neurosynth database. This may take a while ... </span></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="do">##✓    </span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">keywords</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="do">##    keyword     r</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="do">## 524      pain 0.109</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="do">## 57   auditory 0.088</span></span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="do">## 718    speech 0.087</span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="do">## 392 listening 0.084</span></span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="do">## 763  temporal 0.077</span></span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="do">## 525   painful 0.076</span></span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="do">## 460   musical 0.064</span></span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="do">## 459     music 0.062</span></span>
-<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="do">## 707    sounds 0.062</span></span>
-<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="do">## 661 secondary 0.057</span></span></code></pre></div>
-<p>The above procedure will display the top 10 keywords from images in the database that are the most correlated with your input image. According to these results, you can see that the negative clusters (which are thicker in males) are typically found to be associated with pain and auditory processing. If you simply run <code>keyword</code> without specifying the index within the square brackets <code>[1:10,]</code>. All 847 keywords will be displayed.</p>
-<p>In your presentation slides or results section of your paper, you might want to illustrate these keywords using the <a href="https://www.rdocumentation.org/packages/wordcloud/versions/2.6" class="external-link">wordcloud package</a>. You can set the size of the keyword to vary according to its r value:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="do">##      keyword     r</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="do">##449      pain 0.099</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="do">##50   auditory 0.098</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="do">##648  temporal 0.093</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="do">##617    speech 0.092</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="do">##334 listening 0.089</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="do">##607    sounds 0.070</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a><span class="do">##450   painful 0.068</span></span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a><span class="do">##4    acoustic 0.062</span></span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="do">##397     music 0.062</span></span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a><span class="do">##398   musical 0.062</span></span></code></pre></div>
+<p>The above procedure will display the top 10 keywords from images in the database that are the most correlated with your input image. According to these results, you can see that the positive clusters (which are thicker in males) are typically found to be associated with pain and auditory processing. If you simply run <code>keyword</code> without specifying the index within the square brackets <code>[1:10,]</code>. All 715 keywords will be displayed.</p>
+<p>In your presentation slides or results section of your paper, you might want to illustrate these keywords using the <a href="https://www.rdocumentation.org/packages/wordcloud/versions/2.6" class="external-link">wordcloud</a> and <a href="https://cran.r-project.org/web/packages/paletteer/index.html" class="external-link">paletteer</a> packages. You can set the size of the keyword to vary according to its r value:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#install.packages("wordcloud","paletteer")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://blog.fellstat.com/?cat=11" class="external-link">wordcloud</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="do">## Loading required package: RColorBrewer</span></span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilHvitfeldt/paletteer" class="external-link">paletteer</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://blog.fellstat.com/?cat=11" class="external-link">wordcloud</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilHvitfeldt/paletteer" class="external-link">paletteer</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/wordcloud/man/wordcloud.html" class="external-link">wordcloud</a></span><span class="op">(</span>words <span class="op">=</span> <span class="va">keywords</span><span class="op">$</span><span class="va">keyword</span>, <span class="co">##keyword input</span></span>
 <span>          freq <span class="op">=</span> <span class="va">keywords</span><span class="op">$</span><span class="va">r</span>, <span class="co">##setting the size of the keyword to vary with its r value</span></span>
@@ -280,7 +285,7 @@
 <span>          <span class="op">)</span> </span>
 <span>          <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/wordcloud.jpg"><!-- --></p>
-<p>These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the negative clusters.</p>
+<p>These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the positive clusters.</p>
 </div>
 </div>
 
