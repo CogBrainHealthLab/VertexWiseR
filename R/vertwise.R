@@ -25,6 +25,7 @@
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
+#' @param correction A string object or vector of strings to specify the multiple comparison correction methods. Options are “rft” (random field theory correction), "fdr" (false discovery rate correction), both (c("fdr","rft")) or NULL. Default is c("fdr","rft").
 #' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan (Default), 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
@@ -57,7 +58,7 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, correction=c("fdr","rft"), atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   
   #Check required python dependencies. If files missing:
@@ -154,7 +155,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
             contrast=contrast,
             surf = template,
             mask=mask,
-            correction=c("fdr", "rft"),
+            correction=c(correction),
             cluster_threshold=p,
             data_dir=data_dir)
   
