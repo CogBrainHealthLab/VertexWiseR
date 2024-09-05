@@ -1,5 +1,5 @@
 """Python function to smooth surface images
-   Modified from BrainStat toolbox https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM   -removed third dimension
+   Modified from BrainStat toolbox https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM
    © Copyright 2021, MICA Lab, CNG Lab Revision 1f3068fb
    -added 'brainstat.stats' to lines 37-39 to avoid relative import
    -adds the "data_dir" argument to the fetch_template_surface instead of going with default
