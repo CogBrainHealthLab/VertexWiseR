@@ -6,12 +6,12 @@
 #'
 #' @details The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BrainStat' Python library}. 
 #' 
-#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.
+#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply run the non-TFCE analysis functions and set ‘p=1’.
 #' 
 #' Output definitions:
 #' - `nverts`: number of vertices in the cluster
 #' - `P`: p-value of the cluster
-#' - `X, Y and Z`: MNI coordinates of the vertex with the highest t-statistic in the cluster
+#' - `X, Y and Z`: MNI coordinates of the vertex with the highest t-statistic in the cluster.
 #' - `tstat`: t statistic of the vertex with the highest t-statistic in the cluster
 #' - `region`: the region this highest -statistic vertex is located in, as determined/labelled by the selected atlas 
 #'
@@ -25,12 +25,11 @@
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
-#' @param correction A string object or vector of strings to specify the multiple comparison correction methods. Options are “rft” (random field theory correction), "fdr" (false discovery rate correction), both (c("fdr","rft")) or NULL. Default is c("fdr","rft").
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan (Default), 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
+#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
-#' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
+#' @returns A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 #' 
 #' @seealso \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}
 #' 
@@ -58,7 +57,7 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, correction=c("fdr","rft"), atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   
   #Check required python dependencies. If files missing:
@@ -155,7 +154,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
             contrast=contrast,
             surf = template,
             mask=mask,
-            correction=c(correction),
+            correction=c("fdr", "rft"),
             cluster_threshold=p,
             data_dir=data_dir)
   
@@ -276,8 +275,11 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   negmask[which(tstat<0)]=1
   negmask = t(negmask)
   
+  #False discovery rate-corrected p value map
+  fdrpmap=model$Q
+  
   #listing objects to return
-  returnobj=(list(cluster_results,as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap)))
-  names(returnobj)=c("cluster_level_results","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap")
+  returnobj=(list(cluster_results,as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
+  names(returnobj)=c("cluster_level_results","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
   return(returnobj)
 }
