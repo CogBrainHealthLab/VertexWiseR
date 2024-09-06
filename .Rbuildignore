@@ -9,3 +9,4 @@ inst/demo_data/SPRENG_CTv_site1.rds
 inst/demo_data/spreng_surf_data.zip
 inst/demo_data/fink_surf_data.zip
 LICENSE
+.gitattributes
