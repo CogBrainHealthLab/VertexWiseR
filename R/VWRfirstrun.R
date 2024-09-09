@@ -101,7 +101,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
             envpath=tools::R_user_dir(package='VertexWiseR')
-            if (!dir.exists(envpath)) {dir.create(envpath) }
+            if (!dir.exists(envpath)) {dir.create(envpath, recursive = TRUE) }
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
@@ -242,7 +242,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         brainstat_data_usrpath <- readline("Enter the full path to store Brainstat data:")
         message(paste('The path to BrainStat data is now',
                       brainstat_data_usrpath,'.'))
-        dir.create(brainstat_data_usrpath, showWarnings = FALSE)
+        dir.create(brainstat_data_usrpath, showWarnings = FALSE,
+                   recursive = TRUE)
         
         if (!dir.exists(brainstat_data_usrpath))
         {stop('No directory could be found or created via dir.create()  within the given path. Please try typing it again.')}
@@ -252,7 +253,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       
       #Write it in a local .Renviron file 
       envpath=tools::R_user_dir(package='VertexWiseR')
-      if (!dir.exists(envpath)) {dir.create(envpath) }
+      if (!dir.exists(envpath)) {dir.create(envpath, recursive = TRUE) }
       #make .Renviron file there and set conda/python paths:
       renviron_path <- file.path(envpath, ".Renviron")
       env_vars <- paste0('BRAINSTAT_DATA="',brainstat_data_path,'"')
