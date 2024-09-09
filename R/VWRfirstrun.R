@@ -148,7 +148,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
           #pip instead of install_py as it will use a virtual environment
-          system('pip install numpy==1.26.4') 
+          system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') 
           #posterior numpy versions break python functions
           
         }
@@ -203,7 +203,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           reticulate::py_install("brainstat==0.4.2",pip=TRUE) 
         }
         else { #if only Python, install via pip
-          system('pip install brainstat==0.4.2') 
+          system('(pip install brainstat==0.4.2 || pip3 install brainstat==0.4.2)') 
           #install_py would use make virtual environment
         }
         
