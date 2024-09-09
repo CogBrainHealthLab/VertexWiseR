@@ -205,6 +205,10 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         else { #if only Python, install via pip
           system('(pip install brainstat==0.4.2 || pip3 install brainstat==0.4.2)') 
           #install_py would use make virtual environment
+          
+          #reticulate might not search again for the list of modules
+          #so R needs to be restarted
+          message('Restarting R may be needed for the installation to take effect.')
         }
         
       } 
