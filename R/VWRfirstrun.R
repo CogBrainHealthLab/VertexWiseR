@@ -76,7 +76,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           #define default path 
           #mimicking reticulate's non-exported miniconda_path_default()
-          if (.Platform$OS.type == "mac") {
+          if (Sys.info()['sysname'] == "Darwin") {
             # on macOS, different path for arm64 miniconda
             if (Sys.info()[["machine"]] == "arm64") {defaultpath="~/Library/r-miniconda-arm64"} else {defaultpath="~/Library/r-miniconda"}
           } else {
@@ -209,7 +209,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         
       } 
       else {
-        stop('VertexWiseR will not work properly without brainstat.\n\n')}
+        stop('VertexWiseR will not work properly without BrainStat.\n\n')}
     } 
     
     
