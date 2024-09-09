@@ -448,18 +448,20 @@ outputs fslr32k surface data when using the “–cifti-output” option <span c
 were removed and only the dscalar.nii and associated json files were
 preserved, to minimise its size.</p>
 <p>The subsample (14.1 MB) can be downloaded from the repository as
-follows:</p>
+follows (untar can be changed to unzip if issues arise):</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># download and unzip the surface data directory</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">&quot;https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip&quot;</span>, </span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">&quot;spreng_surf_data.zip&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">untar</span>(<span class="at">zipfile =</span> <span class="st">&quot;spreng_surf_data.zip&quot;</span>)</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">&quot;https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip?raw=TRUE&quot;</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">&quot;spreng_surf_data.zip&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>              <span class="at">mode=</span><span class="st">&#39;wb&#39;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">untar</span>(<span class="st">&quot;spreng_surf_data.zip&quot;</span>)</span></code></pre></div>
 <p>FSLRvextract() gets the data from .dscalar.nii files associated with
 the specified measure (e.g. thickness, curv), and can extract it as
 follows:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>dat_fslr32k<span class="ot">=</span><span class="fu">FSLRvextract</span>(<span class="at">sdirpath=</span><span class="st">&quot;spreng_surf_data/&quot;</span>,</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>            <span class="at">wb_path=</span><span class="st">&quot;path/to/workbench&quot;</span>,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>            <span class="at">filename=</span><span class="st">&quot;dat_fslr32k.rds&quot;</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>            <span class="at">dscalar=</span><span class="st">&quot;_space-fsLR_den-91k_thickness.dscalar.nii&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>            <span class="at">dscaler=</span><span class="st">&quot;_space-fsLR_den-91k_thickness.dscalar.nii&quot;</span>,</span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>            <span class="at">subj_ID =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>            <span class="at">silent=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <ul>
@@ -491,9 +493,9 @@ et al. 2023)</span>. As opposed to the other two functions,
 HIPvextract() does not require any system requirement.</p>
 <p>For demonstration, we provide a subsample of 2 participants from the
 <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0">Fink
-dataset</a> (site 1) <span class="citation">(Fink et al. 2021)</span>,
-after preprocessing their surface data using HippUnfold, keeping all
-output .gii files. The subsample (11.3 MB) can be downloaded from the
+dataset</a> <span class="citation">(Fink et al. 2021)</span>, after
+preprocessing their surface data using HippUnfold, keeping all output
+.gii files. The subsample (11.3 MB) can be downloaded from the
 repository as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># download and unzip the surface data directory</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">&quot;https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/fink_surf_data.zip?raw=TRUE&quot;</span>, </span>

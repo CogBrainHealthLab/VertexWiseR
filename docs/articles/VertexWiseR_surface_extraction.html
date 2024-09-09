@@ -160,12 +160,14 @@ outputs fslr32k surface data when using the “–cifti-output” option <span c
 were removed and only the dscalar.nii and associated json files were
 preserved, to minimise its size.</p>
 <p>The subsample (14.1 MB) can be downloaded from the repository as
-follows:</p>
+follows (untar can be changed to unzip if issues arise):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip"</span>, </span>
-<span>              destfile <span class="op">=</span> <span class="st">"spreng_surf_data.zip"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span>zipfile <span class="op">=</span> <span class="st">"spreng_surf_data.zip"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip?raw=TRUE"</span>, </span>
+<span>              destfile <span class="op">=</span> <span class="st">"spreng_surf_data.zip"</span>,</span>
+<span>              mode<span class="op">=</span><span class="st">'wb'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span><span class="st">"spreng_surf_data.zip"</span><span class="op">)</span></span></code></pre></div>
 <p>FSLRvextract() gets the data from .dscalar.nii files associated with
 the specified measure (e.g. thickness, curv), and can extract it as
 follows:</p>
@@ -173,7 +175,7 @@ follows:</p>
 <code class="sourceCode R"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu"><a href="../reference/FSLRvextract.html">FSLRvextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"spreng_surf_data/"</span>,</span>
 <span>            wb_path<span class="op">=</span><span class="st">"path/to/workbench"</span>,</span>
 <span>            filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span>
-<span>            dscalar<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
+<span>            dscaler<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
 <span>            subj_ID <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>            silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ul>
@@ -207,9 +209,9 @@ et al. 2023)</span>. As opposed to the other two functions,
 HIPvextract() does not require any system requirement.</p>
 <p>For demonstration, we provide a subsample of 2 participants from the
 <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0" class="external-link">Fink
-dataset</a> (site 1) <span class="citation">(Fink et al. 2021)</span>,
-after preprocessing their surface data using HippUnfold, keeping all
-output .gii files. The subsample (11.3 MB) can be downloaded from the
+dataset</a> <span class="citation">(Fink et al. 2021)</span>, after
+preprocessing their surface data using HippUnfold, keeping all output
+.gii files. The subsample (11.3 MB) can be downloaded from the
 repository as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>

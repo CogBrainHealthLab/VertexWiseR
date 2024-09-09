@@ -66,13 +66,15 @@ FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connec
 
 For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) (site 1) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
 
-The subsample (14.1 MB) can be downloaded from the repository as follows:
+The subsample (14.1 MB) can be downloaded from the repository as follows (untar can be changed to unzip if issues arise):
 
 ```{r, eval=FALSE}
 # download and unzip the surface data directory
-download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip", 
-              destfile = "spreng_surf_data.zip")
-untar(zipfile = "spreng_surf_data.zip")
+download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip?raw=TRUE", 
+              destfile = "spreng_surf_data.zip",
+              mode='wb')
+
+untar("spreng_surf_data.zip")
 ```
 
 FSLRvextract() gets the data from .dscalar.nii files associated with the specified measure (e.g. thickness, curv), and can extract it as follows:
@@ -81,7 +83,7 @@ FSLRvextract() gets the data from .dscalar.nii files associated with the specifi
 dat_fslr32k=FSLRvextract(sdirpath="spreng_surf_data/",
             wb_path="path/to/workbench",
             filename="dat_fslr32k.rds",
-            dscalar="_space-fsLR_den-91k_thickness.dscalar.nii",
+            dscaler="_space-fsLR_den-91k_thickness.dscalar.nii",
             subj_ID = FALSE,
             silent=FALSE)
 ```
