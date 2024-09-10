@@ -66,8 +66,8 @@ write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
 Sys.setenv(SUBJECTS_DIR=sdirpath)
 system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR"), ignore.stderr = TRUE)
-system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --surfreg lh.sphere --out $SUBJECTS_DIR/lh.mgh \n 
-       mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, "--surfreg rh.sphere --out $SUBJECTS_DIR/rh.mgh"));
+system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --surfreg sphere.reg --out $SUBJECTS_DIR/lh.mgh \n 
+       mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, "--surfreg sphere.reg --out $SUBJECTS_DIR/rh.mgh"));
 
 #Reads mgh files to stores and assign the thickness values to each subject in a matrix object usable by VertexWiseR. Appends a column with the subject IDs if required by the user.
 if (subj_ID == TRUE) 
