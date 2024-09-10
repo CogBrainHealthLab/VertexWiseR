@@ -1,7 +1,7 @@
 ---
 title: "Extracting surface data in VertexWiseR"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-08-23"
+date: "2024-09-10"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Extracting surface data in VertexWiseR}
@@ -31,13 +31,27 @@ SURFvextract() extracts cortical surface data from a preprocessed FreeSurfer sub
 
 The function makes use of internal FreeSurfer functions to resample every participant's individual surface to fsaverage5 or fsaverage6. Therefore, it requires FreeSurfer to be installed and set in the environment where R is run and cannot be automatically run here.
 
-We give the following code as non-executed example:
+For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using FreeSurfer's default recon-all pipeline. Certain files that were not needed (volumes, surfaces, label files) were removed to minimise the subsample's size.
+
+The subsample (29.6 MB) can be downloaded from the repository as follows (unzip can be changed to untar if errors occur):
 
 ```{r, eval=FALSE}
-SPRENG_CTv = SURFvextract(sdirpath = 'path/to/SUBJECTS_DIR', 
+# download and unzip the surface data directory
+download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_freesurfer.zip?raw=TRUE", 
+              destfile = "spreng_surf_data_freesurfer.zip",
+              mode='wb')
+
+unzip("spreng_surf_data_freesurfer.zip")
+```
+
+
+We give the following code as example:
+
+```{r, eval=FALSE}
+SPRENG_CTv = SURFvextract(sdirpath = 'spreng_surf_data_freesurfer', 
              filename = "SPRENG_CTv.rds", 
              template='fsaverage5', 
-             measure = 'thickness'
+             measure = 'thickness',
              subj_ID = FALSE)
 ```
 
@@ -47,8 +61,8 @@ SPRENG_CTv = SURFvextract(sdirpath = 'path/to/SUBJECTS_DIR',
     -   template: The surface template space in which to extract the data, which can be 'fsaverage5' (default) or 'fsaverage6'
     -   measure: The name of the surface-based measure of interest computed [in FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/UserContributions/FAQ). That includes cortical thickness ('thickness'), surface curvature ('curv'), depth/height of vertex ('sulc'), surface area ('area'), and 'volume' (for freesurfer 7.4.1 or later). Default is 'thickness'.
     -   subj_ID Whether to obtain a list object containing both subject ID and data matrix instead of just the matrix (TRUE OR FALSE)
-
-An example of surface matrix object, extracted from FreeSurfer preprocessing of the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) (site 1) [@spreng_neurocognitive_2022], is available on VertexWiseR online repository:
+    
+An example of surface matrix object, extracted from FreeSurfer preprocessing of the all site 1 participants is available on VertexWiseR online repository:
 
 ```{r}
 SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
@@ -64,17 +78,17 @@ When the subj_ID argument is set to TRUE, the object returned is not a matrix on
 
 FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013] or fMRIprep [@esteban_fmriprep_2019] preprocessing output directories. FSLRvextract() requires the [HCP workbench](https://humanconnectome.org/software/get-connectome-workbench)  to be installed, and uses the ciftiTools R package to read the .dscalar.nii files.
 
-For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) (site 1) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
+For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
 
-The subsample (14.1 MB) can be downloaded from the repository as follows (untar can be changed to unzip if issues arise):
+The subsample (14.1 MB) can be downloaded from the repository as follows (unzip can be changed to untar if errors occur):
 
 ```{r, eval=FALSE}
 # download and unzip the surface data directory
-download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data.zip?raw=TRUE", 
-              destfile = "spreng_surf_data.zip",
+download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_fmriprep.zip?raw=TRUE", 
+              destfile = "spreng_surf_data_fmriprep.zip",
               mode='wb')
 
-untar("spreng_surf_data.zip")
+unzip("spreng_surf_data_fmriprep.zip")
 ```
 
 FSLRvextract() gets the data from .dscalar.nii files associated with the specified measure (e.g. thickness, curv), and can extract it as follows:
@@ -102,15 +116,15 @@ Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2 participants) and
 
 HIPvextract() extracts cortical data in CITI168 surface space from the HippUnfold preprocessing pipeline [@dekraker_evaluation_2023]. As opposed to the other two functions, HIPvextract() does not require any system requirement.
 
-For demonstration, we provide a subsample of 2 participants from the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021], after preprocessing their surface data using HippUnfold, keeping all output .gii files. The subsample (11.3 MB) can be downloaded from the repository as follows:
+For demonstration, we provide a subsample of 2 participants from the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021], after preprocessing their surface data using HippUnfold, keeping all output .gii files. The subsample (11.3 MB) can be downloaded from the repository as follows (untar can be changed to unzip if errors occur):
 
 ```{r, results = 'hide'}
 # download and unzip the surface data directory
-download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/fink_surf_data.zip?raw=TRUE", 
-              destfile = "fink_surf_data.zip", 
+download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/fink_surf_data_hippunfold.zip?raw=TRUE", 
+              destfile = "fink_surf_data_hippunfold.zip", 
               mode = "wb")
 
-untar("fink_surf_data.zip")
+untar("fink_surf_data_hippunfold.zip")
 ```
 
 To extract and collate the data of the two participants, HIPvextract() can be run as follows:
