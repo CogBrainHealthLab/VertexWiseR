@@ -106,7 +106,7 @@
 #'
 #' @description Smooths surface data at defined full width at half maximum (FWHM) as per the corresponding template of surface data
 #'
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -115,6 +115,7 @@
 #' surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
+#'
 #' surf_data_smoothed=smooth_surf(surf_data, 10, VWR_check=FALSE);
 #' @importFrom reticulate source_python
 #' @export
@@ -123,6 +124,7 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
 {
+
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
@@ -131,6 +133,15 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     check = VWRfirstrun(requirement="python/conda only")
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  
+  #if surface_data is a path to an object, reads it
+  if(inherits(surf_data,'character')==TRUE)
+  {
+    surf_data=readRDS(surf_data)
+    #if also contained a subject list, only the surface data is kept
+    if(inherits(surf_data,'list')==TRUE)
+    {surf_data=surf_data[[2]]}
+  }
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
