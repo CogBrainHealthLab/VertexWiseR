@@ -463,7 +463,7 @@ atlas_to_surf=function(parcel_data, template)
     else if (length(parcel_data) == 100) {atlas=4} 
     else if (length(parcel_data) == 200) {atlas=5} 
     else if (length(parcel_data) == 400) {atlas=6}
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
+    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of vectors (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
     
     #init variables
     nregions=max(ROImap[[1]][,atlas])
