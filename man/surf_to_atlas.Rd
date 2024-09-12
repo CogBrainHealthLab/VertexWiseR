@@ -9,7 +9,7 @@ surf_to_atlas(surf_data, atlas, mode = "mean")
 \arguments{
 \item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.}
 
-\item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.}
+\item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' 10-parcels hippocampal atlas is used by default and ignores the option.}
 
 \item{mode}{A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.}
 }
@@ -22,7 +22,7 @@ Returns the mean or sum of vertex-wise surface data for each ROI of a selected a
 \details{
 The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{ 'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux}
 
-For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
+For hippocampal data, the function currently works with the "bigbrain" 10-parcels atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 }
 \examples{
 CTv = runif(20484,min=0, max=100)
