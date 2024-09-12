@@ -26,7 +26,7 @@ For hippocampal data, the function currently works with the "bigbrain" atlas int
 }
 \examples{
 CTv = runif(20484,min=0, max=100)
-surf_to_atlas(CTv, 1)
+parcel_data = surf_to_atlas(CTv, 1)
 }
 \seealso{
 \code{\link{atlas_to_surf}}

@@ -9,7 +9,7 @@ atlas_to_surf(parcel_data, template)
 \arguments{
 \item{parcel_data}{A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format.}
 
-\item{template}{A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6' or 'fslr32k').}
+\item{template}{A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6', 'fslr32k', 'CIT168' (hippocampal)).}
 }
 \value{
 A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6 or fslr32k space

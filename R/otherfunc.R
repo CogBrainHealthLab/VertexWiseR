@@ -262,7 +262,7 @@ getClusters=function(surf_data,edgelist)
 #' @seealso \code{\link{atlas_to_surf}}
 #' @examples
 #' CTv = runif(20484,min=0, max=100)
-#' surf_to_atlas(CTv, 1)
+#' parcel_data = surf_to_atlas(CTv, 1)
 #' @export
 
 surf_to_atlas=function(surf_data,atlas,mode='mean') 
@@ -412,7 +412,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 #' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
-#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6' or 'fslr32k').
+#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6', 'fslr32k', 'CIT168' (hippocampal)).
 #'
 #' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6 or fslr32k space
 #' @seealso \code{\link{surf_to_atlas}}
@@ -433,20 +433,31 @@ atlas_to_surf=function(parcel_data, template)
   } else if (template=='fslr32k') 
   { ROImap_fslr32k <- get('ROImap_fslr32k'); n_vert=64984; 
   ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
-  } else { stop('The function currently only works with fsaverage5,  fsaverage6 and fslr32k')}
+  } else if (template=='CIT168') 
+  { ROImap_hip <- get('ROImap_hip'); n_vert=14524; 
+  ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
+  } else { stop('The function currently only works with fsaverage5,  fsaverage6, fslr32k or CIT168 surfaces')}
   
-    
+  #checking template number based on dimensions (works for both matrices and vectors)
+  if(template %in% c('fsaverage5','fsaverage6','fslr32k')) 
+  {
+  if (max(dim(t(parcel_data))) == 70) {atlas=1} 
+  else if (max(dim(t(parcel_data))) == 148) {atlas=2} 
+  else if (max(dim(t(parcel_data))) == 360) {atlas=3} 
+  else if (max(dim(t(parcel_data))) == 100) {atlas=4} 
+  else if (max(dim(t(parcel_data))) == 200) {atlas=5} 
+  else if (max(dim(t(parcel_data))) == 400) {atlas=6}
+  else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns or vectors (parcels). The cortical surfaces currently accept the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, Destrieux-148 atlases.')}
+  } else if (template=='CIT168')
+  {
+  if (max(dim(t(parcel_data))) == 10) {atlas=1}
+  else { stop('Hippocampal CIT168 surfaces currently only accept the bigbrain 10-parcels atlas. The function could not identify the atlas from parcel_data, based on the number of columns or vectors (parcels).')}
+  }
+  
+  
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
   {
-   if (ncol(parcel_data) == 70) {atlas=1} 
-     else if (ncol(parcel_data) == 148) {atlas=2} 
-     else if (ncol(parcel_data) == 360) {atlas=3} 
-     else if (ncol(parcel_data) == 100) {atlas=4} 
-     else if (ncol(parcel_data) == 200) {atlas=5} 
-     else if (ncol(parcel_data) == 400) {atlas=6}
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
-    
-    #init variables
+     #init variables
     nregions=max(ROImap[[1]][,atlas])
     surf_dat=matrix(NA,nrow = NROW(parcel_data), ncol=n_vert)
     
@@ -455,16 +466,11 @@ atlas_to_surf=function(parcel_data, template)
     {
       for (region in 1:nregions)  {surf_dat[sub,which(ROImap[[1]][,atlas]==region)]=parcel_data[sub,region]}      
     }
-  } else if(is.vector(parcel_data)==TRUE) #if parcel_data is a vector
-  {
-    if (length(parcel_data) == 70) {atlas=1} 
-    else if (length(parcel_data) == 148) {atlas=2} 
-    else if (length(parcel_data) == 360) {atlas=3} 
-    else if (length(parcel_data) == 100) {atlas=4} 
-    else if (length(parcel_data) == 200) {atlas=5} 
-    else if (length(parcel_data) == 400) {atlas=6}
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of vectors (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
+  
     
+    ##########if parcel_data is a vector
+    } else if(is.vector(parcel_data)==TRUE) 
+  {
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     surf_dat=rep(NA,n_vert)
