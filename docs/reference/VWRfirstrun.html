@@ -58,14 +58,14 @@
     <dl><dt>requirement</dt>
 <dd><p>String that specifies a requirement to enquire about:</p><ul><li><p>For only Python/Conda installation: 'python/conda only'</p></li>
 <li><p>For Python/Conda and Brainstat installation: 'conda/brainstat'</p></li>
-<li><p>For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'</p></li>
+<li><p>For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'fslr32k', 'yeo_parcels'</p></li>
 <li><p>For the neurosynth database: 'neurosynth'.
 Default is 'any' and checks everything.</p></li>
 </ul></dd>
 
 
 <dt>n_vert</dt>
-<dd><p>Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for</p></dd>
+<dd><p>Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for. It will modify the requirement argument accordingly.</p></dd>
 
 
 <dt>promptless</dt>

@@ -11,12 +11,12 @@ VWRfirstrun(requirement = "any", n_vert = 0, promptless = FALSE)
 \itemize{
 \item For only Python/Conda installation: 'python/conda only'
 \item For Python/Conda and Brainstat installation: 'conda/brainstat'
-\item For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'
+\item For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'fslr32k', 'yeo_parcels'
 \item For the neurosynth database: 'neurosynth'.
 Default is 'any' and checks everything.
 }}
 
-\item{n_vert}{Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for}
+\item{n_vert}{Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for. It will modify the requirement argument accordingly.}
 
 \item{promptless}{A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.}
 }

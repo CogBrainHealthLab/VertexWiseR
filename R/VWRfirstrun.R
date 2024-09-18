@@ -12,10 +12,10 @@
 #' @param requirement String that specifies a requirement to enquire about: 
 #' - For only Python/Conda installation: 'python/conda only'
 #' - For Python/Conda and Brainstat installation: 'conda/brainstat'
-#' - For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'
+#' - For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'fslr32k', 'yeo_parcels'
 #' - For the neurosynth database: 'neurosynth'. 
 #' Default is 'any' and checks everything.
-#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
+#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for. It will modify the requirement argument accordingly.
 #' @param promptless A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
@@ -37,8 +37,11 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   #are fsaverage6 templates in brainstat_data?
   if  (n_vert==81924)
   {requirement='fsaverage6'}
+  #are fslr32k templates in brainstat_data?
+  if  (n_vert==64984)
+  {requirement='fslr32k'}
   #is yeo parcellation data in brainstat_data?
-  if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
+  if (n_vert>0 & n_vert!=20484 & n_vert!=81924 & n_vert!=64984)
   {requirement='yeo_parcels'} 
   
   # If custom installation paths have been defined by the user, source
@@ -332,8 +335,26 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
     } 
     
+    #fsLR32k data
+    if ((requirement=="any" | requirement=='fslr32k')==TRUE 
+        & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69'))) 
+    { 
+      missingobj=1
+      
+      prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fslr32k templates in", brainstat_data_path, ".  They are needed if you want to analyse cortical surface in fslr32k space. \n Do you want the fslr32k templates (~4.12 MB) to be downloaded now?"))
+      
+      if (prompt==1)
+      { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
+      brainstat.datasets.base$fetch_template_surface(template = "fslr32k", data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))
+      
+      } else if (requirement=='fslr32k') { 
+        stop('VertexWiseR will not be able to analyse fslr32k data without the brainstat templates.\n\n')
+      } else if (requirement=="any") {
+        warning('VertexWiseR will not be able to analyse fslr32k data without the brainstat templates.\n\n')}
+    } 
+    
     #Yeo parcellatio data
-    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
+    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
     {
       missingobj=1
@@ -345,7 +366,7 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7, data_dir = paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')), 
             silent=TRUE)}  
       
-      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
+      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels') 
       {
         stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
       else if (requirement=="any") 
@@ -475,6 +496,16 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
       } else {message(missingobj)}
     } 
     
+    #fslr32k missing
+    if ((requirement=="any" | requirement=='fslr32k')==TRUE & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69/fslr32k')))  
+    {
+      missingobj=paste0("VertexWiseR could not find brainstat fslr32k templates in the ",brainstat_data_path,"/brainstat_data/ directory. They are needed if you want to analyse cortical surface in fslr32k space.\n");
+      
+      if (interactive()==FALSE)
+      { non_interactive=paste0(missingobj,non_interactive)
+      return(non_interactive)
+      } else {message(missingobj)}
+    } 
     
     #yeo parcels missing
     if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
