@@ -26,6 +26,10 @@ A function can be run to download and install all the system requirements (Minic
 VWRfirstrun()
 ```
 
+Note: A pop-up/prompt from reticulate asking 'Would you like to create a default Python environment for the reticulate package?' may appear. Clicking Yes will let reticulate install Python in a virtual environment. This is entirely optional. Simply click No/Cancel to ignore. 
+
+Alternatively, advanced users may specify a pre-installed python environment using reticulate’s [use_python() or use_virtualenv() functions](https://rstudio.github.io/reticulate/reference/use_python.html).  
+
 #### Loading datasets
 
 For this example, we use Spreng and colleagues' neurocognitive aging [openneuro dataset ds003592](https://openneuro.org/datasets/ds003592/versions/1.0.13):
