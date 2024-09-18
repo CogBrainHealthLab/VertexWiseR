@@ -130,7 +130,10 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   #Will stop if it's a non-interactive session 
   if (VWR_check == TRUE & length(sys.calls()) <= 1){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="python/conda only")
+    #brainstat must be installed for non hippocampal surf to run get_edgelist, check can be skipped for hippocampus (so 14524 vertices)
+    if(max(dim(t(surf_data)))==14524) {
+    check = VWRfirstrun('conda/python only')}
+    else {check = VWRfirstrun(n_vert=max(dim(t(surf_data))))}
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
