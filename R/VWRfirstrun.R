@@ -123,6 +123,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #posterior numpy versions break python functions
           }
           
+        message('Please restart R after Miniconda installation for its environment to be properly detected by reticulate.')
+          
         }
         else if (prompt==2) #Install Python instead of Miniconda
         { 
@@ -148,8 +150,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
           #pip instead of install_py as it will use a virtual environment
-          system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') 
-          #posterior numpy versions break python functions
+          system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') #posterior numpy versions break python functions
+          
+          message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
         }
         else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
