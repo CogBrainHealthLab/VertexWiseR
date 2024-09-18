@@ -223,13 +223,16 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     ###############################################################################################################################
     #check if BrainStat fsaverage/parcellation templates are installed (stops only if function needs it)
     
+#can be avoided with if the requirement is only to check python conda, and/or brainstat installations
+if (requirement!="python/conda only" & requirement!='conda/brainstat')
+{   
+    message('Checking BrainStat\'s analysis data...')
+  
     #if no path to BrainStat's data path is defined yet
     #and no default $HOME/brainstat_data folder exists,
     #prompt for user to define a path or set default
     if (Sys.getenv('BRAINSTAT_DATA')=="" & 
-        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))
-        & requirement!="python/conda only"
-        & requirement!='conda/brainstat') 
+        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))) 
     {
       missingobj=1
       
@@ -281,7 +284,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
     }
     
-    
+
     #create brainstat_data folder substructure if not already in 
     #the default or custom path 
     #(this allows later downloads to be specifically located)
@@ -292,10 +295,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     
     
     #for each required data, it will now check the set path (default or custom) and prompt for download if they are missing
-    
-    #only if parameters to only check conda and brainstat installations are absent
-    if (requirement!="python/conda only" & requirement!='conda/brainstat')
-    {message('Checking BrainStat\'s analysis data...')}
+  
     #fsaverage5 data
     if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
@@ -353,8 +353,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
       }
     }
-    
-    
+} 
     
     #####################################################################
     #####################################################################
