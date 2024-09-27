@@ -44,7 +44,7 @@ RFT_vertex_analysis(
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
+A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 }
 \description{
 Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.

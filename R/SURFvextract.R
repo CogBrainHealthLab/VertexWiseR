@@ -1,8 +1,7 @@
 #' @title SURFvextract
 #'
-#' @description Extracts whole-brain vertex-wise surface-based measures for each subject in a 'FreeSurfer' output subjects directory, resamples the data to a common surface template, and stores it as a .rds file. This function requires the 'FreeSurfer' environment to be preset.
+#' @description Extracts whole-brain vertex-wise surface-based measures for each subject in a 'FreeSurfer' output subjects directory, resamples the data to a common surface template, and stores it as a .rds file. This function requires the 'FreeSurfer' environment to be preset and a 'FreeSurfer' license key.
 #' @details The function runs system shell commands that will produce in the set subjects directory: 1) a sorted list of subjects "sublist.txt"; 2) a link file to the selected surface fsaverage template. 3) left and right hemisphere .mgh maps outputted by 'FreeSurfer' 's mris_preproc. 
-#' This function was currently not tested on a MacOS system.
 #'
 #' @param sdirpath A string object containing the path to the 'FreeSurfer' subjects directory. Default is the current working directory ("./").
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'brain_measure.rds' in the R temporary directory (tempdir()).
@@ -25,9 +24,12 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
   
   #check if FREESURFER_HOME has been set  
   if(Sys.getenv('FREESURFER_HOME')=="") {return(message('No FREESURFER_HOME variable has been set. SURFvextract() will not be able to work without FreeSurfer.'))}
+  #check if FREESURFER_HOME/license.txt exists  
+  if(!file.exists(paste0(Sys.getenv('FREESURFER_HOME'),'/license.txt')) )
+  {return(message('No FREESURFER_HOME/license.txt file was found. FreeSurfer requires a license to be fully operational. See https://surfer.nmr.mgh.harvard.edu/fswiki/License'))}
   #check if FreeSurfer has been setup (test freeview command)
   testFS <- suppressWarnings(try(system("which freesurfer", intern = TRUE, ignore.stderr = TRUE),silent=TRUE))
-  if  (!length(testFS) > 0) {return(message('It seems that FreeSurfer has not been set up in your environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.'))}
+  if  (!length(testFS) > 0) {return(message('It seems that FreeSurfer has not been set up in your source environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.'))}
   
   
   if (missing("filename")) {
@@ -64,8 +66,8 @@ write.table(sublist, file = paste0(sdirpath,'/sublist.txt'), row.names = FALSE, 
 #Calls Freesurfer to extract vertex-wise thickness data from the sample and resample it to the fsaverage5 common-space surface; and concatenate it into mgh files
 Sys.setenv(SUBJECTS_DIR=sdirpath)
 system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR"), ignore.stderr = TRUE)
-system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --out $SUBJECTS_DIR/lh.mgh \n 
-       mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, " --out $SUBJECTS_DIR/rh.mgh"));
+system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --surfreg sphere.reg --out $SUBJECTS_DIR/lh.mgh \n 
+       mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, " --surfreg sphere.reg --out $SUBJECTS_DIR/rh.mgh"));
 
 #Reads mgh files to stores and assign the thickness values to each subject in a matrix object usable by VertexWiseR. Appends a column with the subject IDs if required by the user.
 if (subj_ID == TRUE) 

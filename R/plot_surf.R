@@ -2,8 +2,8 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #'
-#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract() as well as masks or vertex-wise results outputted by analyses functions.
-#' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).
+#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions. Alternatively, atlas ROI values as supported by atlas_to_surf() may be given.
+#' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 #' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
 #' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
@@ -64,10 +64,28 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   
   #check length of vector
   n_vert=length(surf_data)
+  #if surface template is inputted
   if(n_vert%%20484==0) {template="fsaverage5"}
   else if (n_vert%%64984==0) {template="fslr32k"} 
   else if (n_vert%%81924==0) {template="fsaverage6"} 
-  else if (n_vert%%14524!=0) {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
+  else if (n_vert%%14524==0) {template="CIT168"} 
+  #if atlas object is inputted
+  else if (max(dim(t(surf_data))) == 10) {template="CIT168";
+  surf_data=atlas_to_surf(surf_data, template)} 
+  else if (max(dim(t(surf_data))) == 70) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)} 
+  else if (max(dim(t(surf_data))) == 148) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)}
+  else if (max(dim(t(surf_data))) == 360) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)} 
+  else if (max(dim(t(surf_data))) == 100) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)}
+  else if (max(dim(t(surf_data))) == 200) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)}
+  else if (max(dim(t(surf_data))) == 400) {template="fsaverage5";
+  surf_data=atlas_to_surf(surf_data, template)}
+  else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
+  }
   
   #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
   if(missing("cmap"))
@@ -106,7 +124,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     }   
   }
   
-  if(n_vert%%14524!=0)
+  if(template %in% c('fsaverage5','fsaverage6','fslr32k'))
   {
     ##cortical surface fplots
     #import python libraries
@@ -142,7 +160,10 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
                                                    size=reticulate::tuple(as.integer(size)),nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),
                                                    return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
                                                    label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=FALSE)  ##disabling interactive mode because this causes RStudio to hang
-  } else
+    
+    
+  #######Hippocampal template
+  } else if (template=='CIT168')
   {
     #Solves the "no visible binding for global variable" issue
     . <- surfplot_canonical_foldunfold  <- NULL 

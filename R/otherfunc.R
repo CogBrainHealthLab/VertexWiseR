@@ -106,7 +106,7 @@
 #'
 #' @description Smooths surface data at defined full width at half maximum (FWHM) as per the corresponding template of surface data
 #'
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -115,6 +115,7 @@
 #' surf_data = readRDS(file = url(paste0("https://github.com",
 #'"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
 #'"FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
+#'
 #' surf_data_smoothed=smooth_surf(surf_data, 10, VWR_check=FALSE);
 #' @importFrom reticulate source_python
 #' @export
@@ -123,14 +124,27 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
 {
+
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
   if (VWR_check == TRUE & length(sys.calls()) <= 1){
     message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun(requirement="python/conda only")
+    #brainstat must be installed for non hippocampal surf to run get_edgelist, check can be skipped for hippocampus (so 14524 vertices)
+    if(max(dim(t(surf_data)))==14524) {
+    check = VWRfirstrun('python/conda only')}
+    else {check = VWRfirstrun(n_vert=max(dim(t(surf_data))))}
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  
+  #if surface_data is a path to an object, reads it
+  if(inherits(surf_data,'character')==TRUE)
+  {
+    surf_data=readRDS(surf_data)
+    #if also contained a subject list, only the surface data is kept
+    if(inherits(surf_data,'list')==TRUE)
+    {surf_data=surf_data[[2]]}
+  }
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -252,17 +266,17 @@ getClusters=function(surf_data,edgelist)
 #' @description Returns the mean or sum of vertex-wise surface data for each ROI of a selected atlas
 #' @details The function currently works with the aparc/Desikan-Killiany-70, Destrieux-148, Glasser-360, Schaefer-100, Schaefer-200, Schaefer-400 atlases. ROI to vertex mapping data were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; data for Destrieux came from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{ 'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux}
 #' 
-#' For hippocampal data, the function currently works with the "bigbrain" atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
+#' For hippocampal data, the function currently works with the "bigbrain" 10-parcels atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' hippocampal atlas is used by default and ignores the option.
+#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' 10-parcels hippocampal atlas is used by default and ignores the option.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
 #' @seealso \code{\link{atlas_to_surf}}
 #' @examples
 #' CTv = runif(20484,min=0, max=100)
-#' surf_to_atlas(CTv, 1)
+#' parcel_data = surf_to_atlas(CTv, 1)
 #' @export
 
 surf_to_atlas=function(surf_data,atlas,mode='mean') 
@@ -273,7 +287,7 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
     {stop("Length of surf_data is neither 20484, 81924, 14524: the object is not compatible with the function")}
   
   #atlas argument needed if not hippocampal data
-  if(missing("atlas") & max(dim(t(surf_data)))!=14524) {stop("Please specify an atlas number among the following: 1=aparc, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400")}
+  if(missing("atlas") & max(dim(t(surf_data)))!=14524) {stop("Please specify an atlas number among the following: 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400")}
   
   ###
   #mapping fsaverage5 space vertice to atlas (Nx20484 vertices)
@@ -409,12 +423,12 @@ surf_to_atlas=function(surf_data,atlas,mode='mean')
 #' @title Atlas to surface
 #'
 #' @description Maps average parcellation surface values (e.g. produced with the surf_to_atlas() function) to the fsaverage5, fsaverage6 or fslr32k space
-#' @details The function currently works with the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
+#' @details The function currently supports the Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases for cortical surfaces, and the 'bigbrain' 10-parcels atlas for hippocampal surfaces. ROI to vertex mapping data for 1 to 4 were obtained from the \href{https://github.com/MICA-MNI/ENIGMA/tree/master/enigmatoolbox/datasets/parcellations}{'ENIGMA toolbox'} ; and data for 5 from \href{https://github.com/nilearn/nilearn/blob/a366d22e426b07166e6f8ce1b7ac6eb732c88155/nilearn/datasets/atlas.py}{'Nilearn' 's nilearn.datasets.fetch_atlas_surf_destrieux} . atlas_to_surf() will automatically detect the atlas based on the number of columns.
 #'
 #' @param parcel_data A matrix or vector object containing average surface measures for each region of interest, see the surf_to_atlas() output format. 
-#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6' or 'fslr32k').
+#' @param template A string object stating the surface space on which to map the data ('fsaverage5', 'fsaverage6', 'fslr32k', 'CIT168' (hippocampal)).
 #'
-#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6 or fslr32k space
+#' @returns A matrix or vector object containing vertex-wise surface data mapped in fsaverage5, fsaverage6, fslr32k, or CIT168 space
 #' @seealso \code{\link{surf_to_atlas}}
 #' @examples
 #' parcel_data = t(runif(100,min=0, max=100));
@@ -433,20 +447,31 @@ atlas_to_surf=function(parcel_data, template)
   } else if (template=='fslr32k') 
   { ROImap_fslr32k <- get('ROImap_fslr32k'); n_vert=64984; 
   ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
-  } else { stop('The function currently only works with fsaverage5,  fsaverage6 and fslr32k')}
+  } else if (template=='CIT168') 
+  { ROImap_hip <- get('ROImap_hip'); n_vert=14524; 
+  ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
+  } else { stop('The function currently only works with fsaverage5,  fsaverage6, fslr32k or CIT168 surfaces')}
   
-    
+  #checking template number based on dimensions (works for both matrices and vectors)
+  if(template %in% c('fsaverage5','fsaverage6','fslr32k')) 
+  {
+  if (max(dim(t(parcel_data))) == 70) {atlas=1} 
+  else if (max(dim(t(parcel_data))) == 148) {atlas=2} 
+  else if (max(dim(t(parcel_data))) == 360) {atlas=3} 
+  else if (max(dim(t(parcel_data))) == 100) {atlas=4} 
+  else if (max(dim(t(parcel_data))) == 200) {atlas=5} 
+  else if (max(dim(t(parcel_data))) == 400) {atlas=6}
+  else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns or vectors (parcels). The cortical surfaces currently accept the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, Destrieux-148 atlases.')}
+  } else if (template=='CIT168')
+  {
+  if (max(dim(t(parcel_data))) == 10) {atlas=1}
+  else { stop('Hippocampal CIT168 surfaces currently only accept the bigbrain 10-parcels atlas. The function could not identify the atlas from parcel_data, based on the number of columns or vectors (parcels).')}
+  }
+  
+  
  if(length(dim(parcel_data))==2) #if parcel_data is a matrix
   {
-   if (ncol(parcel_data) == 70) {atlas=1} 
-     else if (ncol(parcel_data) == 148) {atlas=2} 
-     else if (ncol(parcel_data) == 360) {atlas=3} 
-     else if (ncol(parcel_data) == 100) {atlas=4} 
-     else if (ncol(parcel_data) == 200) {atlas=5} 
-     else if (ncol(parcel_data) == 400) {atlas=6}
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
-    
-    #init variables
+     #init variables
     nregions=max(ROImap[[1]][,atlas])
     surf_dat=matrix(NA,nrow = NROW(parcel_data), ncol=n_vert)
     
@@ -455,16 +480,11 @@ atlas_to_surf=function(parcel_data, template)
     {
       for (region in 1:nregions)  {surf_dat[sub,which(ROImap[[1]][,atlas]==region)]=parcel_data[sub,region]}      
     }
-  } else if(is.vector(parcel_data)==TRUE) #if parcel_data is a vector
-  {
-    if (length(parcel_data) == 70) {atlas=1} 
-    else if (length(parcel_data) == 148) {atlas=2} 
-    else if (length(parcel_data) == 360) {atlas=3} 
-    else if (length(parcel_data) == 100) {atlas=4} 
-    else if (length(parcel_data) == 200) {atlas=5} 
-    else if (length(parcel_data) == 400) {atlas=6}
-    else { stop('The function could not identify what atlas your data was parcellated with, based on the number of columns (parcels). The function currently works with the aparc/Desikan-Killiany-70, Schaefer-100, Schaefer-200, Schaefer-400, Glasser-360, or Destrieux-148 atlases.')}
+  
     
+    ##########if parcel_data is a vector
+    } else if(is.vector(parcel_data)==TRUE) 
+  {
     #init variables
     nregions=max(ROImap[[1]][,atlas])
     surf_dat=rep(NA,n_vert)
@@ -637,9 +657,18 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
+  
+  # Check if all values are positive
+ if  (all(surf_data >= 0)==TRUE & contrast=="negative")
+ {stop('No negative cluster was identified in the surf_data.')}
+  # Check if all values are negative
+ if  (all(surf_data <= 0)==TRUE & contrast=="positive")
+ {stop('No positive cluster was identified in the surf_data.')}
+  
+  
+  #if neurosynth database is installed
   if(file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))==TRUE)
   {
-     
   ##checks length
     if(is.vector(surf_data)) {n_vert=length(surf_data)} else {n_vert=ncol(surf_data)}
     if(n_vert==20484) {template="fsaverage5"}

@@ -64,7 +64,7 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, 
     dat.temp=ciftiTools::readcii(filelist[sub],brainstructures = c("left","right"))
     LH.idx=which(dat.temp$meta$cortex$medial_wall_mask$left==TRUE)
     RH.idx=which(dat.temp$meta$cortex$medial_wall_mask$right==TRUE)+32492
-    fslr32k_dat[,c(LH.idx,RH.idx)]=c(dat.temp$data$cortex_left,dat.temp$data$cortex_right)
+    fslr32k_dat[sub,c(LH.idx,RH.idx)]=c(dat.temp$data$cortex_left,dat.temp$data$cortex_right)
     remove(dat.temp)
   }
   fslr32k_dat=fslr32k_dat[order(sublist),]

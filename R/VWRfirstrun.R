@@ -12,10 +12,10 @@
 #' @param requirement String that specifies a requirement to enquire about: 
 #' - For only Python/Conda installation: 'python/conda only'
 #' - For Python/Conda and Brainstat installation: 'conda/brainstat'
-#' - For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'yeo_parcels'
+#' - For specific 'BrainStat' libraries: 'fsaverage5', 'fsaverage6', 'fslr32k', 'yeo_parcels'
 #' - For the neurosynth database: 'neurosynth'. 
 #' Default is 'any' and checks everything.
-#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for
+#' @param n_vert Numeric vector indicating the number of vertices of a given surface data so that only the required templates are asked for. It will modify the requirement argument accordingly.
 #' @param promptless A boolean object specifying whether to prompt the user for action when system requirements are missing. If TRUE, VWRfirstrun() will simply inform of what is missing and will not prompt for action. Default is FALSE.
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
@@ -37,8 +37,11 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   #are fsaverage6 templates in brainstat_data?
   if  (n_vert==81924)
   {requirement='fsaverage6'}
+  #are fslr32k templates in brainstat_data?
+  if  (n_vert==64984)
+  {requirement='fslr32k'}
   #is yeo parcellation data in brainstat_data?
-  if (n_vert>0 & n_vert!=20484 & n_vert!=81924)
+  if (n_vert>0 & n_vert!=20484 & n_vert!=81924 & n_vert!=64984)
   {requirement='yeo_parcels'} 
   
   # If custom installation paths have been defined by the user, source
@@ -76,7 +79,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           #define default path 
           #mimicking reticulate's non-exported miniconda_path_default()
-          if (.Platform$OS.type == "mac") {
+          if (Sys.info()['sysname'] == "Darwin") {
             # on macOS, different path for arm64 miniconda
             if (Sys.info()[["machine"]] == "arm64") {defaultpath="~/Library/r-miniconda-arm64"} else {defaultpath="~/Library/r-miniconda"}
           } else {
@@ -101,7 +104,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
             envpath=tools::R_user_dir(package='VertexWiseR')
-            if (!dir.exists(envpath)) {dir.create(envpath) }
+            if (!dir.exists(envpath)) {dir.create(envpath, recursive = TRUE) }
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
@@ -122,6 +125,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             reticulate::py_install("numpy==1.26.4", pip=TRUE) 
             #posterior numpy versions break python functions
           }
+          
+        message('Please restart R after Miniconda installation for its environment to be properly detected by reticulate.')
           
         }
         else if (prompt==2) #Install Python instead of Miniconda
@@ -148,8 +153,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
           #pip instead of install_py as it will use a virtual environment
-          system('pip install numpy==1.26.4') 
-          #posterior numpy versions break python functions
+          system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') #posterior numpy versions break python functions
+          
+          message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
         }
         else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
@@ -203,26 +209,33 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           reticulate::py_install("brainstat==0.4.2",pip=TRUE) 
         }
         else { #if only Python, install via pip
-          system('pip install brainstat==0.4.2') 
+          system('(pip install brainstat==0.4.2 || pip3 install brainstat==0.4.2)') 
           #install_py would use make virtual environment
+          
+          #reticulate might not search again for the list of modules
+          #so R needs to be restarted
+          message('Restarting R may be needed for the installation to take effect.')
         }
         
       } 
       else {
-        stop('VertexWiseR will not work properly without brainstat.\n\n')}
+        stop('VertexWiseR will not work properly without BrainStat.\n\n')}
     } 
     
     
     ###############################################################################################################################
     #check if BrainStat fsaverage/parcellation templates are installed (stops only if function needs it)
     
+#can be avoided with if the requirement is only to check python conda, and/or brainstat installations
+if (requirement!="python/conda only" & requirement!='conda/brainstat')
+{   
+    message('Checking BrainStat\'s analysis data...')
+  
     #if no path to BrainStat's data path is defined yet
     #and no default $HOME/brainstat_data folder exists,
     #prompt for user to define a path or set default
     if (Sys.getenv('BRAINSTAT_DATA')=="" & 
-        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))
-        & requirement!="python/conda only"
-        & requirement!='conda/brainstat') 
+        !dir.exists(paste0(fs::path_home(),'/brainstat_data/'))) 
     {
       missingobj=1
       
@@ -238,7 +251,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         brainstat_data_usrpath <- readline("Enter the full path to store Brainstat data:")
         message(paste('The path to BrainStat data is now',
                       brainstat_data_usrpath,'.'))
-        dir.create(brainstat_data_usrpath, showWarnings = FALSE)
+        dir.create(brainstat_data_usrpath, showWarnings = FALSE,
+                   recursive = TRUE)
         
         if (!dir.exists(brainstat_data_usrpath))
         {stop('No directory could be found or created via dir.create()  within the given path. Please try typing it again.')}
@@ -248,7 +262,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       
       #Write it in a local .Renviron file 
       envpath=tools::R_user_dir(package='VertexWiseR')
-      if (!dir.exists(envpath)) {dir.create(envpath) }
+      if (!dir.exists(envpath)) {dir.create(envpath, recursive = TRUE) }
       #make .Renviron file there and set conda/python paths:
       renviron_path <- file.path(envpath, ".Renviron")
       env_vars <- paste0('BRAINSTAT_DATA="',brainstat_data_path,'"')
@@ -273,7 +287,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
     }
     
-    
+
     #create brainstat_data folder substructure if not already in 
     #the default or custom path 
     #(this allows later downloads to be specifically located)
@@ -284,10 +298,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     
     
     #for each required data, it will now check the set path (default or custom) and prompt for download if they are missing
-    
-    #only if parameters to only check conda and brainstat installations are absent
-    if (requirement!="python/conda only" & requirement!='conda/brainstat')
-    {message('Checking BrainStat\'s analysis data...')}
+  
     #fsaverage5 data
     if ((requirement=="any" | requirement=='fsaverage5')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-fsaverage/fsaverage5'))) 
@@ -324,8 +335,26 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         warning('VertexWiseR will not be able to analyse fsaverage6 data without the brainstat templates.\n\n')}
     } 
     
+    #fsLR32k data
+    if ((requirement=="any" | requirement=='fslr32k')==TRUE 
+        & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69'))) 
+    { 
+      missingobj=1
+      
+      prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's fslr32k templates in", brainstat_data_path, ".  They are needed if you want to analyse cortical surface in fslr32k space. \n Do you want the fslr32k templates (~4.12 MB) to be downloaded now?"))
+      
+      if (prompt==1)
+      { brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
+      brainstat.datasets.base$fetch_template_surface(template = "fslr32k", data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))
+      
+      } else if (requirement=='fslr32k') { 
+        stop('VertexWiseR will not be able to analyse fslr32k data without the brainstat templates.\n\n')
+      } else if (requirement=="any") {
+        warning('VertexWiseR will not be able to analyse fslr32k data without the brainstat templates.\n\n')}
+    } 
+    
     #Yeo parcellatio data
-    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
+    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels')==TRUE 
         & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
     {
       missingobj=1
@@ -337,7 +366,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7, data_dir = paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')), 
             silent=TRUE)}  
       
-      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels') 
+      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels') 
       {
         stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
       else if (requirement=="any") 
@@ -345,8 +374,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
       }
     }
-    
-    
+} 
     
     #####################################################################
     #####################################################################
@@ -468,6 +496,16 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       } else {message(missingobj)}
     } 
     
+    #fslr32k missing
+    if ((requirement=="any" | requirement=='fslr32k')==TRUE & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69/fslr32k')))  
+    {
+      missingobj=paste0("VertexWiseR could not find brainstat fslr32k templates in the ",brainstat_data_path,"/brainstat_data/ directory. They are needed if you want to analyse cortical surface in fslr32k space.\n");
+      
+      if (interactive()==FALSE)
+      { non_interactive=paste0(missingobj,non_interactive)
+      return(non_interactive)
+      } else {message(missingobj)}
+    } 
     
     #yeo parcels missing
     if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
