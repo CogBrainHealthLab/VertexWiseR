@@ -43,12 +43,10 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap=c("#324DA0","#E7F1D5")}
       else  {cmap=c("#E7F1D5","#324DA0","#A51122","#F5FACD")}  
     }
-    
     # enabling custom color scales
     if(length(cmap)==2) {cmap=list(list(0,cmap[1]), list(1,cmap[2]))} 
     else if(length(cmap)==3){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(1,cmap[3]))}
     else if(length(cmap)==4){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(0.51,cmap[3]),list(1,cmap[4]))}
-    
   
   ## selecting template and ROI map depending on no. vertices
     n_vert=length(surf_data)
@@ -97,7 +95,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       if(limits.range[1]>=0) {limits=c(0,limits.range[2])} ##if image contains all positive values
       else if(limits.range[2]<=0) {limits=c(limits.range[1],0)} ##if image contains all negative values
       else if(limits.range[1]<0 & limits.range[2]>0){limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
-    } else {limits=c(limits[1],limits[2])    }
+    } else {limits=c(limits[1],limits[2])}
     
   ##splitting cortical data in to LH and RH if necessary 
     mid.idx=n_vert/2
@@ -124,11 +122,11 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       face.stat=face.stat[(mid.tri+1):length(tri)]
       face.stat.non0.idx=which(abs(face.stat)>0)
       
-      
       ROI.idx=ROImap[[1]][,atlas]
       ROI.idx[ROI.idx==0]=max(ROI.idx)+1
       ROI.text=ROImap[[2]][,atlas][ROI.idx]
       ROI.text=ROI.text[(mid.idx+1):n_vert]
+      
     } else if(hemi=="b")
     {
       face.stat.non0.idx=which(abs(face.stat)>0)
@@ -172,9 +170,9 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   hovertemplate=paste("Region label: %{text}<br>",
                                       "MNI coords: %{x:.1f},%{y:.1f},%{z:.1f}<br>",
                                       "statistic:%{customdata:.2f}<extra></extra>"))
-    
+  
   ##axis parameters
-  p=plotly::layout(fig,
+  fig=plotly::layout(fig,
                    hoverlabel = list(align = "left"),
                    scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
                                 xaxis = list(showgrid = T,showticklabels=T,showspikes=F,zeroline=F, title=""),
@@ -188,9 +186,9 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
     axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
     axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
     
-    p = layout(p,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+    fig = layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
   }
-  return(p)
+  return(fig)
 }
 
 ############################################################################################################################
