@@ -8,6 +8,7 @@
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits `c(-max(abs(surf_dat),max(abs(surf_dat)))` will be used. 
 #' @param atlas atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
 #' @param hemi A string specifying the hemisphere to plot. Possible values are `l` (left), `r` (right) or `b` (both).
+#' @param medial_gap A numeric value specifying the amount of gap (in MNI coordinate units) to separate the left and right hemispheres. Set to `0` (no gap between hemispheres) by default. In order to view the medial surfaces clearly, it is recommended that this value is set to `20`. This argument is ignored if `hemi!='b'`
 #' @param orientation_labels A boolean object specifying if orientation labels are to be displayed. Set to `TRUE` by default
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -19,7 +20,7 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",orientation_labels=TRUE,VWR_check=TRUE)
+plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",medial_gap=0,orientation_labels=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -129,6 +130,10 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       
     } else if(hemi=="b")
     {
+      #add x-coord offset to increase separation between left and right hemi
+      coords[1:mid.idx,1]=coords[1:mid.idx,1]-medial_gap
+      coords[(mid.idx+1):n_vert,1]=coords[(mid.idx+1):n_vert,1]+medial_gap
+      
       face.stat.non0.idx=which(abs(face.stat)>0)
       ROI.idx=ROImap[[1]][,atlas]
       ROI.idx[ROI.idx==0]=max(ROI.idx)+1
@@ -146,9 +151,6 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
   
   ##overlay statistical map on cortical surface
     fig=add_trace(fig,type = 'mesh3d',
-                  x = coords[,1],
-                  y = coords[,2],
-                  z = coords[,3],
                   i = tri[face.stat.non0.idx,][, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                   j = tri[face.stat.non0.idx,][, 2] - 1,
                   k = tri[face.stat.non0.idx,][, 3] - 1,
@@ -158,7 +160,28 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   cmin = limits[1],
                   cmax = limits[2])
 
-  ##add mouse-over text                 
+ ##x coordinate is mapped differently depending on whether a medial_gap is specified
+  if(hemi=="b" & medial_gap>0)
+  {
+    #subtract x-coord offset to obtain original x-coords
+    customdata=coords[,1]
+    customdata[1:mid.idx]=customdata[1:mid.idx]+medial_gap
+    customdata[(mid.idx+1):n_vert]=customdata[(mid.idx+1):n_vert]-medial_gap
+    
+    ##add mouse-over text
+    fig=add_trace(fig,text=ROI.text,hovertext=surf_data,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
+                  x = coords[,1],
+                  y = coords[,2],
+                  z = coords[,3],
+                  i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                  j = tri[, 2] - 1,
+                  k = tri[, 3] - 1,
+                  customdata=customdata,
+                  hovertemplate=paste("Region label: %{text}<br>",
+                                      "MNI coords: %{customdata:.1f},%{y:.1f},%{z:.1f}<br>",
+                                      "statistic:%{hovertext:.2f}<extra></extra>"))
+  } else
+  {
     fig=add_trace(fig,text=ROI.text,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
                   x = coords[,1],
                   y = coords[,2],
@@ -170,7 +193,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   hovertemplate=paste("Region label: %{text}<br>",
                                       "MNI coords: %{x:.1f},%{y:.1f},%{z:.1f}<br>",
                                       "statistic:%{customdata:.2f}<extra></extra>"))
-  
+  }
   ##axis parameters
   fig=plotly::layout(fig,
                    hoverlabel = list(align = "left"),
