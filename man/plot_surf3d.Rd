@@ -11,6 +11,7 @@ plot_surf3d(
   limits,
   atlas = 1,
   hemi = "b",
+  medial_gap = 0,
   orientation_labels = TRUE,
   VWR_check = TRUE
 )
@@ -27,6 +28,8 @@ plot_surf3d(
 \item{atlas}{atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
 
 \item{hemi}{A string specifying the hemisphere to plot. Possible values are \code{l} (left), \code{r} (right) or \code{b} (both).}
+
+\item{medial_gap}{A numeric value specifying the amount of gap (in MNI coordinate units) to separate the left and right hemispheres. Set to \code{0} (no gap between hemispheres) by default. In order to view the medial surfaces clearly, it is recommended that this value is set to \code{20}. This argument is ignored if \code{hemi!='b'}}
 
 \item{orientation_labels}{A boolean object specifying if orientation labels are to be displayed. Set to \code{TRUE} by default}
 

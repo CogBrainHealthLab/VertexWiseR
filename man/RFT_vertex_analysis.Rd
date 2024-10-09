@@ -37,7 +37,7 @@ RFT_vertex_analysis(
 
 \item{p}{A numeric object specifying the p-value to threshold the results (Default is 0.05)}
 
-\item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.}
+\item{atlas}{A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
 
 \item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
 
