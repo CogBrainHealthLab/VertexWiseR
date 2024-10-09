@@ -15,7 +15,7 @@
 #' @returns a plot_ly object
 #' @examples
 #' surf_data = runif(20484);
-#' plot_surf3d(surf_data = surf_data)
+#' plot_surf3d(surf_data = surf_data, VWR_check=FALSE)
 #' @importFrom plotly plot_ly add_trace layout
 #' @export
 ######################################################################################################################################################

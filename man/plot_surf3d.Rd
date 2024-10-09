@@ -43,5 +43,5 @@ Plots 3D cortical surfaces
 }
 \examples{
 surf_data = runif(20484);
-plot_surf3d(surf_data = surf_data)
+plot_surf3d(surf_data = surf_data, VWR_check=FALSE)
 }
