@@ -220,8 +220,8 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
 get_faces=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')

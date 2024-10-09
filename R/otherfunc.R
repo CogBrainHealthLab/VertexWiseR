@@ -735,8 +735,8 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 get_edgelist=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -768,8 +768,8 @@ get_edgelist=function(template)
 get_MNIcoords=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
