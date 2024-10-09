@@ -59,7 +59,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     } else if (n_vert==64984)
     {
-      tri=t(VertexWiseRget_faces("fslr32k"))
+      tri=t(get_faces("fslr32k"))
       coords=t(get_MNIcoords("fslr32k"))
       ROImap_fslr32k <- get('ROImap_fslr32k')
       ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
