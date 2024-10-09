@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,7 @@
 
 
 <dt>atlas</dt>
-<dd><p>A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.</p></dd>
+<dd><p>A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to <code>1</code> by default. This argument is ignored for hippocampal surfaces.</p></dd>
 
 
 <dt>smooth_FWHM</dt>
@@ -118,7 +118,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function imports and adapts the <a href="https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)" class="external-link"> 'BrainStat' Python library</a>.</p>
-<p>By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply run the non-TFCE analysis functions and set ‘p=1’.</p>
+<p>By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.</p>
 <p>Output definitions:</p><ul><li><p><code>nverts</code>: number of vertices in the cluster</p></li>
 <li><p><code>P</code>: p-value of the cluster</p></li>
 <li><p><code>X, Y and Z</code>: MNI coordinates of the vertex with the highest t-statistic in the cluster.</p></li>
