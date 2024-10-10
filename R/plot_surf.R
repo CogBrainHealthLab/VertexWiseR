@@ -98,7 +98,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #custom cmap— if a vector of hex color codes is specified
   if(inherits(cmap,"colors")==TRUE)
   {
-    matplotlib=reticulate::import("matplotlib")
+    matplotlib=reticulate::import("matplotlib", delay_load = TRUE)
     
     custom_colors=t(col2rgb(cmap)/255) # convert hex color codes to RGB codes, then divide by 255 to convert to RGBA codes
     

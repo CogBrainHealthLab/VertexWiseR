@@ -11,7 +11,7 @@ TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20, VWR_check = TRUE)
 
 \item{p}{A numeric object specifying the p-value to threshold the results (Default is 0.05)}
 
-\item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)}
+\item{atlas}{A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
 
 \item{k}{Cluster-forming threshold (Default is 20)}
 

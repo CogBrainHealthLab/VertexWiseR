@@ -269,7 +269,7 @@ getClusters=function(surf_data,edgelist)
 #' For hippocampal data, the function currently works with the "bigbrain" 10-parcels atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' 10-parcels hippocampal atlas is used by default and ignores the option.
+#' @param atlas A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
@@ -735,8 +735,8 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 get_edgelist=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -768,8 +768,8 @@ get_edgelist=function(template)
 get_MNIcoords=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
