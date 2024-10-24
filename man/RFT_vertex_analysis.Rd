@@ -44,7 +44,7 @@ RFT_vertex_analysis(
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
+A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 }
 \description{
 Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.
@@ -52,7 +52,7 @@ Fits a linear or linear mixed model with the cortical or hippocampal surface dat
 \details{
 The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BrainStat' Python library}.
 
-By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.
+By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To look at data without any form of cluster correction, users can simply refer to the outputted 'tstat_map'.
 
 Output definitions:
 \itemize{

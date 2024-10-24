@@ -6,7 +6,7 @@
 #'
 #' @details The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BrainStat' Python library}. 
 #' 
-#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.
+#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To look at data without any form of cluster correction, users can simply refer to the outputted 'tstat_map'.
 #' 
 #' Output definitions:
 #' - `nverts`: number of vertices in the cluster
@@ -29,7 +29,7 @@
 #' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
-#' @returns A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
+#' @returns A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 #' 
 #' @seealso \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}
 #' 
@@ -279,7 +279,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   fdrpmap=model$Q
   
   #listing objects to return
-  returnobj=(list(cluster_results,as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
-  names(returnobj)=c("cluster_level_results","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
+  returnobj=(list(cluster_results,as.numeric(model$t), as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
+  names(returnobj)=c("cluster_level_results","tstat_map","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
   return(returnobj)
 }
