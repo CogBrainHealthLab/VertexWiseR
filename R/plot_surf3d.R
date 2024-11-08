@@ -147,7 +147,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                         z = coords[,3],
                         i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                         j = tri[, 2] - 1,
-                        k = tri[, 3] - 1,facecolor=surf_color)
+                        k = tri[, 3] - 1,facecolor=rep(surf_color,NROW(tri)))
   
   ##overlay statistical map on cortical surface
     fig=add_trace(fig,type = 'mesh3d',
