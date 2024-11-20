@@ -46,13 +46,13 @@ The dataset T1 weighted images were preprocessed using the recon-all [FreeSurfer
 
 Here, we explain how, from a given FreeSurfer subject directory, VertexWiseR extracts surface-based measures and synthesizes the whole-sample data into a compact matrix object (.rds) for later analyses. 
 
-SURFvextract() gives the opportunity to extract surface-based measures including 'thickness', 'curv', 'sulc', and 'area'. Here, we are interested in cortical thickness:
+SURFvextract() gives the opportunity to extract surface-based measures including 'thickness', 'curv', 'sulc', and 'area'. Here, we were interested in cortical thickness (CT), so the command which we entered to extract CT from the Spreng dataset was as follows (the sdirpath is just an example):
 
 ``` r 
-SURFvextract(sdirpath = "MY_SUBJECTS_DIR/", filename = "SPRENG_CTv.rds", measure = "thickness") 
+SURFvextract(sdirpath = "spreng_freesurfer_subjectsdir/", filename = "SPRENG_CTv.rds", measure = "thickness") 
 ``` 
 
-A cortical thickness (CT) matrix object extracted from the Spreng dataset is included in the VertexWiseR git repository and can be loaded with the following code:
+A cortical thickness matrix object extracted from the Spreng dataset is included in the VertexWiseR git repository and can be loaded with the following code:
 
 ``` r 
 SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))

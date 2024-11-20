@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +61,8 @@
   <main id="main" class="col-md-9"><div class="section level2">
 <h2 id="vertexwiser-a-package-for-simplified-vertex-wise-analyses-of-whole-brain-and-hippocampal-surface-in-r">VertexWiseR: a package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R<a class="anchor" aria-label="anchor" href="#vertexwiser-a-package-for-simplified-vertex-wise-analyses-of-whole-brain-and-hippocampal-surface-in-r"></a>
 </h2>
+<!---start of badges-->
+<p><a href="https://cran.rstudio.com/web/packages/VertexWiseR/index.html" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/VertexWiseR"></a> <a href="https://cran.r-project.org/package=VertexWiseR" class="external-link"><img src="https://www.r-pkg.org/badges/version/VertexWiseR" alt="CRAN status"></a> <!---end of badges--></p>
 <p><img src="reference/figures/Flowchart.jpg"><!-- --></p>
 <div class="section level3">
 <h3 id="setting-up-for-the-first-time">Setting up for the first time<a class="anchor" aria-label="anchor" href="#setting-up-for-the-first-time"></a>
@@ -88,10 +90,10 @@
 <code class="sourceCode R"><span><span class="va">demodata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'demo_data/SPRENG_behdata_site1.rds'</span>, package <span class="op">=</span> <span class="st">'VertexWiseR'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The dataset T1 weighted images were preprocessed using the recon-all <a href="https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki" class="external-link">FreeSurfer</a> pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, fMRIprep, HPC and HippUnfold outputs), see the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a> article.</p>
 <p>Here, we explain how, from a given FreeSurfer subject directory, VertexWiseR extracts surface-based measures and synthesizes the whole-sample data into a compact matrix object (.rds) for later analyses.</p>
-<p>SURFvextract() gives the opportunity to extract surface-based measures including ‘thickness’, ‘curv’, ‘sulc’, and ‘area’. Here, we are interested in cortical thickness:</p>
+<p>SURFvextract() gives the opportunity to extract surface-based measures including ‘thickness’, ‘curv’, ‘sulc’, and ‘area’. Here, we were interested in cortical thickness (CT), so the command which we entered to extract CT from the Spreng dataset was as follows (the sdirpath is just an example):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/SURFvextract.html">SURFvextract</a></span><span class="op">(</span>sdirpath <span class="op">=</span> <span class="st">"MY_SUBJECTS_DIR/"</span>, filename <span class="op">=</span> <span class="st">"SPRENG_CTv.rds"</span>, measure <span class="op">=</span> <span class="st">"thickness"</span><span class="op">)</span> </span></code></pre></div>
-<p>A cortical thickness (CT) matrix object extracted from the Spreng dataset is included in the VertexWiseR git repository and can be loaded with the following code:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/SURFvextract.html">SURFvextract</a></span><span class="op">(</span>sdirpath <span class="op">=</span> <span class="st">"spreng_freesurfer_subjectsdir/"</span>, filename <span class="op">=</span> <span class="st">"SPRENG_CTv.rds"</span>, measure <span class="op">=</span> <span class="st">"thickness"</span><span class="op">)</span> </span></code></pre></div>
+<p>A cortical thickness matrix object extracted from the Spreng dataset is included in the VertexWiseR git repository and can be loaded with the following code:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SPRENG_CTv</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
