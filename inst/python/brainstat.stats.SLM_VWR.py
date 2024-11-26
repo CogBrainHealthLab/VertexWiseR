@@ -1,9 +1,10 @@
-"""Python function to smooth surface images
+"""Python function to run SLM with user-defined template data directory
+   (as fetch_template_surface set to default in the original function)
    Modified from BrainStat toolbox https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM
    © Copyright 2021, MICA Lab, CNG Lab Revision 1f3068fb
    -added 'brainstat.stats' to lines 37-39 to avoid relative import
-   -adds the "data_dir" argument to the fetch_template_surface instead of going with default
-   -the qc() was removed as it was causing issues with reticulate import
+   -added the "data_dir" argument to the fetch_template_surface instead of going with default
+   -qc() was removed as it was causing issues with reticulate import
 """
 
 
