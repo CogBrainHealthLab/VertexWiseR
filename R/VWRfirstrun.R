@@ -123,6 +123,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message('Installing miniconda ...')
             reticulate::install_miniconda() #uses miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
             reticulate::py_install("numpy==1.26.4", pip=TRUE) 
+            reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
+
             #posterior numpy versions break python functions
           }
           
@@ -154,6 +156,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
           #pip instead of install_py as it will use a virtual environment
           system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') #posterior numpy versions break python functions
+          system('(pip install vtk==9.3.1 || pip3 install nvtk==9.3.1)') #latest vtk==9.4.0 causes problems
           
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
