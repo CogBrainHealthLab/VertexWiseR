@@ -124,7 +124,9 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
 {
-
+  #gets surface matrix if is surf_data is a list or path
+  surf_data=get_surf_obj(surf_data)
+  
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
@@ -136,15 +138,6 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     else {check = VWRfirstrun(n_vert=max(dim(t(surf_data))))}
     if (!is.null(check)) {return(check)} 
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
-  
-  #if surface_data is a path to an object, reads it
-  if(inherits(surf_data,'character')==TRUE)
-  {
-    surf_data=readRDS(surf_data)
-    #if also contained a subject list, only the surface data is kept
-    if(inherits(surf_data,'list')==TRUE)
-    {surf_data=surf_data[[2]]}
-  }
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -1038,3 +1031,30 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
 
  return(model_summary) 
 }
+
+####################################################################
+####################################################################
+###################################################################
+#function to automatically read the surface matrix from a list object outputted by the extracter function (containing both the surface matrix and the list of subjects)
+#if it is a string path to the rds, loads the file first
+
+get_surf_obj=function(surf_data)
+{
+  #if surface_data is a path to an object, reads it
+  if(inherits(surf_data,'character')==TRUE)
+  { #if fails to read the path to the RDS, return error
+    if (is(tryCatch(readRDS(surf_data), error=function(e) e))[1] == 'simpleError') 
+  {stop('The surf_data given is a string and was therefore assumed to be a path to a \'.rds\' surface data file. The path failed to be accessed by readRDS().')} 
+   else 
+  {surf_data=readRDS(file=surf_data)}
+  
+  #if surf_data contains subject list only read surface object
+  if(inherits(surf_data,'list')==TRUE)
+  { if ('surf_obj' %in% names(surf_data))
+  {surf_data=surf_data$surf_obj} 
+    else {stop('The surf_data given is a list, but the package does not know which element in the list is meant to be the surface matrix. Please name the element "surf_obj" or enter the matrix as surf_data.'
+    )}}
+  }
+  return(surf_data)
+}
+ 
