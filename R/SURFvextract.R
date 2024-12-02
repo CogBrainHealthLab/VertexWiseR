@@ -91,7 +91,7 @@ system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, 
 if (subj_ID == TRUE) 
 {
 SURFdata= t(rbind(drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"lh.mgh"))),drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"rh.mgh")))));
-SURFdata=list(sublist,SURFdata); 
+SURFdata=list(sub_list=sublist,surf_obj=SURFdata); 
 } else {
 SURFdata=t(rbind(drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"lh.mgh"))),drop(freesurferformats::read.fs.mgh(paste0(sdirpath,"rh.mgh")))));
 }

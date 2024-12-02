@@ -31,8 +31,7 @@
 
 FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, silent=FALSE)
 {
-  oldwd <- getwd()
-  on.exit(setwd(oldwd)) #will restore user's working directory path on function break
+  oldwd <- getwd() 
   
   if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
@@ -75,8 +74,11 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, 
   if(silent==FALSE) {message(paste0("Saving output as ",filename))}
   ##output file depending on subj_ID==T
 
-  if(subj_ID==TRUE) {saveRDS(list(sublist,fslr32k_dat), file=filename)} 
-  else  {saveRDS(fslr32k_dat, file=filename)}
+  if(subj_ID==TRUE) {fslr32k_dat=list(sub_list=sublist, 
+                                       surf_obj=fslr32k_dat)} 
+  
+  setwd(oldwd) #will restore user's working directory path on function break
+  saveRDS(fslr32k_dat, file=filename)
   
   if(silent==FALSE) {message("done!")}
   
