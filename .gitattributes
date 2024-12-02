@@ -1,3 +1,4 @@
 docs/** linguist-vendored=true
 vignettes/*.html linguist-vendored=true
 vignettes/*.html.asis linguist-vendored=true
+vignettes/*.bib linguist-vendored=true
