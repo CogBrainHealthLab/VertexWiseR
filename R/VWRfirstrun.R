@@ -153,7 +153,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
           if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
           
-          message('A specific version of the Numpy package (<= 1.26.4) is more stable for analyses, it will now be installed in the Python libraries along with its dependencies.\n')
+          message('Specific versions of the Numpy (<= 1.26.4) and vtk packages (<= 9.3.1) are more stable for analyses. They will now be installed in the Python libraries along with their dependencies.\n')
           #pip instead of install_py as it will use a virtual environment
           system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') #posterior numpy versions break python functions
           system('(pip install vtk==9.3.1 || pip3 install vtk==9.3.1)') #latest vtk==9.4.0 causes problems
