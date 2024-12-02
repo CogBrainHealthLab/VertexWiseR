@@ -95,8 +95,12 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                                title=paste0("Miniconda's default installation path is ", defaultpath,". Type \"1\" or \"Default\" if you want to install Miniconda in the default Path. \nYou can, alternatively, type your own path (note that the Miniconda installer does not support paths containing spaces)."))
           
           if (choice==1) #Install Miniconda within default path
-          { reticulate::install_miniconda()}
-          
+          { 
+            message('Installing miniconda ...')
+            reticulate::install_miniconda()
+            reticulate::py_install("numpy==1.26.4", pip=TRUE) 
+            reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
+          }
           else {        #Install Miniconda within custom path
             
             userpath <- readline("Enter the full path:")
