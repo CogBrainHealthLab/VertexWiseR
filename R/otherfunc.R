@@ -127,17 +127,18 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   #gets surface matrix if is surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
   
-  #Check required python dependencies. If files missing:
+  #Check required python dependencies. Will skip if smoothing function called as part of modelling smooth_FWHM argument
+  #If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  if (VWR_check == TRUE & length(sys.calls()) <= 1){
+  if (VWR_check == TRUE & deparse(sys.call(-1)[[1]]) != 'model_check'){
     message("Checking for VertexWiseR system requirements ... ")
     #brainstat must be installed for non hippocampal surf to run get_edgelist, check can be skipped for hippocampus (so 14524 vertices)
     if(max(dim(t(surf_data)))==14524) {
     check = VWRfirstrun('python/conda only')}
     else {check = VWRfirstrun(n_vert=max(dim(t(surf_data))))}
     if (!is.null(check)) {return(check)} 
-  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(VWR_check == FALSE & interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 

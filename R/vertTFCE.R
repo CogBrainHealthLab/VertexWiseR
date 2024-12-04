@@ -396,11 +396,11 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  if (VWR_check == TRUE & length(sys.calls()) <= 1){
+  if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="conda/brainstat")
     if (!is.null(check)) {return(check)} 
-  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(VWR_check == FALSE & interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   nperm=length(TFCEoutput$TFCE.max)
   
