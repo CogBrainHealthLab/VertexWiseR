@@ -31,7 +31,7 @@ TFCE_vertex_analysis(
 
 \item{formula_dataset}{An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).}
 
-\item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.}
+\item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.}
 
 \item{nperm}{A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)}
 

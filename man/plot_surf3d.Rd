@@ -21,7 +21,7 @@ plot_surf3d(
 
 \item{surf_color}{color of the cortical surface. Set to \code{'grey'} by default}
 
-\item{cmap}{A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale. If none are specified, appropriate colors will be automatically selected according to \code{range(surf_data)}}
+\item{cmap}{A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale. See \code{RColorBrewer::display.brewer.all()} for all possible cmap options. If none are specified, appropriate colors will be automatically selected according to \code{range(surf_data)}}
 
 \item{limits}{A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits \verb{c(-max(abs(surf_dat),max(abs(surf_dat)))} will be used.}
 

@@ -11,6 +11,7 @@
 * Python package 'vtk' causes issues in latest 9.4.0 versions. The correct 9.3.1 version is now installed when installing Miniconda or reticulate's Python environment via VWRfirstrun(). 
 * The cmap argument in plot_surf() is now converted to class color if not in that class by default
 * Surface extracters fix: Working directory is restored before saving the RDS instead of on exit for HIPvextract() and FSLRvetract(). This ensures the filename is not interpreted as relative to the sdirpath (subjects directory).
+* Fixed a parameter that was skipping VWR_check if smooth_surf() or TFCE_threshold() were nested to avoid VWR_check's repetition. This caused issues for non-interactive sessions/other nesting situations. Now, instead: For TFCE_threshold(), users calling it may manually set the argument VWR_check=FALSE if they want it to be skipped. For smooth_surf(), now VWR_check will be skipped if the parent function is identified as "model_check" as it will mean the smooth function is run from a function that already have a VWR_check (RFT_vertex_analysis, TFCE_vertex_analysis and TFCE_vertex_analysis_mixed functions). 
 
 # VertexWiseR v1.1.0
 
