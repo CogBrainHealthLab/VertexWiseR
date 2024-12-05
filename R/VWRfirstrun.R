@@ -121,7 +121,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #is read and the custom path accessed:
             readRenviron(renviron_path)
             message(paste0("Your custom Miniconda path is set in ", 
-                           renviron_path))
+                           renviron_path, ' \n'))
             
             #Install miniconda in the new path
             message('Installing miniconda ...')
@@ -156,11 +156,26 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           #Read new python enviroment
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
           if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
-          
+
           message('Specific versions of the Numpy (<= 1.26.4) and vtk packages (<= 9.3.1) are more stable for analyses. They will now be installed in the Python libraries along with their dependencies.\n')
+          
+          #access/activate the new python installation in reticulate
+          invisible(reticulate::py_config())
           #pip instead of install_py as it will use a virtual environment
-          system('(pip install numpy==1.26.4 || pip3 install numpy==1.26.4)') #posterior numpy versions break python functions
-          system('(pip install vtk==9.3.1 || pip3 install vtk==9.3.1)') #latest vtk==9.4.0 causes problems
+          #posterior numpy versions break python functions
+          status <- system("pip install numpy==1.26.4");
+          #if failed then try pip3 
+          if (status != 0) { 
+            message('Could not install package with pip, trying pip3...\n')
+            system("pip3 install numpy==1.26.4"); }
+          
+          #latest vtk==9.4.0 causes problems
+          status <- system("pip install vtk==9.3.1");
+          #if failed then try pip3 
+          if (status != 0) { 
+            message('Could not install package with pip, trying pip3...\n')
+            system("pip3 install vtk==9.3.1"); }
+          
           
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
@@ -193,6 +208,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         { 
           warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package.")
         }
+      } else
+      {
+        warning('Numpy was not found in your current Python library. Make sure to install numpy version 1.26.4 for analyses to work properly.\n')
       }
     }
     
@@ -216,8 +234,12 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           reticulate::py_install("brainstat==0.4.2",pip=TRUE) 
         }
         else { #if only Python, install via pip
-          system('(pip install brainstat==0.4.2 || pip3 install brainstat==0.4.2)') 
-          #install_py would use make virtual environment
+        
+          status <- system("pip install brainstat==0.4.2");
+          #if failed then try pip3 
+          if (status != 0) {
+            message('Could not install package with pip, trying pip3...\n')
+            system("pip3 install brainstat==0.4.2");}
           
           #reticulate might not search again for the list of modules
           #so R needs to be restarted
