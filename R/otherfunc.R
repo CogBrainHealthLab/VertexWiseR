@@ -172,7 +172,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     edgelist_hip <- get('edgelist_hip') 
     edgelist <- edgelist_hip@data
     FWHM=FWHM/0.5 #converting m to mesh units
-  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
 
   #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
   idx0=which(colSums(data.matrix(surf_data))==0)
@@ -1047,15 +1047,17 @@ get_surf_obj=function(surf_data)
     if (is(tryCatch(readRDS(surf_data), error=function(e) e))[1] == 'simpleError') 
   {stop('The surf_data given is a string and was therefore assumed to be a path to a \'.rds\' surface data file. The path failed to be accessed by readRDS().')} 
    else 
-  {surf_data=readRDS(file=surf_data)}
+   {surf_data=readRDS(file=surf_data)}
+  }
   
   #if surf_data contains subject list only read surface object
   if(inherits(surf_data,'list')==TRUE)
   { if ('surf_obj' %in% names(surf_data))
-  {surf_data=surf_data$surf_obj} 
+    {surf_data=as.matrix(surf_data$surf_obj)} 
     else {stop('The surf_data given is a list, but the package does not know which element in the list is meant to be the surface matrix. Please name the element "surf_obj" or enter the matrix as surf_data.'
-    )}}
+    )}
   }
+
   return(surf_data)
 }
  
