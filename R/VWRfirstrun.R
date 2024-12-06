@@ -210,7 +210,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         }
       } else
       {
-        warning('Numpy was not found in your current Python library. Make sure to install numpy version 1.26.4 for analyses to work properly. If you have just installed Conda/Python, restarting R should make it available.\n')
+        warning('Numpy was not found in your current Python library. Make sure to install numpy version 1.26.4 for analyses to work properly. If you have just installed Miniconda/Python, restarting R should make it available.\n')
       }
     }
     
@@ -443,8 +443,8 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
     }
     
-    if(!exists('missingobj'))
-    { message('No system requirements are missing. \u2713 \n') }
+    if (promptless==TRUE) {if(!exists('missingobj'))
+    { message('No system requirements are missing. \u2713 \n') }}
     
   } 
   
