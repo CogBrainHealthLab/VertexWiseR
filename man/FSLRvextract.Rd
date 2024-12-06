@@ -18,7 +18,7 @@ FSLRvextract(
 
 \item{wb_path}{The filepath to the workbench folder that you have previously downloaded and unzipped}
 
-\item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).}
+\item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).}
 
 \item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 \itemize{
