@@ -34,7 +34,7 @@ Extracts vertex-wise surface-based measures for each subject from a \href{https:
 The function searches inside the CAT12 preprocessed for 32k meshes (.gii) with the user-selected measure, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. Python and reticulate are required as the \href{https://nipy.org/nibabel/}{NiBabel} package is used to import .gii files outputted by CAT12.
 }
 \examples{
-CAT12vextract=function(sdirpath="./", 
+CAT12vextract(sdirpath="./", 
 filename='thickness.rds', 
 measure='thickness', 
 subj_ID = TRUE, 

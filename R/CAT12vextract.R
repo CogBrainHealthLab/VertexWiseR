@@ -11,7 +11,7 @@
 #' 
 #' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 #' @examples
-#' CAT12vextract=function(sdirpath="./", 
+#' CAT12vextract(sdirpath="./", 
 #' filename='thickness.rds', 
 #' measure='thickness', 
 #' subj_ID = TRUE, 
