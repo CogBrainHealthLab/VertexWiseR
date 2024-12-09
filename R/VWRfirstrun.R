@@ -20,7 +20,7 @@
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
 #' VWRfirstrun()
-#' @importFrom reticulate conda_binary py_module_available
+#' @importFrom reticulate conda_binary py_module_available miniconda_path
 #' @importFrom fs path_home
 #' @importFrom methods is 
 #' @importFrom utils menu
@@ -47,7 +47,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   # If custom installation paths have been defined by the user, source
   # them from the package directory:
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
-  if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+  if (file.exists(Renvironpath)) {
+    readRenviron(Renvironpath)}
   
   #default time limit to download is 60s which can be too short:
   options(timeout=500); #set to 500s instead
@@ -76,19 +77,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         if (prompt==1) #Install Miniconda
         {
           
-          
           #define default path 
-          #mimicking reticulate's non-exported miniconda_path_default()
-          if (Sys.info()['sysname'] == "Darwin") {
-            # on macOS, different path for arm64 miniconda
-            if (Sys.info()[["machine"]] == "arm64") {defaultpath="~/Library/r-miniconda-arm64"} else {defaultpath="~/Library/r-miniconda"}
-          } else {
-            # otherwise, use rappdirs default
-            root <- normalizePath(rappdirs::user_data_dir(), winslash = "/",
-                                  mustWork = FALSE); 
-            defaultpath=file.path(root, "r-miniconda")}
-          
-          
+          defaultpath=reticulate::miniconda_path()
           
           #give the choices to specify path
           choice = utils::menu(c("Default", "Custom"), 
@@ -96,10 +86,35 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           if (choice==1) #Install Miniconda within default path
           { 
-            message('Installing miniconda ...')
-            reticulate::install_miniconda()
+            message('Installing Miniconda (v24.9.2)...')
+            
+            #custom url to get version 24.9.2
+            oldoption=getOption("reticulate.miniconda.url")
+            options(reticulate.miniconda.url=miniconda_installer_py39url())
+            reticulate::install_miniconda(update = FALSE)
             reticulate::py_install("numpy==1.26.4", pip=TRUE) 
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
+            options(reticulate.miniconda.url=oldoption)
+            
+            #will store path in .Renviron in tools::R_user_dir() 
+            #location specified by CRAN, create it if not existing:
+            envpath=tools::R_user_dir(package='VertexWiseR')
+            if (!dir.exists(envpath)) {dir.create(envpath, 
+                                                  recursive = TRUE) }
+            #make .Renviron file there and set conda/python paths:
+            renviron_path <- file.path(envpath, ".Renviron")
+            env_vars <- c(
+              paste0('RETICULATE_PYTHON="',
+                     defaultpath,'/python.exe"'),
+              paste0('RETICULATE_MINICONDA_PATH="',
+                     defaultpath,'"'),
+              paste0('RETICULATE_PYTHON_FALLBACK="',
+                     defaultpath,'"'))
+            # Write to the .Renviron file
+            cat(paste(env_vars, "\n", collapse = "\n"), 
+                file = renviron_path, sep = "\n", append = TRUE)
+            #now everytime VWRfirstrun() is called, the .Renviron file 
+            
           }
           else {        #Install Miniconda within custom path
             
@@ -113,7 +128,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
               paste0('RETICULATE_PYTHON="',userpath,'/python.exe"'),
-              paste0('RETICULATE_MINICONDA_PATH="',userpath,'"'))
+              paste0('RETICULATE_MINICONDA_PATH="',userpath,'"'),
+              paste0('RETICULATE_PYTHON_FALLBACK="',userpath,'"'))
             # Write to the .Renviron file
             cat(paste(env_vars, "\n", collapse = "\n"), 
                 file = renviron_path, sep = "\n", append = TRUE)
@@ -124,12 +140,15 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                            renviron_path, ' \n'))
             
             #Install miniconda in the new path
-            message('Installing miniconda ...')
-            reticulate::install_miniconda() #uses miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
+            message('Installing Miniconda (v24.9.2)...')
+            #custom url to get version 24.9.2
+            oldoption=getOption("reticulate.miniconda.url")
+            options(reticulate.miniconda.url=miniconda_installer_py39url())
+            #install_miniconda will use miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
+            reticulate::install_miniconda(update = FALSE)
             reticulate::py_install("numpy==1.26.4", pip=TRUE) 
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
-
-            #posterior numpy versions break python functions
+            options(reticulate.miniconda.url=oldoption)
           }
           
         message('Please restart R after Miniconda installation for its environment to be properly detected by reticulate.')
@@ -160,7 +179,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           message('Specific versions of the Numpy (<= 1.26.4) and vtk packages (<= 9.3.1) are more stable for analyses. They will now be installed in the Python libraries along with their dependencies.\n')
           
           #access/activate the new python installation in reticulate
-          invisible(reticulate::py_config())
+          invisible(reticulate::py_discover_config())
           #pip instead of install_py as it will use a virtual environment
           #posterior numpy versions break python functions
           status <- system("pip install numpy==1.26.4");
