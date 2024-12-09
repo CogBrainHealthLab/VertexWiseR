@@ -1,17 +1,22 @@
-# VertexWiseR v1.2.0
+# VertexWiseR v1.2.0 (to be coming)
 
 ## NEW FEATURES
 
 * Update for RFT_vertex_analysis: now outputs also the unthresholded tstat map; Rdoc fixed accordingly (setting p=1 as previously advised caused errors, it doesn't simply output the unthresholded tstat map)
 * SURFvextract() now has the optional argument fshomepath. This ensures FreeSurfer's environment is accessed by R and set up again if the function is used from RStudio. This is needed because RStudio does not inherit the system variables set before opening it from a terminal. 
-* If the surf_data argument (in modelling or smoothing functions) is a list object with the subject list along with the surface matrix, the code automatically detects the matrix (now named "surf_obj" by the extracter functions) within that list, instead of forcing users to specify the matrix. 
-* Modelling functions now accept a string with the path to the extracted surface .rds file instead of the matrix itself as the surf_data argument
+* If the surf_data argument (in modelling or smoothing functions) is a list object with the subject list along with the surface matrix (as outputted by extraction functions with subj_ID=TRUE), the code automatically detects the matrix in that list, named "surf_obj", instead of forcing users to specify the matrix. 
+* Modelling functions now accept a string with the path to the .rds file outputted by extraction functions, instead of only the matrix itself as the surf_data argument
+* New function CAT12vextract() which allows surface data resampled to 32k meshes in CAT12 to be extracted and converted to a surface .rds object. This works with any measure applicable for the 32k resampled meshes ('thickness', 'depth', 'fractaldimension', 'gyrification', and 'toroGI20mm'). 
 
 ## FIXES
 * Python package 'vtk' causes issues in latest 9.4.0 versions. The correct 9.3.1 version is now installed when installing Miniconda or reticulate's Python environment via VWRfirstrun(). 
 * The cmap argument in plot_surf() is now converted to class color if not in that class by default
 * Surface extracters fix: Working directory is restored before saving the RDS instead of on exit for HIPvextract() and FSLRvetract(). This ensures the filename is not interpreted as relative to the sdirpath (subjects directory).
 * Fixed a parameter that was skipping VWR_check if smooth_surf() or TFCE_threshold() were nested to avoid VWR_check's repetition. This caused issues for non-interactive sessions/other nesting situations. Now, instead: For TFCE_threshold(), users calling it may manually set the argument VWR_check=FALSE if they want it to be skipped. For smooth_surf(), now VWR_check will be skipped if the parent function is identified as "model_check" as it will mean the smooth function is run from a function that already have a VWR_check (RFT_vertex_analysis, TFCE_vertex_analysis and TFCE_vertex_analysis_mixed functions). 
+* Fix for non-miniconda Python installation: numpy, vtk and brainstat were installed via system('') but the optional use of pip or pip3 did not work properly in Windows due to a unix syntax error. The pip3 installation is now only triggered if an error occurs with the first system('pip ...') call. Furthermore, reticulate's environment is loaded immediately after the Python installation to make sure the pip function can be used subsequently to install the required packages. Other minor improvements in the messages printed during the VWRfirstrun() installation process.
+* VWRfirstrun(): One message was still showing even if promptless=TRUE, this is now fixed
+* FSLRvextract(): Default filename fixed (simply 'fslr32k.rds')
+* To avoid instability, the reticulate Miniconda installation is now set at v.24.9.2 instead of the latest
 
 # VertexWiseR v1.1.0
 
