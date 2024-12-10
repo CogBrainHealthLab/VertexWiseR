@@ -76,17 +76,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         if (prompt==1) #Install Miniconda
         {
           
-          #define default path (will differ across OS)
-          defaultpath <- tryCatch({
-            tmpfile <- tempfile()
-            con <- file(tmpfile, open = "wt")
-            sink(con, type = "message")
-            on.exit({
-              sink(type = "message");
-              close(con); file.remove(tmpfile)}, add = TRUE)
-            reticulate::py_discover_config()$python
-          }, error = function(e) {NULL})
-          
+          #define default miniconda directory 
+          defaultpath=reticulate::miniconda_path()
           
           #give the choices to specify path
           choice = utils::menu(c("Default", "Custom"), 
@@ -100,7 +91,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             oldoption=getOption("reticulate.miniconda.url")
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             reticulate::install_miniconda(update = FALSE)
-            reticulate::py_install("numpy==1.26.4", pip=TRUE) 
+            message("Installing dependency packages with appropriate versions...")
+            reticulate::conda_install(packages="numpy==1.26.4", pip=TRUE)
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             options(reticulate.miniconda.url=oldoption)
             
@@ -109,11 +101,24 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             envpath=tools::R_user_dir(package='VertexWiseR')
             if (!dir.exists(envpath)) {dir.create(envpath, 
                                                   recursive = TRUE) }
+            
+            #get path to python executable (will differ across OS)
+            Sys.setenv(RETICULATE_PYTHON=defaultpath)
+            defaultpathexe <- tryCatch({
+              tmpfile <- tempfile()
+              con <- file(tmpfile, open = "wt")
+              sink(con, type = "message")
+              on.exit({
+                sink(type = "message");
+                close(con); file.remove(tmpfile)}, add = TRUE)
+              reticulate::py_discover_config()$python
+            }, error = function(e) {NULL})
+            
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
               paste0('RETICULATE_PYTHON="',
-                     defaultpath,'/python.exe"'),
+                     defaultpathexe,'"'),
               paste0('RETICULATE_MINICONDA_PATH="',
                      defaultpath,'"'),
               paste0('RETICULATE_PYTHON_FALLBACK="',
@@ -121,14 +126,14 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             # Write to the .Renviron file
             cat(paste(env_vars, "\n", collapse = "\n"), 
                 file = renviron_path, sep = "\n", append = TRUE)
-            #now everytime VWRfirstrun() is called, the .Renviron file             
+            #now everytime VWRfirstrun() is called, the .Renviron file
             #is read and the custom path accessed:
             readRenviron(renviron_path)
  
           }
           else {        #Install Miniconda within custom path
             
-            userpath <- readline("Enter the full path:")
+            userpath <- readline("Enter the full path to the directory:")
             
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
@@ -137,13 +142,14 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
-              paste0('RETICULATE_PYTHON="',userpath,'/python.exe"'),
-              paste0('RETICULATE_MINICONDA_PATH="',userpath,'"'),
-              paste0('RETICULATE_PYTHON_FALLBACK="',userpath,'"'))
+              paste0('RETICULATE_MINICONDA_PATH="',
+                     userpath,'"'),
+              paste0('RETICULATE_PYTHON_FALLBACK="',
+                     userpath,'"'))
             # Write to the .Renviron file
             cat(paste(env_vars, "\n", collapse = "\n"), 
                 file = renviron_path, sep = "\n", append = TRUE)
-            #now everytime VWRfirstrun() is called, the .Renviron file 
+            #now everytime VWRfirstrun() is called, the .Renviron file
             #is read and the custom path accessed:
             readRenviron(renviron_path)
             message(paste0("Your custom Miniconda path is set in ", 
@@ -156,9 +162,33 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             #install_miniconda will use miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
             reticulate::install_miniconda(update = FALSE)
-            reticulate::py_install("numpy==1.26.4", pip=TRUE) 
+            message("Installing dependency packages with appropriate versions...")
+            #set environment variable to make sure packages 
+            #arrive at the same place, not in 'r-miniconda'
+            Sys.setenv(RETICULATE_PYTHON_ENV=userpath)
+            reticulate::py_install("numpy==1.26.4", pip=TRUE,) 
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             options(reticulate.miniconda.url=oldoption)
+            
+            #add python executable to the new installation 
+            #path to it will differ across OS:
+            Sys.setenv(RETICULATE_PYTHON=userpath)
+            userpathexe <- tryCatch({
+              tmpfile <- tempfile()
+              con <- file(tmpfile, open = "wt")
+              sink(con, type = "message")
+              on.exit({
+                sink(type = "message");
+                close(con); file.remove(tmpfile)}, add = TRUE)
+              reticulate::py_discover_config()$python
+            }, error = function(e) {NULL})
+            env_vars <- paste0('RETICULATE_PYTHON="',
+                               userpathexe,'"')
+            # Write to the .Renviron file and read again
+            cat(paste(env_vars, "\n", collapse = "\n"), 
+                file = renviron_path, sep = "\n", append = TRUE)
+            readRenviron(renviron_path)
+            
           }
           
         message('Please restart R after Miniconda installation for its environment to be properly detected by reticulate.')
