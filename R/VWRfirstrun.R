@@ -76,8 +76,17 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         if (prompt==1) #Install Miniconda
         {
           
-          #define default path 
-          defaultpath=reticulate::miniconda_path()
+          #define default path (will differ across OS)
+          defaultpath <- tryCatch({
+            tmpfile <- tempfile()
+            con <- file(tmpfile, open = "wt")
+            sink(con, type = "message")
+            on.exit({
+              sink(type = "message");
+              close(con); file.remove(tmpfile)}, add = TRUE)
+            reticulate::py_discover_config()$python
+          }, error = function(e) {NULL})
+          
           
           #give the choices to specify path
           choice = utils::menu(c("Default", "Custom"), 
@@ -112,8 +121,10 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             # Write to the .Renviron file
             cat(paste(env_vars, "\n", collapse = "\n"), 
                 file = renviron_path, sep = "\n", append = TRUE)
-            #now everytime VWRfirstrun() is called, the .Renviron file 
-            
+            #now everytime VWRfirstrun() is called, the .Renviron file             
+            #is read and the custom path accessed:
+            readRenviron(renviron_path)
+ 
           }
           else {        #Install Miniconda within custom path
             
