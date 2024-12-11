@@ -62,3 +62,6 @@ is_linux <- function() {
   identical(tolower(Sys.info()[["sysname"]]), "linux")
 }
 
+stopf <- function(fmt = "", ...) {
+  stop(sprintf(fmt, ...))
+}
