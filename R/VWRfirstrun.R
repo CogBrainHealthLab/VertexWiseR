@@ -93,7 +93,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             reticulate::install_miniconda(update = FALSE)
             message("Installing dependency packages with appropriate versions...")
-            reticulate::conda_install(packages="numpy==1.26.4", pip=TRUE)
+            reticulate::py_install("numpy==1.26.4", pip=TRUE)
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             
             #will store path in .Renviron in tools::R_user_dir() 
