@@ -7,6 +7,8 @@
 * If the surf_data argument (in modelling or smoothing functions) is a list object with the subject list along with the surface matrix (as outputted by extraction functions with subj_ID=TRUE), the code automatically detects the matrix in that list, named "surf_obj", instead of forcing users to specify the matrix. 
 * Modelling functions now accept a string with the path to the .rds file outputted by extraction functions, instead of only the matrix itself as the surf_data argument
 * New function CAT12vextract() which allows surface data resampled to 32k meshes in CAT12 to be extracted and converted to a surface .rds object. This works with any measure applicable for the 32k resampled meshes ('thickness', 'depth', 'fractaldimension', 'gyrification', and 'toroGI20mm'). 
+* New vignette/article gives advice on how to solve various Python-related issues
+* Numpy version check is no longer present as pip replaces it upon BrainStat's installation with the compatible version
 
 ## FIXES
 * Python package 'vtk' causes issues in latest 9.4.0 versions. The correct 9.3.1 version is now installed when installing Miniconda or reticulate's Python environment via VWRfirstrun(). 

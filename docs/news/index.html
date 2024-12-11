@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Python_troubleshooting.html">Python troubleshooting</a></li>
+    <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a></li>
   </ul></li>
@@ -46,6 +47,8 @@
 <li>If the surf_data argument (in modelling or smoothing functions) is a list object with the subject list along with the surface matrix (as outputted by extraction functions with subj_ID=TRUE), the code automatically detects the matrix in that list, named “surf_obj”, instead of forcing users to specify the matrix.</li>
 <li>Modelling functions now accept a string with the path to the .rds file outputted by extraction functions, instead of only the matrix itself as the surf_data argument</li>
 <li>New function CAT12vextract() which allows surface data resampled to 32k meshes in CAT12 to be extracted and converted to a surface .rds object. This works with any measure applicable for the 32k resampled meshes (‘thickness’, ‘depth’, ‘fractaldimension’, ‘gyrification’, and ‘toroGI20mm’).</li>
+<li>New vignette/article gives advice on how to solve various Python-related issues</li>
+<li>Numpy version check is no longer present as pip replaces it upon BrainStat’s installation with the compatible version</li>
 </ul></div>
 <div class="section level3">
 <h3 id="fixes-1-2-0">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-2-0"></a></h3>

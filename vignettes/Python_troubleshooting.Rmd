@@ -1,0 +1,77 @@
+---
+title: "Python troubleshooting"
+author: "Charly Billaud, Junhong Yu"
+date: "2024-12-10"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Python troubleshooting}
+  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+VertexWiseR uses Python functions from various toolboxes that can flexibly be called and executed in R using the *reticulate* package v1.37.0 [@ushey_reticulate_2023]. We explain in this article how to solve a number of issues that may arise from the interaction with Python.
+
+## 1. How to make VWRfirstrun() ignore the system's Python installation
+
+VertexWiseR will automatically select a previous Python installation it finds via reticulate, but you may want to prevent this and run VertexWiseR on a new Python installation of its own. This section explains how to make `VWRfirstrun()` ignore a previous Python/Miniconda installation in order to install a new one (which will *not* affect the system's Python libraries).
+
+Firstly, the Python installation path may already be preloaded in the global environment, via files such as `.Renviron`, `.Rprofile`, `.bashrc` etc. If that is the case they should be edited to remove the path of a previous Python installation, because reticulate will read the paths contained in these files.
+
+Secondly, if the Python paths are not specified in the global environment, reticulate will then search for a Python installation in its default locations. This can be avoided with the method below.
+
+To make `VWRfirstrun()` ignore a previous Python installation, you can set the `RETICULATE_PYTHON` variable as `NA` (in a new R session with a clean workspace):
+
+```{r, eval=FALSE}
+Sys.setenv(RETICULATE_PYTHON=NA)
+VWRfirstrun()
+```
+
+With the above lines, reticulate will respond in the same way it would if Python was not previously installed at all. Therefore, `VWRfirstrun()` will let users install a new Miniconda or Python environment. After that, `VWRfirstrun()` will use that newly installed Python environment by default and you should not need to do this again.
+
+## 2. How to make VWRfirstrun() use a previously installed Python 
+
+This section explains how you can choose a different Python other than the one automatically detected if they wish to.
+
+### a. For a new VertexWiseR set-up
+
+Reticulate allows you to predefine the Python environment to be used by entering its Python's directory path into the [following functions](https://rstudio.github.io/reticulate/reference/use_python.html):
+
+```{r, eval=FALSE}
+reticulate::use_python(python)
+reticulate::use_virtualenv(virtualenv)
+reticulate::use_condaenv(condaenv)
+reticulate::use_miniconda(condaenv)
+```
+
+These functions must be executed before `VWRfirstrun()` is run in the R session. It should then automatically assume that a version of Python is correctly installed and only ask for other packages to be downloaded/installed if they are missing. To make sure the correct Python installation is being used, users can run:
+
+```{r, eval=FALSE}
+reticulate::py_config()
+```
+
+### b. If the VWRfirstrun() installations were already done before
+
+If Python or Miniconda was already installed using `VWRfirstrun()`, then you will not be able to modify the Python path in the above manner. This is because `VWRfirstrun()` saves the path to the user-selected default or custom installations in order to access them again later. Every time `VWRfirstrun()` is run, it will read and use the saved paths.
+
+The paths are saved in a `.Renviron` file, in the standard path generated via:
+
+```{r, eval=FALSE}
+tools::R_user_dir(package='VertexWiseR')
+```
+
+Within the `.Renviron` file, the environment variables will be written in this manner:
+
+```{r, eval=FALSE}
+#RETICULATE_MINICONDA_PATH="C:/path_to_miniconda:"
+#RETICULATE_PYTHON_FALLBACK="C:/path_to_miniconda:"
+#RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
+```
+
+You may choose to edit `.Renviron` directly, by replacing the paths with the new Python installation you would like to use. The `RETICULATE_MINICONDA_PATH` may also be safely removed if a non-conda Python library is to be used instead. Alternatively, users may choose to completely remove the `.Renviron` and define the path as described in section 2a.
+
+## References:
