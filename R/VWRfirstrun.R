@@ -52,6 +52,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   
   #default time limit to download is 60s which can be too short:
   options(timeout=500); #set to 500s instead
+  on.exit(options(timeout=60))
   
   if (interactive()==TRUE & promptless==FALSE) { 
     #can only run interactively as it requires user's action
@@ -88,13 +89,12 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message('Installing Miniconda (v24.9.2)...')
             
             #custom url to get version 24.9.2
-            oldoption=getOption("reticulate.miniconda.url")
+            on.exit(options(reticulate.miniconda.url=NULL))
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             reticulate::install_miniconda(update = FALSE)
             message("Installing dependency packages with appropriate versions...")
             reticulate::conda_install(packages="numpy==1.26.4", pip=TRUE)
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
-            options(reticulate.miniconda.url=oldoption)
             
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
@@ -158,7 +158,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #Install miniconda in the new path
             message('Installing Miniconda (v24.9.2)...')
             #custom url to get version 24.9.2
-            oldoption=getOption("reticulate.miniconda.url")
+            on.exit(options(reticulate.miniconda.url=NULL))
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             #install_miniconda will use miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
             reticulate::install_miniconda(update = FALSE)
@@ -166,9 +166,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #set environment variable to make sure packages 
             #arrive at the same place, not in 'r-miniconda'
             Sys.setenv(RETICULATE_PYTHON_ENV=userpath)
-            reticulate::py_install("numpy==1.26.4", pip=TRUE,) 
+            reticulate::py_install("numpy==1.26.4", pip=TRUE) 
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
-            options(reticulate.miniconda.url=oldoption)
             
             #add python executable to the new installation 
             #path to it will differ across OS:
@@ -267,10 +266,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         { 
           warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package.")
         }
-      } else
-      {
-        warning('Numpy was not found in your current Python library. Make sure to install numpy version 1.26.4 for analyses to work properly. If you have just installed Miniconda/Python, restarting R should make it available.\n')
-      }
+      } 
     }
     
     #################################################################
