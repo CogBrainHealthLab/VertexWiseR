@@ -93,7 +93,6 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             reticulate::install_miniconda(update = FALSE)
             message("Installing dependency packages with appropriate versions...")
-            reticulate::py_install("numpy==1.26.4", pip=TRUE)
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             
             #will store path in .Renviron in tools::R_user_dir() 
@@ -166,7 +165,6 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #set environment variable to make sure packages 
             #arrive at the same place, not in 'r-miniconda'
             Sys.setenv(RETICULATE_PYTHON_ENV=userpath)
-            reticulate::py_install("numpy==1.26.4", pip=TRUE) 
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             
             #add python executable to the new installation 
@@ -214,19 +212,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           #Read new python enviroment
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
           if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
-
-          message('Specific versions of the Numpy (<= 1.26.4) and vtk packages (<= 9.3.1) are more stable for analyses. They will now be installed in the Python libraries along with their dependencies.\n')
-          
-          #access/activate the new python installation in reticulate
-          invisible(reticulate::py_discover_config())
-          #pip instead of install_py as it will use a virtual environment
-          #posterior numpy versions break python functions
-          status <- system("pip install numpy==1.26.4");
-          #if failed then try pip3 
-          if (status != 0) { 
-            message('Could not install package with pip, trying pip3...\n')
-            system("pip3 install numpy==1.26.4"); }
-          
+          message('A specific version of the vtk package (v9.3.1) will be installed.\n')
           #latest vtk==9.4.0 causes problems
           status <- system("pip install vtk==9.3.1");
           #if failed then try pip3 
@@ -242,33 +228,6 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         
       }} 
     
-    
-    ##################################################################
-    ##################################################################
-    ###if Python installation could be found by reticulate, check numpy version
-    
-    if(!is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError')
-    {
-      message('Checking Numpy\'s version...')
-      
-      #check config
-      pyconfig=reticulate::py_config()
-      # check if numpy is in the default python environment
-      numpy=pyconfig$numpy
-      
-      if (!is.null(numpy)) #if numpy exists at all 
-      {
-        numpyv=pyconfig$numpy[[2]]
-        #warn to install 1.26.2 if current version is superior  
-        numpyv=gsub("\\.", "", numpyv);
-        
-        if (as.numeric(numpyv)/(10 ^ (nchar(numpyv) - 1)) > 1.264)
-        { 
-          warning("The current Python environment's Numpy package is version > 1.26.4. This may cause issues with this package.")
-        }
-      } 
-    }
-    
     #################################################################
     ##################################################################
     ###check if BrainStat is installed
@@ -280,7 +239,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     {
       missingobj=1
       
-      prompt = utils::menu(c("Yes", "No"), title="The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
+      prompt = utils::menu(c("Yes", "No"), title="\n The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
       if (prompt==1)
       {	
         
