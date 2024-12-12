@@ -69,7 +69,7 @@ CAT12vextract=function(sdirpath="./", filename, measure='thickness', subj_ID = T
   
   for (sub in 1:NROW(filelist))
   {
-    giiobj=nibabel$load(filelist[sub]);
+    giiobj=nibabel$load(paste0(sdirpath,'/',filelist[sub]));
     CAT12_dat[sub,]=giiobj$darrays[[1]]$data;
   }
   CAT12_dat=CAT12_dat[order(filelist),]
