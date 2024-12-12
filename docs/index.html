@@ -146,7 +146,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, filename <span class="op">=</span> <span class="st">'sigcluster.png'</span>, surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'seismic'</span><span class="op">)</span></span></code></pre></div>
 <ul>
-<li><p><code>surf_data</code>: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.</p></li>
+<li><p><code>surf_data</code>: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), CAT12vextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.</p></li>
 <li><p><code>filename</code>: A string object containing the desired name of the output .png. Default is ‘plot.png’ in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.</p></li>
 <li>
 <p><code>cmap</code> (optional) : A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the .</p>

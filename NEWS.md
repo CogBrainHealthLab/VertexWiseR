@@ -1,4 +1,4 @@
-# VertexWiseR v1.2.0 (to be coming)
+# VertexWiseR v1.2.0
 
 ## NEW FEATURES
 

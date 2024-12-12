@@ -77,8 +77,8 @@ tools::R_user_dir(package='VertexWiseR')
 Within the `.Renviron` file, the environment variables will be written in this manner:
 
 ```{r, eval=FALSE}
-#RETICULATE_MINICONDA_PATH="C:/path_to_miniconda:"
-#RETICULATE_PYTHON_FALLBACK="C:/path_to_miniconda:"
+#RETICULATE_MINICONDA_PATH="C:/path_to_miniconda/"
+#RETICULATE_PYTHON_FALLBACK="C:/path_to_miniconda/"
 #RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
 ```
 
