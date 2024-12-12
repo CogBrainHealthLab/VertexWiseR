@@ -1,7 +1,7 @@
 ---
 title: "Python troubleshooting"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-12-10"
+date: "2024-12-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Python troubleshooting}
@@ -16,7 +16,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 VertexWiseR uses Python functions from various toolboxes that can flexibly be called and executed in R using the *reticulate* package v1.37.0 [@ushey_reticulate_2023]. We explain in this article how to solve a number of issues that may arise from the interaction with Python.
 
-## 1. How to make VWRfirstrun() ignore the system's Python installation
+## 1. About the message: "Would you like to create a default Python environment for the reticulate package? (Yes/no/cancel)"
+
+As explained in the home page, this is a pop-up/prompt from the reticulate package. Choosing 'Yes' will let reticulate install Python in a virtual environment. This is entirely optional. Simply choose/click No/Cancel to ignore.
+
+The [reticulate documentation](https://rstudio.github.io/reticulate/articles/python_packages.html) explains:
+
+>When installing Python packages it’s best practice to isolate >them within a Python environment (a named Python installation >that exists for a specific project or purpose). This provides a >measure of isolation, so that updating a Python package for one >project doesn’t impact other projects. The risk for package >incompatibilities is significantly higher with Python packages >than it is with R packages, because unlike CRAN, PyPI does not >enforce, or even check, if the current versions of packages >currently available are compatible.
+
+Note that VertexWiseR will install stable specific versions of Python itself and of each package it needs to work properly. If you believe you will be using the Miniconda/Python installation for more than VertexWiseR and will need to update them, it may be safer to install your specific Miniconda/Python environment in a path of your choice (as allowed by VWRfirstrun()), or to use a reticulate isolated virtual environment. More details on why use virtual environments can be found in the [reticulate documentation](https://rstudio.github.io/reticulate/articles/python_packages.html).
+
+## 2. How to make VWRfirstrun() ignore the system's Python installation
 
 VertexWiseR will automatically select a previous Python installation it finds via reticulate, but you may want to prevent this and run VertexWiseR on a new Python installation of its own. This section explains how to make `VWRfirstrun()` ignore a previous Python/Miniconda installation in order to install a new one (which will *not* affect the system's Python libraries).
 
@@ -33,7 +43,7 @@ VWRfirstrun()
 
 With the above lines, reticulate will respond in the same way it would if Python was not previously installed at all. Therefore, `VWRfirstrun()` will let users install a new Miniconda or Python environment. After that, `VWRfirstrun()` will use that newly installed Python environment by default and you should not need to do this again.
 
-## 2. How to make VWRfirstrun() use a previously installed Python 
+## 3. How to make VWRfirstrun() use a previously installed Python
 
 This section explains how you can choose a different Python other than the one automatically detected if they wish to.
 
@@ -72,6 +82,6 @@ Within the `.Renviron` file, the environment variables will be written in this m
 #RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
 ```
 
-You may choose to edit `.Renviron` directly, by replacing the paths with the new Python installation you would like to use. The `RETICULATE_MINICONDA_PATH` may also be safely removed if a non-conda Python library is to be used instead. Alternatively, users may choose to completely remove the `.Renviron` and define the path as described in section 2a.
+You may choose to edit `.Renviron` directly, by replacing the paths with the new Python installation you would like to use. The `RETICULATE_MINICONDA_PATH` may also be safely removed if a non-conda Python library is to be used instead. Alternatively, users may choose to completely remove the `.Renviron` and define the path as described in section 3a.
 
 ## References:

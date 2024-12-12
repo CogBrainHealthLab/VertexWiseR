@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2024-12-10</h4>
+            <h4 data-toc-skip class="date">2024-12-12</h4>
       
 
       <div class="d-none name"><code>Python_troubleshooting.Rmd</code></div>
@@ -76,7 +76,38 @@ package v1.37.0 <span class="citation">(Ushey, Allaire, and Tang
 2023)</span>. We explain in this article how to solve a number of issues
 that may arise from the interaction with Python.</p>
 <div class="section level2">
-<h2 id="how-to-make-vwrfirstrun-ignore-the-systems-python-installation">1. How to make VWRfirstrun() ignore the system’s Python
+<h2 id="about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel">1. About the message: “Would you like to create a default Python
+environment for the reticulate package? (Yes/no/cancel)”<a class="anchor" aria-label="anchor" href="#about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel"></a>
+</h2>
+<p>As explained in the home page, this is a pop-up/prompt from the
+reticulate package. Choosing ‘Yes’ will let reticulate install Python in
+a virtual environment. This is entirely optional. Simply choose/click
+No/Cancel to ignore.</p>
+<p>The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
+documentation</a> explains:</p>
+<blockquote>
+<p>When installing Python packages it’s best practice to isolate
+&gt;them within a Python environment (a named Python installation
+&gt;that exists for a specific project or purpose). This provides a
+&gt;measure of isolation, so that updating a Python package for one
+&gt;project doesn’t impact other projects. The risk for package
+&gt;incompatibilities is significantly higher with Python packages
+&gt;than it is with R packages, because unlike CRAN, PyPI does not
+&gt;enforce, or even check, if the current versions of packages
+&gt;currently available are compatible.</p>
+</blockquote>
+<p>Note that VertexWiseR will install stable specific versions of Python
+itself and of each package it needs to work properly. If you believe you
+will be using the Miniconda/Python installation for more than
+VertexWiseR and will need to update them, it may be safer to install
+your specific Miniconda/Python environment in a path of your choice (as
+allowed by VWRfirstrun()), or to use a reticulate isolated virtual
+environment. More details on why use virtual environments can be found
+in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
+documentation</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="how-to-make-vwrfirstrun-ignore-the-systems-python-installation">2. How to make VWRfirstrun() ignore the system’s Python
 installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-ignore-the-systems-python-installation"></a>
 </h2>
 <p>VertexWiseR will automatically select a previous Python installation
@@ -108,7 +139,7 @@ newly installed Python environment by default and you should not need to
 do this again.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-make-vwrfirstrun-use-a-previously-installed-python">2. How to make VWRfirstrun() use a previously installed Python<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-previously-installed-python"></a>
+<h2 id="how-to-make-vwrfirstrun-use-a-previously-installed-python">3. How to make VWRfirstrun() use a previously installed Python<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-previously-installed-python"></a>
 </h2>
 <p>This section explains how you can choose a different Python other
 than the one automatically detected if they wish to.</p>
@@ -156,7 +187,7 @@ the paths with the new Python installation you would like to use. The
 <code>RETICULATE_MINICONDA_PATH</code> may also be safely removed if a
 non-conda Python library is to be used instead. Alternatively, users may
 choose to completely remove the <code>.Renviron</code> and define the
-path as described in section 2a.</p>
+path as described in section 3a.</p>
 </div>
 </div>
 <div class="section level2 unnumbered">

@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/404.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/index.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html</loc></url>
@@ -9,6 +10,7 @@
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/LICENSE-text.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/atlas_to_surf.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/CAT12vextract.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/decode_surf_data.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist-class.html</loc></url>
 <url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist_hip.html</loc></url>

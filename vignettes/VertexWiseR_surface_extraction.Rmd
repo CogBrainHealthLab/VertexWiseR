@@ -1,7 +1,7 @@
 ---
 title: "Extracting surface data in VertexWiseR"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-09-10"
+date: "2024-12-12"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Extracting surface data in VertexWiseR}
@@ -15,15 +15,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(VertexWiseR)
 ```
 
-Three functions in VertexWiseR do surface data extraction and synthesis: SURFvextract(), FSLRvextract() and HIPvextract().
+As of version 1.2.0, four functions in VertexWiseR do surface data extraction and synthesis: SURFvextract(), FSLRvextract(), CAT12vextract() and HIPvextract().
 
 Surface extraction consists in reading through a preprocessing pipeline's subjects directory, collating the surface data (for a chosen vertex-wise measures, e.g. thickness), and summarising it into one compact matrix R object, with N rows per subject and M columns per vertex values.
 
-```{r, echo=FALSE, fig.align="center", out.width="100%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.cap="Surface extraction methods workflow"}
 knitr::include_graphics('surfextract.jpg')
 ```
 
-The functions save such objects as a .rds file (which contains the R surface object). This file can be shared across any device with R and all VertexWiseR statistical analyses functions can be run on these, without the need to access the initially preprocessed data.
+The functions save such objects as a .rds file. The file contains the R surface matrix and, with the default subj_ID setting, an appended list of the corresponding subjects ID. This file can be shared across any device with R and all VertexWiseR statistical analyses functions can be run on these, without the need to access the initially preprocessed data.
 
 ## Extracting cortical surface data: from FreeSurfer
 
@@ -44,7 +44,6 @@ download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/
 unzip("spreng_surf_data_freesurfer.zip")
 ```
 
-
 We give the following code as example:
 
 ```{r, eval=FALSE}
@@ -61,7 +60,7 @@ SPRENG_CTv = SURFvextract(sdirpath = 'spreng_surf_data_freesurfer',
     -   template: The surface template space in which to extract the data, which can be 'fsaverage5' (default) or 'fsaverage6'
     -   measure: The name of the surface-based measure of interest computed [in FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/UserContributions/FAQ). That includes cortical thickness ('thickness'), surface curvature ('curv'), depth/height of vertex ('sulc'), surface area ('area'), and 'volume' (for freesurfer 7.4.1 or later). Default is 'thickness'.
     -   subj_ID Whether to obtain a list object containing both subject ID and data matrix instead of just the matrix (TRUE OR FALSE)
-    
+
 An example of surface matrix object, extracted from FreeSurfer preprocessing of the all site 1 participants is available on VertexWiseR online repository:
 
 ```{r}
@@ -76,7 +75,7 @@ When the subj_ID argument is set to TRUE, the object returned is not a matrix on
 
 ## Extracting cortical surface data: from HCP and fMRIprep
 
-FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013] or fMRIprep [@esteban_fmriprep_2019] preprocessing output directories. FSLRvextract() requires the [HCP workbench](https://humanconnectome.org/software/get-connectome-workbench)  to be installed, and uses the ciftiTools R package to read the .dscalar.nii files.
+FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013] or fMRIprep [@esteban_fmriprep_2019] preprocessing output directories. FSLRvextract() requires the [HCP workbench](https://humanconnectome.org/software/get-connectome-workbench) to be installed, and uses the ciftiTools R package to read the .dscalar.nii files.
 
 For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
 
@@ -91,7 +90,7 @@ download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/
 unzip("spreng_surf_data_fmriprep.zip")
 ```
 
-FSLRvextract() gets the data from .dscalar.nii files associated with the specified measure (e.g. thickness, curv), and can extract it as follows:
+FSLRvextract() gets the data from .dscalar.nii files associated with the specified measure (e.g. thickness, curv), and can extract it as follows (specify your own connectome workbench path):
 
 ```{r, eval=FALSE}
 dat_fslr32k=FSLRvextract(sdirpath="spreng_surf_data/",
@@ -111,6 +110,48 @@ dat_fslr32k=FSLRvextract(sdirpath="spreng_surf_data/",
     -   silent: Whether to silence messages from the process (TRUE or FALSE). Default is FALSE.
 
 Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2 participants) and 64,984 columns (the subject's cortical thickness values in every vertex of the fslr32k surface).
+
+## Extracting cortical surface data: from CAT12
+
+CAT12vextract() was implemented in version 1.2.0 and can extract surface preprocessed with the CAT12 [@gaser_cat_2024] surface based morphometry pipeline. The function requires reticulate [@ushey_reticulate_2023] to run.
+
+For demonstration, we provide again a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using CAT12's SBM pipeline (segmentation and resampling without smoothing), and extracting different possible surface measures. Only the 32k mesh .gii and .dat files were kept.
+
+The subsample (~13 MB) can be downloaded from the repository as follows (unzip can be changed to untar if errors occur):
+
+```{r, results = 'hide'}
+# download and unzip the surface data directory
+download.file(url = "https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_cat12.zip?raw=TRUE", 
+              destfile = "spreng_surf_data_cat12.zip",
+              mode='wb')
+
+unzip("spreng_surf_data_cat12.zip")
+```
+
+CAT12vextract() extracts surface data resampled to 32k meshes (with or without smoothing) and can be used as in this example:
+
+```{r}
+CATsurf=CAT12vextract(sdirpath="SPRENG_CAT12_subsample", 
+                      filename='thickness.rds', 
+                      measure='thickness', 
+                      subj_ID = TRUE,
+                      silent = FALSE)
+```
+
+-   The following arguments can be used:
+    -   sdirpath: Path to the preprocessed subjects directory (will be used to define the SUBJECTS_DIR variable automatically). We recommend that the directory follows the [BIDS](https://bids.neuroimaging.io/) structure for accuracy.
+    -   filename: Name of the saved .rds output (can include a specific path to it)
+    -   measure: The name of the surface-based measure of interest computed [in CAT12](https://neuro-jena.github.io/cat12-help/#sbm). That includes 'thickness', 'depth', 'fractaldimension', 'gyrification', and 'toroGI20mm'.
+    -   subj_ID Whether to obtain a list object containing both subject ID and data matrix instead of just the matrix (TRUE OR FALSE)
+
+Accordingly, the matrix will contained 2 rows (for 2 participants) and 64,984 columns (the subject's cortical thickness values in every vertex of the 32k mesh):
+
+```{r}
+#The surface object contains the surface matrix and the list of subjects ID (and session number if applicable)
+names(CATsurf)
+#The surface matrix dimensions:
+dim(CATsurf$surf_obj)
+```
 
 ## Extracting hippocampal surface data: from HippUnfold
 
@@ -142,8 +183,7 @@ hipp_surf=HIPvextract(sdirpath="fink_surf_data",
     -   measure: The name of the surface-based measure of interest computed [in HippUnfold](https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics). That includes 'thickness','curvature','gyrification' and 'surfarea'. Default is 'thickness'
     -   subj_ID: Whether to obtain a list object containing both subject ID and data matrix instead of just the matrix (TRUE OR FALSE). Default is TRUE.
 
-
-Note that when subjects directories have multiple sessions, the matrix object will contain N rows per participant and per session. 
+Note that when subjects directories have multiple sessions, the matrix object will contain N rows per participant and per session.
 
 ```{r}
 hipp_surf[[1]]
