@@ -79,10 +79,10 @@ that may arise from the interaction with Python.</p>
 <h2 id="about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel">1. About the message: “Would you like to create a default Python
 environment for the reticulate package? (Yes/no/cancel)”<a class="anchor" aria-label="anchor" href="#about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel"></a>
 </h2>
-<p>As explained in the home page, this is a pop-up/prompt from the
-reticulate package. Choosing ‘Yes’ will let reticulate install Python in
-a virtual environment. This is entirely optional. Simply choose/click
-No/Cancel to ignore.</p>
+<p>As explained in the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/">home page</a>,
+this is a pop-up or prompt from the reticulate package. Choosing ‘Yes’
+will let reticulate install Python in a virtual environment. This is
+entirely optional. Simply choose/click No/Cancel to ignore.</p>
 <p>The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
 documentation</a> explains:</p>
 <blockquote>
@@ -96,14 +96,14 @@ documentation</a> explains:</p>
 &gt;enforce, or even check, if the current versions of packages
 &gt;currently available are compatible.</p>
 </blockquote>
-<p>Note that VertexWiseR will install stable specific versions of Python
-itself and of each package it needs to work properly. If you believe you
-will be using the Miniconda/Python installation for more than
-VertexWiseR and will need to update them, it may be safer to install
-your specific Miniconda/Python environment in a path of your choice (as
-allowed by VWRfirstrun()), or to use a reticulate isolated virtual
-environment. More details on why use virtual environments can be found
-in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
+<p>Note that VertexWiseR will install a stable specific version of
+Python itself and of each package it needs to work properly. If users
+believe they will be using the Miniconda/Python installation for more
+than VertexWiseR and will need to update them, it may be safer to
+install a specific Miniconda/Python environment in a path of their
+choice (as allowed by VWRfirstrun()), or to use a reticulate isolated
+virtual environment. More details on why using virtual environments can
+be found in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
 documentation</a>.</p>
 </div>
 <div class="section level2">
@@ -111,7 +111,7 @@ documentation</a>.</p>
 installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-ignore-the-systems-python-installation"></a>
 </h2>
 <p>VertexWiseR will automatically select a previous Python installation
-it finds via reticulate, but you may want to prevent this and run
+it finds via reticulate, but users may want to prevent this and run
 VertexWiseR on a new Python installation of its own. This section
 explains how to make <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> ignore a previous
 Python/Miniconda installation in order to install a new one (which will
@@ -120,34 +120,36 @@ Python/Miniconda installation in order to install a new one (which will
 global environment, via files such as <code>.Renviron</code>,
 <code>.Rprofile</code>, <code>.bashrc</code> etc. If that is the case
 they should be edited to remove the path of a previous Python
-installation, because reticulate will read the paths contained in these
-files.</p>
+installation, because reticulate will likely read the paths contained in
+these files.</p>
 <p>Secondly, if the Python paths are not specified in the global
 environment, reticulate will then search for a Python installation in
 its default locations. This can be avoided with the method below.</p>
 <p>To make <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> ignore a previous Python
-installation, you can set the <code>RETICULATE_PYTHON</code> variable as
-<code>NA</code> (in a new R session with a clean workspace):</p>
+installation, users can set the <code>RETICULATE_PYTHON</code> variable
+as <code>NA</code> (in a new R session with a clean workspace) before
+running the function:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RETICULATE_PYTHON<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/VWRfirstrun.html">VWRfirstrun</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>With the above lines, reticulate will respond in the same way it
-would if Python was not previously installed at all. Therefore,
-<code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> will let users install a new Miniconda or
-Python environment. After that, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> will use that
-newly installed Python environment by default and you should not need to
-do this again.</p>
+<p>With the above lines, reticulate will fail to load Python and respond
+in the same way it would if Python was not previously installed at all.
+Therefore, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> will promot users to install a new
+Miniconda or Python environment. After that, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>
+will use that newly installed Python environment by default and users
+should not need to do this again.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-make-vwrfirstrun-use-a-previously-installed-python">3. How to make VWRfirstrun() use a previously installed Python<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-previously-installed-python"></a>
+<h2 id="how-to-make-vwrfirstrun-use-a-different-python-installation">3. How to make VWRfirstrun() use a different Python
+installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-different-python-installation"></a>
 </h2>
-<p>This section explains how you can choose a different Python other
+<p>This section explains how users can choose a different Python other
 than the one automatically detected if they wish to.</p>
 <div class="section level3">
-<h3 id="a--for-a-new-vertexwiser-set-up">a. For a new VertexWiseR set-up<a class="anchor" aria-label="anchor" href="#a--for-a-new-vertexwiser-set-up"></a>
+<h3 id="a--for-a-new-fresh-vertexwiser-set-up">a. For a new, fresh VertexWiseR set-up<a class="anchor" aria-label="anchor" href="#a--for-a-new-fresh-vertexwiser-set-up"></a>
 </h3>
-<p>Reticulate allows you to predefine the Python environment to be used
-by entering its Python’s directory path into the <a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">following
+<p>Reticulate allows users to predefine the Python environment to be
+used by entering their Python’s directory path into the <a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">following
 functions</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="va">python</span><span class="op">)</span></span>
@@ -155,39 +157,44 @@ functions</a>:</p>
 <span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_condaenv</a></span><span class="op">(</span><span class="va">condaenv</span><span class="op">)</span></span>
 <span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_miniconda</a></span><span class="op">(</span><span class="va">condaenv</span><span class="op">)</span></span></code></pre></div>
 <p>These functions must be executed before <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> is
-run in the R session. It should then automatically assume that a version
-of Python is correctly installed and only ask for other packages to be
-downloaded/installed if they are missing. To make sure the correct
-Python installation is being used, users can run:</p>
+run in the R session. The latter function should then automatically
+assume that a version of Python is correctly installed and only ask for
+other packages to be downloaded/installed if they are missing. To make
+sure the correct Python installation is being used, users can run:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_config.html" class="external-link">py_config</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>This will print the information and path of the Python environment
+reticulate is currently using. If that is still not the path specified
+in the functions listed above, users should try restarting R and/or
+clearing the workspace first.</p>
 </div>
 <div class="section level3">
 <h3 id="b--if-the-vwrfirstrun-installations-were-already-done-before">b. If the VWRfirstrun() installations were already done before<a class="anchor" aria-label="anchor" href="#b--if-the-vwrfirstrun-installations-were-already-done-before"></a>
 </h3>
 <p>If Python or Miniconda was already installed using
-<code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>, then you will not be able to modify the
-Python path in the above manner. This is because
-<code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> saves the path to the user-selected default
-or custom installations in order to access them again later. Every time
+<code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>, users will not be able to modify the Python
+path in the above manner. That is because <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>
+saves the path to the user-selected default or custom installations in
+order to conveniently access them again later. Every time
 <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> is run, it will read and use the saved
 paths.</p>
-<p>The paths are saved in a <code>.Renviron</code> file, in the standard
-path generated via:</p>
+<p>The paths are saved inside a <code>.Renviron</code> file, in the
+standard path generated via:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'VertexWiseR'</span><span class="op">)</span></span></code></pre></div>
 <p>Within the <code>.Renviron</code> file, the environment variables
 will be written in this manner:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#RETICULATE_MINICONDA_PATH="C:/path_to_miniconda/"</span></span>
-<span><span class="co">#RETICULATE_PYTHON_FALLBACK="C:/path_to_miniconda/"</span></span>
-<span><span class="co">#RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"</span></span></code></pre></div>
-<p>You may choose to edit <code>.Renviron</code> directly, by replacing
-the paths with the new Python installation you would like to use. The
+<code class="sourceCode R"><span><span class="va">RETICULATE_MINICONDA_PATH</span><span class="op">=</span><span class="st">"C:/path_to_miniconda/"</span></span>
+<span><span class="va">RETICULATE_PYTHON_FALLBACK</span><span class="op">=</span><span class="st">"C:/path_to_miniconda/"</span></span>
+<span><span class="va">RETICULATE_PYTHON</span><span class="op">=</span><span class="st">"C:/path_to_miniconda/python.exe"</span></span></code></pre></div>
+<p>To swap with another Python environment, users may choose to edit
+<code>.Renviron</code> directly, by replacing the paths with the Python
+installation they would like VertexWiseR to use instead. The
 <code>RETICULATE_MINICONDA_PATH</code> may also be safely removed if a
-non-conda Python library is to be used instead. Alternatively, users may
-choose to completely remove the <code>.Renviron</code> and define the
-path as described in section 3a.</p>
+non-conda Python library is to be used. Alternatively, users may choose
+to completely remove the <code>.Renviron</code> and redefine the path as
+described in section 3a.</p>
 </div>
 </div>
 <div class="section level2 unnumbered">
