@@ -70,6 +70,9 @@ onlysubjsurf=alldirs[-grep("fsaverage5|fsaverage6|fsaverage", alldirs)]
 if(length(onlysubjsurf) > 0) {alldirs=onlysubjsurf}
 #checks subject with specific surf measure data (rh.measure file) 
 sublist=list.files(paste0(sdirpath, alldirs), pattern=paste0("rh.",measure), recursive=TRUE, full.names=TRUE)
+#If the sublist is empty, return error message
+if (identical(sublist, character(0)))
+{stop(paste0("No surface file for the given measure (lh.", measure, ", rh.",measure,") could be found in the subjects' surf/ directories."))}
 #flags subjects with no appropriate surf measure data inside surf/
 missinglist=dirname(alldirs[! paste0(sdirpath, alldirs) 
                             %in% dirname(sublist)])
@@ -86,6 +89,10 @@ Sys.setenv(SUBJECTS_DIR=sdirpath)
 system(paste0("ln -s $FREESURFER_HOME/subjects/", template, " -t $SUBJECTS_DIR"), ignore.stderr = TRUE)
 system(paste0("mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi lh --meas ", measure, " --surfreg sphere.reg --out $SUBJECTS_DIR/lh.mgh \n 
        mris_preproc --f $SUBJECTS_DIR/sublist.txt --target ", template, " --hemi rh --meas ", measure, " --surfreg sphere.reg --out $SUBJECTS_DIR/rh.mgh"));
+
+#removes the sublist.txt if subject list was not required by user
+if (subj_ID == FALSE) 
+{file.remove(paste0(sdirpath,'/sublist.txt'));}
 
 #Reads mgh files to stores and assign the thickness values to each subject in a matrix object usable by VertexWiseR. Appends a column with the subject IDs if required by the user.
 if (subj_ID == TRUE) 
