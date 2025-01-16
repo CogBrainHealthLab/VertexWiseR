@@ -20,7 +20,7 @@ SURFvextract(
 
 \item{template}{A string object containing the name of surface template (available: 'fsaverage5', 'fsaverage6'). Default is fsaverage5.}
 
-\item{measure}{A string object containing the name of the measure of interest. Options are thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness.}
+\item{measure}{A string object containing the name of the measure of interest. Options include thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness. Note that non-standard surface measures stored in "surf/" also work, provided the full name and extension following lh./rh. is given (e.g., "w-g.pct.mgh" for grey-white matter contrast).}
 
 \item{subj_ID}{A logical object stating whether to include subject IDs (folder names in the subjects directory) as a first column to the output matrix. Default is TRUE.}
 

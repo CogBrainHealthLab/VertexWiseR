@@ -7,7 +7,7 @@
 #' @param sdirpath A string object containing the path to the 'FreeSurfer' preprocessed subjects directory. This directory must be the output directory from a [FreeSurfer preprocessing recon-all pipeline](https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all). Default is the current working directory ("./").
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'brain_measure.rds' in the R temporary directory (tempdir()).
 #' @param template A string object containing the name of surface template (available: 'fsaverage5', 'fsaverage6'). Default is fsaverage5.
-#' @param measure A string object containing the name of the measure of interest. Options are thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness.
+#' @param measure A string object containing the name of the measure of interest. Options include thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness. Note that non-standard surface measures stored in "surf/" also work, provided the full name and extension following lh./rh. is given (e.g., "w-g.pct.mgh" for grey-white matter contrast).
 #' @param subj_ID A logical object stating whether to include subject IDs (folder names in the subjects directory) as a first column to the output matrix. Default is TRUE.
 #' @param fshomepath An optional string object containing the path to the FreeSurfer installation directory. This makes sure R accesses FreeSurfer if the system environment variables are not inherited — as would be the case if you are running the function from RStudio.
 #'

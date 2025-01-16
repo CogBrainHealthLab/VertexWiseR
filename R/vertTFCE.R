@@ -20,7 +20,7 @@
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()

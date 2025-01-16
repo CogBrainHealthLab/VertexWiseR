@@ -43,7 +43,7 @@ TFCE_vertex_analysis_mixed(
 
 \item{nthread}{A numeric integer object specifying the number of CPU threads to allocate}
 
-\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.}
 
 \item{perm_type}{A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row".}
 

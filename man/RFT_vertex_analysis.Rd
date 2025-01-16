@@ -39,7 +39,7 @@ RFT_vertex_analysis(
 
 \item{atlas}{A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
 
-\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.}
 
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }

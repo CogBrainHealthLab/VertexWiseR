@@ -39,7 +39,7 @@ TFCE_vertex_analysis(
 
 \item{nthread}{A numeric integer object specifying the number of CPU threads to allocate}
 
-\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.}
 
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }

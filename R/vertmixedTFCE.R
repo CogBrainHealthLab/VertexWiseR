@@ -21,7 +21,7 @@
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
 #' @param perm_type A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row". 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
