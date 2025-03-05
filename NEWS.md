@@ -1,3 +1,9 @@
+# VertexWiseR v1.2.1 (To be coming)
+
+## FIXES
+* SURFvextract() now gives a proper error message if subjects' surface measure files could not be found. It also will get rid of the sublist.txt which was outputted automatically if subj_ID was set to FALSE. 
+* Reticulate's [last update](https://posit.co/blog/reticulate-1-41/) suggests the package will transition from user-installed Python environments to uv-based virtual environments. Given this conflicts with VertexWiseR's Python/miniconda dependency management and options, we currently limit the package for reticulate version 1.40.0.
+
 # VertexWiseR v1.2.0
 
 ## NEW FEATURES
