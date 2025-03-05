@@ -120,8 +120,12 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
     } else 
     {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
   
+  #Solves the "no visible binding for global variable" issue
+  . <- SLM <- NULL 
+    
   ##import python libaries
-  brainstat.stats=reticulate::import("brainstat.stats", delay_load = TRUE)
+  reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+  
 
   ##fitting model
   #preparing mask for model
@@ -142,14 +146,13 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
   
   #define model to fit
-  if(missing(random)) {model0=brainstat.stats$terms$FixedEffect(model, "_check_categorical" = FALSE)}
-  else {model0=brainstat.stats$terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
+  if(missing(random)) {model0=FixedEffect(model, "_check_categorical" = FALSE)}
+  else {model0=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
   
-  #Solves the "no visible binding for global variable" issue
-  . <- SLM <- NULL 
+
   #read version of SLM that allows to specify the directory for the
   #fetch_template_surface option
-  reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+  
   
   model=SLM(model = model0,
             contrast=contrast,

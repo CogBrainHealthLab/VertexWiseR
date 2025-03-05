@@ -132,14 +132,16 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   #construct model
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
-  brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
-  terms=brainstat.stats.terms$MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
+
+  
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
   #read version of SLM that allows to specify the directory for the
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+  
+  terms=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -215,11 +217,9 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export="getClusters",.options.snow = opts)  %dopar%
     {
       #load python libraries within each foreach loop
-      brainstat.stats.terms=reticulate::import("brainstat.stats.terms", delay_load = TRUE)
-      #read version of SLM that allows to specify the directory for the
-      #fetch_template_surface option
       reticulate::source_python(SLMpath)
-      
+      #read version of SLM that allows to specify the directory for the
+
       #Brainstat data, will either be stored in default $HOME path or 
       #custom if it's been set via VWRfirstrun()
       if (Sys.getenv('BRAINSTAT_DATA')=="")
@@ -230,7 +230,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
       data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
       
       ##fit permuted models
-      terms=brainstat.stats.terms$MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
+      terms=MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
       model.fit=SLM(model = terms,
                     contrast=contrast,
                     correction="None",
