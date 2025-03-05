@@ -46,7 +46,7 @@ Imports:
     plotly,
     png,
     rappdirs,
-    reticulate (== 1.40.0),
+    reticulate (<= 1.40.0),
     stats,
     stringr,
     utils
