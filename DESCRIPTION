@@ -50,4 +50,3 @@ Imports:
     stats,
     stringr,
     utils
-Remotes: rstudio/reticulate@v1.40.0
