@@ -48,7 +48,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   # them from the package directory:
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
   if (file.exists(Renvironpath)) {
-    readRenviron(Renvironpath)}
+    readRenviron(Renvironpath)
   
   #if cache was cleared and UV environment no longer exists, remove it
   if (!file.exists(Sys.getenv('VIRTUAL_ENV')))
@@ -57,6 +57,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     lines = readLines(Renvironpath) 
     lines = lines[!grepl("^VIRTUAL_ENV", lines)]
     writeLines(lines, Renvironpath)
+  }
   }
   
   #default time limit to download is 60s which can be too short:
