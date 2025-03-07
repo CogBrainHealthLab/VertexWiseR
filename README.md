@@ -22,9 +22,9 @@ library(VertexWiseR)
 
 VertexWiseR imports and makes use of the R package [reticulate](https://rstudio.github.io/reticulate/). `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the [BrainStat](https://brainstat.readthedocs.io/en/latest/) Python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
 
-For reticulate to work properly with VertexWiseR, the latest version of `Miniconda` needs to be installed with it — Miniconda is a lightweight version of Python, specifically for use within RStudio. Alternatively, a suitable version of Python must be installed.
+For 'reticulate' to work properly with VertexWiseR, a Python environment must be installed with it — the default choice offered by VertexWiseR is to let reticulate (version 1.41.0) create an ephemeral Python virtual environment using [UV and py_require()](https://posit.co/blog/reticulate-1-41/). Alternatively, `Miniconda` — a lightweight version of Python -, or a suitable version of Python can be installed.
 
-A function can be run to download and install all the system requirements (Miniconda, brainstat, BrainStat's fsaverage/parcellation templates) if they are not installed yet:
+A function can be run to download and install all the system requirements (Python environment, BrainStat, BrainStat's fsaverage/parcellation templates) if they are not installed yet:
 
 ``` r
 VWRfirstrun()

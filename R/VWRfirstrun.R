@@ -4,9 +4,10 @@
 ############################################################################################################################
 #' @title VertexWiseR system requirements installation
 #'
-#' @description Helps the user verify if VertexWisrR's system requirements are present and install them ('Miniconda', 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten. 
+#' @description Helps the user verify if VertexWisrR's system requirements are present and install them (a suitable 'Python' or 'Miniconda' environment, 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten. 
 #'
-#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. If for a reason Miniconda cannot be installed, the function gives the choice to install a reticulate-suitable Python environment.
+#' @details VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, a Python environment needs to be installed with it — the default choice offered by VWRfirstrun is to let reticulate (version 1.41.0) create an ephemeral Python virtual environment using UV and py_require(). 
+#' If for a reason this is not desirable, VWRfirstrun() also gives the choice to install a 'Miniconda' (lightweight version of Python) or Python environment in a reticulate default path or a specified path.
 #' Vertex-wise statistical analyses of cortical surface require fsaverage and parcellation templates as imported by default in 'BrainStat'. 
 #' The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
 #' @param requirement String that specifies a requirement to enquire about: 
@@ -79,14 +80,38 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       {
         missingobj=1
         
-        prompt = utils::menu(title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?",
-                  choices = c("Yes, install Miniconda (Recommended)",
-                              "Yes, install Python (if Miniconda could not be installed)", 
-                              "Yes, install an ephemeral virtual Python environment",
+        prompt = utils::menu(title="A suitable Python environment for reticulate or Miniconda could not be found in the environment. \n Do you want Miniconda or Python to be installed now?",
+                  choices = c("Yes, install a virtual Python environment (Recommended)",
+                              "Yes, install Miniconda",
+                              "Yes, install Python", 
                               "No"), 
                              )
-        
-        if (prompt==1) #Install Miniconda
+        if (prompt==1) #Install ephemeral virtual environment via UV 
+        { 
+          #check if virtual environment available with the right settings
+          #and initialize it.
+          message('Installing Python ephemeral environment via reticulate\'s py_require() and UV...\n')
+          reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1"), python_version = "<3.11")
+          reticulate::py_config()
+          
+          #will store cache path in .Renviron in tools::R_user_dir() 
+          #location specified by CRAN, create it if not existing:
+          envpath=tools::R_user_dir(package='VertexWiseR')
+          if (!dir.exists(envpath)) {dir.create(envpath, 
+                                                recursive = TRUE)} 
+          #make .Renviron file there and set conda/python paths:
+          renviron_path <- file.path(envpath, ".Renviron")
+          env_vars <- c(paste0('VIRTUAL_ENV="',
+                               Sys.getenv('VIRTUAL_ENV'),'"'))
+          cat(paste0(env_vars, "\n", collapse = "\n"), 
+              file = renviron_path, sep = "\n", append = TRUE)
+          
+          message(paste0('\nThis virtual environment is cached in the following path:\n', tools::R_user_dir("reticulate", "cache"), 
+                         '\n\nIf it gets cleared, VWRfirstrun() will prompt you again for a new installation. Unless the cache is removed, it will NOT use a new virtual environment created via py_require(), as the virtual path is fixated there:\n',
+                         paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+                         ,'\n'))
+        } 
+        else if (prompt==2) #Install Miniconda
         {
           
           #define default miniconda directory 
@@ -223,7 +248,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         message('Please restart R after Miniconda installation for its environment to be properly detected by reticulate.')
           
         }
-        else if (prompt==2) #Install Python instead of Miniconda
+        else if (prompt==3) #Install Python instead of Miniconda
         { 
           
           #give the choices to specify path
@@ -259,31 +284,6 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
       }
-      else if (prompt==3) #Install UV environment 
-      { 
-        #check if virtual environment available with the right settings
-        #and initialize it.
-        message('Installing Python ephemeral environment via reticulate\'s py_require()...\n')
-        reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1"), python_version = "<3.11")
-        reticulate::py_config()
-        
-        #will store cache path in .Renviron in tools::R_user_dir() 
-        #location specified by CRAN, create it if not existing:
-        envpath=tools::R_user_dir(package='VertexWiseR')
-        if (!dir.exists(envpath)) {dir.create(envpath, 
-                                              recursive = TRUE)} 
-        #make .Renviron file there and set conda/python paths:
-        renviron_path <- file.path(envpath, ".Renviron")
-        env_vars <- c(paste0('VIRTUAL_ENV="',
-                             Sys.getenv('VIRTUAL_ENV'),'"'))
-        cat(paste0(env_vars, "\n", collapse = "\n"), 
-            file = renviron_path, sep = "\n", append = TRUE)
-        
-        message(paste0('\nThis virtual environment is cached in the following path:\n', tools::R_user_dir("reticulate", "cache"), 
-        '\n\nIf it gets cleared, VWRfirstrun() will prompt you again for a new installation. Unless the cache is removed, it will NOT use a new virtual environment created via py_require(), as the virtual path is fixated there:\n',
-        paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
-        ,'\n'))
-      } 
       else { 
         stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')
       }
