@@ -21,7 +21,7 @@
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
 #' VWRfirstrun()
-#' @importFrom reticulate conda_binary py_module_available miniconda_path
+#' @importFrom reticulate conda_binary py_module_available miniconda_path py_require
 #' @importFrom fs path_home
 #' @importFrom methods is 
 #' @importFrom utils menu

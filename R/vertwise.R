@@ -122,7 +122,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
-    
+  . <- FixedEffect <- NULL
+  . <- MixedEffect <- NULL
+  
   ##import python libaries
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   

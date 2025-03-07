@@ -137,6 +137,8 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
+  . <- MixedEffect <- NULL
+  
   #read version of SLM that allows to specify the directory for the
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
