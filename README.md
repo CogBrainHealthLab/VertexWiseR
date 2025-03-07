@@ -5,7 +5,7 @@
 [![CRAN status](https://www.r-pkg.org/badges/version/VertexWiseR)](https://cran.r-project.org/package=VertexWiseR)
 <!---end of badges-->
 
-![](man/figures/Flowchart.jpg)<!-- -->
+![VertexWise workflow summary](man/figures/Flowchart.jpg)<!-- -->
 
 ### Setting up for the first time
 
@@ -136,7 +136,7 @@ plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.png'
 
 - `surface` (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include `"white"`, `"smoothwm"`,`"pial"` and `"inflated"` (default). The surface parameter is ignored for hippocampal surface data.
   
-![](man/figures/sigcluster.png)
+![Significant clusters for the effect of age on thickness](man/figures/sigcluster.png)
 
 #### Extracting the CT values for each subject
 
@@ -241,7 +241,7 @@ results$cluster_level_results
 plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.png")
 ```
 
-![](man/figures/sexdiff.png)
+![Significant clusters for effect of sex on cortical thickness](man/figures/sexdiff.png)
 
 According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.
 
@@ -302,6 +302,6 @@ wordcloud(words = keywords$keyword, ##keyword input
           par(mar = rep(0, 4))
 ```
 
-![](man/figures/wordcloud.jpg)<!-- -->
+![Wordcloud plot of keywords associated with the clusters](man/figures/wordcloud.jpg)<!-- -->
 
 These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the positive clusters.

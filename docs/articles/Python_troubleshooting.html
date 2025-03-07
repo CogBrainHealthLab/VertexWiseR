@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Python troubleshooting • VertexWiseR</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
@@ -45,6 +45,14 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
+<li><button class="dropdown-item" data-bs-theme-value="light"><span class="fa fa-sun"></span> Light</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="dark"><span class="fa fa-moon"></span> Dark</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="auto"><span class="fa fa-adjust"></span> Auto</button></li>
+  </ul>
+</li>
       </ul>
 </div>
 
@@ -62,7 +70,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2024-12-12</h4>
+            <h4 data-toc-skip class="date">2025-03-07</h4>
       
 
       <div class="d-none name"><code>Python_troubleshooting.Rmd</code></div>
@@ -72,12 +80,13 @@ Junhong Yu</h4>
     
 <p>VertexWiseR uses Python functions from various toolboxes that can
 flexibly be called and executed in R using the <em>reticulate</em>
-package v1.37.0 <span class="citation">(Ushey, Allaire, and Tang
+package <span class="citation">(Ushey, Allaire, and Tang
 2023)</span>. We explain in this article how to solve a number of issues
 that may arise from the interaction with Python.</p>
 <div class="section level2">
-<h2 id="about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel">1. About the message: “Would you like to create a default Python
-environment for the reticulate package? (Yes/no/cancel)”<a class="anchor" aria-label="anchor" href="#about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel"></a>
+<h2 id="about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel-reticulate-1-41-0">1. About the message: “Would you like to create a default Python
+environment for the reticulate package? (Yes/no/cancel)” (reticulate
+&lt; 1.41.0)<a class="anchor" aria-label="anchor" href="#about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel-reticulate-1-41-0"></a>
 </h2>
 <p>As explained in the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/">home page</a>,
 this is a pop-up or prompt from the reticulate package. Choosing ‘Yes’
@@ -99,7 +108,7 @@ documentation</a> explains:</p>
 <p>Note that VertexWiseR will install a stable specific version of
 Python itself and of each package it needs to work properly. If users
 believe they will be using the Miniconda/Python installation for more
-than VertexWiseR and will need to update them, it may be safer to
+than VertexWiseR and will need to update them, it may be more stable to
 install a specific Miniconda/Python environment in a path of their
 choice (as allowed by VWRfirstrun()), or to use a reticulate isolated
 virtual environment. More details on why using virtual environments can
@@ -107,10 +116,10 @@ be found in the <a href="https://rstudio.github.io/reticulate/articles/python_pa
 documentation</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-make-vwrfirstrun-ignore-the-systems-python-installation">2. How to make VWRfirstrun() ignore the system’s Python
-installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-ignore-the-systems-python-installation"></a>
+<h2 id="how-to-make-vwrfirstrun-ignore-the-systems-python-environment-when-starting-a-fresh-installation">2. How to make VWRfirstrun() ignore the system’s Python environment
+when starting a fresh installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-ignore-the-systems-python-environment-when-starting-a-fresh-installation"></a>
 </h2>
-<p>VertexWiseR will automatically select a previous Python installation
+<p>VertexWiseR will automatically select and run a Python installation
 it finds via reticulate, but users may want to prevent this and run
 VertexWiseR on a new Python installation of its own. This section
 explains how to make <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> ignore a previous
@@ -120,8 +129,8 @@ Python/Miniconda installation in order to install a new one (which will
 global environment, via files such as <code>.Renviron</code>,
 <code>.Rprofile</code>, <code>.bashrc</code> etc. If that is the case
 they should be edited to remove the path of a previous Python
-installation, because reticulate will likely read the paths contained in
-these files.</p>
+installation, which will avoid reticulate from using those paths
+automatically.</p>
 <p>Secondly, if the Python paths are not specified in the global
 environment, reticulate will then search for a Python installation in
 its default locations. This can be avoided with the method below.</p>
@@ -132,19 +141,19 @@ running the function:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RETICULATE_PYTHON<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/VWRfirstrun.html">VWRfirstrun</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>With the above lines, reticulate will fail to load Python and respond
-in the same way it would if Python was not previously installed at all.
-Therefore, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> will promot users to install a new
-Miniconda or Python environment. After that, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>
+<p>With the above lines, reticulate should fail to load Python and
+respond in the same way it would if Python was not previously installed
+at all. Therefore, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> will prompt users to
+install a new Python environment. After that, <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>
 will use that newly installed Python environment by default and users
 should not need to do this again.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-make-vwrfirstrun-use-a-different-python-installation">3. How to make VWRfirstrun() use a different Python
-installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-different-python-installation"></a>
+<h2 id="how-to-make-vwrfirstrun-use-a-specific-python-installation">3. How to make VWRfirstrun() use a specific Python installation<a class="anchor" aria-label="anchor" href="#how-to-make-vwrfirstrun-use-a-specific-python-installation"></a>
 </h2>
 <p>This section explains how users can choose a different Python other
-than the one automatically detected if they wish to.</p>
+than the one automatically detected if they wish to, instead of
+installing a new one.</p>
 <div class="section level3">
 <h3 id="a--for-a-new-fresh-vertexwiser-set-up">a. For a new, fresh VertexWiseR set-up<a class="anchor" aria-label="anchor" href="#a--for-a-new-fresh-vertexwiser-set-up"></a>
 </h3>
@@ -159,27 +168,32 @@ functions</a>:</p>
 <p>These functions must be executed before <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> is
 run in the R session. The latter function should then automatically
 assume that a version of Python is correctly installed and only ask for
-other packages to be downloaded/installed if they are missing. To make
-sure the correct Python installation is being used, users can run:</p>
+other packages to be downloaded/installed if they are missing. To check
+the Python installation that is being used, users can run:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/py_config.html" class="external-link">py_config</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>This will print the information and path of the Python environment
 reticulate is currently using. If that is still not the path specified
 in the functions listed above, users should try restarting R and/or
-clearing the workspace first.</p>
+clearing the R workspace first.</p>
 </div>
 <div class="section level3">
 <h3 id="b--if-the-vwrfirstrun-installations-were-already-done-before">b. If the VWRfirstrun() installations were already done before<a class="anchor" aria-label="anchor" href="#b--if-the-vwrfirstrun-installations-were-already-done-before"></a>
 </h3>
 <p>If Python or Miniconda was already installed using
 <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>, users will not be able to modify the Python
-path in the above manner. That is because <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code>
-saves the path to the user-selected default or custom installations in
-order to conveniently access them again later. Every time
-<code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> is run, it will read and use the saved
-paths.</p>
-<p>The paths are saved inside a <code>.Renviron</code> file, in the
-standard path generated via:</p>
+path in the above manner. That is because the path to the user-selected
+default or custom installations is saved in order to conveniently access
+them again later. Every time <code><a href="../reference/VWRfirstrun.html">VWRfirstrun()</a></code> is run, it will
+read and use such saved paths. This also depends on whether the user
+created a default ephemeral environment or chose a manual
+Python/Miniconda installation.</p>
+<ul>
+<li><strong>If the user installed a Miniconda or Python environment in
+the classic way</strong></li>
+</ul>
+<p>The paths to these installations are saved inside the
+<code>.Renviron</code> file, in the standard path generated via:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'VertexWiseR'</span><span class="op">)</span></span></code></pre></div>
 <p>Within the <code>.Renviron</code> file, the environment variables
@@ -195,6 +209,31 @@ installation they would like VertexWiseR to use instead. The
 non-conda Python library is to be used. Alternatively, users may choose
 to completely remove the <code>.Renviron</code> and redefine the path as
 described in section 3a.</p>
+<ul>
+<li><strong>If the user created an ephemeral virtual
+environment</strong></li>
+</ul>
+<p>This is in the case that users chose the virtual environment
+installation proposed by VWRfirstrun(), which calls
+reticulate::py_require(). The path to such environment is accessible
+with that command line:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span><span class="st">"reticulate"</span>, <span class="st">"cache"</span><span class="op">)</span></span></code></pre></div>
+<p>To stop using this environment, users may choose to clear the cache
+completely:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">'rm -rf'</span>,<span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span><span class="st">"reticulate"</span>, <span class="st">"cache"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>If they do not wish to get rid of the previous virtual environment,
+users will have to modify and/or remove the VIRTUAL_ENV variable which
+has been stored in the <code>.Renviron</code> file, in the standard path
+generated via:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'VertexWiseR'</span><span class="op">)</span></span></code></pre></div>
+<p>This variable is automatically removed when the virtual environment
+can no longer be found in the cache, but will automatically be used by
+VWRfirstrun() after its installation to speed up the process, if it
+still exists. So the VIRTUAL_ENV variable must be rewritten to the new
+ephemeral environment generated by py_require() to use the latter.</p>
 </div>
 </div>
 <div class="section level2 unnumbered">

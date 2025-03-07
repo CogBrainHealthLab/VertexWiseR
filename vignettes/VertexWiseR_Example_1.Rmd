@@ -97,7 +97,7 @@ plot_surf(surf_data = tmaps,
           cmap='RdBu_r',
           show.plot.window=FALSE)
 ```
-```{r, echo=FALSE, fig.align="center", out.width="100%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction and TFCE correction"}
 knitr::include_graphics('SPRENG_tstatmaps.png')
 ```
 

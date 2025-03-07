@@ -1,7 +1,7 @@
 ---
 title: "Python troubleshooting"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-12-12"
+date: "2025-03-07"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Python troubleshooting}
@@ -14,23 +14,23 @@ bibliography: references.bib
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-VertexWiseR uses Python functions from various toolboxes that can flexibly be called and executed in R using the *reticulate* package v1.37.0 [@ushey_reticulate_2023]. We explain in this article how to solve a number of issues that may arise from the interaction with Python.
+VertexWiseR uses Python functions from various toolboxes that can flexibly be called and executed in R using the *reticulate* package [@ushey_reticulate_2023]. We explain in this article how to solve a number of issues that may arise from the interaction with Python.
 
-## 1. About the message: "Would you like to create a default Python environment for the reticulate package? (Yes/no/cancel)"
+## 1. About the message: "Would you like to create a default Python environment for the reticulate package? (Yes/no/cancel)" (reticulate \< 1.41.0)
 
 As explained in the [home page](https://cogbrainhealthlab.github.io/VertexWiseR/), this is a pop-up or prompt from the reticulate package. Choosing 'Yes' will let reticulate install Python in a virtual environment. This is entirely optional. Simply choose/click No/Cancel to ignore.
 
 The [reticulate documentation](https://rstudio.github.io/reticulate/articles/python_packages.html) explains:
 
->When installing Python packages it’s best practice to isolate >them within a Python environment (a named Python installation >that exists for a specific project or purpose). This provides a >measure of isolation, so that updating a Python package for one >project doesn’t impact other projects. The risk for package >incompatibilities is significantly higher with Python packages >than it is with R packages, because unlike CRAN, PyPI does not >enforce, or even check, if the current versions of packages >currently available are compatible.
+> When installing Python packages it's best practice to isolate \>them within a Python environment (a named Python installation \>that exists for a specific project or purpose). This provides a \>measure of isolation, so that updating a Python package for one \>project doesn't impact other projects. The risk for package \>incompatibilities is significantly higher with Python packages \>than it is with R packages, because unlike CRAN, PyPI does not \>enforce, or even check, if the current versions of packages \>currently available are compatible.
 
-Note that VertexWiseR will install a stable specific version of Python itself and of each package it needs to work properly. If users believe they will be using the Miniconda/Python installation for more than VertexWiseR and will need to update them, it may be safer to install a specific Miniconda/Python environment in a path of their choice (as allowed by VWRfirstrun()), or to use a reticulate isolated virtual environment. More details on why using virtual environments can be found in the [reticulate documentation](https://rstudio.github.io/reticulate/articles/python_packages.html).
+Note that VertexWiseR will install a stable specific version of Python itself and of each package it needs to work properly. If users believe they will be using the Miniconda/Python installation for more than VertexWiseR and will need to update them, it may be more stable to install a specific Miniconda/Python environment in a path of their choice (as allowed by VWRfirstrun()), or to use a reticulate isolated virtual environment. More details on why using virtual environments can be found in the [reticulate documentation](https://rstudio.github.io/reticulate/articles/python_packages.html).
 
-## 2. How to make VWRfirstrun() ignore the system's Python installation
+## 2. How to make VWRfirstrun() ignore the system's Python environment when starting a fresh installation
 
-VertexWiseR will automatically select a previous Python installation it finds via reticulate, but users may want to prevent this and run VertexWiseR on a new Python installation of its own. This section explains how to make `VWRfirstrun()` ignore a previous Python/Miniconda installation in order to install a new one (which will *not* affect the system's Python libraries).
+VertexWiseR will automatically select and run a Python installation it finds via reticulate, but users may want to prevent this and run VertexWiseR on a new Python installation of its own. This section explains how to make `VWRfirstrun()` ignore a previous Python/Miniconda installation in order to install a new one (which will *not* affect the system's Python libraries).
 
-Firstly, the Python installation path may already be preloaded in the global environment, via files such as `.Renviron`, `.Rprofile`, `.bashrc` etc. If that is the case they should be edited to remove the path of a previous Python installation, because reticulate will likely read the paths contained in these files.
+Firstly, the Python installation path may already be preloaded in the global environment, via files such as `.Renviron`, `.Rprofile`, `.bashrc` etc. If that is the case they should be edited to remove the path of a previous Python installation, which will avoid reticulate from using those paths automatically.
 
 Secondly, if the Python paths are not specified in the global environment, reticulate will then search for a Python installation in its default locations. This can be avoided with the method below.
 
@@ -41,11 +41,11 @@ Sys.setenv(RETICULATE_PYTHON=NA)
 VWRfirstrun()
 ```
 
-With the above lines, reticulate will fail to load Python and respond in the same way it would if Python was not previously installed at all. Therefore, `VWRfirstrun()` will promot users to install a new Miniconda or Python environment. After that, `VWRfirstrun()` will use that newly installed Python environment by default and users should not need to do this again.
+With the above lines, reticulate should fail to load Python and respond in the same way it would if Python was not previously installed at all. Therefore, `VWRfirstrun()` will prompt users to install a new Python environment. After that, `VWRfirstrun()` will use that newly installed Python environment by default and users should not need to do this again.
 
-## 3. How to make VWRfirstrun() use a different Python installation
+## 3. How to make VWRfirstrun() use a specific Python installation
 
-This section explains how users can choose a different Python other than the one automatically detected if they wish to.
+This section explains how users can choose a different Python other than the one automatically detected if they wish to, instead of installing a new one.
 
 ### a. For a new, fresh VertexWiseR set-up
 
@@ -58,19 +58,21 @@ reticulate::use_condaenv(condaenv)
 reticulate::use_miniconda(condaenv)
 ```
 
-These functions must be executed before `VWRfirstrun()` is run in the R session. The latter function should then automatically assume that a version of Python is correctly installed and only ask for other packages to be downloaded/installed if they are missing. To make sure the correct Python installation is being used, users can run:
+These functions must be executed before `VWRfirstrun()` is run in the R session. The latter function should then automatically assume that a version of Python is correctly installed and only ask for other packages to be downloaded/installed if they are missing. To check the Python installation that is being used, users can run:
 
 ```{r, eval=FALSE}
 reticulate::py_config()
 ```
 
-This will print the information and path of the Python environment reticulate is currently using. If that is still not the path specified in the functions listed above, users should try restarting R and/or clearing the workspace first.
+This will print the information and path of the Python environment reticulate is currently using. If that is still not the path specified in the functions listed above, users should try restarting R and/or clearing the R workspace first.
 
 ### b. If the VWRfirstrun() installations were already done before
 
-If Python or Miniconda was already installed using `VWRfirstrun()`, users will not be able to modify the Python path in the above manner. That is because `VWRfirstrun()` saves the path to the user-selected default or custom installations in order to conveniently access them again later. Every time `VWRfirstrun()` is run, it will read and use the saved paths.
+If Python or Miniconda was already installed using `VWRfirstrun()`, users will not be able to modify the Python path in the above manner. That is because the path to the user-selected default or custom installations is saved in order to conveniently access them again later. Every time `VWRfirstrun()` is run, it will read and use such saved paths. This also depends on whether the user created a default ephemeral environment or chose a manual Python/Miniconda installation.
 
-The paths are saved inside a `.Renviron` file, in the standard path generated via:
+-   **If the user installed a Miniconda or Python environment in the classic way**
+
+The paths to these installations are saved inside the `.Renviron` file, in the standard path generated via:
 
 ```{r, eval=FALSE}
 tools::R_user_dir(package='VertexWiseR')
@@ -85,5 +87,27 @@ RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
 ```
 
 To swap with another Python environment, users may choose to edit `.Renviron` directly, by replacing the paths with the Python installation they would like VertexWiseR to use instead. The `RETICULATE_MINICONDA_PATH` may also be safely removed if a non-conda Python library is to be used. Alternatively, users may choose to completely remove the `.Renviron` and redefine the path as described in section 3a.
+
+-   **If the user created an ephemeral virtual environment**
+
+This is in the case that users chose the virtual environment installation proposed by VWRfirstrun(), which calls reticulate::py_require(). The path to such environment is accessible with that command line:
+
+```{r, eval=FALSE}
+tools::R_user_dir("reticulate", "cache")
+```
+
+To stop using this environment, users may choose to clear the cache completely:
+
+```{r, eval=FALSE}
+system(paste('rm -rf',tools::R_user_dir("reticulate", "cache")))
+```
+
+If they do not wish to get rid of the previous virtual environment, users will have to modify and/or remove the VIRTUAL_ENV variable which has been stored in the `.Renviron` file, in the standard path generated via:
+
+```{r, eval=FALSE}
+tools::R_user_dir(package='VertexWiseR')
+```
+
+This variable is automatically removed when the virtual environment can no longer be found in the cache, but will automatically be used by VWRfirstrun() after its installation to speed up the process, if it still exists. So the VIRTUAL_ENV variable must be rewritten to the new ephemeral environment generated by py_require() to use the latter.
 
 ## References:
