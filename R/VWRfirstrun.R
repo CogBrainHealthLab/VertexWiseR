@@ -50,6 +50,15 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   if (file.exists(Renvironpath)) {
     readRenviron(Renvironpath)}
   
+  #if cache was cleared and UV environment no longer exists, remove it
+  if (!file.exists(Sys.getenv('VIRTUAL_ENV')))
+  {
+    Sys.unsetenv('VIRTUAL_ENV')
+    lines = readLines(Renvironpath) 
+    lines = lines[!grepl("^VIRTUAL_ENV", lines)]
+    writeLines(lines, Renvironpath)
+  }
+  
   #default time limit to download is 60s which can be too short:
   options(timeout=500); #set to 500s instead
   on.exit(options(timeout=60))
@@ -62,17 +71,19 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     #check if miniconda (or suitable python environment) is installed
     message('Checking for Miniconda or Python environment...')
     
-    if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
+    if(reticulate::py_available()==FALSE) #fast, but unreliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
       
       if (is.null(tryCatch(reticulate::py_discover_config(), error = function(e) NULL))) #slow but reliable check if first time 
       {
         missingobj=1
         
-        prompt = utils::menu(c("Yes, install Miniconda (Recommended)",
-                               "Yes, install Python (if Miniconda could not be installed)", 
-                               "No"), 
-                             title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?")
+        prompt = utils::menu(title="Miniconda or a suitable version of Python for reticulate could not be found in the environment. \n Do you want Miniconda or Python to be installed now?",
+                  choices = c("Yes, install Miniconda (Recommended)",
+                              "Yes, install Python (if Miniconda could not be installed)", 
+                              "Yes, install an ephemeral virtual Python environment",
+                              "No"), 
+                             )
         
         if (prompt==1) #Install Miniconda
         {
@@ -102,16 +113,26 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                                                   recursive = TRUE) }
             
             #get path to python executable (will differ across OS)
+            #silenced with sink and con
             Sys.setenv(RETICULATE_PYTHON=defaultpath)
             defaultpathexe <- tryCatch({
               tmpfile <- tempfile()
               con <- file(tmpfile, open = "wt")
               sink(con, type = "message")
-              on.exit({
-                sink(type = "message");
-                close(con); file.remove(tmpfile)}, add = TRUE)
-              reticulate::py_discover_config()$python
-            }, error = function(e) {NULL})
+              result <- reticulate::py_discover_config()$python  
+              # Close sink and connection 
+              sink(type = "message")
+              close(con)
+              file.remove(tmpfile)
+              result
+            }, error = function(e) {
+              # Ensure cleanup in case of error
+              sink(type = "message")
+              close(con)
+              file.remove(tmpfile)
+              NULL
+            })
+            
             
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
@@ -167,18 +188,28 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             Sys.setenv(RETICULATE_PYTHON_ENV=userpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
             
-            #add python executable to the new installation 
-            #path to it will differ across OS:
-            Sys.setenv(RETICULATE_PYTHON=userpath)
+            #get path to python executable (will differ across OS)
+            #silenced with sink and con
+            Sys.setenv(RETICULATE_PYTHON=defaultpath)
             userpathexe <- tryCatch({
               tmpfile <- tempfile()
               con <- file(tmpfile, open = "wt")
               sink(con, type = "message")
-              on.exit({
-                sink(type = "message");
-                close(con); file.remove(tmpfile)}, add = TRUE)
-              reticulate::py_discover_config()$python
-            }, error = function(e) {NULL})
+              result <- reticulate::py_discover_config()$python  
+              # Close sink and connection 
+              sink(type = "message")
+              close(con)
+              file.remove(tmpfile)
+              result
+            }, error = function(e) {
+              # Ensure cleanup in case of error
+              sink(type = "message")
+              close(con)
+              file.remove(tmpfile)
+              NULL
+            })
+            
+            #add user path to the .Renviron:
             env_vars <- paste0('RETICULATE_PYTHON="',
                                userpathexe,'"')
             # Write to the .Renviron file and read again
@@ -195,8 +226,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         { 
           
           #give the choices to specify path
-          choice = utils::menu(c("Default", "Custom"), 
-                               title=paste0("Reticulate's Python default installation is done within 'r-reticulate' in your OS libraries, via install_python(). Type \"1\" or \"Default\" if you want the default installation. \nYou can, alternatively, specify the path where Python will be installed."))
+          choice = utils::menu(title=paste0("Reticulate's Python default installation is done within 'r-reticulate' in your OS libraries, via install_python(). Type \"1\" or \"Default\" if you want the default installation. \nYou can, alternatively, specify the path where Python will be installed."),
+                               choices=c("Default", "Custom"))
           
           if (choice==1) #Install Python within default path
           {
@@ -212,21 +243,54 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           #Read new python enviroment
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
           if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
+          
+          #vtk installation
           message('A specific version of the vtk package (v9.3.1) will be installed.\n')
           #latest vtk==9.4.0 causes problems
-          status <- system("pip install vtk==9.3.1");
+          status <- system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip install vtk==9.3.1"));
           #if failed then try pip3 
           if (status != 0) { 
             message('Could not install package with pip, trying pip3...\n')
-            system("pip3 install vtk==9.3.1"); }
-          
+            status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install vtk==9.3.1")); 
+          if (status2 != 0) {message("vtk 9.3.1 was not installed successfully. This may cause further issues.")}
+          }
           
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
           
-        }
-        else { stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')}
+      }
+      else if (prompt==3) #Install UV environment 
+      { 
+        #check if virtual environment available with the right settings
+        #and initialize it.
+        message('Installing Python ephemeral environment via reticulate\'s py_require()...\n')
+        reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1"), python_version = "<3.11")
+        reticulate::py_config()
         
-      }} 
+        #will store cache path in .Renviron in tools::R_user_dir() 
+        #location specified by CRAN, create it if not existing:
+        envpath=tools::R_user_dir(package='VertexWiseR')
+        if (!dir.exists(envpath)) {dir.create(envpath, 
+                                              recursive = TRUE)} 
+        #make .Renviron file there and set conda/python paths:
+        renviron_path <- file.path(envpath, ".Renviron")
+        env_vars <- c(paste0('VIRTUAL_ENV="',
+                             Sys.getenv('VIRTUAL_ENV'),'"'))
+        cat(paste0(env_vars, "\n", collapse = "\n"), 
+            file = renviron_path, sep = "\n", append = TRUE)
+        
+        message(paste0('\nThis virtual environment is cached in the following path:\n', tools::R_user_dir("reticulate", "cache"), 
+        '\n\nIf it gets cleared, VWRfirstrun() will prompt you again for a new installation. Unless the cache is removed, it will NOT use a new virtual environment created via py_require(), as the virtual path is fixated there:\n',
+        paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
+        ,'\n'))
+      } 
+      else { 
+        stop('VertexWiseR will not work properly without Miniconda or a suitable version of Python for reticulate.\n\n')
+      }
+      
+    } else 
+    {
+    reticulate::py_config() #if py_discover_config() successful, initialise for py_available to return TRUE next time
+    }} 
     
     #################################################################
     ##################################################################
@@ -239,7 +303,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     {
       missingobj=1
       
-      prompt = utils::menu(c("Yes", "No"), title="\n The Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
+      prompt = utils::menu(c("Yes", "No"), title="\nThe Brainstat package could not be found in your Python/Conda environment. It is needed for vertex-wise linear models and the surface plotter to work. \n Do you want Brainstat (v0.4.2) to be installed now (~1.65 MB)? The NiMARE (~20.4 MB) and Brainspace (~84.2 MB) libraries and other BrainStat dependencies will automatically be installed within your Python library.")
       if (prompt==1)
       {	
         
@@ -263,8 +327,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       } 
       else {
         stop('VertexWiseR will not work properly without BrainStat.\n\n')}
-    } 
-    
+    }
     
     ###############################################################################################################################
     #check if BrainStat fsaverage/parcellation templates are installed (stops only if function needs it)
@@ -459,10 +522,7 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     
     if (promptless==TRUE) {if(!exists('missingobj'))
     { message('No system requirements are missing. \u2713 \n') }}
-    
-  } 
-  
-  
+  }
   
   #############################################################
   #############################################################
@@ -479,7 +539,7 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     non_interactive="Run VWRfirstrun() in an interactive R session to check for the missing system requirements and to install them."
     
     #miniconda or python missing?
-    if(is(tryCatch(reticulate::py_config(), error=function(e) e))[1] == 'simpleError') #fast, though less reliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
+    if(reticulate::py_available()==FALSE) #fast, but unreliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
       if (is.null(reticulate::py_discover_config()) |
           is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
@@ -490,7 +550,10 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         { non_interactive=paste0(missingobj,non_interactive)
         return(non_interactive)
         } else {message(missingobj)}
-      }} 
+      } else {
+        reticulate::py_config #needed for py_available to return TRUE at the next check if py_discover_config was successful
+      }
+    } 
     
     #brainstat missing
     if (!reticulate::py_module_available("brainstat") 
