@@ -1,4 +1,4 @@
-# VertexWiseR v1.2.1 (To be coming)
+# VertexWiseR v1.2.1
 
 ## NEW FEATURES
 * Reticulate's [last update](https://posit.co/blog/reticulate-1-41/) allows users to install ephemeral Python environments with UV instead of requiring a stable Python/Miniconda installation. If users create their own with py_require() before running VertexWiseR, such environment will be selected automatically. If no Python environment is found, VertexWiseR now gives the choice to either install an ephemeral environment with UV, or to install Miniconda or Python via the classic ways.
