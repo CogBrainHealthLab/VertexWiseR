@@ -93,26 +93,21 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   colno=model_summary$colno
   
   #make internal invironment to save edgelist
-  edgelistenv <- new.env()
-  
+
   #check length of surface data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)  {
     edgelist <- get_edgelist('fsaverage5') 
-    assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==81924)  {
     edgelist <- get_edgelist('fsaverage6') 
-    assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==64984)  {
     edgelist <- get_edgelist('fslr32k') 
-    assign("edgelist", edgelist, envir = edgelistenv)
   }
   else if (n_vert==14524)  {
     edgelist_hip <- get('edgelist_hip')
     edgelist <- edgelist_hip@data
-    assign("edgelist", edgelist, envir = edgelistenv)
   }
   else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
   
@@ -137,7 +132,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   message("Estimating unpermuted TFCE image...")
   
   tmap.orig=extract.t(mod,colno+1)
-  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv, edgelist=edgelist))
+  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread,edgelist=edgelist))
   remove(mod)
   
   end=Sys.time()
@@ -158,12 +153,12 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   cl=parallel::makeCluster(nthread)
   
   #The functions from otherfunc.r below are not exported for users in library(VertexWiseR). For vertTFCE to use them, They are manually exported below beforehand:
-  TFCE = utils::getFromNamespace("TFCE", "VertexWiseR")
-  extract.t = utils::getFromNamespace("extract.t", "VertexWiseR")
-  getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
+  #TFCE_optimized = utils::getFromNamespace("TFCE_optimized", "VertexWiseR")
+  #extract.t = utils::getFromNamespace("extract.t", "VertexWiseR")
+  #getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
   
   doParallel::registerDoParallel(cl)
-  parallel::clusterExport(cl, c("edgelist"), envir=edgelistenv)
+  #parallel::clusterExport(cl, c("edgelist"))
   `%dopar%` = foreach::`%dopar%`
   
   #progress bar
@@ -175,7 +170,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   ##fitting permuted regression model and extracting t-stats in parallel streams
   start=Sys.time()
   
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export=c("getClusters"), .options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind", .options.snow = opts)  %dopar%
     {
       ##commented out alternative method of permutation— permuting only the contrast variable
       #model.permuted=model
@@ -272,12 +267,13 @@ TFCE=function(data,tail=tail,edgelist)
   }
   return(tfce_step_values.all)
 }
+
 ############################################################################################################################
 ############################################################################################################################
 
 ##TFCE multicore— for estimating unpermuted TFCE statistics
 ##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
-TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
+TFCE.multicore=function(data,tail=tail,nthread,edgelist)
 {
   
   #selecting tail type
@@ -317,14 +313,12 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
     getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
     
     cl=parallel::makeCluster(nthread)
-    parallel::clusterExport(cl, c("edgelist"), envir=envir)
+    #parallel::clusterExport(cl, "edgelist")
     doParallel::registerDoParallel(cl)
     `%dopar%` = foreach::`%dopar%`
     
     #Solves the "no visible binding for global variable" issue
     . <- thresh.no <- NULL 
-    internalenv <- new.env()
-    assign("thresh.no", thresh.no, envir = internalenv)
     
     #parallel loop across different score_threshs values for TFCE estimation
     tfce=foreach::foreach(thresh.no=1:length(score_threshs), .combine="rbind")  %dopar%

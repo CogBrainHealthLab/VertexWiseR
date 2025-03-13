@@ -17,11 +17,11 @@
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
 #' @param perm_type A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row". 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -59,8 +59,11 @@
 
 ##Main function
 
-TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
+TFCE_vertex_analysis_mixed2=function(model,contrast, random, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
 {
+  #gets surface matrix if is surf_data is a list or path
+  surf_data=get_surf_obj(surf_data)
+  
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
@@ -125,6 +128,8 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
+  . <- MixedEffect <- NULL
+  
   #read version of SLM that allows to specify the directory for the
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
@@ -149,12 +154,18 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
                 cluster_threshold=1, 
                 data_dir=data_dir)
   
+
+  
   #fit will fetch parcellation data in a different place
   model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
+
+  temp.path=paste0(tempdir(),"/modelfit.pickle")
+  reticulate::py_save_object(model.fit,filename = temp.path)
   
-  model.fit.unpermuted=model.fit
-  #fit model
-  SLM$fit(model.fit.unpermuted,surf_data[,inc.vert.idx])
+  SLM$fit(model.fit,surf_data[,inc.vert.idx])
+  # model.fit.unpermuted=model.fit
+  # #fit model
+  # SLM$fit(model.fit.unpermuted,surf_data[,inc.vert.idx])
   
   #compute unpermuted TFCE stats
   tmap.orig=rep(0,n_vert)
@@ -179,19 +190,19 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   ##estimating permuted stat
   
-  message("Estimating unpermuted t-stats...\n")
-  start=Sys.time()
-  tmap.perm=matrix(NA,nrow=nperm, ncol=NCOL(surf_data))
-  
-  for(perm in 1:nperm)
-  {
-    model.fit.permuted=model.fit
-    SLM$fit(model.fit.permuted,surf_data[permseq[,perm],inc.vert.idx])  
-    tmap.perm[perm,inc.vert.idx]=model.fit.permuted$t
-  }
-  
-  end=Sys.time()
-  message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
+  # message("Estimating unpermuted t-stats...\n")
+  # start=Sys.time()
+  # tmap.perm=matrix(NA,nrow=nperm, ncol=NCOL(surf_data))
+  # 
+  # for(perm in 1:nperm)
+  # {
+  #   model.fit.permuted=model.fit
+  #   SLM$fit(model.fit.permuted,surf_data[permseq[,perm],inc.vert.idx])  
+  #   tmap.perm[perm,inc.vert.idx]=model.fit.permuted$t
+  # }
+  # 
+  # end=Sys.time()
+  # message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
 
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
@@ -215,7 +226,6 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   opts=list(progress = progress)
   
   #preset path to SLM
-  SLMpath= paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py')
   
   message("Estimating unpermuted TFCE-stats...\n")
   
@@ -223,14 +233,19 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   start=Sys.time()
   TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.options.snow = opts)  %dopar%
     {
-      return(max(abs(suppressWarnings(TFCE(data = as.numeric(tmap.perm[perm,]),tail = tail,
+      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
+      modelfit=reticulate::py_load_object(filename = temp.path)
+      
+      SLM$fit(modelfit,surf_data[permseq[,perm],inc.vert.idx])
+      
+      return(max(abs(suppressWarnings(TFCE(data = reticulate::py_to_r(modelfit$t),tail = tail,
                                            edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   unregister_dopar()
   
-  
+  file.remove(temp.path)
   ##saving list objects
   returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)
   names(returnobj)=c("t_stat","TFCE.orig","TFCE.max","tail")
