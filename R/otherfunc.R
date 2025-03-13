@@ -124,27 +124,21 @@
 ## FWHM input is measured in mm, which is subsequently converted into mesh units
 smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
 {
-
-  #Check required python dependencies. If files missing:
+  #gets surface matrix if is surf_data is a list or path
+  surf_data=get_surf_obj(surf_data)
+  
+  #Check required python dependencies. Will skip if smoothing function called as part of modelling smooth_FWHM argument
+  #If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-  if (VWR_check == TRUE & length(sys.calls()) <= 1){
+  if (VWR_check == TRUE & deparse(sys.call(-1)[[1]]) != 'model_check'){
     message("Checking for VertexWiseR system requirements ... ")
     #brainstat must be installed for non hippocampal surf to run get_edgelist, check can be skipped for hippocampus (so 14524 vertices)
     if(max(dim(t(surf_data)))==14524) {
     check = VWRfirstrun('python/conda only')}
     else {check = VWRfirstrun(n_vert=max(dim(t(surf_data))))}
     if (!is.null(check)) {return(check)} 
-  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
-  
-  #if surface_data is a path to an object, reads it
-  if(inherits(surf_data,'character')==TRUE)
-  {
-    surf_data=readRDS(surf_data)
-    #if also contained a subject list, only the surface data is kept
-    if(inherits(surf_data,'list')==TRUE)
-    {surf_data=surf_data[[2]]}
-  }
+  } else if(VWR_check == FALSE & interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Solves the "no visible binding for global variable" issue
   . <- mesh_smooth <- NULL 
@@ -178,7 +172,7 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     edgelist_hip <- get('edgelist_hip') 
     edgelist <- edgelist_hip@data
     FWHM=FWHM/0.5 #converting m to mesh units
-  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6) or 14524 (hippocampal vertices) columns")}
+  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
 
   #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
   idx0=which(colSums(data.matrix(surf_data))==0)
@@ -262,7 +256,7 @@ getClusters=function(surf_data,edgelist)
 #' For hippocampal data, the function currently works with the "bigbrain" 10-parcels atlas integrated in 'HippUnfold.' See also \doi{doi:10.1016/j.neuroimage.2019.116328}.
 #'
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=aparc/Desikan-Killiany-70, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. For hippocampal surface, the 'bigbrain' 10-parcels hippocampal atlas is used by default and ignores the option.
+#' @param atlas A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
 #' @param mode A string indicating whether to extract the sum ('sum') or the average ('mean') of the ROI vertices values. Default is 'mean'.
 #'
 #' @returns A matrix object with ROI as column and corresponding average vertex-wise values as row
@@ -728,8 +722,8 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
 get_edgelist=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainstat.mesh.utils=reticulate::import("brainstat.mesh.utils", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -761,8 +755,8 @@ get_edgelist=function(template)
 get_MNIcoords=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -1031,3 +1025,32 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
 
  return(model_summary) 
 }
+
+####################################################################
+####################################################################
+###################################################################
+#function to automatically read the surface matrix from a list object outputted by the extracter function (containing both the surface matrix and the list of subjects)
+#if it is a string path to the rds, loads the file first
+
+get_surf_obj=function(surf_data)
+{
+  #if surface_data is a path to an object, reads it
+  if(inherits(surf_data,'character')==TRUE)
+  { #if fails to read the path to the RDS, return error
+    if (is(tryCatch(readRDS(surf_data), error=function(e) e))[1] == 'simpleError') 
+  {stop('The surf_data given is a string and was therefore assumed to be a path to a \'.rds\' surface data file. The path failed to be accessed by readRDS().')} 
+   else 
+   {surf_data=readRDS(file=surf_data)}
+  }
+  
+  #if surf_data contains subject list only read surface object
+  if(inherits(surf_data,'list')==TRUE)
+  { if ('surf_obj' %in% names(surf_data))
+    {surf_data=as.matrix(surf_data$surf_obj)} 
+    else {stop('The surf_data given is a list, but the package does not know which element in the list is meant to be the surface matrix. Please name the element "surf_obj" or enter the matrix as surf_data.'
+    )}
+  }
+
+  return(surf_data)
+}
+ 

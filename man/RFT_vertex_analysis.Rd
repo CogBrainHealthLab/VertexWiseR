@@ -33,18 +33,18 @@ RFT_vertex_analysis(
 
 \item{formula_dataset}{An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).}
 
-\item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.}
+\item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.}
 
 \item{p}{A numeric object specifying the p-value to threshold the results (Default is 0.05)}
 
-\item{atlas}{A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.}
+\item{atlas}{A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
 
-\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm}
+\item{smooth_FWHM}{A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.}
 
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
+A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 }
 \description{
 Fits a linear or linear mixed model with the cortical or hippocampal surface data as the predicted outcome, and returns cluster-thresholded (Random field theory) t-stat map selected contrast.
@@ -52,7 +52,7 @@ Fits a linear or linear mixed model with the cortical or hippocampal surface dat
 \details{
 The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BrainStat' Python library}.
 
-By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.
+By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To look at data without any form of cluster correction, users can simply refer to the outputted 'tstat_map'.
 
 Output definitions:
 \itemize{

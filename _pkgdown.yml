@@ -1,7 +1,9 @@
 title: VertexWiseR
 url: https://cogbrainhealthlab.github.io/VertexWiseR/
 template:
+  light-switch: true
   bootstrap: 5
+  bootswatch: sandstone
 
 reference:
   - title: Requirements check
@@ -15,6 +17,7 @@ reference:
     - HIPvextract
     - SURFvextract
     - FSLRvextract
+    - CAT12vextract
     - smooth_surf
     - fs_stats
     
@@ -31,6 +34,7 @@ reference:
     desc: >
     contents:
     - plot_surf
+    - plot_surf3d
   
   - title: Other functions
   - subtitle: Atlas manipulations

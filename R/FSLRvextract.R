@@ -5,7 +5,7 @@
 #'
 #' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
 #' @param wb_path The filepath to the workbench folder that you have previously downloaded and unzipped
-#' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k_measure.rds' in the R temporary directory (tempdir()).
+#' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
 #' @param dscaler A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 #' \itemize{
 #'  \item `.thickness_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
@@ -31,8 +31,7 @@
 
 FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, silent=FALSE)
 {
-  oldwd <- getwd()
-  on.exit(setwd(oldwd)) #will restore user's working directory path on function break
+  oldwd <- getwd() 
   
   if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
@@ -75,8 +74,11 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, 
   if(silent==FALSE) {message(paste0("Saving output as ",filename))}
   ##output file depending on subj_ID==T
 
-  if(subj_ID==TRUE) {saveRDS(list(sublist,fslr32k_dat), file=filename)} 
-  else  {saveRDS(fslr32k_dat, file=filename)}
+  if(subj_ID==TRUE) {fslr32k_dat=list(sub_list=sublist, 
+                                       surf_obj=fslr32k_dat)} 
+  
+  setwd(oldwd) #will restore user's working directory path on function break
+  saveRDS(fslr32k_dat, file=filename)
   
   if(silent==FALSE) {message("done!")}
   

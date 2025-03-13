@@ -4,22 +4,23 @@
 #'
 #' @param surf_data  A numeric vector (length of V) 
 #' @param surf_color  color of the cortical surface. Set to `'grey'` by default
-#' @param cmap A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale. If none are specified, appropriate colors will be automatically selected according to `range(surf_data)`
+#' @param cmap A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale. See `RColorBrewer::display.brewer.all()` for all possible cmap options. If none are specified, appropriate colors will be automatically selected according to `range(surf_data)`
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits `c(-max(abs(surf_dat),max(abs(surf_dat)))` will be used. 
 #' @param atlas atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
 #' @param hemi A string specifying the hemisphere to plot. Possible values are `l` (left), `r` (right) or `b` (both).
+#' @param medial_gap A numeric value specifying the amount of gap (in MNI coordinate units) to separate the left and right hemispheres. Set to `0` (no gap between hemispheres) by default. In order to view the medial surfaces clearly, it is recommended that this value is set to `20`. This argument is ignored if `hemi!='b'`
 #' @param orientation_labels A boolean object specifying if orientation labels are to be displayed. Set to `TRUE` by default
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns a plot_ly object
 #' @examples
 #' surf_data = runif(20484);
-#' plot_surf3d(surf_data = surf_data)
+#' plot_surf3d(surf_data = surf_data, VWR_check=FALSE)
 #' @importFrom plotly plot_ly add_trace layout
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",orientation_labels=TRUE,VWR_check=TRUE)
+plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",medial_gap=0,orientation_labels=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -43,12 +44,10 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap=c("#324DA0","#E7F1D5")}
       else  {cmap=c("#E7F1D5","#324DA0","#A51122","#F5FACD")}  
     }
-    
     # enabling custom color scales
     if(length(cmap)==2) {cmap=list(list(0,cmap[1]), list(1,cmap[2]))} 
     else if(length(cmap)==3){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(1,cmap[3]))}
     else if(length(cmap)==4){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(0.51,cmap[3]),list(1,cmap[4]))}
-    
   
   ## selecting template and ROI map depending on no. vertices
     n_vert=length(surf_data)
@@ -60,7 +59,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
     } else if (n_vert==64984)
     {
-      tri=t(VertexWiseRget_faces("fslr32k"))
+      tri=t(get_faces("fslr32k"))
       coords=t(get_MNIcoords("fslr32k"))
       ROImap_fslr32k <- get('ROImap_fslr32k')
       ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
@@ -97,7 +96,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       if(limits.range[1]>=0) {limits=c(0,limits.range[2])} ##if image contains all positive values
       else if(limits.range[2]<=0) {limits=c(limits.range[1],0)} ##if image contains all negative values
       else if(limits.range[1]<0 & limits.range[2]>0){limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
-    } else {limits=c(limits[1],limits[2])    }
+    } else {limits=c(limits[1],limits[2])}
     
   ##splitting cortical data in to LH and RH if necessary 
     mid.idx=n_vert/2
@@ -124,13 +123,17 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       face.stat=face.stat[(mid.tri+1):length(tri)]
       face.stat.non0.idx=which(abs(face.stat)>0)
       
-      
       ROI.idx=ROImap[[1]][,atlas]
       ROI.idx[ROI.idx==0]=max(ROI.idx)+1
       ROI.text=ROImap[[2]][,atlas][ROI.idx]
       ROI.text=ROI.text[(mid.idx+1):n_vert]
+      
     } else if(hemi=="b")
     {
+      #add x-coord offset to increase separation between left and right hemi
+      coords[1:mid.idx,1]=coords[1:mid.idx,1]-medial_gap
+      coords[(mid.idx+1):n_vert,1]=coords[(mid.idx+1):n_vert,1]+medial_gap
+      
       face.stat.non0.idx=which(abs(face.stat)>0)
       ROI.idx=ROImap[[1]][,atlas]
       ROI.idx[ROI.idx==0]=max(ROI.idx)+1
@@ -144,13 +147,10 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                         z = coords[,3],
                         i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                         j = tri[, 2] - 1,
-                        k = tri[, 3] - 1,facecolor=surf_color)
+                        k = tri[, 3] - 1,facecolor=rep(surf_color,NROW(tri)))
   
   ##overlay statistical map on cortical surface
     fig=add_trace(fig,type = 'mesh3d',
-                  x = coords[,1],
-                  y = coords[,2],
-                  z = coords[,3],
                   i = tri[face.stat.non0.idx,][, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                   j = tri[face.stat.non0.idx,][, 2] - 1,
                   k = tri[face.stat.non0.idx,][, 3] - 1,
@@ -160,7 +160,28 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   cmin = limits[1],
                   cmax = limits[2])
 
-  ##add mouse-over text                 
+ ##x coordinate is mapped differently depending on whether a medial_gap is specified
+  if(hemi=="b" & medial_gap>0)
+  {
+    #subtract x-coord offset to obtain original x-coords
+    customdata=coords[,1]
+    customdata[1:mid.idx]=customdata[1:mid.idx]+medial_gap
+    customdata[(mid.idx+1):n_vert]=customdata[(mid.idx+1):n_vert]-medial_gap
+    
+    ##add mouse-over text
+    fig=add_trace(fig,text=ROI.text,hovertext=surf_data,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
+                  x = coords[,1],
+                  y = coords[,2],
+                  z = coords[,3],
+                  i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                  j = tri[, 2] - 1,
+                  k = tri[, 3] - 1,
+                  customdata=customdata,
+                  hovertemplate=paste("Region label: %{text}<br>",
+                                      "MNI coords: %{customdata:.1f},%{y:.1f},%{z:.1f}<br>",
+                                      "statistic:%{hovertext:.2f}<extra></extra>"))
+  } else
+  {
     fig=add_trace(fig,text=ROI.text,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
                   x = coords[,1],
                   y = coords[,2],
@@ -172,9 +193,9 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   hovertemplate=paste("Region label: %{text}<br>",
                                       "MNI coords: %{x:.1f},%{y:.1f},%{z:.1f}<br>",
                                       "statistic:%{customdata:.2f}<extra></extra>"))
-    
+  }
   ##axis parameters
-  p=plotly::layout(fig,
+  fig=plotly::layout(fig,
                    hoverlabel = list(align = "left"),
                    scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
                                 xaxis = list(showgrid = T,showticklabels=T,showspikes=F,zeroline=F, title=""),
@@ -188,9 +209,9 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
     axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
     axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
     
-    p = layout(p,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+    fig = layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
   }
-  return(p)
+  return(fig)
 }
 
 ############################################################################################################################
@@ -199,8 +220,8 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
 get_faces=function(template)
 {
   #Load brainstat tools
-  brainstat.datasets=reticulate::import("brainstat.datasets")  
-  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements")
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.mesh.mesh_elements=reticulate::import("brainspace.mesh.mesh_elements", delay_load = TRUE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')

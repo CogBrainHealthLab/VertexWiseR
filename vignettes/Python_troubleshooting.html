@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Charly Billaud, Junhong Yu" />
+
+<meta name="date" content="2025-03-07" />
+
+<title>Python troubleshooting</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Python troubleshooting</h1>
+<h4 class="author">Charly Billaud, Junhong Yu</h4>
+<h4 class="date">2025-03-07</h4>
+
+
+
+<p>VertexWiseR uses Python functions from various toolboxes that can
+flexibly be called and executed in R using the <em>reticulate</em>
+package <span class="citation">(Ushey, Allaire, and Tang
+2023)</span>. We explain in this article how to solve a number of issues
+that may arise from the interaction with Python.</p>
+<div id="about-the-message-would-you-like-to-create-a-default-python-environment-for-the-reticulate-package-yesnocancel-reticulate-1.41.0" class="section level2">
+<h2>1. About the message: “Would you like to create a default Python
+environment for the reticulate package? (Yes/no/cancel)” (reticulate
+&lt; 1.41.0)</h2>
+<p>As explained in the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/">home page</a>,
+this is a pop-up or prompt from the reticulate package. Choosing ‘Yes’
+will let reticulate install Python in a virtual environment. This is
+entirely optional. Simply choose/click No/Cancel to ignore.</p>
+<p>The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
+documentation</a> explains:</p>
+<blockquote>
+<p>When installing Python packages it’s best practice to isolate
+&gt;them within a Python environment (a named Python installation
+&gt;that exists for a specific project or purpose). This provides a
+&gt;measure of isolation, so that updating a Python package for one
+&gt;project doesn’t impact other projects. The risk for package
+&gt;incompatibilities is significantly higher with Python packages
+&gt;than it is with R packages, because unlike CRAN, PyPI does not
+&gt;enforce, or even check, if the current versions of packages
+&gt;currently available are compatible.</p>
+</blockquote>
+<p>Note that VertexWiseR will install a stable specific version of
+Python itself and of each package it needs to work properly. If users
+believe they will be using the Miniconda/Python installation for more
+than VertexWiseR and will need to update them, it may be safer to
+install a specific Miniconda/Python environment in a path of their
+choice (as allowed by VWRfirstrun()), or to use a reticulate isolated
+virtual environment. More details on why using virtual environments can
+be found in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
+documentation</a>.</p>
+</div>
+<div id="how-to-make-vwrfirstrun-ignore-the-systems-python-environment-when-starting-a-fresh-installation" class="section level2">
+<h2>2. How to make VWRfirstrun() ignore the system’s Python environment
+when starting a fresh installation</h2>
+<p>VertexWiseR will automatically select and run a Python installation
+it finds via reticulate, but users may want to prevent this and run
+VertexWiseR on a new Python installation of its own. This section
+explains how to make <code>VWRfirstrun()</code> ignore a previous
+Python/Miniconda installation in order to install a new one (which will
+<em>not</em> affect the system’s Python libraries).</p>
+<p>Firstly, the Python installation path may already be preloaded in the
+global environment, via files such as <code>.Renviron</code>,
+<code>.Rprofile</code>, <code>.bashrc</code> etc. If that is the case
+they should be edited to remove the path of a previous Python
+installation, which will avoid reticulate from using those paths
+automatically.</p>
+<p>Secondly, if the Python paths are not specified in the global
+environment, reticulate will then search for a Python installation in
+its default locations. This can be avoided with the method below.</p>
+<p>To make <code>VWRfirstrun()</code> ignore a previous Python
+installation, users can set the <code>RETICULATE_PYTHON</code> variable
+as <code>NA</code> (in a new R session with a clean workspace) before
+running the function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_PYTHON=</span><span class="cn">NA</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">VWRfirstrun</span>()</span></code></pre></div>
+<p>With the above lines, reticulate should fail to load Python and
+respond in the same way it would if Python was not previously installed
+at all. Therefore, <code>VWRfirstrun()</code> will prompt users to
+install a new Python environment. After that, <code>VWRfirstrun()</code>
+will use that newly installed Python environment by default and users
+should not need to do this again.</p>
+</div>
+<div id="how-to-make-vwrfirstrun-use-a-specific-python-installation" class="section level2">
+<h2>3. How to make VWRfirstrun() use a specific Python installation</h2>
+<p>This section explains how users can choose a different Python other
+than the one automatically detected if they wish to, instead of
+installing a new one.</p>
+<div id="a.-for-a-new-fresh-vertexwiser-set-up" class="section level3">
+<h3>a. For a new, fresh VertexWiseR set-up</h3>
+<p>Reticulate allows users to predefine the Python environment to be
+used by entering their Python’s directory path into the <a href="https://rstudio.github.io/reticulate/reference/use_python.html">following
+functions</a>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_python</span>(python)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_virtualenv</span>(virtualenv)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_condaenv</span>(condaenv)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_miniconda</span>(condaenv)</span></code></pre></div>
+<p>These functions must be executed before <code>VWRfirstrun()</code> is
+run in the R session. The latter function should then automatically
+assume that a version of Python is correctly installed and only ask for
+other packages to be downloaded/installed if they are missing. To check
+the Python installation that is being used, users can run:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">py_config</span>()</span></code></pre></div>
+<p>This will print the information and path of the Python environment
+reticulate is currently using. If that is still not the path specified
+in the functions listed above, users should try restarting R and/or
+clearing the R workspace first.</p>
+</div>
+<div id="b.-if-the-vwrfirstrun-installations-were-already-done-before" class="section level3">
+<h3>b. If the VWRfirstrun() installations were already done before</h3>
+<p>If Python or Miniconda was already installed using
+<code>VWRfirstrun()</code>, users will not be able to modify the Python
+path in the above manner. That is because the path to the user-selected
+default or custom installations is saved in order to conveniently access
+them again later. Every time <code>VWRfirstrun()</code> is run, it will
+read and use such saved paths. This also depends on whether the user
+created a default ephemeral environment or chose a manual
+Python/Miniconda installation.</p>
+<ul>
+<li><strong>If the user installed a Miniconda or Python environment in
+the classic way</strong></li>
+</ul>
+<p>The paths to these installations are saved inside the
+<code>.Renviron</code> file, in the standard path generated via:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="at">package=</span><span class="st">&#39;VertexWiseR&#39;</span>)</span></code></pre></div>
+<p>Within the <code>.Renviron</code> file, the environment variables
+will be written in this manner:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>RETICULATE_MINICONDA_PATH<span class="ot">=</span><span class="st">&quot;C:/path_to_miniconda/&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>RETICULATE_PYTHON_FALLBACK<span class="ot">=</span><span class="st">&quot;C:/path_to_miniconda/&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>RETICULATE_PYTHON<span class="ot">=</span><span class="st">&quot;C:/path_to_miniconda/python.exe&quot;</span></span></code></pre></div>
+<p>To swap with another Python environment, users may choose to edit
+<code>.Renviron</code> directly, by replacing the paths with the Python
+installation they would like VertexWiseR to use instead. The
+<code>RETICULATE_MINICONDA_PATH</code> may also be safely removed if a
+non-conda Python library is to be used. Alternatively, users may choose
+to completely remove the <code>.Renviron</code> and redefine the path as
+described in section 3a.</p>
+<ul>
+<li><strong>If the user created an ephemeral virtual
+environment</strong></li>
+</ul>
+<p>This is in the case that users chose the virtual environment
+installation proposed by VWRfirstrun(), which calls
+reticulate::py_require(). The path to such environment is accessible
+with that command line:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)</span></code></pre></div>
+<p>To stop using this environment, users may choose to clear the cache
+completely:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">system</span>(<span class="fu">paste</span>(<span class="st">&#39;rm -rf&#39;</span>,tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)))</span></code></pre></div>
+<p>If they do not wish to get rid of the previous virtual environment,
+users will have to modify and/or remove the VIRTUAL_ENV variable which
+has been stored in the <code>.Renviron</code> file, in the standard path
+generated via:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="at">package=</span><span class="st">&#39;VertexWiseR&#39;</span>)</span></code></pre></div>
+<p>This variable is automatically removed when the virtual environment
+can no longer be found in the cache, but will automatically be used by
+VWRfirstrun() after its installation to speed up the process, if it
+still exists. So the VIRTUAL_ENV variable must be rewritten to the new
+ephemeral environment generated by py_require() to use the latter.</p>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References:</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-ushey_reticulate_2023" class="csl-entry">
+Ushey, K, J Allaire, and Y Tang. 2023. <span>“Reticulate:
+<span>Interface</span> to ’<span>Python</span>’.”</span> <a href="https://CRAN.R-project.org/package=reticulate">https://CRAN.R-project.org/package=reticulate</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -16,11 +16,11 @@
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
 #' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
@@ -61,6 +61,8 @@
 
 TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
 {
+  #gets surface matrix if is surf_data is a list or path
+  surf_data=get_surf_obj(surf_data)
   
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -368,7 +370,7 @@ TFCE.multicore=function(data,tail=tail,nthread,edgelist)
 #' 
 #' @param TFCEoutput An object containing the output from TFCE_vertex_analysis()
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148 (Default is 1)
+#' @param atlas A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
 #' @param k Cluster-forming threshold (Default is 20)
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -388,11 +390,11 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session
-  if (VWR_check == TRUE & length(sys.calls()) <= 1){
+  if (VWR_check == TRUE){
     message("Checking for VertexWiseR system requirements ... ")
     check = VWRfirstrun(requirement="conda/brainstat")
     if (!is.null(check)) {return(check)} 
-  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  } else if(VWR_check == FALSE & interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   nperm=length(TFCEoutput$TFCE.max)
   

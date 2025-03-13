@@ -6,7 +6,7 @@
 #'
 #' @details The function imports and adapts the \href{https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)}{ 'BrainStat' Python library}. 
 #' 
-#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To turn off any form of cluster correction and obtain unthresholded t-statistics, users can simply set ‘p=1’.
+#' By default, false discovery rate correction is used together with the Random field theory (RFT) cluster correction. To look at data without any form of cluster correction, users can simply refer to the outputted 'tstat_map'.
 #' 
 #' Output definitions:
 #' - `nverts`: number of vertices in the cluster
@@ -23,13 +23,13 @@
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
-#' @param atlas A numeric integer object corresponding to the atlas of interest. 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148.
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm 
+#' @param atlas A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
-#' @returns A list object containing the cluster level results, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
+#' @returns A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, positive, negative and bidirectional cluster maps, and a FDR-corrected p-value map.
 #' 
 #' @seealso \code{\link{TFCE_vertex_analysis}}, \code{\link{TFCE_vertex_analysis_mixed}}
 #' 
@@ -59,6 +59,8 @@
 ##vertex wise analysis with mixed effects
 RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
+  #gets surface matrix if is surf_data is a list or path
+  surf_data=get_surf_obj(surf_data)
   
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -81,8 +83,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   } else if ((missing(formula) & !missing(formula_dataset)) | (!missing(formula) & missing(formula_dataset)))
   {stop('The formula and the formula_dataset arguments must both be provided to work.')}
   
-  #run all checks for correct structure, recode variables when needed with
-  #model_check()
+  #run all checks for correct structure, recode variables when needed with model_check()
   if (missing(random)) {random=NULL};
   if (missing(smooth_FWHM)) {smooth_FWHM=NULL};
   model_summary=model_check(model=model, contrast=contrast, 
@@ -121,7 +122,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
-    
+  . <- FixedEffect <- NULL
+  . <- MixedEffect <- NULL
+  
   ##import python libaries
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   
@@ -282,7 +285,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   fdrpmap=model$Q
   
   #listing objects to return
-  returnobj=(list(cluster_results,as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
-  names(returnobj)=c("cluster_level_results","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
+  returnobj=(list(cluster_results,as.numeric(model$t), as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
+  names(returnobj)=c("cluster_level_results","tstat_map","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
   return(returnobj)
 }

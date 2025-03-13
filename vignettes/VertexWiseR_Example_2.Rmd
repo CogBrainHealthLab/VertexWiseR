@@ -88,7 +88,7 @@ plot_surf(surf_data = tmaps,
           show.plot.window=FALSE)
 ```
 
-```{r, echo=FALSE, fig.align="center", out.width="100%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant hippocampal clusters, RFT corrected and TFCE corrected"}
 knitr::include_graphics('FINK_tstatmaps.png')
 ```
 
@@ -141,7 +141,7 @@ print(plots)
 dev.off()
 ```
 
-```{r, echo=FALSE, fig.align="center", out.width="100%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Graph showing average cluster thickness per group and correction method for each cluster"}
 knitr::include_graphics('traj.png')
 ```
 

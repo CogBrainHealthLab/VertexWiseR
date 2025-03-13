@@ -1,153 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/404.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/atlas_to_fs5.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/atlas_to_surf.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/decode_surf_data.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelistfs5.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelistfs6.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelistHIP.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist_hip.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs5_to_atlas.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs5_to_fs6.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5_map.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/FSLRvextract.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs_stats.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/get_edgelist.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/get_MNIcoords.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/HIPvextract.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/hip_points_cells.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/hip_to_atlas.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNImap_fs5.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNImap_fs6.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNImap_hip.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNIsurface-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/plot_surf.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/RFT_vertex_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fs5.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fs6.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fslr32k.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_HIP.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/smooth_surf.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/SURFvextract.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/surf_to_atlas.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/surf_to_vol.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE.threshold.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE.vertex_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE.vertex_analysis.mixed.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_threshold.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis_mixed.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/vertex_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/VWRfirstrun.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/404.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/index.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/authors.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/index.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/LICENSE-text.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/atlas_to_surf.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/CAT12vextract.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/decode_surf_data.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist-class.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/edgelist_hip.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs5_to_fs6.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5_map.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/FSLRvextract.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs_stats.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/HIPvextract.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/hip_points_cells.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/index.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNImap_hip.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/MNIsurface-class.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/plot_surf.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/plot_surf3d.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/RFT_vertex_analysis.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap-class.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fs5.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fs6.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_fslr32k.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/ROImap_HIP.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/smooth_surf.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/SURFvextract.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/surf_to_atlas.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/surf_to_vol.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_threshold.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis_mixed.html</loc></url>
+<url><loc>https://cogbrainhealthlab.github.io/VertexWiseR/reference/VWRfirstrun.html</loc></url>
 </urlset>
+

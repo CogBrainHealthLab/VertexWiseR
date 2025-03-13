@@ -24,10 +24,11 @@ Default is 'any' and checks everything.
 No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 }
 \description{
-Helps the user verify if VertexWisrR's system requirements are present and install them ('Miniconda', 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten.
+Helps the user verify if VertexWisrR's system requirements are present and install them (a suitable 'Python' or 'Miniconda' environment, 'BrainStat' toolbox and libraries). If they are installed already, nothing will be overwritten.
 }
 \details{
-VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, 'Miniconda' needs to be installed with it — 'Miniconda' is a lightweight version of Python, specifically for use within 'RStudio'. If for a reason Miniconda cannot be installed, the function gives the choice to install a reticulate-suitable Python environment.
+VertexWiseR imports and makes use of the R package 'reticulate.' 'reticulate' is a package that allows R to borrow or translate Python functions into R. Using 'reticulate', the package calls functions from the 'BrainStat' Python module. For 'reticulate' to work properly with VertexWiseR, a Python environment needs to be installed with it — the default choice offered by VWRfirstrun is to let reticulate (version 1.41.0) create an ephemeral Python virtual environment using UV and py_require().
+If for a reason this is not desirable, VWRfirstrun() also gives the choice to install a 'Miniconda' (lightweight version of Python) or Python environment in a reticulate default path or a specified path.
 Vertex-wise statistical analyses of cortical surface require fsaverage and parcellation templates as imported by default in 'BrainStat'.
 The decode_surf_data() function also requires the 'Neurosynth' database to be downloaded.
 }

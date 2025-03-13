@@ -18,7 +18,6 @@
 HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRUE)
 {
   oldwd <- getwd()
-  on.exit(setwd(oldwd)) #will restore user's working directory path on function break
   
   if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
@@ -56,9 +55,10 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   ##If subj_ID==TRUE, the surface data is saved as a list object with the  with subject list appended
   if(subj_ID==TRUE)
   {
-    hip_dat=list(sublist,hip_dat);
+    hip_dat=list(sub_list=sublist,surf_obj=hip_dat);
   } 
-  
+
+setwd(oldwd) #will restore user's working directory path on function break
 saveRDS(hip_dat, file=filename)
 return(hip_dat)
 }

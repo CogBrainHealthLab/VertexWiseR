@@ -46,7 +46,7 @@ The following commented out code is the script which was used to produce this de
 
 The surface can be loaded straight from the online repository and then smoothed :
 
-```{r}
+```{r, envir=globalenv()}
 SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
 
 SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
@@ -97,7 +97,7 @@ plot_surf(surf_data = tmaps,
           cmap='RdBu_r',
           show.plot.window=FALSE)
 ```
-```{r, echo=FALSE, fig.align="center", out.width="100%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction and TFCE correction"}
 knitr::include_graphics('SPRENG_tstatmaps.png')
 ```
 
