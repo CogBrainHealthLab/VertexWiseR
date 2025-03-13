@@ -186,7 +186,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   message("Estimating unpermuted t-stats...\n")
   start=Sys.time()
-  tmap.perm=matrix(NA,nrow=nperm, ncol=NCOL(surf_data))
+  tmap.perm=matrix(0,nrow=nperm, ncol=NCOL(surf_data))
   
   for(perm in 1:nperm)
   {
