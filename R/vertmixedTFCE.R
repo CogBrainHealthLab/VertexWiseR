@@ -168,6 +168,8 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
 
   #save model to temp dir
   temp.dir=tempdir()
+  if(!dir.exist(temp.dir))  {dir.create(temp.dir)}
+  
   reticulate::py_save_object(model.fit,filename = paste0(temp.dir,"/modelfit.pickle"))
   
   #fit model
@@ -237,7 +239,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   unregister_dopar()
   
-  file.remove(temp.dir)
+  unlink(temp.dir, recursive = TRUE) 
   ##saving list objects
   returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)
   names(returnobj)=c("t_stat","TFCE.orig","TFCE.max","tail")
