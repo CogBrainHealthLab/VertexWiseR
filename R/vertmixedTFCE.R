@@ -143,7 +143,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   
-  terms=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
+  terms=MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
@@ -165,6 +165,10 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   #fit will fetch parcellation data in a different place
   model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
+
+  #save model to temp dir
+  temp.dir=tempdir()
+  reticulate::py_save_object(model.fit,filename = paste0(temp.dir,"/modelfit.pickle"))
   
   #fit model
   SLM$fit(model.fit,surf_data[,inc.vert.idx])
@@ -197,8 +201,8 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   }
   unregister_dopar()
   
-  getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
-  TFCE = utils::getFromNamespace("TFCE", "VertexWiseR")
+  #getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
+  #TFCE = utils::getFromNamespace("TFCE", "VertexWiseR")
   
   cl=parallel::makeCluster(nthread)
   doParallel::registerDoParallel(cl)
@@ -218,44 +222,22 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   start=Sys.time()
   TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export="getClusters",.options.snow = opts)  %dopar%
     {
-      #load python libraries within each foreach loop
-      reticulate::source_python(SLMpath)
-      #read version of SLM that allows to specify the directory for the
+      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
 
-      #Brainstat data, will either be stored in default $HOME path or 
-      #custom if it's been set via VWRfirstrun()
-      if (Sys.getenv('BRAINSTAT_DATA')=="")
-      {brainstat_data_path=fs::path_home()} else if 
-      (!Sys.getenv('BRAINSTAT_DATA')=="") 
-      {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
-      #convert path to pathlib object for brainstat
-      data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
+      #load previously saved model
+      modelfit=reticulate::py_load_object(filename = paste0(temp.dir,"/modelfit.pickle"))
+
+      #fit model to permuted data
+      SLM$fit(modelfit,surf_data[permseq[,perm],inc.vert.idx])
       
-      ##fit permuted models
-      terms=MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
-      model.fit=SLM(model = terms,
-                    contrast=contrast,
-                    correction="None",
-                    cluster_threshold=1, 
-                    data_dir=data_dir)
-      
-      #fit will fetch parcellation data in a different place
-      model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
-      
-      #fit model
-      SLM$fit(model.fit,surf_data[permseq[,perm],inc.vert.idx])
-      
-      tmap.perm=rep(0,n_vert)
-      tmap.perm[inc.vert.idx]=as.numeric(model.fit$t)  
-        
-      return(max(abs(suppressWarnings(TFCE(data = tmap.perm,tail = tail,
+      return(max(abs(suppressWarnings(TFCE(data = modelfit$t,tail = tail,
                                            edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   unregister_dopar()
   
-  
+  file.remove(temp.dir)
   ##saving list objects
   returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)
   names(returnobj)=c("t_stat","TFCE.orig","TFCE.max","tail")
