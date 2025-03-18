@@ -168,7 +168,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
 
   #save model to temp dir
   temp.dir=tempdir()
-  if(!dir.exist(temp.dir))  {dir.create(temp.dir)}
+  if(!dir.exists(temp.dir))  {dir.create(temp.dir)}
   
   reticulate::py_save_object(model.fit,filename = paste0(temp.dir,"/modelfit.pickle"))
   
