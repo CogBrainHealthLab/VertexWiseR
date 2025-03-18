@@ -143,7 +143,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
   
-  terms=MixedEffect(ran = random,fix = model,"_check_categorical" = FALSE)
+  terms=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)
   
   #Read new python enviroment
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
