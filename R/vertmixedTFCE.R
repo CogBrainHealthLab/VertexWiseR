@@ -49,7 +49,7 @@
 #' #formula_dataset=demodata, surf_data=CTv, tail=1, 
 #' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
-#' @importFrom reticulate import r_to_py
+#' @importFrom reticulate import r_to_py py_save_object py_load_object
 #' @importFrom foreach foreach 
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel

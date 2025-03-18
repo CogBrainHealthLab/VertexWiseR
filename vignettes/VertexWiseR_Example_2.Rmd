@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 2"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-08-12"
+date: "2025-03-18"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 2}
@@ -62,6 +62,7 @@ model2_RFT$cluster_level_results
 To run the vertex-wise mixed model analysis with threshold-free cluster enhancement-based cluster correction, with 1000 permutations, testing for the effect of session, group, session \* group interaction, on hippocampal thickness, with subject ID as a random variable:
 
 ```{r, results = 'hide'}
+set.seed(123)
 model2_TFCE=TFCE_vertex_analysis_mixed(
   model = dat_beh_ses13[,c("session","group","session_x_group")], 
   contrast = dat_beh_ses13[,"session_x_group"], 
@@ -84,7 +85,7 @@ tmaps = rbind(model2_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map
 plot_surf(surf_data = tmaps, 
           filename = 'FINK_tstatmaps.png', 
           title=c('RFT-corrected\nclusters','TFCE-corrected\nclusters'), 
-          cmap='RdBu_r',
+          cmap='Reds',
           show.plot.window=FALSE)
 ```
 
@@ -96,13 +97,12 @@ knitr::include_graphics('FINK_tstatmaps.png')
 
 The code below was used in R (v.4.3.3) to plot the cluster-wise values from the RFT and TFCE corrected analyses and validate them with additional mixed linear models.
 
-We produce a figure displaying the thickness of the positive and negative hippocampal clusters in relation to the group and session variables, in RFT and TFCE models, demonstrating a steeper curve toward group 2: 
+We produce a figure displaying the thickness of the hippocampal clusters in relation to the group and session variables, in RFT and TFCE models, demonstrating a steeper curve toward group 2: 
 
 ```{r, results = 'hide'}
 #We divide the cluster values by their sum to get the average thickness per vertex
 dat_beh_ses13$clustCTTFCE=(FINK_Tv_smoothed_ses13 %*% TFCEoutput$pos_mask)/sum(TFCEoutput$pos_mask>0)
 dat_beh_ses13$clustRFT=(FINK_Tv_smoothed_ses13 %*% model2_RFT$pos_mask)/sum(model2_RFT$pos_mask>0)
-dat_beh_ses13$neg.clustCTTFCE=(FINK_Tv_smoothed_ses13 %*% TFCEoutput$neg_mask)/sum(TFCEoutput$neg_mask>0)
 
 library(ggplot2)
 library(ggbeeswarm)
@@ -122,21 +122,12 @@ b=ggplot(data=dat_beh_ses13,aes(y=clustRFT,x=as.factor(session), color=as.factor
   geom_line(aes(group=participant_id), alpha=0.2)+
   geom_smooth(aes(group=group), method="lm")+
   labs(y="Mean thickness (mm)", x="session", color="group")+
-  guides(colour = "none")+
   ggtitle("Positive cluster\n(RFT-corrected)")+ 
-  ylim(1.1, 1.55)
-
-c=ggplot(data=dat_beh_ses13,aes(y=neg.clustCTTFCE,x=as.factor(session), color=as.factor(group)))+
-  geom_quasirandom(dodge.width=0.5)+
-  geom_line(aes(group=participant_id), alpha=0.2)+
-  geom_smooth(aes(group=group), method="lm")+
-  labs(y="Mean thickness (mm)", x="session", color="group")+
-  ggtitle("Negative cluster\n(TFCE-corrected)")+
   scale_color_discrete(name="Group",labels=c("group 1", "group 2"))+
   ylim(1.1, 1.55)
 
 png(filename="traj.png", res=300, width=2500,height=1080)
-plots=plot_grid(a,b,c, nrow=1,rel_widths=c(0.3,0.3,0.43))
+plots=plot_grid(a,b, nrow=1,rel_widths=c(0.3,0.40))
 print(plots)
 dev.off()
 ```
@@ -165,12 +156,4 @@ Linear mixed effect testing the effect of session, group, and session * group in
 lme.posTFCE=lmer(clustCTTFCE~session+group+session*group+(1|participant_id),data =dat_beh_ses13 )
 summary(lme.posTFCE)
 ```
-
-Linear mixed effect testing the effect of session, group, and session * group interaction on the negative TFCE clusters' average thickness value
-
-```{r}
-lme.negTFCE=lmer(neg.clustCTTFCE~session+group+session*group+(1|participant_id),data =dat_beh_ses13 )
-summary(lme.negTFCE)
-```
-
 ## References:

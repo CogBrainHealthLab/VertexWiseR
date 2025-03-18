@@ -99,7 +99,7 @@ tools::R_user_dir("reticulate", "cache")
 To stop using this environment, users may choose to clear the cache completely:
 
 ```{r, eval=FALSE}
-system(paste('rm -rf',tools::R_user_dir("reticulate", "cache")))
+unlink(tools::R_user_dir("reticulate", "cache"))
 ```
 
 If they do not wish to get rid of the previous virtual environment, users will have to modify and/or remove the VIRTUAL_ENV variable which has been stored in the `.Renviron` file, in the standard path generated via:
