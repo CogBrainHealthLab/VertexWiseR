@@ -226,12 +226,14 @@ getClusters=function(surf_data,edgelist)
   if(length(edgelist1)>2) #if at least 2 edges are identified
   {
     #extracting cluster-related info from list of non-zero edges
-    com=igraph::components(igraph::graph_from_data_frame(edgelist1, directed = FALSE))
+    #graph_from_data_frame() works a lot faster with character data
+    com=igraph::components(igraph::graph_from_data_frame(matrix(as.character(edgelist1),ncol=2), directed = FALSE))
     clust.size=com$csize
     
     #cluster mappings
     clust.map=rep(NA,n_vert)
-    clust.map[as.numeric(names(com$membership))]=com$membership
+    #need to insert the indices of the selected vertices within square brackets, components() no longer returns named numeric vector if the graph is constructed from character data
+    clust.map[unique(as.numeric(edgelist1))]=com$membership 
   
   } else if(length(edgelist1)==2) #bypass cluster extraction procedure if only 1 edge is identified
   {
