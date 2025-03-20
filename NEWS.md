@@ -1,7 +1,7 @@
 # VertexWiseR v1.3.0
 
 ## NEW FEATURES
-* TFCE computation is now optimized for speed: previously, the parallel steps in the foreach loop were building the linear model again every time; now the model will be saved as a file in a temporary directory (tempdir(), which will automatically be cleaned up), and loaded within the foreach loops instead of rebuilt.
+* TFCE computation is now optimized for speed: previously, the parallel steps in the permutation loop were building the linear model again every time; now the model will be saved as a file in a temporary directory (tempdir(), which will automatically be cleaned up), and loaded within the loops instead of rebuilt.
  
 ## FIXES
 * TFCE_vertex_analysis_mixed(): The random variable was not being  processed identically in BrainStat across the permuted and unpermuted models, because of a setting factorizing the variable in only one case. Now random variables are factorized in both. This error affected the coefficients and t-stat estimations, and by extension the results of Example 2, which no longer shows negative clusters. This makes the outcome more consistent with the RFT results (TFCE being more conservative). We apologise for overlooking this inconsistency in the code. Please refer to Example 2 as presented in its vignette/website page dated 2025-03-18 for the accurate results.

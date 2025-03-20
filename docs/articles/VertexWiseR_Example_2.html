@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2024-08-12</h4>
+            <h4 data-toc-skip class="date">2025-03-18</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_Example_2.Rmd</code></div>
@@ -128,7 +128,8 @@ cluster enhancement-based cluster correction, with 1000 permutations,
 testing for the effect of session, group, session * group interaction,
 on hippocampal thickness, with subject ID as a random variable:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model2_TFCE</span><span class="op">=</span><span class="fu"><a href="../reference/TFCE_vertex_analysis_mixed.html">TFCE_vertex_analysis_mixed</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">model2_TFCE</span><span class="op">=</span><span class="fu"><a href="../reference/TFCE_vertex_analysis_mixed.html">TFCE_vertex_analysis_mixed</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">dat_beh_ses13</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"session"</span>,<span class="st">"group"</span>,<span class="st">"session_x_group"</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>  contrast <span class="op">=</span> <span class="va">dat_beh_ses13</span><span class="op">[</span>,<span class="st">"session_x_group"</span><span class="op">]</span>, </span>
 <span>  surf_data<span class="op">=</span> <span class="va">FINK_Tv_smoothed_ses13</span>, </span>
@@ -140,15 +141,11 @@ on hippocampal thickness, with subject ID as a random variable:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <pre><code><span><span class="co">## $`Positive contrast`</span></span>
-<span><span class="co">##   clusid nverts      P     X    Y   Z tstat      region</span></span>
-<span><span class="co">## 1      1   1949 &lt;0.001 -27.5 27.5 1.3  4.14 L Subiculum</span></span>
-<span><span class="co">## 2      2    972 &lt;0.001  17.0 14.7 3.5  3.50       R CA1</span></span>
+<span><span class="co">##   clusid nverts     P     X    Y   Z tstat      region</span></span>
+<span><span class="co">## 1      1     73 0.033 -27.5 27.5 1.3  4.14 L Subiculum</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $`Negative contrasts`</span></span>
-<span><span class="co">##   clusid nverts     P     X    Y   Z tstat      region</span></span>
-<span><span class="co">## 1      1    115 0.011  13.3 33.1 4.1  2.85 R Subiculum</span></span>
-<span><span class="co">## 2      2     54 0.036 -16.7 16.7 6.9  2.31       L CA1</span></span>
-<span><span class="co">## 3      3     31 0.045 -18.5 18.5 3.8  2.17       L CA1</span></span></code></pre>
+<span><span class="co">## [1] "No significant clusters"</span></span></code></pre>
 <p>To plot the significant clusters from both models on the CITI168
 hippocampal template surface:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -156,9 +153,9 @@ hippocampal template surface:</p>
 <span><span class="fu"><a href="../reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">tmaps</span>, </span>
 <span>          filename <span class="op">=</span> <span class="st">'FINK_tstatmaps.png'</span>, </span>
 <span>          title<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'RFT-corrected\nclusters'</span>,<span class="st">'TFCE-corrected\nclusters'</span><span class="op">)</span>, </span>
-<span>          cmap<span class="op">=</span><span class="st">'RdBu_r'</span>,</span>
+<span>          cmap<span class="op">=</span><span class="st">'Reds'</span>,</span>
 <span>          show.plot.window<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FINK_tstatmaps.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="FINK_tstatmaps.png" alt="Significant hippocampal clusters, RFT corrected and TFCE corrected" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="example-2-follow-up-plotting-and-post-hoc-analyses-of-hippocampal-clusters-across-regression-models">Example 2 follow-up: plotting and post-hoc analyses of hippocampal
@@ -167,15 +164,13 @@ clusters across regression models<a class="anchor" aria-label="anchor" href="#ex
 <p>The code below was used in R (v.4.3.3) to plot the cluster-wise
 values from the RFT and TFCE corrected analyses and validate them with
 additional mixed linear models.</p>
-<p>We produce a figure displaying the thickness of the positive and
-negative hippocampal clusters in relation to the group and session
-variables, in RFT and TFCE models, demonstrating a steeper curve toward
-group 2:</p>
+<p>We produce a figure displaying the thickness of the hippocampal
+clusters in relation to the group and session variables, in RFT and TFCE
+models, demonstrating a steeper curve toward group 2:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#We divide the cluster values by their sum to get the average thickness per vertex</span></span>
 <span><span class="va">dat_beh_ses13</span><span class="op">$</span><span class="va">clustCTTFCE</span><span class="op">=</span><span class="op">(</span><span class="va">FINK_Tv_smoothed_ses13</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">TFCEoutput</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">dat_beh_ses13</span><span class="op">$</span><span class="va">clustRFT</span><span class="op">=</span><span class="op">(</span><span class="va">FINK_Tv_smoothed_ses13</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">model2_RFT</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">model2_RFT</span><span class="op">$</span><span class="va">pos_mask</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">dat_beh_ses13</span><span class="op">$</span><span class="va">neg.clustCTTFCE</span><span class="op">=</span><span class="op">(</span><span class="va">FINK_Tv_smoothed_ses13</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">TFCEoutput</span><span class="op">$</span><span class="va">neg_mask</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">neg_mask</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/eclarke/ggbeeswarm" class="external-link">ggbeeswarm</a></span><span class="op">)</span></span>
@@ -195,24 +190,15 @@ group 2:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">participant_id</span><span class="op">)</span>, alpha<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">group</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"lm"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="st">"Mean thickness (mm)"</span>, x<span class="op">=</span><span class="st">"session"</span>, color<span class="op">=</span><span class="st">"group"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Positive cluster\n(RFT-corrected)"</span><span class="op">)</span><span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">1.55</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">c</span><span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">dat_beh_ses13</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">neg.clustCTTFCE</span>,x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">session</span><span class="op">)</span>, color<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggbeeswarm/man/geom_quasirandom.html" class="external-link">geom_quasirandom</a></span><span class="op">(</span>dodge.width<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">participant_id</span><span class="op">)</span>, alpha<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">group</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"lm"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="st">"Mean thickness (mm)"</span>, x<span class="op">=</span><span class="st">"session"</span>, color<span class="op">=</span><span class="st">"group"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Negative cluster\n(TFCE-corrected)"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Group"</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group 1"</span>, <span class="st">"group 2"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">1.55</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span>filename<span class="op">=</span><span class="st">"traj.png"</span>, res<span class="op">=</span><span class="fl">300</span>, width<span class="op">=</span><span class="fl">2500</span>,height<span class="op">=</span><span class="fl">1080</span><span class="op">)</span></span>
-<span><span class="va">plots</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">a</span>,<span class="va">b</span>,<span class="va">c</span>, nrow<span class="op">=</span><span class="fl">1</span>,rel_widths<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">0.3</span>,<span class="fl">0.43</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">plots</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">a</span>,<span class="va">b</span>, nrow<span class="op">=</span><span class="fl">1</span>,rel_widths<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">0.40</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="traj.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="traj.png" alt="Graph showing average cluster thickness per group and correction method for each cluster" width="100%" style="display: block; margin: auto;"></p>
 <p>As an additional validation of these results, these significant
 clusters were extracted as regions-of-interests and fitted in a linear
 mixed effects model using another R package— lmerTest <span class="citation">(Kuznetsova, Brockhoff, and Christensen
@@ -267,70 +253,32 @@ value</p>
 <span><span class="co">## Formula: clustCTTFCE ~ session + group + session * group + (1 | participant_id)</span></span>
 <span><span class="co">##    Data: dat_beh_ses13</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## REML criterion at convergence: -361.7</span></span>
+<span><span class="co">## REML criterion at convergence: -272.9</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Scaled residuals: </span></span>
 <span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">## -2.79209 -0.33964  0.04546  0.39149  2.56583 </span></span>
+<span><span class="co">## -1.50112 -0.45415 -0.05631  0.49916  1.71410 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Random effects:</span></span>
-<span><span class="co">##  Groups         Name        Variance Std.Dev.</span></span>
-<span><span class="co">##  participant_id (Intercept) 0.003514 0.05928 </span></span>
-<span><span class="co">##  Residual                   0.000124 0.01113 </span></span>
+<span><span class="co">##  Groups         Name        Variance  Std.Dev.</span></span>
+<span><span class="co">##  participant_id (Intercept) 0.0048047 0.06932 </span></span>
+<span><span class="co">##  Residual                   0.0005989 0.02447 </span></span>
 <span><span class="co">## Number of obs: 96, groups:  participant_id, 48</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Fixed effects:</span></span>
 <span><span class="co">##                Estimate Std. Error        df t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">## (Intercept)    1.316823   0.008996 52.349267 146.380  &lt; 2e-16 ***</span></span>
-<span><span class="co">## session       -0.001803   0.001145 46.000000  -1.574    0.122    </span></span>
-<span><span class="co">## group         -0.006405   0.008996 52.349267  -0.712    0.480    </span></span>
-<span><span class="co">## session:group  0.005752   0.001145 46.000000   5.022 8.17e-06 ***</span></span>
+<span><span class="co">## (Intercept)    1.134943   0.011549 66.462361  98.275  &lt; 2e-16 ***</span></span>
+<span><span class="co">## session       -0.003589   0.002517 46.000000  -1.426 0.160692    </span></span>
+<span><span class="co">## group         -0.009920   0.011549 66.462361  -0.859 0.393452    </span></span>
+<span><span class="co">## session:group  0.010234   0.002517 46.000000   4.065 0.000186 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Correlation of Fixed Effects:</span></span>
 <span><span class="co">##             (Intr) sessin group </span></span>
-<span><span class="co">## session     -0.255              </span></span>
-<span><span class="co">## group       -0.125  0.032       </span></span>
-<span><span class="co">## session:grp  0.032 -0.125 -0.255</span></span></code></pre>
-<p>Linear mixed effect testing the effect of session, group, and session
-* group interaction on the negative TFCE clusters’ average thickness
-value</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lme.negTFCE</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/lmerTest/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">neg.clustCTTFCE</span><span class="op">~</span><span class="va">session</span><span class="op">+</span><span class="va">group</span><span class="op">+</span><span class="va">session</span><span class="op">*</span><span class="va">group</span><span class="op">+</span><span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">participant_id</span><span class="op">)</span>,data <span class="op">=</span><span class="va">dat_beh_ses13</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lme.negTFCE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Linear mixed model fit by REML. t-tests use Satterthwaite's method [</span></span>
-<span><span class="co">## lmerModLmerTest]</span></span>
-<span><span class="co">## Formula: </span></span>
-<span><span class="co">## neg.clustCTTFCE ~ session + group + session * group + (1 | participant_id)</span></span>
-<span><span class="co">##    Data: dat_beh_ses13</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## REML criterion at convergence: -290.8</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Scaled residuals: </span></span>
-<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">## -1.92573 -0.42877 -0.09892  0.46118  2.38291 </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Random effects:</span></span>
-<span><span class="co">##  Groups         Name        Variance  Std.Dev.</span></span>
-<span><span class="co">##  participant_id (Intercept) 0.0044953 0.06705 </span></span>
-<span><span class="co">##  Residual                   0.0004398 0.02097 </span></span>
-<span><span class="co">## Number of obs: 96, groups:  participant_id, 48</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Fixed effects:</span></span>
-<span><span class="co">##                 Estimate Std. Error         df t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">## (Intercept)    1.258e+00  1.088e-02  6.259e+01 115.583  &lt; 2e-16 ***</span></span>
-<span><span class="co">## session       -9.428e-05  2.157e-03  4.600e+01  -0.044  0.96533    </span></span>
-<span><span class="co">## group          1.744e-02  1.088e-02  6.259e+01   1.602  0.11411    </span></span>
-<span><span class="co">## session:group -7.504e-03  2.157e-03  4.600e+01  -3.478  0.00111 ** </span></span>
-<span><span class="co">## ---</span></span>
-<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Correlation of Fixed Effects:</span></span>
-<span><span class="co">##             (Intr) sessin group </span></span>
-<span><span class="co">## session     -0.397              </span></span>
-<span><span class="co">## group       -0.125  0.050       </span></span>
-<span><span class="co">## session:grp  0.050 -0.125 -0.397</span></span></code></pre>
+<span><span class="co">## session     -0.436              </span></span>
+<span><span class="co">## group       -0.125  0.054       </span></span>
+<span><span class="co">## session:grp  0.054 -0.125 -0.436</span></span></code></pre>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References:<a class="anchor" aria-label="anchor" href="#references"></a>
