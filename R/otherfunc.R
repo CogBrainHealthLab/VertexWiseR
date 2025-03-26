@@ -227,13 +227,15 @@ getClusters=function(surf_data,edgelist)
   {
     #extracting cluster-related info from list of non-zero edges
     #graph_from_data_frame() works a lot faster with character data
-    com=igraph::components(igraph::graph_from_data_frame(matrix(as.character(edgelist1),ncol=2), directed = FALSE))
+    com=igraph::components(igraph::graph_from_edgelist(edgelist1, directed = FALSE))
     clust.size=com$csize
     
     #cluster mappings
+    clust.idx=which(com$csize>1) # need to remove clusters with only a single vertex
     clust.map=rep(NA,n_vert)
-    #need to insert the indices of the selected vertices within square brackets, components() no longer returns named numeric vector if the graph is constructed from character data
-    clust.map[unique(as.numeric(edgelist1))]=com$membership 
+    clust.map[1:max(edgelist1)]=match(com$membership,clust.idx) #graph_from_edgelist does not return com$membership for each of the n_vert vertices
+  
+    clust.size=clust.size[clust.idx]
   
   } else if(length(edgelist1)==2) #bypass cluster extraction procedure if only 1 edge is identified
   {

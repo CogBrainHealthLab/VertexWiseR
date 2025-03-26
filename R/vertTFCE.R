@@ -229,15 +229,16 @@ TFCE=function(data,tail=tail,edgelist)
   #define TFCE parameters
   step=max_score / 100 #calculating number of steps for TFCE estimation
   score_threshs = seq(step, max_score, by = step) #Set based on determined step size
-  
+  n_threshs=length(score_threshs)
+
   #loop across different signs(i.e., for two tailed test)
   for (sign.idx in 1:length(signs)) 
   {
     temp_data = data * signs[sign.idx]
-    tfce=rep(0,length(temp_data))
+    tfce=matrix(0,nrow=n_threshs, ncol=length(temp_data))
     
     #loop across different score_threshs values for TFCE estimation
-    for(thresh.no in 1:length(score_threshs))
+    for(thresh.no in 1:n_threshs)
     {
       temp_data[temp_data < score_threshs[thresh.no]] = 0
       if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
@@ -260,16 +261,15 @@ TFCE=function(data,tail=tail,edgelist)
           labeled_non_zero = clust.dat[[1]][non_zero_inds]
           cluster_tfces = signs[sign.idx] * clust.dat[[2]] * (score_threshs[thresh.no] ^ 2) #using the E=1 , H=2 paramters for 2D (vertex-wise data)
           tfce_step_values = rep(0, length(clust.dat[[1]]))
-          tfce_step_values[non_zero_inds] = cluster_tfces[labeled_non_zero]
-          tfce[non_zero_inds]=tfce_step_values[non_zero_inds]+tfce[non_zero_inds] #cumulatively add up all TFCE values at each vertex
+          tfce[thresh.no,non_zero_inds] = cluster_tfces[labeled_non_zero]
           remove(non_zero_inds,cluster_tfces,tfce_step_values, labeled_non_zero)
         }
       }
     }
     remove(clust.dat)
     #combine results from positive and negative tails if necessary 
-    if(sign.idx==1){tfce_step_values.all=tfce}
-    else if (sign.idx==2){tfce_step_values.all=tfce_step_values.all+tfce}
+    if(sign.idx==1){tfce_step_values.all=colSums(tfce)}
+    else if (sign.idx==2){tfce_step_values.all=tfce_step_values.all+colSums(tfce)}
     remove(tfce)
   }
   return(tfce_step_values.all)
