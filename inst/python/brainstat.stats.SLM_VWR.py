@@ -27,7 +27,7 @@ from nibabel.nifti1 import Nifti1Image
 
 from brainstat._typing import ArrayLike
 from brainstat.datasets import fetch_parcellation, fetch_template_surface
-from brainstat.datasets.base import fetch_template_surface, fetch_yeo_networks_metadata
+from brainstat.datasets.base import fetch_template_surface
 from brainstat.mesh.utils import _mask_edges, mesh_edges
 from brainstat.stats.terms import FixedEffect, MixedEffect
 from brainstat.stats.utils import apply_mask, undo_mask
@@ -255,23 +255,6 @@ class SLM:
                         self.P["peak"]["clusid"][i] = self.P["peak"]["clusid"][
                             i
                         ].astype(int)
-
-                    if self.surf_name in (
-                        "fsaverage",
-                        "fsaverage5",
-                        "fslr32k",
-                        "civet41k",
-                        "civet164k",
-                    ):
-                        yeo7 = fetch_parcellation(
-                            self.surf_name, "yeo", 7, data_dir=self.data_dir
-                        )
-                        yeo_names, _ = fetch_yeo_networks_metadata(7)
-                        yeo_names.insert(0, "Undefined")
-                        yeo7_index = yeo7[self.P["peak"]["vertid"][i]]
-                        if "yeo7" not in self.P["peak"]:
-                            self.P["peak"]["yeo7"] = []
-                        self.P["peak"]["yeo7"].append(np.take(yeo_names, yeo7_index))
 
             if "clus" in self.P:
                 for i in range(len(self.P["clus"]["clusid"])):
