@@ -461,26 +461,26 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     } 
     
     #Yeo parcellatio data
-    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels')==TRUE 
-        & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
-    {
-      missingobj=1
-      
-      prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's yeo parcellation data in", brainstat_data_path, ". They are fetched by default by BrainStat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?"))
-      
-      if (prompt==1){    
-        brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
-        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7, data_dir = paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')), 
-            silent=TRUE)}  
-      
-      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels') 
-      {
-        stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
-      else if (requirement=="any") 
-      {
-        warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
-      }
-    }
+#    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels')==TRUE 
+#        & !file.exists(paste0(brainstat_data_path,'/brainstat_data/parcellation_data/__MACOSX/')))
+#    {
+#      missingobj=1
+#      
+#      prompt = utils::menu(c("Yes", "No"), title=paste("VertexWiseR could not find BrainStat's yeo parcellation data in", brainstat_data_path, ". They are fetched by default by BrainStat for vertex-wise linear models to run and cannot be ignored. \n Do you want the yeo parcellation data (~1.01 MB) to be downloaded now?"))
+#      
+#      if (prompt==1){    
+#        brainstat.datasets.base=reticulate::import("brainstat.datasets.base", delay_load = TRUE)
+#        try(brainstat.datasets.base$fetch_parcellation(template="fsaverage",atlas="yeo", n_regions=7, data_dir = paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')), 
+#            silent=TRUE)}  
+#      
+#      else if  (requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='fslr32k' | requirement=='yeo_parcels') 
+#      {
+#        stop('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')}
+#      else if (requirement=="any") 
+#      {
+#        warning('VertexWiseR will not be able to analyse cortical data without the parcellation data.\n\n')
+#      }
+#    }
 } 
     
     #####################################################################
