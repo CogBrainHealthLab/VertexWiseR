@@ -602,8 +602,8 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   #check length of vector
     n_vert=length(surf_data)
     if(n_vert==20484) {template="fsaverage5"}
-    else if (n_vert==81924) {template="fsaverage6"} 
-    else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) or 81924 (fsaverage6) is accepted")}
+    else if (n_vert==64984) {template="fslr32k"} 
+    else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) or 64984 (fslr32k) is accepted")}
   
   #load python libraries
     interpolate=reticulate::import("brainstat.mesh.interpolate", delay_load = TRUE)
@@ -663,9 +663,9 @@ decode_surf_data=function(surf_data,contrast="positive", VWR_check=TRUE)
   ##checks length
     if(is.vector(surf_data)) {n_vert=length(surf_data)} else {n_vert=ncol(surf_data)}
     if(n_vert==20484) {template="fsaverage5"}
-    else if (n_vert==81924) {stop("decoding of fsaverage6-space image is current not implemented, please resample the image to fsaverage5 space")} 
-    else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) is accepted")}
-
+    else if (n_vert==64984) {template="fslr32k"}
+    else {stop("Only an surf_data vector with a length of 20484 (fsaverage5) or 64984 (fslr32k) is accepted")}
+  
     #check contrast
     if(contrast != "positive" & contrast != "negative")  {stop("contrast has to be either positive or negative")} 
   
