@@ -42,8 +42,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   if  (n_vert==64984)
   {requirement='fslr32k'}
   #is yeo parcellation data in brainstat_data?
-  if (n_vert>0 & n_vert!=20484 & n_vert!=81924 & n_vert!=64984)
-  {requirement='yeo_parcels'} 
+  #if (n_vert>0 & n_vert!=20484 & n_vert!=81924 & n_vert!=64984)
+  #{requirement='yeo_parcels'} 
   
   # If custom installation paths have been defined by the user, source
   # them from the package directory:
