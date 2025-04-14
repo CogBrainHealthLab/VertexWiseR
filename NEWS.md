@@ -2,6 +2,13 @@
 
 ## NEW FEATURES
 * Slight modification of the cluster building process, which speeds up TFCE analyses.
+* plot_surf() now includes the transparent_bg argument which uses a boolean to make the plot's background transparent (default is FALSE, white background).
+* fslr32k can now be used in surf_to_vol() and decode_surf_data()
+* Yeo parcellations are no longer required by VWRfirstrun(). They were fetched by default in BrainStat's SLM script, when used for hippocampal surfaces. 
+* Slightly clearer message in VWRfirstrun()'s check of the BrainStat data path: the actual user's home path is printed instead of "$HOME_DIR/".
+
+## FIXES
+* Documentation mistake: surf_to_vol() does NOT work with fsaverage6.
 
 # VertexWiseR v1.3.0
 
