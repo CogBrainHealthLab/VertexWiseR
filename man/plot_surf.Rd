@@ -14,6 +14,7 @@ plot_surf(
   colorbar = TRUE,
   size,
   zoom,
+  transparent_bg = FALSE,
   show.plot.window = TRUE,
   VWR_check = TRUE
 )
@@ -38,6 +39,8 @@ Default cmap is set to \code{"Reds"} for positive values, \code{"Blues_r"} for n
 \item{size}{A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.}
 
 \item{zoom}{A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.}
+
+\item{transparent_bg}{A logical object to determine if the background of the image is set to transparent (Default is FALSE).}
 
 \item{show.plot.window}{A logical object to determine if the generated plot is to be shown within RStudio's plot window}
 

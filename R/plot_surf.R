@@ -13,6 +13,7 @@
 #' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
 #' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
 #' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
+#' @param transparent_bg A logical object to determine if the background of the image is set to transparent (Default is FALSE).
 #' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -31,7 +32,7 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, show.plot.window=TRUE,VWR_check=TRUE)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, transparent_bg=FALSE, show.plot.window=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -161,7 +162,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     surf_plot=brainspace.plotting$plot_hemispheres(left[[1]], right[[1]],  array_name=reticulate::np_array(surf_data),cmap=cmap, 
                                                    size=reticulate::tuple(as.integer(size)),nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),
                                                    return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
-                                                   label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=FALSE)  ##disabling interactive mode because this causes RStudio to hang
+                                                   label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=transparent_bg)  ##disabling interactive mode because this causes RStudio to hang
     
     
   #######Hippocampal template
@@ -193,7 +194,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
                                             cmap=cmap,color_range=limits,label_text=title, return_plotter=TRUE,interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
   }
   #output plot as a .png image
-  surf_plot$screenshot(filename=filename,transparent_bg = FALSE)
+  surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
   if(show.plot.window==T)
   {
     img=png::readPNG(source =filename)
