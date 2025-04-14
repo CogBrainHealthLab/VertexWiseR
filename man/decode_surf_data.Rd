@@ -7,7 +7,7 @@
 decode_surf_data(surf_data, contrast = "positive", VWR_check = TRUE)
 }
 \arguments{
-\item{surf_data}{A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix).}
+\item{surf_data}{A numeric vector or object containing the surface data, in fsaverage5 (1 x 20484 vertices) or fsLR32k (1 x 64984 vertices) space. It can only be one row of vertices (not a cohort surface data matrix).}
 
 \item{contrast}{A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')}
 

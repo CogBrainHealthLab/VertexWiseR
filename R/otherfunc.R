@@ -570,7 +570,7 @@ fs6_to_fs5=function(surf_data)
 #'
 #' @description Converts surface data to volumetric data (.nii file)
 #'
-#' @param surf_data A numeric vector or object containing the surface data, either in fsaverage5 (1 x 20484 vertices) or fsaverage6 (1 x 81924 vertices) space. It can only be one row of vertices (not a cohort surface data matrix). 
+#' @param surf_data A numeric vector or object containing the surface data, either in fsaverage5 (1 x 20484 vertices) or fsLR32k (1 x 64984 vertices) space. It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param filename A string object containing the desired name of the output .nii file (default is 'output.nii' in the R temporary directory (tempdir())).
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -623,7 +623,7 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
 #'
 #' @details The \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (~8 Mb) for the analysis.
 #'
-#' @param surf_data A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix). 
+#' @param surf_data A numeric vector or object containing the surface data, in fsaverage5 (1 x 20484 vertices) or fsLR32k (1 x 64984 vertices) space. It can only be one row of vertices (not a cohort surface data matrix). 
 #' @param contrast A string object indicating whether to decode the positive or negative mask ('positive' or 'negative')
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
