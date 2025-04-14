@@ -346,7 +346,7 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     {
       missingobj=1
       
-      choice = utils::menu(c("Default", "Custom"), title='By Default, BrainStat stores data required for analyses in $HOME_DIR/brainstat_data/. Alternatively, you may want to specify your own custom path for the BrainStat data. Where do you want BrainStat data to be saved?\n')
+      choice = utils::menu(c("Default", "Custom"), title=paste0('By Default, BrainStat stores data required for analyses in ', fs::path_home(), '/brainstat_data/. Alternatively, you may want to specify your own custom path for the BrainStat data. Where do you want BrainStat data to be saved?\n'))
       if (choice==1)  #set path to $HOME_DIR by default
       {
         message(paste('The brainstat_data directory will be located in',
@@ -615,17 +615,17 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     } 
     
     #yeo parcels missing
-    if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
-        & !file.exists(paste0(brainstat_data_path,
-                              '/brainstat_data/parcellation_data/__MACOSX/'))) 
-    {
-      missingobj=paste0("VertexWiseR could not find brainstat yeo parcellation data in the ",brainstat_data_path,"/brainstat_data/ directory. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.\n");
-      
-      if (interactive()==FALSE)
-      { non_interactive=paste0(missingobj,non_interactive)
-      return(non_interactive)
-      } else {message(missingobj)}
-    } 
+    #if ((requirement=="any" | requirement=='fsaverage6' | requirement=='fsaverage5' | requirement=='yeo_parcels')==TRUE 
+    #    & !file.exists(paste0(brainstat_data_path,
+    #                          '/brainstat_data/parcellation_data/__MACOSX/'))) 
+    #{
+    #  missingobj=paste0("VertexWiseR could not find brainstat yeo parcellation data in the ",brainstat_data_path,"/brainstat_data/ directory. They are fetched by default by brainstat for vertex-wise linear models to run and cannot be ignored.\n");
+    #  
+    #  if (interactive()==FALSE)
+    #  { non_interactive=paste0(missingobj,non_interactive)
+    #  return(non_interactive)
+    #  } else {message(missingobj)}
+    #} 
     
     #neurosynth data missing
     if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
