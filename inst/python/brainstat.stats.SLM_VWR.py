@@ -5,6 +5,7 @@
    -added 'brainstat.stats' to lines 37-39 to avoid relative import
    -added the "data_dir" argument to the fetch_template_surface instead of going with default
    -qc() was removed as it was causing issues with reticulate import
+   -the fetch_yeo_networks_metadata() function and Yeo parcellation data fetching were removed as not needed here
 """
 
 
