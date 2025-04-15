@@ -1,4 +1,4 @@
-# VertexWiseR v1.3.1 (work in progress)
+# VertexWiseR v1.3.1
 
 ## NEW FEATURES
 * Slight modification of the cluster building process, which speeds up TFCE analyses.

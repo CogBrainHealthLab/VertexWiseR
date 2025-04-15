@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 
 
 <dl><dt id="arg-surf-data">surf_data<a class="anchor" aria-label="anchor" href="#arg-surf-data"></a></dt>
-<dd><p>A numeric vector or object containing the surface data,  in fsaverage5 (1 x 20484 vertices). It can only be one row of vertices (not a cohort surface data matrix).</p></dd>
+<dd><p>A numeric vector or object containing the surface data, in fsaverage5 (1 x 20484 vertices) or fsLR32k (1 x 64984 vertices) space. It can only be one row of vertices (not a cohort surface data matrix).</p></dd>
 
 
 <dt id="arg-contrast">contrast<a class="anchor" aria-label="anchor" href="#arg-contrast"></a></dt>
@@ -81,9 +81,21 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">20484</span>, <span class="fl">1</span>, <span class="fl">0.001</span><span class="op">)</span> </span>
-<span><span class="va">decoding</span> <span class="op">=</span> <span class="fu">decode_surf_data</span><span class="op">(</span><span class="va">CTv</span>, <span class="st">'positive'</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">decoding</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">20484</span>, <span class="fl">1</span>, <span class="fl">0.001</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="va">decoding</span> <span class="op">=</span> <span class="fu">decode_surf_data</span><span class="op">(</span><span class="va">CTv</span>, <span class="st">'positive'</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting and interpolating the surface data ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ✓ </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  Correlating input image with images in the neurosynth database. This may take a while ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ✓ </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">decoding</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        keyword     r</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 449       pain 0.037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20      adults 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   autonomic 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111   decision 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 194    empathy 0.031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 198 engagement 0.030</span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
