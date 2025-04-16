@@ -13,7 +13,7 @@ Maintainer: Charly Billaud <charly.billaud@ntu.edu.sg>
 Description: Provides functions to run statistical analyses on
     surface-based neuroimaging data, computing measures including cortical
     thickness and surface area of the whole-brain and of the hippocampi.
-    It can make use of 'FreeSurfer', 'fMRIprep', 'HCP' and 'CAT12' preprocessed
+    It can make use of 'FreeSurfer', 'fMRIprep', 'XCP-D', 'HCP' and 'CAT12' preprocessed
     datasets and 'HippUnfold' hippocampal segmentation outputs for a given
     sample by restructuring the data values into a single file. The single
     file can then be used by the package for analyses independently from

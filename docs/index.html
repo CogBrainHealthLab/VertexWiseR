@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal Surface">
-<meta name="description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep and HCP preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
-<meta property="og:description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep and HCP preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
+<meta name="description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, HCP and CAT12 preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
+<meta property="og:description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, HCP and CAT12 preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -67,7 +67,7 @@
 </h2>
 <!---start of badges-->
 <p><a href="https://CRAN.R-project.org/package=VertexWiseR" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/VertexWiseR"></a> <a href="https://cran.r-project.org/package=VertexWiseR" class="external-link"><img src="https://www.r-pkg.org/badges/version/VertexWiseR" alt="CRAN status"></a> <!---end of badges--></p>
-<p><img src="reference/figures/Flowchart.jpg"><!-- --></p>
+<p><img src="reference/figures/Flowchart.jpg" alt="VertexWise workflow summary"><!-- --></p>
 <div class="section level3">
 <h3 id="setting-up-for-the-first-time">Setting up for the first time<a class="anchor" aria-label="anchor" href="#setting-up-for-the-first-time"></a>
 </h3>
@@ -163,7 +163,9 @@
 <li><p><code>title</code> (optional) : A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting “\n”.</p></li>
 <li><p><code>surface</code> (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include <code>"white"</code>, <code>"smoothwm"</code>,<code>"pial"</code> and <code>"inflated"</code> (default). The surface parameter is ignored for hippocampal surface data.</p></li>
 </ul>
-<p><img src="reference/figures/sigcluster.png"></p>
+<div class="float">
+<img src="reference/figures/sigcluster.png" alt="Significant clusters for the effect of age on thickness"><div class="figcaption">Significant clusters for the effect of age on thickness</div>
+</div>
 </div>
 <div class="section level4">
 <h4 id="extracting-the-ct-values-for-each-subject">Extracting the CT values for each subject<a class="anchor" aria-label="anchor" href="#extracting-the-ct-values-for-each-subject"></a>
@@ -250,7 +252,9 @@
 <span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="do">## [1] "No significant clusters"</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>,filename <span class="op">=</span> <span class="st">"sexdiff.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/sexdiff.png"></p>
+<div class="float">
+<img src="reference/figures/sexdiff.png" alt="Significant clusters for effect of sex on cortical thickness"><div class="figcaption">Significant clusters for effect of sex on cortical thickness</div>
+</div>
 <p>According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.</p>
 </div>
 <div class="section level3">
@@ -292,7 +296,7 @@
 <span>          ,scale<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span> </span>
 <span>          <span class="op">)</span> </span>
 <span>          <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/wordcloud.jpg"><!-- --></p>
+<p><img src="reference/figures/wordcloud.jpg" alt="Wordcloud plot of keywords associated with the clusters"><!-- --></p>
 <p>These keywords may not be very accurate but they should give a rough idea for interpreting your results. Take note that these keywords are specific to the positive clusters.</p>
 </div>
 </div>
