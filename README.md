@@ -1,4 +1,4 @@
-# VertexWiseR <img src="man/figures/hexlogo_shadow_equation.png" align="right" alt="logo"/>
+# VertexWiseR <img src="man/figures/logo.png" align="right" alt="logo" style="float:right; height:200px;"/>
 
 ## A package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R
 <!---start of badges-->
