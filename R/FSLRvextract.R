@@ -6,7 +6,7 @@
 #' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
 #' @param wb_path The filepath to the workbench folder that you have previously downloaded and unzipped
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
-#' @param dscaler A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
+#' @param dscalar A string object containing the filename suffix of the dscalar file. These dscalar files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 #' \itemize{
 #'  \item `.thickness_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
 #'  \item `.sulc_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
@@ -23,13 +23,13 @@
 #' dat_fslr32k=FSLRvextract(sdirpath="./", 
 #' wb_path="/path/to/workbench",
 #' filename="dat_fslr32k.rds",
-#' dscaler=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+#' dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 #' subj_ID = TRUE, silent=FALSE)
 #' 
 #' @importFrom ciftiTools ciftiTools.setOption readcii
 #' @export
 
-FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, silent=FALSE)
+FSLRvextract=function(sdirpath="./", wb_path,filename, dscalar, subj_ID = TRUE, silent=FALSE)
 {
   oldwd <- getwd() 
   
@@ -43,12 +43,12 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscaler, subj_ID = TRUE, 
   }
   
   ## get filelists and subject lists
-  filelist=list.files(pattern=dscaler, recursive=TRUE)
-  sublist=gsub(dscaler, "",basename(filelist))
+  filelist=list.files(pattern=dscalar, recursive=TRUE)
+  sublist=gsub(dscalar, "",basename(filelist))
   
   ##Function stops if files not found
   if (length(filelist) ==0)
-  {return(message(paste0('No *',dscaler, ' files could be found in the set sdirpath')))} 
+  {return(message(paste0('No *',dscalar, ' files could be found in the set sdirpath')))} 
   
   ##load and configure ciftitools
   ciftiTools::ciftiTools.setOption('wb_path', wb_path)
