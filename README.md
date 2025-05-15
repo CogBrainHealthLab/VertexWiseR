@@ -195,8 +195,6 @@ In this example, we will first run a whole-brain vertex-wise
 analysis to compare the cortical thickness between males and females in the young adult population of the SPRENG dataset. The thresholded
 cortical surface maps obtained from this analysis will then be fed into an image-decoding procedure to identify keywords that are relevant to our results
 
-### Source custom-made R functions from Github
-
 The [NiMARE](https://nimare.readthedocs.io/en/stable/index.html) python module is needed in order for the imaging decoding to work. It is similarly imported by VertexWiseR via reticulate in the decode_surf_data() function. 
 
 ### Load and prepare data
