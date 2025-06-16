@@ -8,7 +8,7 @@ FSLRvextract(
   sdirpath = "./",
   wb_path,
   filename,
-  dscaler,
+  dscalar,
   subj_ID = TRUE,
   silent = FALSE
 )
@@ -20,7 +20,7 @@ FSLRvextract(
 
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).}
 
-\item{dscaler}{A string object containing the filename suffix of the dscaler file. These dscaler files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
+\item{dscalar}{A string object containing the filename suffix of the dscalar file. These dscalar files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 \itemize{
 \item \code{.thickness_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
 \item \code{.sulc_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
@@ -47,7 +47,7 @@ The function searches for the HCP preprocessed directory by listing out files wi
 dat_fslr32k=FSLRvextract(sdirpath="./", 
 wb_path="/path/to/workbench",
 filename="dat_fslr32k.rds",
-dscaler=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
+dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 subj_ID = TRUE, silent=FALSE)
 
 }

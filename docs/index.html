@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -220,10 +220,6 @@
 <p>After running the whole-brain vertex-wise analyses, you may be able to identify regions in the brain in which cortical thickness (CT) values are significantly different between groups or these CT values predict a certain IV significantly. How do we make sense of these regions? We can plot out the results using the <code><a href="reference/plot_surf.html">plot_surf()</a></code> function, but still, it may be difficult to interpret the results in terms of the functional relevance of the regions identified. Here we present a tool that you can use to facilitate such interpretations.</p>
 <p>What this tool does is correlate your input image (cortical surface maps obtained from an earlier vertex-wise analysis, currently supporting fsaverage5 surface space) with images from a large database of task-based fMRI and voxel-based morphometric studies. Each of these images in the database is tagged with a few keywords, describing the task and/or sample characteristics. The correlations that are carried out essentially measure how similar your input image is to each of the images in the database. Higher correlations would mean that your input image looks very similar to a certain image in the database, thus the keywords associated with that image in the database would be highly relevant to your input image.</p>
 <p>In this example, we will first run a whole-brain vertex-wise analysis to compare the cortical thickness between males and females in the young adult population of the SPRENG dataset. The thresholded cortical surface maps obtained from this analysis will then be fed into an image-decoding procedure to identify keywords that are relevant to our results</p>
-</div>
-<div class="section level3">
-<h3 id="source-custom-made-r-functions-from-github">Source custom-made R functions from Github<a class="anchor" aria-label="anchor" href="#source-custom-made-r-functions-from-github"></a>
-</h3>
 <p>The <a href="https://nimare.readthedocs.io/en/stable/index.html" class="external-link">NiMARE</a> python module is needed in order for the imaging decoding to work. It is similarly imported by VertexWiseR via reticulate in the decode_surf_data() function.</p>
 </div>
 <div class="section level3">
