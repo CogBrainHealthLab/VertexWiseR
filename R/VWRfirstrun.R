@@ -521,8 +521,8 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         warning("\ndecode_surf_data() can only work with the neurosynth database.\n")}
     }
     
-    if (promptless==TRUE) {if(!exists('missingobj'))
-    { message('No system requirements are missing. \u2713 \n') }}
+    if(!exists('missingobj'))
+    { message('No system requirements are missing. \u2713 \n') }
   }
   
   #############################################################
@@ -604,7 +604,8 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     } 
     
     #fslr32k missing
-    if ((requirement=="any" | requirement=='fslr32k')==TRUE & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69/fslr32k')))  
+    if ((requirement=="any" | requirement=='fslr32k')==TRUE 
+        & !file.exists(paste0(brainstat_data_path,'/brainstat_data/surface_data/tpl-conte69'))) 
     {
       missingobj=paste0("VertexWiseR could not find brainstat fslr32k templates in the ",brainstat_data_path,"/brainstat_data/ directory. They are needed if you want to analyse cortical surface in fslr32k space.\n");
       
@@ -640,8 +641,8 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     
     #If nothing is missing, missingobj will not have been created
     #thus allowing the function to inform that no (specified) requirements are missing
-    if (promptless==TRUE) {if(!exists('missingobj'))
-    { message('No system requirements are missing. \u2713 \n') }}
+    if(!exists('missingobj'))
+    { message('No system requirements are missing. \u2713 \n') }
     
   }
   

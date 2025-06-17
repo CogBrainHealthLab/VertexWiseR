@@ -1,3 +1,9 @@
+# VertexWiseR v1.3.3
+
+## FIXES
+* When VWRfirstrun() was set to promptless, it checked the wrong directory path for brainstat's fslr32k data and considered it missing.
+* Successful check message stopped showing except when promptless was set as FALSE, this was a mistake.
+
 # VertexWiseR v1.3.2
 
 ## FIXES

@@ -29,7 +29,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 SystemRequirements: Miniconda3 (v24.9.2), Python (<= v3.12), BrainStat
-    (v0.4.2), vtk (v9.3.1)
+    (v0.4.2), vtk (v9.3.1), numpy (<= v1.26.4)
 Depends: 
     R (>= 4.0.0)
 Imports: 
