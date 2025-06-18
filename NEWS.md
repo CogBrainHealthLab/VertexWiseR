@@ -3,6 +3,8 @@
 ## FIXES
 * When VWRfirstrun() was set to promptless, it checked the wrong directory path for brainstat's fslr32k data and considered it missing.
 * Successful check message stopped showing except when promptless was set as FALSE, this was a mistake.
+* Fix to ensure the right numpy version gets installed when installing miniconda, in case brainstat does not upon installation
+* Fix to still run UV if RETICULATE_PYTHON was set to NA (a suggestion given in our article for users whose systems already have a python installed but want to dedicate VWR to a virtual environment)
 
 # VertexWiseR v1.3.2
 

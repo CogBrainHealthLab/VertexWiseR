@@ -88,8 +88,10 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                              )
         if (prompt==1) #Install ephemeral virtual environment via UV 
         { 
-          #check if virtual environment available with the right settings
-          #and initialize it.
+          #reset variable if RETICULATE_PYTHON was set to NA
+          Sys.unsetenv("RETICULATE_PYTHON")
+          
+          #check if virtual environment available with the right settings and initialize it.
           message('Installing Python ephemeral environment via reticulate\'s py_require() and UV...\n')
           reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1"), python_version = "<3.11")
           reticulate::py_config()
@@ -124,13 +126,17 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           if (choice==1) #Install Miniconda within default path
           { 
             message('Installing Miniconda (v24.9.2)...')
+            Sys.setenv(RETICULATE_PYTHON=defaultpath)
             
             #custom url to get version 24.9.2
             on.exit(options(reticulate.miniconda.url=NULL))
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             reticulate::install_miniconda(update = FALSE)
             message("Installing dependency packages with appropriate versions...")
-            reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("numpy==1.26.4", pip=TRUE, 
+                                   envname = defaultpath)
+            reticulate::py_install("vtk==9.3.1",pip = TRUE, 
+                                   envname = defaultpath) # latest vtk==9.4.0 causes problems
             
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
@@ -140,7 +146,6 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             
             #get path to python executable (will differ across OS)
             #silenced with sink and con
-            Sys.setenv(RETICULATE_PYTHON=defaultpath)
             defaultpathexe <- tryCatch({
               tmpfile <- tempfile()
               con <- file(tmpfile, open = "wt")
@@ -180,7 +185,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           else {        #Install Miniconda within custom path
             
             userpath <- readline("Enter the full path to the directory:")
-            
+            Sys.setenv(RETICULATE_PYTHON=userpath)
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
             envpath=tools::R_user_dir(package='VertexWiseR')
@@ -211,12 +216,13 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message("Installing dependency packages with appropriate versions...")
             #set environment variable to make sure packages 
             #arrive at the same place, not in 'r-miniconda'
-            Sys.setenv(RETICULATE_PYTHON_ENV=userpath)
-            reticulate::py_install("vtk==9.3.1",pip = TRUE) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("numpy==1.26.4", pip=TRUE, 
+                                   envname=userpath)
+            reticulate::py_install("vtk==9.3.1",pip = TRUE, 
+                                   envname=userpath) # latest vtk==9.4.0 causes problems
             
             #get path to python executable (will differ across OS)
             #silenced with sink and con
-            Sys.setenv(RETICULATE_PYTHON=defaultpath)
             userpathexe <- tryCatch({
               tmpfile <- tempfile()
               con <- file(tmpfile, open = "wt")
@@ -265,6 +271,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message(paste('Installing Python in',userpath,'...\n'))
             python_custominstall(userpath)
           }
+          
           
           #Read new python enviroment
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
