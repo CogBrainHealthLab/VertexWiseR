@@ -1,7 +1,7 @@
 ---
 title: "Extracting surface data in VertexWiseR"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-12-12"
+date: "2025-07-01"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Extracting surface data in VertexWiseR}
@@ -73,9 +73,9 @@ What dim(SPRENG_CTv) shows is that the matrix object contains the surface values
 
 When the subj_ID argument is set to TRUE, the object returned is not a matrix on its own but a list containing both the matrix and an array listing the subject IDs from the directory. In our example: \* SPRENG_CTv[[1]] will be the list of subject IDs \* SPRENG_CTv[[2]] will be the matrix object
 
-## Extracting cortical surface data: from HCP and fMRIprep
+## Extracting cortical surface data: from HCP, fMRIprep or XCP-D
 
-FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013] or fMRIprep [@esteban_fmriprep_2019] preprocessing output directories. FSLRvextract() requires the [HCP workbench](https://humanconnectome.org/software/get-connectome-workbench) to be installed, and uses the ciftiTools R package to read the .dscalar.nii files.
+FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013], fMRIprep [@esteban_fmriprep_2019] preprocessing output directories, as well as XCP-D [@mehta2024xcp] postprocessing output directories . FSLRvextract() requires the [HCP workbench](https://humanconnectome.org/software/get-connectome-workbench) to be installed, and uses the ciftiTools R package to read the .dscalar.nii files.
 
 For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
 

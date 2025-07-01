@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 1"
 author: "Charly Billaud, Junhong Yu"
-date: "2024-08-12"
+date: "2025-07-01"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 1}
@@ -34,9 +34,9 @@ VWRfirstrun()
 
 ## Example analysis 1: linear model of age and cortical thickness, and meta-analytic decoding
 
-The first stage of the analysis assumes that a preprocessed Freesurfer subjects directory is present. However, this code makes use of an already-extracted cortical thickness (CT) dataset made available on the VertexWiseR git repository.
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself.
 
-The following commented out code is the script which was used to produce this demo data with the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]:
+To obtain it, we had extracted cortical thickness (CT) data from a FreeSurfer preprocessing directory of the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]. Here is the command line which was used to extract it:
 
 ```{r}
 
@@ -44,11 +44,17 @@ The following commented out code is the script which was used to produce this de
 
 ```
 
-The surface can be loaded straight from the online repository and then smoothed :
+In this demo, the surface data can be loaded straight from the online repository and then smoothed:
+
+To load the thickness matrix:
 
 ```{r, envir=globalenv()}
 SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
+```
 
+To smooth the surface data:
+
+```{r}
 SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
 ```
 

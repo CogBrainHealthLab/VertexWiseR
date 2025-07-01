@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 2"
 author: "Charly Billaud, Junhong Yu"
-date: "2025-03-25"
+date: "2025-07-01"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 2}
@@ -19,15 +19,15 @@ library(VertexWiseR)
 
 **Note: This is the most up-to-date demo. Its version published in [Imaging Neuroscience (2024) 2: 1--14](https://doi.org/10.1162/imag_a_00372) no longer applies since the v1.3.0** **fixes made to the** **TFCE_vertex_analysis_mixed() function (see our [updates page](https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html) for details).**
 
-The first stage of the analysis assumes that a preprocessed Hippunfold subjects directory is present. Likewise, this code makes use of an already-extracted hippocampal thickness dataset made available on the VertexWiseR git repository.
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself.
 
-The following code is the script which was used to produce this demo data with the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021]:
+To obtain it, we had extracted cortical thickness (CT) data from a Hippunfold preprocessing directory of  the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021]. Here is the command line which was used to extract it:
 
 ```{r}
 #HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = "FINK_Tv", measure = "thickness", subj_ID = T)
 ```
 
-The hippocampal surface can be loaded from the online VertexWiseR git repository.
+In this demo, the hippocampal surface data can be loaded straight from the online repository and then smoothed:
 
 To load the thickness matrix:
 

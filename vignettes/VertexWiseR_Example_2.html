@@ -12,7 +12,7 @@
 
 <meta name="author" content="Charly Billaud, Junhong Yu" />
 
-<meta name="date" content="2025-03-25" />
+<meta name="date" content="2025-07-01" />
 
 <title>Example analyses with VertexWiseR - Example 2</title>
 
@@ -364,7 +364,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Example analyses with VertexWiseR - Example
 2</h1>
 <h4 class="author">Charly Billaud, Junhong Yu</h4>
-<h4 class="date">2025-03-25</h4>
+<h4 class="date">2025-07-01</h4>
 
 
 
@@ -377,16 +377,16 @@ in <a href="https://doi.org/10.1162/imag_a_00372">Imaging Neuroscience
 <strong>fixes made to the</strong> <strong>TFCE_vertex_analysis_mixed()
 function (see our <a href="https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html">updates
 page</a> for details).</strong></p>
-<p>The first stage of the analysis assumes that a preprocessed
-Hippunfold subjects directory is present. Likewise, this code makes use
-of an already-extracted hippocampal thickness dataset made available on
-the VertexWiseR git repository.</p>
-<p>The following code is the script which was used to produce this demo
-data with the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0">Fink
-dataset</a> <span class="citation">(Fink et al. 2021)</span>:</p>
+<p>The analysis will use surface data already extracted in R from a
+preprocessed subjects directory, which we make available so you do not
+need to preprocess a sample yourself.</p>
+<p>To obtain it, we had extracted cortical thickness (CT) data from a
+Hippunfold preprocessing directory of the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0">Fink
+dataset</a> <span class="citation">(Fink et al. 2021)</span>. Here is
+the command line which was used to extract it:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = &quot;FINK_Tv&quot;, measure = &quot;thickness&quot;, subj_ID = T)</span></span></code></pre></div>
-<p>The hippocampal surface can be loaded from the online VertexWiseR git
-repository.</p>
+<p>In this demo, the hippocampal surface data can be loaded straight
+from the online repository and then smoothed:</p>
 <p>To load the thickness matrix:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>FINK_Tv_ses13 <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="fu">url</span>(<span class="st">&quot;https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/FINK_Tv_ses13.rds?raw=TRUE&quot;</span>))</span></code></pre></div>
 <p>To smooth the surface data:</p>
@@ -493,9 +493,10 @@ mixed effects model using another R package— lmerTest <span class="citation">(
 value</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>lme.RFT<span class="ot">=</span><span class="fu">lmer</span>(clustRFT<span class="sc">~</span>session<span class="sc">+</span>group<span class="sc">+</span>session<span class="sc">*</span>group<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>participant_id),<span class="at">data =</span>dat_beh_ses13 )</span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">summary</span>(lme.RFT)</span></code></pre></div>
-<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
-## lmerModLmerTest]
-## Formula: clustRFT ~ session + group + session * group + (1 | participant_id)
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s
+##   method [lmerModLmerTest]
+## Formula: 
+## clustRFT ~ session + group + session * group + (1 | participant_id)
 ##    Data: dat_beh_ses13
 ## 
 ## REML criterion at convergence: -317.1
@@ -511,11 +512,16 @@ value</p>
 ## Number of obs: 96, groups:  participant_id, 48
 ## 
 ## Fixed effects:
-##                Estimate Std. Error        df t value Pr(&gt;|t|)    
-## (Intercept)    1.326760   0.010717 54.685962 123.801  &lt; 2e-16 ***
-## session       -0.003450   0.001580 46.000000  -2.183   0.0342 *  
-## group         -0.006877   0.010717 54.685962  -0.642   0.5237    
-## session:group  0.007645   0.001580 46.000000   4.837 1.51e-05 ***
+##                Estimate Std. Error        df t value Pr(&gt;|t|)
+## (Intercept)    1.326760   0.010717 54.685962 123.801  &lt; 2e-16
+## session       -0.003450   0.001580 46.000000  -2.183   0.0342
+## group         -0.006877   0.010717 54.685962  -0.642   0.5237
+## session:group  0.007645   0.001580 46.000000   4.837 1.51e-05
+##                  
+## (Intercept)   ***
+## session       *  
+## group            
+## session:group ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -529,8 +535,8 @@ value</p>
 value</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>lme.posTFCE<span class="ot">=</span><span class="fu">lmer</span>(clustCTTFCE<span class="sc">~</span>session<span class="sc">+</span>group<span class="sc">+</span>session<span class="sc">*</span>group<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>participant_id),<span class="at">data =</span>dat_beh_ses13 )</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">summary</span>(lme.posTFCE)</span></code></pre></div>
-<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
-## lmerModLmerTest]
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s
+##   method [lmerModLmerTest]
 ## Formula: 
 ## clustCTTFCE ~ session + group + session * group + (1 | participant_id)
 ##    Data: dat_beh_ses13
@@ -548,11 +554,16 @@ value</p>
 ## Number of obs: 96, groups:  participant_id, 48
 ## 
 ## Fixed effects:
-##                Estimate Std. Error        df t value Pr(&gt;|t|)    
-## (Intercept)    1.134943   0.011549 66.462361  98.275  &lt; 2e-16 ***
-## session       -0.003589   0.002517 46.000000  -1.426 0.160692    
-## group         -0.009920   0.011549 66.462361  -0.859 0.393452    
-## session:group  0.010234   0.002517 46.000000   4.065 0.000186 ***
+##                Estimate Std. Error        df t value Pr(&gt;|t|)
+## (Intercept)    1.134943   0.011549 66.462361  98.275  &lt; 2e-16
+## session       -0.003589   0.002517 46.000000  -1.426 0.160692
+## group         -0.009920   0.011549 66.462361  -0.859 0.393452
+## session:group  0.010234   0.002517 46.000000   4.065 0.000186
+##                  
+## (Intercept)   ***
+## session          
+## group            
+## session:group ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
