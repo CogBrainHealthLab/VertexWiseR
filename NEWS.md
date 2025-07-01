@@ -1,5 +1,8 @@
 # VertexWiseR v1.3.3
 
+## NEW FEATURES
+* New options for plot_surf: alpha setting to reduce transparency of non-NaN vertices, and option to not plot the NaN vertices.
+
 ## FIXES
 * When VWRfirstrun() was set to promptless, it checked the wrong directory path for brainstat's fslr32k data and considered it missing.
 * Successful check message stopped showing except when promptless was set as FALSE, this was a mistake.

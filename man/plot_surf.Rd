@@ -15,6 +15,8 @@ plot_surf(
   size,
   zoom,
   transparent_bg = FALSE,
+  show_nan = T,
+  alpha = 1,
   show.plot.window = TRUE,
   VWR_check = TRUE
 )
@@ -41,6 +43,10 @@ Default cmap is set to \code{"Reds"} for positive values, \code{"Blues_r"} for n
 \item{zoom}{A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.}
 
 \item{transparent_bg}{A logical object to determine if the background of the image is set to transparent (Default is FALSE).}
+
+\item{show_nan}{A logical object to determine if the NaN vertices are to be plotted (Default is TRUE).}
+
+\item{alpha}{A numeric object between 0 and 1 to determine the opacity of the non-empty vertices. Note that this is not a true opacity setting, it will blend the colour into that of the NaN vertices (white if show_nan is FALSE)}
 
 \item{show.plot.window}{A logical object to determine if the generated plot is to be shown within RStudio's plot window}
 

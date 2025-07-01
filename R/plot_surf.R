@@ -14,6 +14,8 @@
 #' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
 #' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
 #' @param transparent_bg A logical object to determine if the background of the image is set to transparent (Default is FALSE).
+#' @param show_nan A logical object to determine if the NaN vertices are to be plotted (Default is TRUE).
+#' @param alpha A numeric object between 0 and 1 to determine the opacity of the non-empty vertices. Note that this is not a true opacity setting, it will blend the colour into that of the NaN vertices (white if show_nan is FALSE)
 #' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -32,7 +34,7 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, transparent_bg=FALSE, show.plot.window=TRUE,VWR_check=TRUE)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, transparent_bg=FALSE, show_nan=T, alpha=1, show.plot.window=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -112,6 +114,37 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     cmap="custom_cmap"  
   }
   
+  #show nan or not
+  if (show_nan==T)
+  {nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1)} else 
+  {nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0)}
+  
+  #set opacity
+  if (alpha<1 & alpha>=0)
+  {
+    #establish default NaN colour 
+    if (show_nan==T)
+    {nan_rgb <- c(0.7, 0.7, 0.7)} else
+    {nan_rgb <- c(1, 1, 1)}
+    
+    #read cmap
+    matplotlib <- reticulate::import("matplotlib", delay_load = TRUE)
+    np <- reticulate::import("numpy")
+    cmap_obj <- matplotlib$cm$get_cmap(cmap)
+    # read rgb colors across the colormap
+    rgb_vals <- cmap_obj(np$linspace(0, 1, 256L))[, 1:3]
+
+    #blend cmap toward NaN colour (not true opacity but works the same)
+    blended <- (1 - alpha) * matrix(nan_rgb, nrow = nrow(rgb_vals), ncol = 3, byrow = TRUE) +
+      alpha * rgb_vals
+    
+    #save as python cmap object
+    mymap = matplotlib$colors$LinearSegmentedColormap$from_list('blended_map', blended)
+    matplotlib$colormaps$unregister(name = "blended_map")
+    matplotlib$colormaps$register(cmap = mymap,name="blended_map")
+    cmap="blended_map"  
+  }
+  
   #setting color scale limits
   maxlimit=max(abs(range(surf_data,na.rm = TRUE)))
   if(missing("limits")) 
@@ -160,7 +193,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     if(missing("zoom")) { zoom=1.25 }
     
     surf_plot=brainspace.plotting$plot_hemispheres(left[[1]], right[[1]],  array_name=reticulate::np_array(surf_data),cmap=cmap, 
-                                                   size=reticulate::tuple(as.integer(size)),nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),
+                                                   size=reticulate::tuple(as.integer(size)),nan_color=nan_color,
                                                    return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
                                                    label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=transparent_bg)  ##disabling interactive mode because this causes RStudio to hang
     
@@ -190,7 +223,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
       surf_data=surf_data.3d
     }
     
-    surf_plot=surfplot_canonical_foldunfold(surf_data,hipdat =get('hip_points_cells'),color_bar=colorbar,share="row",nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1),size=as.integer(size), zoom=zoom,
+    surf_plot=surfplot_canonical_foldunfold(surf_data,hipdat =get('hip_points_cells'),color_bar=colorbar,share="row",nan_color=nan_color,size=as.integer(size), zoom=zoom,
                                             cmap=cmap,color_range=limits,label_text=title, return_plotter=TRUE,interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
   }
   #output plot as a .png image
