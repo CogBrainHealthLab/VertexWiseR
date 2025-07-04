@@ -17,8 +17,8 @@ install.packages('VertexWiseR')
 library(VertexWiseR)
 
 ##Alternatively
-#install.packages("devtools")
-#devtools::install_github("CogBrainHealthLab/VertexWiseR")
+#install.packages(c("devtools","R.rsp")
+#devtools::install_github("CogBrainHealthLab/VertexWiseR", build_vignettes = TRUE)
 ``` 
 
 VertexWiseR imports and makes use of the R package [reticulate](https://rstudio.github.io/reticulate/). `reticulate` is a package that allows R to borrow or translate python functions into R. Using reticulate, the package calls functions from the [BrainStat](https://brainstat.readthedocs.io/en/latest/) Python module. Brainstat also comes with a number of fsaverage templates that need to be downloaded for use with VertexWiseR cortical analyses.
