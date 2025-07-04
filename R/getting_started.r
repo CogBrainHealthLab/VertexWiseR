@@ -84,8 +84,8 @@ if (interactive()==TRUE) #only works in interactive session
   prompt_2 = utils::menu(title="\nAvailable tutorials (will open in Rstudio's Help panel):",
             choices = c("Extracting surface data in VertexWiseR", "Example analyses with VertexWiseR - Example 1", "Example analyses with VertexWiseR - Example 2"))
   if (prompt_2==1) { vignette(package='VertexWiseR', topic='VertexWiseR_surface_extraction')}
-  if (prompt_2==2) { vignette(package='VertexWiseR', topic='VertexWiseR_Example_1')}
-  if (prompt_2==3) { vignette(package='VertexWiseR', topic='VertexWiseR_Example_3')}
+  else if (prompt_2==2) { vignette(package='VertexWiseR', topic='VertexWiseR_Example_1')}
+  else if (prompt_2==3) { vignette(package='VertexWiseR', topic='VertexWiseR_Example_3')}
 
 } 
 }
