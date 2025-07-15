@@ -3,6 +3,7 @@
 inst/extdata/neurosynth_dataset.pkl.gz
 ^_pkgdown\.yml$
 ^docs$
+^doc$
 ^pkgdown$
 inst/demo_data/FINK_Tv_ses13.rds
 inst/demo_data/SPRENG_CTv_site1.rds
@@ -10,6 +11,8 @@ inst/demo_data/spreng_surf_data_freesurfer.zip
 inst/demo_data/spreng_surf_data_cat12.zip
 inst/demo_data/spreng_surf_data_fmriprep.zip
 inst/demo_data/fink_surf_data_hippunfold.zip
+inst/demo_data/model1_TFCE.rds
 LICENSE
 .gitattributes
 man/figures/logo.png
+^Meta$
