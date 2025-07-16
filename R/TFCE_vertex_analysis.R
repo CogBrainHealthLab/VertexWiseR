@@ -198,8 +198,14 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   
   
   ##saving list objects
-  returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)
-  names(returnobj)=c("t_stat","TFCE.orig","TFCE.max","tail")
+  returnobj=list(tmap.orig,
+                 TFCE.orig, 
+                 TFCE.max,
+                 tail)
+  names(returnobj)=c("t_stat",
+                     "TFCE.orig",
+                     "TFCE.max",
+                     "tail")
   
   return(returnobj)
 }
@@ -380,7 +386,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #' @param k Cluster-forming threshold (Default is 20)
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
-#' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
+#' @returns A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' @examples
 #' model1_TFCE=readRDS(file = url(paste0("https://github.com/CogBrainHealthLab",
 #' "/VertexWiseR/blob/main/inst/demo_data/model1_TFCE.rds?raw=TRUE")))
@@ -641,9 +647,22 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
   t_stat.thresholdedPK=TFCEoutput$t_stat*(pos.mask+neg.mask)
   #setting 0s to NA to make vertex with t=0 empty in plots
   t_stat.thresholdedPK[t_stat.thresholdedPK==0]=NA
+  TFCEoutput$t_stat[TFCEoutput$t_stat==0]=NA
   
-  returnobj=list(cluster_level_results, t_stat.thresholdedPK,pos.mask,neg.mask, pos.clustermap, neg.clustermap, bi.clusterIDmap)  
-  names(returnobj)=c("cluster_level_results","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap")
+  returnobj=list(cluster_level_results, 
+                 TFCEoutput$t_stat,
+                 t_stat.thresholdedPK,
+                 pos.mask,neg.mask, 
+                 pos.clustermap, 
+                 neg.clustermap, 
+                 bi.clusterIDmap)  
+  names(returnobj)=c("cluster_level_results",
+                     "tstat_map",
+                     "thresholded_tstat_map",
+                     "pos_mask","neg_mask",
+                     "pos_clusterIDmap",
+                     "neg_clusterIDmap", 
+                     "bi_clusterIDmap")
   returnobj$cluster_level_results
   
   return(returnobj)

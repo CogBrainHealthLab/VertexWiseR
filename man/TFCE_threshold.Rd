@@ -18,7 +18,7 @@ TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20, VWR_check = TRUE)
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
+A list object containing the cluster level results, unthresholded t-stat map, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 }
 \description{
 Threshold TFCE maps from the TFCE_vertex_analysis() output and identifies significant clusters at the desired threshold.

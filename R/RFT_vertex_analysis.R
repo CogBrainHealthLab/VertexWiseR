@@ -285,7 +285,23 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   fdrpmap=model$Q
   
   #listing objects to return
-  returnobj=(list(cluster_results,as.numeric(model$t), as.numeric(tstat),as.numeric(posmask),as.numeric(negmask),as.numeric(pos_clusterIDmap),as.numeric(neg_clusterIDmap), as.numeric(bi_clusterIDmap), as.numeric(fdrpmap)))
-  names(returnobj)=c("cluster_level_results","tstat_map","thresholded_tstat_map","pos_mask","neg_mask","pos_clusterIDmap","neg_clusterIDmap", "bi_clusterIDmap", "fdr_pmap")
+  returnobj=(list(cluster_results,
+                  as.numeric(model$t), 
+                  as.numeric(tstat),
+                  as.numeric(posmask),
+                  as.numeric(negmask),
+                  as.numeric(pos_clusterIDmap),
+                  as.numeric(neg_clusterIDmap), 
+                  as.numeric(bi_clusterIDmap), 
+                  as.numeric(fdrpmap)))
+  names(returnobj)=c("cluster_level_results",
+                     "tstat_map",
+                     "thresholded_tstat_map",
+                     "pos_mask",
+                     "neg_mask",
+                     "pos_clusterIDmap",
+                     "neg_clusterIDmap", 
+                     "bi_clusterIDmap", 
+                     "fdr_pmap")
   return(returnobj)
 }
