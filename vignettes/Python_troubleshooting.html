@@ -396,7 +396,7 @@ documentation</a> explains:</p>
 <p>Note that VertexWiseR will install a stable specific version of
 Python itself and of each package it needs to work properly. If users
 believe they will be using the Miniconda/Python installation for more
-than VertexWiseR and will need to update them, it may be safer to
+than VertexWiseR and will need to update them, it may be more stable to
 install a specific Miniconda/Python environment in a path of their
 choice (as allowed by VWRfirstrun()), or to use a reticulate isolated
 virtual environment. More details on why using virtual environments can
@@ -499,7 +499,7 @@ with that command line:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)</span></code></pre></div>
 <p>To stop using this environment, users may choose to clear the cache
 completely:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">system</span>(<span class="fu">paste</span>(<span class="st">&#39;rm -rf&#39;</span>,tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">unlink</span>(tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>))</span></code></pre></div>
 <p>If they do not wish to get rid of the previous virtual environment,
 users will have to modify and/or remove the VIRTUAL_ENV variable which
 has been stored in the <code>.Renviron</code> file, in the standard path
