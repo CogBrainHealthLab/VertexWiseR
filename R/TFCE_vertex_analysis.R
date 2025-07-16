@@ -382,8 +382,8 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
 #'
 #' @returns A list object containing the cluster level results, thresholded t-stat map, and positive, negative and bidirectional cluster maps.
 #' @examples
-#' model1_TFCE=readRDS(system.file('demo_data/model1_TFCE.rds', 
-#' package = 'VertexWiseR'))
+#' model1_TFCE=readRDS(file = url(paste0("https://github.com/CogBrainHealthLab",
+#' "/VertexWiseR/blob/main/inst/demo_data/model1_TFCE.rds?raw=TRUE")))
 #' 
 #' TFCEanalysis_output=TFCE_threshold(model1_TFCE, p=0.05, atlas=1,
 #' VWR_check=FALSE)
