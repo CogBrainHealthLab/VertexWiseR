@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 1"
 author: "Charly Billaud, Junhong Yu"
-date: "2025-07-01"
+date: "2025-07-16"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 1}
@@ -34,9 +34,16 @@ VWRfirstrun()
 
 ## Example analysis 1: linear model of age and cortical thickness, and meta-analytic decoding
 
-The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself.
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had extracted cortical thickness (CT) data from a FreeSurfer preprocessing directory of the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]. 
 
-To obtain it, we had extracted cortical thickness (CT) data from a FreeSurfer preprocessing directory of the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]. Here is the command line which was used to extract it:
+The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+
+```{r, eval=TRUE}
+#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
+demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
+```
+
+Here is the command line which was originally used to extract the surface:
 
 ```{r}
 
@@ -44,12 +51,10 @@ To obtain it, we had extracted cortical thickness (CT) data from a FreeSurfer pr
 
 ```
 
-In this demo, the surface data can be loaded straight from the online repository and then smoothed:
-
-To load the thickness matrix:
+To load the demo thickness matrix:
 
 ```{r, envir=globalenv()}
-SPRENG_CTv = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
+SPRENG_CTv = readRDS(file=paste0(demodata,"/SPRENG_CTv_site1.rds"))
 ```
 
 To smooth the surface data:
@@ -58,10 +63,10 @@ To smooth the surface data:
 SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
 ```
 
-The SPRENG behavioural data (for participants in site 1, SPRENG_behdata_site1.csv) is accessible from the VertexWiseR package internal data:
+To load the demo behavioural data (for participants in site 1, SPRENG_behdata_site1.csv):
 
 ```{r}
-dat_beh=readRDS(system.file(package='VertexWiseR', '/demo_data/SPRENG_behdata_site1.rds')) 
+dat_beh=readRDS(paste0(demodata,'/SPRENG_behdata_site1.rds'))
 ```
 
 To run the vertex-wise model analysis with random field theory-based cluster correction, testing for the effect of age, controlling for sex, on CT:

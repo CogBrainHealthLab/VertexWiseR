@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 2"
 author: "Charly Billaud, Junhong Yu"
-date: "2025-07-01"
+date: "2025-07-16"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 2}
@@ -19,20 +19,25 @@ library(VertexWiseR)
 
 **Note: This is the most up-to-date demo. Its version published in [Imaging Neuroscience (2024) 2: 1--14](https://doi.org/10.1162/imag_a_00372) no longer applies since the v1.3.0** **fixes made to the** **TFCE_vertex_analysis_mixed() function (see our [updates page](https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html) for details).**
 
-The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself.
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had extracted cortical thickness (CT) data from a Hippunfold preprocessing directory of  the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021].
 
-To obtain it, we had extracted cortical thickness (CT) data from a Hippunfold preprocessing directory of  the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021]. Here is the command line which was used to extract it:
+The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+
+```{r, eval=TRUE}
+#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
+demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
+```
+
+Here is the command line which was originally used to extract the surface:
 
 ```{r}
 #HIPvextract(sdirpath = hippunfold_SUBJECTS_DIR, filename = "FINK_Tv", measure = "thickness", subj_ID = T)
 ```
 
-In this demo, the hippocampal surface data can be loaded straight from the online repository and then smoothed:
-
-To load the thickness matrix:
+To load the hippocampal thickness matrix:
 
 ```{r}
-FINK_Tv_ses13 = readRDS(file = url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/FINK_Tv_ses13.rds?raw=TRUE"))
+FINK_Tv_ses13 = readRDS(file=paste0(demodata,"/FINK_Tv_ses13.rds"))
 ```
 
 To smooth the surface data:
@@ -41,10 +46,10 @@ To smooth the surface data:
 FINK_Tv_smoothed_ses13 = smooth_surf(FINK_Tv_ses13, 5)
 ```
 
-The FINK behavioural data (FINK_behdata_ses13.csv) can be loaded from the VertexWiseR package internal data. It contains one row per participant, for scanning sessions 1 and 3.
+To load the behavioural data (FINK_behdata_ses13.csv, which contains two rows per participant, for scanning sessions 1 and 3).
 
 ```{r}
-dat_beh_ses13 = readRDS(system.file(package='VertexWiseR', "/demo_data/FINK_behdata_ses13.rds"))
+dat_beh_ses13 = readRDS(paste0(demodata,"/FINK_behdata_ses13.rds"))
 ```
 
 Here, we are interested in the interaction between session number (time) and group. To run the vertex-wise mixed model analysis with random field theory-based cluster correction, testing for the effect of session, group, session \* group interaction, on hippocampal thickness, with subject ID as a random variable:
