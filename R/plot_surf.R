@@ -115,7 +115,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   }
   
   #show nan or not
-  if (show_nan==T)
+  if (show_nan==TRUE)
   {nan_color=reticulate::tuple(0.7, 0.7, 0.7, 1)} else 
   {nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0)}
   
@@ -123,13 +123,13 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   if (alpha<1 & alpha>=0)
   {
     #establish default NaN colour 
-    if (show_nan==T)
+    if (show_nan==TRUE)
     {nan_rgb <- c(0.7, 0.7, 0.7)} else
     {nan_rgb <- c(1, 1, 1)}
     
     #read cmap
     matplotlib <- reticulate::import("matplotlib", delay_load = TRUE)
-    np <- reticulate::import("numpy")
+    np <- reticulate::import("numpy", delay_load = TRUE)
     cmap_obj <- matplotlib$cm$get_cmap(cmap)
     # read rgb colors across the colormap
     rgb_vals <- cmap_obj(np$linspace(0, 1, 256L))[, 1:3]
@@ -192,10 +192,21 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     if(missing("size")) { size=c(1920,rows*400)}
     if(missing("zoom")) { zoom=1.25 }
     
-    surf_plot=brainspace.plotting$plot_hemispheres(left[[1]], right[[1]],  array_name=reticulate::np_array(surf_data),cmap=cmap, 
-                                                   size=reticulate::tuple(as.integer(size)),nan_color=nan_color,
-                                                   return_plotter=TRUE,background=reticulate::tuple(as.integer(c(1,1,1))),zoom=zoom,color_range=limits,
-                                                   label_text=title,interactive=FALSE, color_bar=colorbar,  transparent_bg=transparent_bg)  ##disabling interactive mode because this causes RStudio to hang
+    surf_plot=brainspace.plotting$plot_hemispheres(
+      left[[1]], 
+      right[[1]],  
+      array_name=reticulate::np_array(surf_data),
+      cmap=cmap,
+      size=reticulate::tuple(as.integer(size)),
+      nan_color=nan_color,
+      return_plotter=TRUE,
+      background=reticulate::tuple(as.integer(c(1,1,1))),
+      zoom=zoom,
+      color_range=limits,
+      label_text=title,
+      interactive=FALSE, 
+      color_bar=colorbar,  
+      transparent_bg=transparent_bg)  ##disabling interactive mode because this causes RStudio to hang
     
     
   #######Hippocampal template
@@ -223,12 +234,23 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
       surf_data=surf_data.3d
     }
     
-    surf_plot=surfplot_canonical_foldunfold(surf_data,hipdat =get('hip_points_cells'),color_bar=colorbar,share="row",nan_color=nan_color,size=as.integer(size), zoom=zoom,
-                                            cmap=cmap,color_range=limits,label_text=title, return_plotter=TRUE,interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
+    surf_plot=surfplot_canonical_foldunfold(
+      surf_data,
+      hipdat =get('hip_points_cells'),
+      color_bar=colorbar,
+      share="row",
+      nan_color=nan_color,
+      size=as.integer(size), 
+      zoom=zoom,
+      cmap=cmap,
+      color_range=limits,
+      label_text=title, 
+      return_plotter=TRUE,
+      interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
   }
   #output plot as a .png image
   surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
-  if(show.plot.window==T)
+  if(show.plot.window==TRUE)
   {
     img=png::readPNG(source =filename)
     grid::grid.raster(img)
