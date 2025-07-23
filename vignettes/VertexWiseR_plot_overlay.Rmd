@@ -17,7 +17,7 @@ library(VertexWiseR)
 
 ## Transparent thresholding
 
-This article lays out a number of functions users can use to overlay plots produced with surf_plot() in VertexWiseR. We show how we can use them to apply "transparent thresholding", which consists in reporting spatial neuroimaging results at a lower, non-significant subthreshold, to contextualise significant findings and improve broader interpretation across studies [@taylor2025go].
+This article presents the plot_overlay_surf() function which can be used to overlay plots similar to those produced with surf_plot() in VertexWiseR. We show how we can use the function to apply "transparent thresholding", which consists in reporting spatial neuroimaging results at a lower, non-significant subthreshold, to contextualise significant findings and improve broader interpretation across studies [@taylor2025go].
 
 The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
 
@@ -54,22 +54,11 @@ results=RFT_vertex_analysis(model=predictors,
 results$cluster_level_results
 ```
 
-According to these results, since the female sex is coded as 0 and males as 1, the regions colored in red are thicker in males.
+According to these results, since females are coded as 0 and males as 1, the regions colored in red are thicker in males.
 
 ## Plotting significant and subthreshold outcome
 
-Both RFT_vertex_analysis() and TFCE_threshold() return thresholded and unthresholded t-maps.
-
-Thresholded (significant) t-map:
-
-```{r, eval=TRUE, results = 'hide'}
-plot_surf(surf_data = results$thresholded_tstat_map,
-          filename = paste0(tempdir(),"/sexdiff_thresh.png"),
-          show.plot.window=FALSE)
-```
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
-knitr::include_graphics(paste0(tempdir(),'/sexdiff_thresh.png'))
-```
+Both RFT_vertex_analysis() and TFCE_threshold() return thresholded and unthresholded t-maps, and can be plotted individually as follows.
 
 Unthresholded t-map:
 
@@ -82,18 +71,34 @@ plot_surf(surf_data = results$tstat_map,
 knitr::include_graphics(paste0(tempdir(),'/sexdiff_nothresh.png'))
 ```
 
-## Overlaying plots together
-
-To apply transparency thresholding, and letting information about subthreshold effects present in the plot, one may want to "merge" both maps together. 
-
-plot_overlay() is a function that will allow you to plot a surface on top of another. To work in this context, we plot the thresholded t-stat map (surf_data_2) on top of the unthresholded one (surf_data_1), but we reduce the alpha opacity of the background surface to highlight the surface on top:
+Thresholded (significant) t-map:
 
 ```{r, eval=TRUE, results = 'hide'}
-plot_overlay_surf(surf_data_1=results$tstat_map,
-                  surf_data_2=results$thresholded_tstat_map, 
+plot_surf(surf_data = results$thresholded_tstat_map,
+          filename = paste0(tempdir(),"/sexdiff_thresh.png"),
+          show.plot.window=FALSE)
+```
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
+knitr::include_graphics(paste0(tempdir(),'/sexdiff_thresh.png'))
+```
+
+## Overlaying plots together
+
+To apply transparency thresholding, and letting information about subthreshold effects present in the plot, one may want to "merge" both maps together. plot_overlay() is a function that will allow you to plot an overlay surface (surf_data_2) on top of a background (surf_data_1).
+
+To work in this context, we plot a thresholded (significant) t-stat map on top of an unthresholded t-stat map, both of which can be automatically taken from the 'results' variable saved from the RFT_vertex_analysis() model.
+
+We reduce the alpha opacity of the background surface to highlight the surface on top:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_overlay_surf(model_output=results,
+                  #To specify maps manually:
+                  #surf_data_1=results$tstat_map,
+                  #surf_data_2=results$thresholded_tstat_map, 
                   cmap_1='RdBu_r', cmap_2='RdBu_r',
                   colorbar_1=FALSE, colorbar_2=TRUE,
-                  alpha_1=0.3, alpha_2=1,
+                  alpha_1=0.4, alpha_2=1,
+                  overlay_boundaries=TRUE,
                   limits_2='same',
                   filename=paste0(tempdir(),'/overlay_plot.png'), 
                   title="Significant effect\nof sex",
@@ -102,13 +107,13 @@ plot_overlay_surf(surf_data_1=results$tstat_map,
 ```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map"}
 knitr::include_graphics(paste0(tempdir(),'/overlay_plot.png'))
 ```
+
 By default, both color bars are plotted but either can be set to FALSE (removed), which was done for the faded background colours here.
 
 The function also give freedom to have two separate color maps, in order to highlight the significant t-values even more:
 
 ```{r, eval=TRUE, results = 'hide'}
-plot_overlay_surf(surf_data_1=results$tstat_map,
-                  surf_data_2=results$thresholded_tstat_map, 
+plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='Reds',
                   alpha_1=1, alpha_2=1,
                   limits_2='same',
@@ -120,11 +125,10 @@ plot_overlay_surf(surf_data_1=results$tstat_map,
 knitr::include_graphics(paste0(tempdir(),'/overlay_plot_twocmaps.png'))
 ```
 
-A similar procedure can be used if one wants the range of values to be independent (the default if the 'same' option is not provided):
+A similar procedure can be used if one wants the range of values to be independent (which is the default if the limits=='same' option is not provided):
 
 ```{r, eval=TRUE, results = 'hide'}
-plot_overlay_surf(surf_data_1=results$tstat_map,
-                  surf_data_2=results$thresholded_tstat_map, 
+plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='hot_r',
                   alpha_1=1, alpha_2=1,
                   filename=paste0(tempdir(),'/overlay_plot_twolimits.png'), 

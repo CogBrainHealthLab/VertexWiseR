@@ -1,7 +1,7 @@
 #' @title Surface overlay plotter
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
-#'
+#' @param model_output A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.
 #' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
 #' @param surf_data_2 Same as surf_data_1. This is the overlay surface.
 #' @param cmap_1 A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
@@ -14,6 +14,7 @@
 #' @param colorbar_2 A logical object stating whether to include the color bar for the overlay layer in the plot or not (default is TRUE).
 #' @param alpha_1 A numeric object between 0 and 1 to determine the opacity of the non-empty vertices. Note that this is not a true opacity setting, it will blend the colour into that of the NaN vertices (white if show_nan is FALSE). This is meant for the background surface.
 #' @param alpha_2 Same as alpha_2. This is meant for the overlay surface. Default is the same as alpha_1.
+#' @param overlay_boundaries A logical object stating whether to plot black contour of the overlay layer.
 #' @param show_nan A logical object to determine if the NaN vertices are to be plotted (Default is TRUE). This is meant for the background surface. The overlay surface will always omit NaN vertices to make the background visible.
 #' @param filename A string object containing the desired name of the output .png. Default is 'combined_plots.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
@@ -49,6 +50,7 @@
 #'                 alpha_1=0.4, alpha_2=1,
 #'                 filename=paste0(tempdir(),"/simulated_plot.png"), 
 #'                title="Significant effects",
+#'                overlay_boundaries=TRUE,
 #'                VWR_check=FALSE)
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
@@ -58,7 +60,8 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_overlay_surf=function(surf_data_1, surf_data_2, 
+plot_overlay_surf=function(model_output=NULL,
+                           surf_data_1=NULL, surf_data_2=NULL, 
                            cmap_1, cmap_2,
                            limits_1, limits_2,
                            alpha_1=1, alpha_2=1,
@@ -68,12 +71,34 @@ plot_overlay_surf=function(surf_data_1, surf_data_2,
                            filename, 
                            title="",
                            surface="inflated", 
+                           overlay_boundaries=FALSE,
                            size, 
                            zoom, 
                            transparent_bg=FALSE, 
                            show.plot.window=TRUE,
                            VWR_check=TRUE)
 {
+  
+  
+  #fetch thresholded and unthresholded tstat map automatically
+  if(!missing(model_output))
+  {
+    if('tstat_map' %in% names(model_output))
+    {
+      surf_data_1=model_output$tstat_map
+    } else {stop('No tstat_map was found in your model_output variable. Make sure you are inputting the output of RFT_vertex_analysis() or TFCE_threshold(), or use the surf_data_1 and surf_data_2 arguments instead of the model_output argument.')}
+    if('thresholded_tstat_map' %in% names(model_output))
+    {
+      surf_data_2=model_output$thresholded_tstat_map
+    } else {stop('No thresholded_tstat_map was found in your model_output variable. Make sure you are inputting the output of RFT_vertex_analysis() or TFCE_threshold(), or use the surf_data_1 and surf_data_2 arguments instead of the model_output argument.')}
+  } else {
+    
+    # If both model_output and one of surf_data_1/2 are NULL, throw error
+    if (is.null(surf_data_1) | is.null(surf_data_2)) {
+      stop("If no model_output is given, both surf_data_1 and surf_data_2 arguments should be provided.")
+    }
+  }
+  
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
@@ -132,6 +157,10 @@ plot_overlay_surf=function(surf_data_1, surf_data_2,
   } else{stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
   }
   
+  #NA-ify vertices if alpha=0 before computing color maps
+  if (alpha_1==0){surf_data_1=rep(NaN,length(surf_data_1))
+  } else if (alpha_2==0){surf_data_2=rep(NaN,length(surf_data_2))}
+  
   #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
   if(missing("cmap_1"))
   {
@@ -172,9 +201,9 @@ plot_overlay_surf=function(surf_data_1, surf_data_2,
   if(length(cmap_1)>1){cmap_1=custom_map(cmap_1)}
   if(length(cmap_2)>1){cmap_2=custom_map(cmap_2)}
   
- #set opacity
-  #wrapped in a function to apply for both alpha_1 and alpha_2
-  alpha_function=function(alpha,show_nan){
+#set opacity
+ #wrapped in a function to apply for both alpha_1 and alpha_2
+ alpha_function=function(alpha,show_nan){
     
     # Get the number of the variable passed (1 for "alpha_1" etc.)
     alpha_name <- deparse(substitute(alpha))
@@ -298,93 +327,92 @@ plot_overlay_surf=function(surf_data_1, surf_data_2,
     
     surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
     
-    if (show_nan==FALSE)
-    { 
-    #Produce the plot
+    ###
+    #If NaN are plotted, add a coloured NaN layer under both layers if show_nan==T, because the default NaN has to be removed for the background to show behind the overlay's own NaN 
+    if (show_nan==TRUE)
+    { nan_mesh_lh=rep(0.43, length(surf_data_1_lh))
+      nan_mesh_rh=rep(0.43, length(surf_data_1_rh))
+    } else 
+    { nan_mesh_lh=rep(NaN, length(surf_data_1_lh))
+      nan_mesh_rh=rep(NaN, length(surf_data_1_rh))
+    }
+    
+    # Create VTK arrays for NaN too
+    vtk_array_lh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_lh), deep = TRUE); 
+    vtk_array_lh_nan$SetName("lh_data_nan")
+    vtk_array_rh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_rh), deep = TRUE); 
+    vtk_array_rh_nan$SetName("rh_data_nan")
+    # Add nan plot to surf_obj
+    left[[1]]$GetPointData()$AddArray(vtk_array_lh_nan)
+    right[[1]]$GetPointData()$AddArray(vtk_array_rh_nan)
+    surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
+    
+    ###
+    #If user wants boundaries plotted around overlay:
+    mesh_ops <- reticulate::import("brainspace.mesh.array_operations", convert = FALSE)
+    binary_mask_lh <- ifelse(is.na(surf_data_2_lh), 0L, 1L)
+    binary_mask_rh <- ifelse(is.na(surf_data_2_rh), 0L, 1L)
+    boundary_lh <- mesh_ops$get_labeling_border(left[[1]], reticulate::np_array(binary_mask_lh))$astype("float")
+    boundary_rh <- mesh_ops$get_labeling_border(right[[1]], reticulate::np_array(binary_mask_rh))$astype("float")
+
+    #NaN for non boundaries if wanted, and all NaN if to be hidden
+    if (overlay_boundaries==TRUE)
+    {
+      #mask out non boundary vertices
+      boundary_lh = reticulate::py_to_r(boundary_lh)
+      boundary_rh = reticulate::py_to_r(boundary_rh) 
+      boundary_lh[boundary_lh==0] = NaN
+      boundary_rh[boundary_rh==0] = NaN
+    } else {
+      boundary_lh=rep(NaN, length(surf_data_1_rh))
+      boundary_rh=rep(NaN, length(surf_data_1_rh))
+    }
+
+    
+    # Create VTK arrays for boundaries too
+    vtk_array_lh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_lh), deep = TRUE); 
+    vtk_array_lh_bd$SetName("lh_data_bd")
+    vtk_array_rh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_rh), deep = TRUE); 
+    vtk_array_rh_bd$SetName("rh_data_bd")
+    # Add nan plot to surf_obj
+    left[[1]]$GetPointData()$AddArray(vtk_array_lh_bd)
+    right[[1]]$GetPointData()$AddArray(vtk_array_rh_bd)
+    surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
+    
+    #############################################################
+    #Produce the plot 
     surf_plot = brainspace.plotting$plot_surf(
       surfs = surf_obj,
       array_name = list(list(
-          utils$PTuple("lh_data_1", "lh_data_2"),
-          utils$PTuple("lh_data_1", "lh_data_2"),
-          utils$PTuple("rh_data_1", "rh_data_2"),
-          utils$PTuple("rh_data_1", "rh_data_2")
-        )
+        utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+        utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+        utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd"),
+        utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd")
+      )
       ), #Referencing the attached scalar by name
       layout = list(list("lh","lh","rh","rh")),
       view = list(list("lateral", "medial","lateral","medial")),
       cmap = list(list(
-                   utils$PTuple(cmap_1,cmap_2), 
-                   utils$PTuple(cmap_1,cmap_2), 
-                   utils$PTuple(cmap_1,cmap_2), 
-                   utils$PTuple(cmap_1,cmap_2)
-                   )),
+        utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+        utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+        utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+        utils$PTuple('Greys',cmap_1,cmap_2,'Greys')
+      )),
       size = as.integer(size),
       nan_color = reticulate::tuple(0.7, 0.7, 0.7, 0),
       background = reticulate::tuple(as.integer(c(1, 1, 1))),
       zoom = zoom,
       color_range = list(list(
-                      utils$PTuple(limits_1,limits_2), 
-                      utils$PTuple(limits_1,limits_2), 
-                      utils$PTuple(limits_1,limits_2), 
-                      utils$PTuple(limits_1,limits_2)
-                    )),
+        utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+        utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+        utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+        utils$PTuple(c(0,1),limits_1,limits_2,c(0,1))
+      )),
       label_text = title,
       return_plotter=TRUE,
       interactive = FALSE,
       transparent_bg = transparent_bg
     )
-    
-    #add a coloured NaN layer under both layers if show_nan==T, because the default NaN has to be removed for the background to show behind the overlay's own NaN
-    #so create a layer with background's nan and grey colour
-    } else if (show_nan==TRUE)
-    { 
-      nan_mesh_lh=rep(0.43, length(surf_data_1_lh))
-      nan_mesh_rh=rep(0.43, length(surf_data_1_rh))
-      
-      # Create VTK arrays for NaN too
-      vtk_array_lh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_lh), deep = TRUE); 
-      vtk_array_lh_nan$SetName("lh_data_nan")
-      vtk_array_rh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_rh), deep = TRUE); 
-      vtk_array_rh_nan$SetName("rh_data_nan")
-      # Add nan plot to surf_obj
-      left[[1]]$GetPointData()$AddArray(vtk_array_lh_nan)
-      right[[1]]$GetPointData()$AddArray(vtk_array_rh_nan)
-      surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
-      
-      #Produce the plot with nan layer
-      surf_plot = brainspace.plotting$plot_surf(
-        surfs = surf_obj,
-        array_name = list(list(
-          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2"),
-          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2"),
-          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2"),
-          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2")
-        )
-        ), #Referencing the attached scalar by name
-        layout = list(list("lh","lh","rh","rh")),
-        view = list(list("lateral", "medial","lateral","medial")),
-        cmap = list(list(
-          utils$PTuple('Greys',cmap_1,cmap_2), 
-          utils$PTuple('Greys',cmap_1,cmap_2), 
-          utils$PTuple('Greys',cmap_1,cmap_2), 
-          utils$PTuple('Greys',cmap_1,cmap_2)
-        )),
-        size = as.integer(size),
-        nan_color = reticulate::tuple(0.7, 0.7, 0.7, 0),
-        background = reticulate::tuple(as.integer(c(1, 1, 1))),
-        zoom = zoom,
-        color_range = list(list(
-          utils$PTuple(c(0,1),limits_1,limits_2), 
-          utils$PTuple(c(0,1),limits_1,limits_2), 
-          utils$PTuple(c(0,1),limits_1,limits_2), 
-          utils$PTuple(c(0,1),limits_1,limits_2)
-        )),
-        label_text = title,
-        return_plotter=TRUE,
-        interactive = FALSE,
-        transparent_bg = transparent_bg
-      )
-    }
     
     #color bars need to be added on top of the original plot, since brainspace's plot_surf won't render them properly
     #plot_hemispheres does, so we can plot the bar(s) with it, take the bar(s), and append it to the main image
