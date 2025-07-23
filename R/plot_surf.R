@@ -105,7 +105,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     class(cmap)="colors"
     matplotlib=reticulate::import("matplotlib", delay_load = TRUE)
     
-    custom_colors=t(col2rgb(cmap)/255) # convert hex color codes to RGB codes, then divide by 255 to convert to RGBA codes
+    custom_colors=t(grDevices::col2rgb(cmap)/255) # convert hex color codes to RGB codes, then divide by 255 to convert to RGBA codes
     
     #save as python cmap object
     mymap = matplotlib$colors$LinearSegmentedColormap$from_list('my_colormap', custom_colors)
