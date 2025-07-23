@@ -1,6 +1,8 @@
-# VertexWiseR v1.3.3
+# VertexWiseR v1.4.0 (TBC)
 
 ## NEW FEATURES
+* New function getting_started(): allows users to run through the package's tutorials and to download all the demo data at once. Article vignettes now propose downloading the demo data in bulk rather than running the line every time.
+* New function plot_overlay_surf(): allows users to plot two surfaces on top of each other, with varying opacity, color maps and value ranges (for cortical surfaces). A new tutorial/vignette called 'Overlaying plots and transparent thresholding' was also created to showcase it.
 * New options for plot_surf: alpha setting to reduce transparency of non-NaN vertices, and option to not plot the NaN vertices.
 
 ## FIXES

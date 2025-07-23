@@ -6,6 +6,11 @@ template:
   bootswatch: sandstone
 
 reference:
+  - title: Demo & tutorials
+    desc: >
+    contents:
+    - getting_started
+  
   - title: Requirements check
     desc: >
     contents:
@@ -35,6 +40,7 @@ reference:
     contents:
     - plot_surf
     - plot_surf3d
+    - plot_overlay_surf
   
   - title: Other functions
   - subtitle: Atlas manipulations

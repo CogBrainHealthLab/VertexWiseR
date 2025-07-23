@@ -1,0 +1,138 @@
+---
+title: "Overlaying plots and transparent thresholding"
+author: "Charly H. A. Billaud"
+date: "2025-07-16"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Overlaying plots and transparent thresholding}
+  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(VertexWiseR)
+```
+
+## Transparent thresholding
+
+This article lays out a number of functions users can use to overlay plots produced with surf_plot() in VertexWiseR. We show how we can use them to apply "transparent thresholding", which consists in reporting spatial neuroimaging results at a lower, non-significant subthreshold, to contextualise significant findings and improve broader interpretation across studies [@taylor2025go].
+
+The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+
+```{r, eval=TRUE}
+#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
+demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
+```
+
+## Running a vertex-wise linear model
+
+In this example, we use the Spreng dataset cortical thickness and behavioural data as in [Example 1](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html) and the [home  example](https://cogbrainhealthlab.github.io/VertexWiseR/index.html) , selecting young adults:
+
+```{r, eval=TRUE}
+SPRENG_CTv = readRDS(file=paste0(demodata,"/SPRENG_CTv_site1.rds"))
+dat_beh = readRDS(paste0(demodata,'/SPRENG_behdata_site1.rds'))
+#only young adults
+SPRENG_CTv = SPRENG_CTv[dat_beh$agegroup=='Y',]
+dat_beh = dat_beh[dat_beh$agegroup=='Y',]
+#smoothing at 10 FMHW
+SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10, VWR_check = T)
+```
+
+We test the effect of sex on cortical thickness in the sample:
+
+```{r, eval=TRUE}
+#preparing model data
+predictors=dat_beh[,c("site","age","sex")]
+#running the model
+results=RFT_vertex_analysis(model=predictors, 
+                            contrast=predictors$sex, 
+                            surf_data = SPRENG_CTv_smoothed,
+                            p = 0.05 
+                            )
+results$cluster_level_results
+```
+
+According to these results, since the female sex is coded as 0 and males as 1, the regions colored in red are thicker in males.
+
+## Plotting significant and subthreshold outcome
+
+Both RFT_vertex_analysis() and TFCE_threshold() return thresholded and unthresholded t-maps.
+
+Thresholded (significant) t-map:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_surf(surf_data = results$thresholded_tstat_map,
+          filename = paste0(tempdir(),"/sexdiff_thresh.png"),
+          show.plot.window=FALSE)
+```
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
+knitr::include_graphics(paste0(tempdir(),'/sexdiff_thresh.png'))
+```
+
+Unthresholded t-map:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_surf(surf_data = results$tstat_map,
+          filename = paste0(tempdir(),"/sexdiff_nothresh.png"),
+          show.plot.window=FALSE)
+```
+```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Unthresholded t-statistic map"}
+knitr::include_graphics(paste0(tempdir(),'/sexdiff_nothresh.png'))
+```
+
+## Overlaying plots together
+
+To apply transparency thresholding, and letting information about subthreshold effects present in the plot, one may want to "merge" both maps together. 
+
+plot_overlay() is a function that will allow you to plot a surface on top of another. To work in this context, we plot the thresholded t-stat map (surf_data_2) on top of the unthresholded one (surf_data_1), but we reduce the alpha opacity of the background surface to highlight the surface on top:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_overlay_surf(surf_data_1=results$tstat_map,
+                  surf_data_2=results$thresholded_tstat_map, 
+                  cmap_1='RdBu_r', cmap_2='RdBu_r',
+                  colorbar_1=FALSE, colorbar_2=TRUE,
+                  alpha_1=0.3, alpha_2=1,
+                  limits_2='same',
+                  filename=paste0(tempdir(),'/overlay_plot.png'), 
+                  title="Significant effect\nof sex",
+                  show.plot.window=FALSE)
+```
+```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map"}
+knitr::include_graphics(paste0(tempdir(),'/overlay_plot.png'))
+```
+By default, both color bars are plotted but either can be set to FALSE (removed), which was done for the faded background colours here.
+
+The function also give freedom to have two separate color maps, in order to highlight the significant t-values even more:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_overlay_surf(surf_data_1=results$tstat_map,
+                  surf_data_2=results$thresholded_tstat_map, 
+                  cmap_1='RdBu_r', cmap_2='Reds',
+                  alpha_1=1, alpha_2=1,
+                  limits_2='same',
+                  filename=paste0(tempdir(),'/overlay_plot_twocmaps.png'), 
+                  title="Significant effect\nof sex",
+                  show.plot.window=FALSE)
+```
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps"}
+knitr::include_graphics(paste0(tempdir(),'/overlay_plot_twocmaps.png'))
+```
+
+A similar procedure can be used if one wants the range of values to be independent (the default if the 'same' option is not provided):
+
+```{r, eval=TRUE, results = 'hide'}
+plot_overlay_surf(surf_data_1=results$tstat_map,
+                  surf_data_2=results$thresholded_tstat_map, 
+                  cmap_1='RdBu_r', cmap_2='hot_r',
+                  alpha_1=1, alpha_2=1,
+                  filename=paste0(tempdir(),'/overlay_plot_twolimits.png'), 
+                  title="Significant effect\nof sex",
+                  show.plot.window=FALSE)
+```
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
+knitr::include_graphics(paste0(tempdir(),'/overlay_plot_twolimits.png'))
+```
+
+## References:
