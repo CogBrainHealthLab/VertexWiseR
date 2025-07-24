@@ -64,22 +64,24 @@ Unthresholded t-map:
 
 ```{r, eval=TRUE, results = 'hide'}
 plot_surf(surf_data = results$tstat_map,
-          filename = paste0(tempdir(),"/sexdiff_nothresh.png"),
+          filename = "sexdiff_nothresh.png",
+          size=c(1400,291),
           show.plot.window=FALSE)
 ```
 ```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Unthresholded t-statistic map"}
-knitr::include_graphics(paste0(tempdir(),'/sexdiff_nothresh.png'))
+knitr::include_graphics('sexdiff_nothresh.png')
 ```
 
 Thresholded (significant) t-map:
 
 ```{r, eval=TRUE, results = 'hide'}
 plot_surf(surf_data = results$thresholded_tstat_map,
-          filename = paste0(tempdir(),"/sexdiff_thresh.png"),
+          filename = "sexdiff_thresh.png",
+          size=c(1400,291),
           show.plot.window=FALSE)
 ```
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
-knitr::include_graphics(paste0(tempdir(),'/sexdiff_thresh.png'))
+knitr::include_graphics('sexdiff_thresh.png')
 ```
 
 ## Overlaying plots together
@@ -100,12 +102,13 @@ plot_overlay_surf(model_output=results,
                   alpha_1=0.4, alpha_2=1,
                   overlay_boundaries=TRUE,
                   limits_2='same',
-                  filename=paste0(tempdir(),'/overlay_plot.png'), 
+                  filename='overlay_plot.png',
+                  size=c(1400,291), 
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
 ```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map"}
-knitr::include_graphics(paste0(tempdir(),'/overlay_plot.png'))
+knitr::include_graphics('overlay_plot.png')
 ```
 
 By default, both color bars are plotted but either can be set to FALSE (removed), which was done for the faded background colours here.
@@ -117,12 +120,13 @@ plot_overlay_surf(model_output=results,
                   cmap_1='RdBu_r', cmap_2='Reds',
                   alpha_1=1, alpha_2=1,
                   limits_2='same',
-                  filename=paste0(tempdir(),'/overlay_plot_twocmaps.png'), 
+                  filename='overlay_plot_twocmaps.png',
+                  size=c(1400,291), 
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps"}
-knitr::include_graphics(paste0(tempdir(),'/overlay_plot_twocmaps.png'))
+knitr::include_graphics('overlay_plot_twocmaps.png')
 ```
 
 A similar procedure can be used if one wants the range of values to be independent (which is the default if the limits=='same' option is not provided):
@@ -131,12 +135,13 @@ A similar procedure can be used if one wants the range of values to be independe
 plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='hot_r',
                   alpha_1=1, alpha_2=1,
-                  filename=paste0(tempdir(),'/overlay_plot_twolimits.png'), 
+                  filename='overlay_plot_twolimits.png',
+                  size=c(1400,291),
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
-knitr::include_graphics(paste0(tempdir(),'/overlay_plot_twolimits.png'))
+knitr::include_graphics('overlay_plot_twolimits.png')
 ```
 
 ## References:

@@ -90,7 +90,7 @@ To plot the significant clusters from both models on the CITI168 hippocampal tem
 ```{r, results = 'hide'}
 tmaps = rbind(model2_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
 plot_surf(surf_data = tmaps, 
-          filename = 'FINK_tstatmaps.png', 
+          filename = 'FINK_tstatmaps.png',
           title=c('RFT-corrected\nclusters','TFCE-corrected\nclusters'), 
           cmap='Reds',
           show.plot.window=FALSE)
@@ -133,7 +133,7 @@ b=ggplot(data=dat_beh_ses13,aes(y=clustRFT,x=as.factor(session), color=as.factor
   scale_color_discrete(name="Group",labels=c("group 1", "group 2"))+
   ylim(1.1, 1.55)
 
-png(filename="traj.png", res=300, width=2500,height=1080)
+png(filename="traj.png", res=250, width=1400,height=604)
 plots=plot_grid(a,b, nrow=1,rel_widths=c(0.3,0.40))
 print(plots)
 dev.off()

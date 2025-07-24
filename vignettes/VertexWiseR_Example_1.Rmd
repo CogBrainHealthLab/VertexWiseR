@@ -103,6 +103,7 @@ To plot the results of both models on an inflated fsaverage5 surface:
 tmaps = rbind(model1_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
 plot_surf(surf_data = tmaps, 
           filename ='SPRENG_tstatmaps.png', 
+          size=c(1400,582),
           surface = 'inflated', 
           title=c("RFT-corrected\nclusters", "TFCE-corrected\nclusters"),
           cmap='RdBu_r',
