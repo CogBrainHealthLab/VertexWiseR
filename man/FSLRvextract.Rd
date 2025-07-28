@@ -38,10 +38,10 @@ FSLRvextract(
 A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
-Extracts vertex-wise surface-based measures for each subject from HCP and fMRIprep preprocessed directory, and stores it as a single .RDS file.
+Extracts vertex-wise surface-based measures for each subject from HCP, fMRIprep or XCP-D preprocessed directories, and stores it as a single .RDS file.
 }
 \details{
-The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extract the data from these files, and organize the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
+The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
 }
 \examples{
 dat_fslr32k=FSLRvextract(sdirpath="./", 

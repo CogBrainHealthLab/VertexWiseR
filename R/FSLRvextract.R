@@ -1,7 +1,7 @@
 #' @title FSLRvextract
 #'
-#' @description Extracts vertex-wise surface-based measures for each subject from HCP and fMRIprep preprocessed directory, and stores it as a single .RDS file.
-#' @details The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extract the data from these files, and organize the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. 
+#' @description Extracts vertex-wise surface-based measures for each subject from HCP, fMRIprep or XCP-D preprocessed directories, and stores it as a single .RDS file.
+#' @details The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. 
 #'
 #' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
 #' @param wb_path The filepath to the workbench folder that you have previously downloaded and unzipped
@@ -37,7 +37,7 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscalar, subj_ID = TRUE, 
   setwd(sdirpath)
   
   ## filename check
-  if (missing("filename")) {
+  if (missing("filename") & silent==FALSE) {
     warning(paste0('No filename argument was given. The matrix object "fslr32k.rds" will be saved in R temporary directory (tempdir()).\n'))
     filename=paste0(tempdir(),'/fslr32k.rds')
   }
