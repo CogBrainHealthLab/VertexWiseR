@@ -106,6 +106,8 @@ dat_fslr32k=FSLRvextract(
 
 Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2 participants) and 64,984 columns (the subject's cortical thickness values in every vertex of the fslr32k surface).
 
+Additionally, the [DTSERIESvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/DTSERIESvextract.html) function can be used on an individual CIFTI dtseries.nii typically outputted in the same space by the fmriprep pipeline, to get one subject's surface data across N time points.
+
 ## Extracting cortical surface data: from CAT12
 
 CAT12vextract() was implemented in version 1.2.0 and can extract surface preprocessed with the CAT12 [@gaser_cat_2024] surface based morphometry pipeline. The function requires reticulate [@ushey_reticulate_2023] to run.
