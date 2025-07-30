@@ -6,7 +6,7 @@
 
 [![](https://cranlogs.r-pkg.org/badges/grand-total/VertexWiseR)](https://CRAN.R-project.org/package=VertexWiseR) [![CRAN status](https://www.r-pkg.org/badges/version/VertexWiseR)](https://cran.r-project.org/package=VertexWiseR) <!---end of badges-->
 
-![VertexWise workflow summary](man/figures/Flowchart.jpg){alt="Description of the VertexWise workflow summary"}<!-- -->
+![VertexWise workflow summary](man/figures/Flowchart.jpg)<!-- -->
 
 ## Setting up for the first time
 

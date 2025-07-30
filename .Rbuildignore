@@ -14,7 +14,7 @@ inst/demo_data/spreng_surf_data_cat12.zip
 inst/demo_data/spreng_surf_data_fmriprep.zip
 inst/demo_data/fink_surf_data_hippunfold.zip
 inst/demo_data/model1_TFCE.rds
-inst/demo_91k_bold.dtseries.nii
+inst/demo_data/demo_91k_bold.dtseries.nii
 man/figures/logo.png
 vignettes/*.png
 .gitattributes

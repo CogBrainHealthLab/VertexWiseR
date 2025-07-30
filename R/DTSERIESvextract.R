@@ -26,7 +26,6 @@
 #' filename="demo_91k_bold.dtseries.rds", 
 #' silent=FALSE)
 #' 
-#' 
 #' ##visualizing e.g. the first 4 frames of the fMRI volume
 #' #plot_surf(sub_dtseries[c(1,10,20,40),], 
 #' #            file="4frames.png")
@@ -41,7 +40,9 @@ DTSERIESvextract=function(dtseries, wb_path, filename, silent=FALSE)
   {stop('The dtseries file given does not exist at the set path.')}
   #wb_path exists? (exits without error for Rdoc example)
   if(!dir.exists(wb_path))
-  {return(message('The path to the workbench directory could be not found in the set wb_path.'))}
+  {
+    return(message('The path to the workbench directory could be not found in the set wb_path.'))
+  }
   
   ## filename check
   if (missing("filename") & silent==FALSE) {

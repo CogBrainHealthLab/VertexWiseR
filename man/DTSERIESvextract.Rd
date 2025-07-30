@@ -42,7 +42,6 @@ wb_path="/path/to/workbench",
 filename="demo_91k_bold.dtseries.rds", 
 silent=FALSE)
 
-
 ##visualizing e.g. the first 4 frames of the fMRI volume
 #plot_surf(sub_dtseries[c(1,10,20,40),], 
 #            file="4frames.png")
