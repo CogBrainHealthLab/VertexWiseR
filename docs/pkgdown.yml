@@ -1,12 +1,13 @@
-pandoc: 3.1.13
-pkgdown: 2.1.1.9000
-pkgdown_sha: dfa28bef27858bd442334b5cce8f645d555914be
+pandoc: '3.4'
+pkgdown: 2.1.3
+pkgdown_sha: ~
 articles:
   Python_troubleshooting: Python_troubleshooting.html
   VertexWiseR_Example_1: VertexWiseR_Example_1.html
   VertexWiseR_Example_2: VertexWiseR_Example_2.html
+  VertexWiseR_plot_overlay: VertexWiseR_plot_overlay.html
   VertexWiseR_surface_extraction: VertexWiseR_surface_extraction.html
-last_built: 2025-06-11T03:51Z
+last_built: 2025-07-29T04:12Z
 urls:
   reference: https://cogbrainhealthlab.github.io/VertexWiseR/reference
   article: https://cogbrainhealthlab.github.io/VertexWiseR/articles

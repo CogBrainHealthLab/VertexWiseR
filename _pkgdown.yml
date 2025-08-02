@@ -5,30 +5,48 @@ template:
   bootstrap: 5
   bootswatch: sandstone
 
+repo:
+  url:
+    home: https://github.com/CogBrainHealthLab/VertexWiseR
+    
+navbar:
+  structure:
+    left:
+      - home
+      - reference
+      - articles
+      - news
+      - OHBMposter
+  components:
+    OHBMposter:
+      title: OHBM 2025 poster
+      icon: fa-solid fa-scroll
+      aria-label: OHBM 2025 poster PDF
+      href: poster/VertexWiseR_poster_OHBM2025.pdf
+
 reference:
   - title: Demo & tutorials
-    desc: >
     contents:
     - getting_started
   
   - title: Requirements check
-    desc: >
     contents:
     - VWRfirstrun
     
-  - title: Surface data extraction and smoothing
-    desc: >
+  - title: Surface data extraction and 
     contents:
     - HIPvextract
     - SURFvextract
     - FSLRvextract
     - CAT12vextract
+    - DTSERIESvextract
+    
+  - title: Smoothing
+    contents:
     - smooth_surf
-    - fs_stats
     
   - title: Main analysis functions
   - subtitle: Vertex-Wise analysis
-    desc: >
     contents:
     - RFT_vertex_analysis
     - TFCE_vertex_analysis
@@ -36,54 +54,48 @@ reference:
     - TFCE_threshold
   
   - subtitle: Plotting
-    desc: >
     contents:
     - plot_surf
     - plot_surf3d
     - plot_overlay_surf
   
   - title: Other functions
-  - subtitle: Atlas manipulations
-    desc: >
-    contents:
-    - atlas_to_surf
-    - surf_to_atlas
-    
+
   - subtitle: Decoding surface data
-    desc: >
     contents:
     - decode_surf_data 
      
-  - subtitle: Conversions
-    desc: >
-    contents:   
+  - subtitle: Conversion functions
+    contents: 
     - fs5_to_fs6
     - fs6_to_fs5
     - surf_to_vol
+    - atlas_to_surf
+    - surf_to_atlas
     
+  - subtitle: Descriptive statistics extraction  
+    contents: 
+    - fs_stats
+      
   - title: Data objects
   
   - subtitle: Object classes
-    desc: >
     contents:
     - MNIsurface-class
     - edgelist-class
     - ROImap-class
   
   - subtitle: Edges
-    desc: >
     contents:
     - edgelist_hip
     
   - subtitle: Template maps
-    desc: >
     contents:
     - fs6_to_fs5_map
     - hip_points_cells
     - MNImap_hip
     
   - subtitle: Parcellation maps
-    desc: >
     contents:
     - ROImap_fs5
     - ROImap_fs6

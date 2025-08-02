@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Example analyses with VertexWiseR - Example 1 • VertexWiseR</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="48x48" href="../favicon-48x48.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,15 +41,18 @@
 <li><a class="dropdown-item" href="../articles/Python_troubleshooting.html">Python troubleshooting</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a></li>
+    <li><a class="dropdown-item" href="../articles/VertexWiseR_plot_overlay.html">Overlaying plots and transparent thresholding</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Updates</a></li>
+<li class="nav-item"><a class="nav-link" href="../poster/VertexWiseR_poster_OHBM2025.pdf" title="OHBM 2025 poster" aria-label="OHBM 2025 poster PDF"><span class="fa fa-solid fa-scroll"></span></a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/CogBrainHealthLab/VertexWiseR" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
@@ -74,7 +77,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2024-08-12</h4>
+            <h4 data-toc-skip class="date">2025-07-16</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_Example_1.Rmd</code></div>
@@ -102,33 +105,39 @@ them.</p>
 <h2 id="example-analysis-1-linear-model-of-age-and-cortical-thickness-and-meta-analytic-decoding">Example analysis 1: linear model of age and cortical thickness, and
 meta-analytic decoding<a class="anchor" aria-label="anchor" href="#example-analysis-1-linear-model-of-age-and-cortical-thickness-and-meta-analytic-decoding"></a>
 </h2>
-<p>The first stage of the analysis assumes that a preprocessed
-Freesurfer subjects directory is present. However, this code makes use
-of an already-extracted cortical thickness (CT) dataset made available
-on the VertexWiseR git repository.</p>
-<p>The following commented out code is the script which was used to
-produce this demo data with the <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">SPRENG
-dataset</a> <span class="citation">(Spreng et al. 2022)</span>:</p>
+<p>The analysis will use surface data already extracted in R from a
+preprocessed subjects directory, which we make available so you do not
+need to preprocess a sample yourself. To obtain it, we had extracted
+cortical thickness (CT) data from a FreeSurfer preprocessing directory
+of the <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">SPRENG
+dataset</a> <span class="citation">(Spreng et al. 2022)</span>.</p>
+<p>The demo data (218 MB) required to run the package demos can be
+downloaded from the package’s github repository with the following
+function:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#SURFvextract(sdirpath = SUBJECTS_DIR, filename = "SPRENG_CTv", template='fsaverage5', measure = 'thickness', subj_ID = T)</span></span></code></pre></div>
-<p>The surface can be loaded straight from the online repository and
-then smoothed :</p>
+<code class="sourceCode R"><span><span class="co">#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)</span></span>
+<span><span class="va">demodata</span><span class="op">=</span><span class="fu">VertexWiseR</span><span class="fu">:::</span><span class="fu">dl_demo</span><span class="op">(</span>path<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Here is the command line which was originally used to extract the
+surface:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">SPRENG_CTv_smoothed</span> <span class="op">=</span> <span class="fu"><a href="../reference/smooth_surf.html">smooth_surf</a></span><span class="op">(</span><span class="va">SPRENG_CTv</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>The SPRENG behavioural data (for participants in site 1,
-SPRENG_behdata_site1.csv) is accessible from the VertexWiseR package
-internal data:</p>
+<code class="sourceCode R"><span><span class="co">#SURFvextract(sdirpath = SUBJECTS_DIR, filename = "SPRENG_CTv", template='fsaverage5', measure = 'thickness', subj_ID = T)</span></span></code></pre></div>
+<p>To load the demo thickness matrix:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat_beh</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'VertexWiseR'</span>, <span class="st">'/demo_data/SPRENG_behdata_site1.rds'</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/SPRENG_CTv_site1.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>To smooth the surface data:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">SPRENG_CTv_smoothed</span> <span class="op">=</span> <span class="fu"><a href="../reference/smooth_surf.html">smooth_surf</a></span><span class="op">(</span><span class="va">SPRENG_CTv</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>To load the demo behavioural data (for participants in site 1,
+SPRENG_behdata_site1.csv):</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_beh</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">'/SPRENG_behdata_site1.rds'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To run the vertex-wise model analysis with random field theory-based
 cluster correction, testing for the effect of age, controlling for sex,
 on CT:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model1_RFT</span><span class="op">=</span><span class="fu"><a href="../reference/RFT_vertex_analysis.html">RFT_vertex_analysis</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">dat_beh</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,<span class="st">"age"</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>  contrast <span class="op">=</span> <span class="va">dat_beh</span><span class="op">[</span>,<span class="st">"age"</span><span class="op">]</span>, surf_data <span class="op">=</span> <span class="va">SPRENG_CTv_smoothed</span>, p <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model1_RFT</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <pre><code><span><span class="co">## $`Positive contrast`</span></span>
 <span><span class="co">##   clusid nverts     P     X    Y   Z tstat          region</span></span>
@@ -141,7 +150,7 @@ on CT:</p>
 <p>To run the vertex-wise model analysis with threshold-free cluster
 enhancement-based cluster correction, testing for the effect of age,
 controlling for sex, on CT; with 1000 permutations:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model1_TFCE</span><span class="op">=</span><span class="fu"><a href="../reference/TFCE_vertex_analysis.html">TFCE_vertex_analysis</a></span><span class="op">(</span>model<span class="op">=</span> <span class="va">dat_beh</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,<span class="st">"age"</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>                                 contrast <span class="op">=</span> <span class="va">dat_beh</span><span class="op">[</span>,<span class="st">"age"</span><span class="op">]</span>,</span>
 <span>                                 surf_data<span class="op">=</span><span class="va">SPRENG_CTv_smoothed</span>,</span>
@@ -149,7 +158,7 @@ controlling for sex, on CT; with 1000 permutations:</p>
 <span>                                 nthread<span class="op">=</span><span class="fl">4</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">TFCEoutput</span> <span class="op">=</span> <span class="fu"><a href="../reference/TFCE_threshold.html">TFCE_threshold</a></span><span class="op">(</span><span class="va">model1_TFCE</span>, p<span class="op">=</span><span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <pre><code><span><span class="co">## $`Positive contrast`</span></span>
 <span><span class="co">## [1] "No significant clusters"</span></span>
@@ -160,10 +169,11 @@ controlling for sex, on CT; with 1000 permutations:</p>
 <span><span class="co">## 2      2   7617 &lt;0.001 -34 -25.7  16.2 14.23           lh-insula</span></span></code></pre>
 <p>To plot the results of both models on an inflated fsaverage5
 surface:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tmaps</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">model1_RFT</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, <span class="va">TFCEoutput</span><span class="op">$</span><span class="va">thresholded_tstat_map</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">tmaps</span>, </span>
 <span>          filename <span class="op">=</span><span class="st">'SPRENG_tstatmaps.png'</span>, </span>
+<span>          size<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1400</span>,<span class="fl">582</span><span class="op">)</span>,</span>
 <span>          surface <span class="op">=</span> <span class="st">'inflated'</span>, </span>
 <span>          title<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RFT-corrected\nclusters"</span>, <span class="st">"TFCE-corrected\nclusters"</span><span class="op">)</span>,</span>
 <span>          cmap<span class="op">=</span><span class="st">'RdBu_r'</span>,</span>
@@ -172,9 +182,9 @@ surface:</p>
 <p>To run meta-analytic decoding of the significant negative clusters
 (the neurosynth dataset needs to be installed as VWRfirstrun()
 allows):</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">surf_decoding</span><span class="op">=</span><span class="fu"><a href="../reference/decode_surf_data.html">decode_surf_data</a></span><span class="op">(</span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, contrast<span class="op">=</span><span class="st">"negative"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">surf_decoding</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        keyword     r</span></span>
 <span><span class="co">## 538  retrieval 0.065</span></span>
@@ -208,7 +218,7 @@ Data</em> 9 (1): 119. <a href="https://doi.org/10.1038/s41597-022-01231-7" class
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Extracting surface data in VertexWiseR • VertexWiseR</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="48x48" href="../favicon-48x48.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,15 +41,18 @@
 <li><a class="dropdown-item" href="../articles/Python_troubleshooting.html">Python troubleshooting</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a></li>
+    <li><a class="dropdown-item" href="../articles/VertexWiseR_plot_overlay.html">Overlaying plots and transparent thresholding</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Updates</a></li>
+<li class="nav-item"><a class="nav-link" href="../poster/VertexWiseR_poster_OHBM2025.pdf" title="OHBM 2025 poster" aria-label="OHBM 2025 poster PDF"><span class="fa fa-solid fa-scroll"></span></a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/CogBrainHealthLab/VertexWiseR" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
@@ -74,7 +77,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2024-12-12</h4>
+            <h4 data-toc-skip class="date">2025-07-16</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_surface_extraction.Rmd</code></div>
@@ -83,11 +86,16 @@ Junhong Yu</h4>
     
     
 <p>As of version 1.2.0, four functions in VertexWiseR do surface data
-extraction and synthesis: SURFvextract(), FSLRvextract(),
-CAT12vextract() and HIPvextract().</p>
+extraction and synthesis:</p>
+<ul>
+<li><p>SURFvextract()</p></li>
+<li><p>FSLRvextract()</p></li>
+<li><p>CAT12vextract()</p></li>
+<li><p>HIPvextract()</p></li>
+</ul>
 <p>Surface extraction consists in reading through a preprocessing
 pipeline’s subjects directory, collating the surface data (for a chosen
-vertex-wise measures, e.g. thickness), and summarising it into one
+vertex-wise measure, e.g. thickness), and summarising it into one
 compact matrix R object, with N rows per subject and M columns per
 vertex values.</p>
 <div class="figure" style="text-align: center">
@@ -101,6 +109,12 @@ of the corresponding subjects ID. This file can be shared across any
 device with R and all VertexWiseR statistical analyses functions can be
 run on these, without the need to access the initially preprocessed
 data.</p>
+<p>The demo data (218 MB) required to run the package demos can be
+downloaded from the package’s github repository with the following
+function:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)</span></span>
+<span><span class="va">demodata</span><span class="op">=</span><span class="fu">VertexWiseR</span><span class="fu">:::</span><span class="fu">dl_demo</span><span class="op">(</span>path<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="extracting-cortical-surface-data-from-freesurfer">Extracting cortical surface data: from FreeSurfer<a class="anchor" aria-label="anchor" href="#extracting-cortical-surface-data-from-freesurfer"></a>
 </h2>
@@ -117,22 +131,14 @@ dataset</a> <span class="citation">(Spreng et al. 2022)</span>, after
 preprocessing their surface data using FreeSurfer’s default recon-all
 pipeline. Certain files that were not needed (volumes, surfaces, label
 files) were removed to minimise the subsample’s size.</p>
-<p>The subsample (29.6 MB) can be downloaded from the repository as
-follows (unzip can be changed to untar if errors occur):</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_freesurfer.zip?raw=TRUE"</span>, </span>
-<span>              destfile <span class="op">=</span> <span class="st">"spreng_surf_data_freesurfer.zip"</span>,</span>
-<span>              mode<span class="op">=</span><span class="st">'wb'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span><span class="st">"spreng_surf_data_freesurfer.zip"</span><span class="op">)</span></span></code></pre></div>
 <p>We give the following code as example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="../reference/SURFvextract.html">SURFvextract</a></span><span class="op">(</span>sdirpath <span class="op">=</span> <span class="st">'spreng_surf_data_freesurfer'</span>, </span>
-<span>             filename <span class="op">=</span> <span class="st">"SPRENG_CTv.rds"</span>, </span>
-<span>             template<span class="op">=</span><span class="st">'fsaverage5'</span>, </span>
-<span>             measure <span class="op">=</span> <span class="st">'thickness'</span>,</span>
-<span>             subj_ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="../reference/SURFvextract.html">SURFvextract</a></span><span class="op">(</span></span>
+<span>  sdirpath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">'/spreng_surf_data_freesurfer'</span><span class="op">)</span>, </span>
+<span>  filename <span class="op">=</span> <span class="st">"SPRENG_CTv.rds"</span>,</span>
+<span>  template<span class="op">=</span><span class="st">'fsaverage5'</span>,</span>
+<span>  measure <span class="op">=</span> <span class="st">'thickness'</span>,</span>
+<span>  subj_ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>The following arguments can be used:
 <ul>
@@ -153,12 +159,11 @@ and data matrix instead of just the matrix (TRUE OR FALSE)</li>
 </ul>
 </li>
 </ul>
-<p>An example of surface matrix object, extracted from FreeSurfer
-preprocessing of the all site 1 participants is available on VertexWiseR
-online repository:</p>
+<p>Here is an example of surface matrix object, extracted from
+FreeSurfer preprocessing of the all site 1 participants:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="va">SPRENG_CTv</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span></span>
+<span>  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/SPRENG_CTv_site1.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">SPRENG_CTv</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]   238 20484</span></span></code></pre>
 <p>What dim(SPRENG_CTv) shows is that the matrix object contains the
@@ -172,13 +177,13 @@ SPRENG_CTv[[1]] will be the list of subject IDs * SPRENG_CTv[[2]] will
 be the matrix object</p>
 </div>
 <div class="section level2">
-<h2 id="extracting-cortical-surface-data-from-hcp-and-fmriprep">Extracting cortical surface data: from HCP and fMRIprep<a class="anchor" aria-label="anchor" href="#extracting-cortical-surface-data-from-hcp-and-fmriprep"></a>
+<h2 id="extracting-cortical-surface-data-from-hcp-fmriprep-or-xcp-d">Extracting cortical surface data: from HCP, fMRIprep or XCP-D<a class="anchor" aria-label="anchor" href="#extracting-cortical-surface-data-from-hcp-fmriprep-or-xcp-d"></a>
 </h2>
 <p>FSLRvextract() extracts cortical data in FSLR32k surface space from
 Human Connectome Project (HCP) <span class="citation">(Van Essen et al.
-2013)</span> or fMRIprep <span class="citation">(Esteban et al.
-2019)</span> preprocessing output directories. FSLRvextract() requires
-the <a href="https://humanconnectome.org/software/get-connectome-workbench" class="external-link">HCP
+2013)</span>, fMRIprep <span class="citation">(Esteban et al.
+2019)</span> preprocessing output directories, as well as XCP-D <span class="citation">(Mehta et al. 2024)</span> postprocessing output
+directories . FSLRvextract() requires the <a href="https://humanconnectome.org/software/get-connectome-workbench" class="external-link">HCP
 workbench</a> to be installed, and uses the ciftiTools R package to read
 the .dscalar.nii files.</p>
 <p>For demonstration, we provide a subsample of 2 participants from the
@@ -188,25 +193,17 @@ preprocessing their surface data using fMRIprep. The latter outputs
 fslr32k surface data when using the “–cifti-output” option <span class="citation">(Esteban et al. 2019)</span>. Other anatomical files
 were removed and only the dscalar.nii and associated json files were
 preserved, to minimise its size.</p>
-<p>The subsample (14.1 MB) can be downloaded from the repository as
-follows (unzip can be changed to untar if errors occur):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_fmriprep.zip?raw=TRUE"</span>, </span>
-<span>              destfile <span class="op">=</span> <span class="st">"spreng_surf_data_fmriprep.zip"</span>,</span>
-<span>              mode<span class="op">=</span><span class="st">'wb'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span><span class="st">"spreng_surf_data_fmriprep.zip"</span><span class="op">)</span></span></code></pre></div>
 <p>FSLRvextract() gets the data from .dscalar.nii files associated with
 the specified measure (e.g. thickness, curv), and can extract it as
 follows (specify your own connectome workbench path):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu"><a href="../reference/FSLRvextract.html">FSLRvextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"spreng_surf_data/"</span>,</span>
-<span>            wb_path<span class="op">=</span><span class="st">"path/to/workbench"</span>,</span>
-<span>            filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span>
-<span>            dscaler<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
-<span>            subj_ID <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>            silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu"><a href="../reference/FSLRvextract.html">FSLRvextract</a></span><span class="op">(</span></span>
+<span>  sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/spreng_surf_data/"</span><span class="op">)</span>,</span>
+<span>  wb_path<span class="op">=</span><span class="st">"path/to/workbench"</span>,</span>
+<span>  filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span>
+<span>  dscaler<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
+<span>  subj_ID <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>The following arguments can be used:
 <ul>
@@ -228,6 +225,10 @@ FALSE). Default is FALSE.</li>
 <p>Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2
 participants) and 64,984 columns (the subject’s cortical thickness
 values in every vertex of the fslr32k surface).</p>
+<p>Additionally, the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/reference/DTSERIESvextract.html">DTSERIESvextract()</a>
+function can be used on an individual CIFTI dtseries.nii typically
+outputted in the same space by the fmriprep pipeline, to get one
+subject’s surface data across N time points.</p>
 </div>
 <div class="section level2">
 <h2 id="extracting-cortical-surface-data-from-cat12">Extracting cortical surface data: from CAT12<a class="anchor" aria-label="anchor" href="#extracting-cortical-surface-data-from-cat12"></a>
@@ -244,23 +245,15 @@ preprocessing their surface data using CAT12’s SBM pipeline
 (segmentation and resampling without smoothing), and extracting
 different possible surface measures. Only the 32k mesh .gii and .dat
 files were kept.</p>
-<p>The subsample (~13 MB) can be downloaded from the repository as
-follows (unzip can be changed to untar if errors occur):</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/spreng_surf_data_cat12.zip?raw=TRUE"</span>, </span>
-<span>              destfile <span class="op">=</span> <span class="st">"spreng_surf_data_cat12.zip"</span>,</span>
-<span>              mode<span class="op">=</span><span class="st">'wb'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span><span class="st">"spreng_surf_data_cat12.zip"</span><span class="op">)</span></span></code></pre></div>
 <p>CAT12vextract() extracts surface data resampled to 32k meshes (with
 or without smoothing) and can be used as in this example:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">CATsurf</span><span class="op">=</span><span class="fu"><a href="../reference/CAT12vextract.html">CAT12vextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"SPRENG_CAT12_subsample"</span>, </span>
-<span>                      filename<span class="op">=</span><span class="st">'thickness.rds'</span>, </span>
-<span>                      measure<span class="op">=</span><span class="st">'thickness'</span>, </span>
-<span>                      subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                      silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">CATsurf</span><span class="op">=</span><span class="fu"><a href="../reference/CAT12vextract.html">CAT12vextract</a></span><span class="op">(</span></span>
+<span>  sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/SPRENG_CAT12_subsample"</span><span class="op">)</span>,</span>
+<span>  filename<span class="op">=</span><span class="st">'thickness.rds'</span>, </span>
+<span>  measure<span class="op">=</span><span class="st">'thickness'</span>, </span>
+<span>  subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>The following arguments can be used:
 <ul>
@@ -282,11 +275,11 @@ and data matrix instead of just the matrix (TRUE OR FALSE)</li>
 <p>Accordingly, the matrix will contained 2 rows (for 2 participants)
 and 64,984 columns (the subject’s cortical thickness values in every
 vertex of the 32k mesh):</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#The surface object contains the surface matrix and the list of subjects ID (and session number if applicable)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">CATsurf</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub_list" "surf_obj"</span></span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#The surface matrix dimensions:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">CATsurf</span><span class="op">$</span><span class="va">surf_obj</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]     2 64984</span></span></code></pre>
@@ -302,20 +295,12 @@ HIPvextract() does not require any system requirement.</p>
 <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0" class="external-link">Fink
 dataset</a> <span class="citation">(Fink et al. 2021)</span>, after
 preprocessing their surface data using HippUnfold, keeping all output
-.gii files. The subsample (11.3 MB) can be downloaded from the
-repository as follows (untar can be changed to unzip if errors
-occur):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># download and unzip the surface data directory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/fink_surf_data_hippunfold.zip?raw=TRUE"</span>, </span>
-<span>              destfile <span class="op">=</span> <span class="st">"fink_surf_data_hippunfold.zip"</span>, </span>
-<span>              mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span><span class="st">"fink_surf_data_hippunfold.zip"</span><span class="op">)</span></span></code></pre></div>
+.gii files.</p>
 <p>To extract and collate the data of the two participants,
 HIPvextract() can be run as follows:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">=</span><span class="fu"><a href="../reference/HIPvextract.html">HIPvextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"fink_surf_data"</span>,</span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">=</span><span class="fu"><a href="../reference/HIPvextract.html">HIPvextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,</span>
+<span>                                      <span class="st">"/fink_surf_data"</span><span class="op">)</span>,</span>
 <span>            filename<span class="op">=</span><span class="st">"hippocampal_surf.rds"</span>,</span>
 <span>            measure<span class="op">=</span><span class="st">"thickness"</span>,</span>
 <span>            subj_ID <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
@@ -337,14 +322,14 @@ TRUE.</li>
 </ul>
 <p>Note that when subjects directories have multiple sessions, the
 matrix object will contain N rows per participant and per session.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub-season101_ses-1" "sub-season101_ses-2" "sub-season101_ses-3"</span></span>
 <span><span class="co">## [4] "sub-season102_ses-1" "sub-season102_ses-2" "sub-season102_ses-3"</span></span></code></pre>
 <p>Here the matrix has 6 rows for 2 particiants with 3 sessions each;
 and 14,524 columns (the hippocampal thickness values in every vertex of
 the CITI168 surface).</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]     6 14524</span></span></code></pre>
 </div>
@@ -385,6 +370,12 @@ Luders, and the Alzheimer’s Disease Neuroimaging Initiative. 2024.
 Analysis of Structural <span>MRI</span> Data.”</span>
 <em>GigaScience</em> 13 (January): giae049. <a href="https://doi.org/10.1093/gigascience/giae049" class="external-link">https://doi.org/10.1093/gigascience/giae049</a>.
 </div>
+<div id="ref-mehta2024xcp" class="csl-entry">
+Mehta, Kahini, Taylor Salo, Thomas J Madison, Azeez Adebimpe, Danielle S
+Bassett, Max Bertolero, Matthew Cieslak, et al. 2024. <span>“XCP-d: A
+Robust Pipeline for the Post-Processing of fMRI Data.”</span>
+<em>Imaging Neuroscience</em> 2: 1–26.
+</div>
 <div id="ref-spreng_neurocognitive_2022" class="csl-entry">
 Spreng, R. Nathan, Roni Setton, Udi Alter, Benjamin N. Cassidy, Bri
 Darboh, Elizabeth DuPre, Karin Kantarovich, et al. 2022.
@@ -417,7 +408,7 @@ Behrens, Essa Yacoub, and Kamil Ugurbil. 2013. <span>“The
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
