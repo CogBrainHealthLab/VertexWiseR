@@ -47,5 +47,7 @@ The function searches for the HCP preprocessed directory by listing out files wi
 dat_fslr32k=FSLRvextract(sdirpath="./", 
 filename="dat_fslr32k.rds",
 dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
-subj_ID = TRUE, silent=FALSE)
+subj_ID = TRUE, 
+silent=FALSE,
+VWR_check=FALSE)
 }

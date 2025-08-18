@@ -38,7 +38,8 @@ mode = "wb")
 sub_dtseries=DTSERIESvextract(
 dtseries=paste0(tempdir(),
              "/demo_91k_bold.dtseries.nii"), 
-silent=FALSE)
+silent=FALSE,
+VWR_check=FALSE)
 
 ##visualizing e.g. the first 4 frames of the fMRI volume
 #plot_surf(sub_dtseries[c(1,10,20,40),], 

@@ -22,7 +22,8 @@
 #' sub_dtseries=DTSERIESvextract(
 #' dtseries=paste0(tempdir(),
 #'              "/demo_91k_bold.dtseries.nii"), 
-#' silent=FALSE)
+#' silent=FALSE,
+#' VWR_check=FALSE)
 #' 
 #' ##visualizing e.g. the first 4 frames of the fMRI volume
 #' #plot_surf(sub_dtseries[c(1,10,20,40),], 
@@ -39,9 +40,9 @@ DTSERIESvextract=function(dtseries, filename, silent=FALSE, VWR_check = TRUE)
   if (VWR_check == TRUE){
     if(silent==FALSE)
     {message("Checking for VertexWiseR system requirements ... ")
-      check = VWRfirstrun('python/conda only')}
+      check = VWRfirstrun('conda/brainstat')}
     else
-    {check = VWRfirstrun('python/conda only', promptless = TRUE)}
+    {check = VWRfirstrun('conda/brainstat', promptless = TRUE)}
     if (!is.null(check)) {return(check)}
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
@@ -55,8 +56,8 @@ DTSERIESvextract=function(dtseries, filename, silent=FALSE, VWR_check = TRUE)
     filename=paste0(tempdir(),'/dtseries.rds')
   }
 
-  ##reading and extracting data from the cifti file
-  reticulate::py_require("nibabel")
+  #import nibabel package
+  reticulate::import("nibabel")
   #Solves the "no visible binding for global variable" issue
   . <- read_cifti  <- NULL 
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/read_cifti.py'))

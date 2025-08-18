@@ -23,7 +23,9 @@
 #' dat_fslr32k=FSLRvextract(sdirpath="./", 
 #' filename="dat_fslr32k.rds",
 #' dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
-#' subj_ID = TRUE, silent=FALSE)
+#' subj_ID = TRUE, 
+#' silent=FALSE,
+#' VWR_check=FALSE)
 #' @export
 
 FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=FALSE, VWR_check=TRUE)
@@ -36,9 +38,9 @@ FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=F
   if (VWR_check == TRUE){
     if(silent==FALSE)
     {message("Checking for VertexWiseR system requirements ... ")
-      check = VWRfirstrun('python/conda only')}
+      check = VWRfirstrun('conda/brainstat')}
     else
-    {check = VWRfirstrun('python/conda only', promptless = TRUE)}
+    {check = VWRfirstrun('conda/brainstat', promptless = TRUE)}
     if (!is.null(check)) {return(check)}
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
@@ -64,7 +66,8 @@ FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=F
   ##read data and save data for each subject as rows in a data matrix
   fslr32k_dat=matrix(NA, nrow=NROW(sublist), ncol=64984)
     
-  reticulate::py_require("nibabel")
+  #import nibabel package
+  reticulate::import("nibabel")
   #Solves the "no visible binding for global variable" issue
   . <- read_cifti  <- NULL 
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/read_cifti.py'))
