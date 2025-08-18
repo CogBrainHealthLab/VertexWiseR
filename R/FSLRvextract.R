@@ -65,6 +65,8 @@ FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=F
   fslr32k_dat=matrix(NA, nrow=NROW(sublist), ncol=64984)
     
   reticulate::py_require("nibabel")
+  #Solves the "no visible binding for global variable" issue
+  . <- read_cifti  <- NULL 
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/read_cifti.py'))
   
   for (sub in 1:NROW(sublist))

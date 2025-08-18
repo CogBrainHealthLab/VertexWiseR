@@ -57,6 +57,8 @@ DTSERIESvextract=function(dtseries, filename, silent=FALSE, VWR_check = TRUE)
 
   ##reading and extracting data from the cifti file
   reticulate::py_require("nibabel")
+  #Solves the "no visible binding for global variable" issue
+  . <- read_cifti  <- NULL 
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/read_cifti.py'))
   cifti.timeseries.dat=t(read_cifti(dtseries))
   
