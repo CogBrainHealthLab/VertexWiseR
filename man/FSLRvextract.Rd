@@ -6,17 +6,15 @@
 \usage{
 FSLRvextract(
   sdirpath = "./",
-  wb_path,
   filename,
   dscalar,
   subj_ID = TRUE,
-  silent = FALSE
+  silent = FALSE,
+  VWR_check = TRUE
 )
 }
 \arguments{
 \item{sdirpath}{A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").}
-
-\item{wb_path}{The filepath to the workbench folder that you have previously downloaded and unzipped}
 
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).}
 
@@ -45,9 +43,7 @@ The function searches for the HCP preprocessed directory by listing out files wi
 }
 \examples{
 dat_fslr32k=FSLRvextract(sdirpath="./", 
-wb_path="/path/to/workbench",
 filename="dat_fslr32k.rds",
 dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 subj_ID = TRUE, silent=FALSE)
-
 }

@@ -4,12 +4,10 @@
 \alias{DTSERIESvextract}
 \title{DTSERIESvextract}
 \usage{
-DTSERIESvextract(dtseries, wb_path, filename, silent = FALSE)
+DTSERIESvextract(dtseries, filename, silent = FALSE, VWR_check = TRUE)
 }
 \arguments{
 \item{dtseries}{A string object containing the full path to the dtseries files to extract from.}
-
-\item{wb_path}{The filepath to the workbench folder that you have previously downloaded and unzipped}
 
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).}
 
@@ -38,8 +36,6 @@ mode = "wb")
 sub_dtseries=DTSERIESvextract(
 dtseries=paste0(tempdir(),
              "/demo_91k_bold.dtseries.nii"), 
-wb_path="/path/to/workbench",
-filename="demo_91k_bold.dtseries.rds", 
 silent=FALSE)
 
 ##visualizing e.g. the first 4 frames of the fMRI volume

@@ -1,3 +1,8 @@
+# VertexWiseR v1.4.1
+
+## NEW FEATURES
+* The ciftiTools package and connectome workbench are no longer needed to extract FSLR32K surface when using FSLRvextract() or DTSERIESvextract(). The surface extraction tutorial was updated accordingly.
+
 # VertexWiseR v1.4.0
 
 ## NEW FEATURES

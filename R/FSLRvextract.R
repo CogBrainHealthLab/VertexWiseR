@@ -4,7 +4,6 @@
 #' @details The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. 
 #'
 #' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
-#' @param wb_path The filepath to the workbench folder that you have previously downloaded and unzipped
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
 #' @param dscalar A string object containing the filename suffix of the dscalar file. These dscalar files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 #' \itemize{
@@ -21,16 +20,27 @@
 #' @returns A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 #' @examples
 #' dat_fslr32k=FSLRvextract(sdirpath="./", 
-#' wb_path="/path/to/workbench",
 #' filename="dat_fslr32k.rds",
 #' dscalar=".thickness_MSMAll.32k_fs_LR.dscalar.nii", 
 #' subj_ID = TRUE, silent=FALSE)
-#' 
-#' @importFrom ciftiTools ciftiTools.setOption readcii
 #' @export
 
-FSLRvextract=function(sdirpath="./", wb_path,filename, dscalar, subj_ID = TRUE, silent=FALSE)
+FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=FALSE, VWR_check=TRUE)
 {
+  
+  ##loading python library and functions
+  #Check required python dependencies. If files missing:
+  #Will prompt the user to get them in interactive session 
+  #Will stop if it's a non-interactive session
+  if (VWR_check == TRUE){
+    if(silent==FALSE)
+    {message("Checking for VertexWiseR system requirements ... ")
+      check = VWRfirstrun('python/conda only')}
+    else
+    {check = VWRfirstrun('python/conda only', promptless = TRUE)}
+    if (!is.null(check)) {return(check)}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  
   oldwd <- getwd() 
   
   if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
@@ -50,21 +60,16 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscalar, subj_ID = TRUE, 
   if (length(filelist) ==0)
   {return(message(paste0('No *',dscalar, ' files could be found in the set sdirpath')))} 
   
-  ##load and configure ciftitools
-  ciftiTools::ciftiTools.setOption('wb_path', wb_path)
-  
   ##read data and save data for each subject as rows in a data matrix
   fslr32k_dat=matrix(NA, nrow=NROW(sublist), ncol=64984)
+    
+  reticulate::py_require("nibabel")
+  reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/read_cifti.py'))
   
   for (sub in 1:NROW(sublist))
   {
     if(silent==FALSE) {message(paste0("Processing (",sub,"/",NROW(sublist),") ",filelist[sub]," ..."))}
-    
-    dat.temp=ciftiTools::readcii(filelist[sub],brainstructures = c("left","right"))
-    LH.idx=which(dat.temp$meta$cortex$medial_wall_mask$left==TRUE)
-    RH.idx=which(dat.temp$meta$cortex$medial_wall_mask$right==TRUE)+32492
-    fslr32k_dat[sub,c(LH.idx,RH.idx)]=c(dat.temp$data$cortex_left,dat.temp$data$cortex_right)
-    remove(dat.temp)
+    fslr32k_dat[sub,]=read_cifti(filelist[sub])
   }
   fslr32k_dat=fslr32k_dat[order(sublist),]
   
@@ -73,9 +78,9 @@ FSLRvextract=function(sdirpath="./", wb_path,filename, dscalar, subj_ID = TRUE, 
   
   if(silent==FALSE) {message(paste0("Saving output as ",filename))}
   ##output file depending on subj_ID==T
-
+  
   if(subj_ID==TRUE) {fslr32k_dat=list(sub_list=sublist, 
-                                       surf_obj=fslr32k_dat)} 
+                                      surf_obj=fslr32k_dat)} 
   
   setwd(oldwd) #will restore user's working directory path on function break
   saveRDS(fslr32k_dat, file=filename)
