@@ -30,9 +30,9 @@ CAT12vextract=function(sdirpath="./", filename, measure='thickness', subj_ID = T
   if (VWR_check == TRUE){
     if(silent==FALSE)
     {message("Checking for VertexWiseR system requirements ... ")
-    check = VWRfirstrun('python/conda only')}
+    check = VWRfirstrun('conda/brainstat')}
     else
-    {check = VWRfirstrun('python/conda only', promptless = TRUE)}
+    {check = VWRfirstrun('conda/brainstat', promptless = TRUE)}
     if (!is.null(check)) {return(check)}
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
