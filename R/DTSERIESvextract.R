@@ -5,6 +5,7 @@
 #' @param dtseries A string object containing the full path to the dtseries files to extract from.
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
 #' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
+#' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #' 
 #' @returns A .RDSfile containing a surface data matrix object, with N time-point x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a time point in order and contains the left to right hemispheres' vertex-wise values.
 #' @examples

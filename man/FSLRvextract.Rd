@@ -31,6 +31,8 @@ FSLRvextract(
 \item{subj_ID}{A logical object to determine whether to return a list object containing both subject ID and data matrix.}
 
 \item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
