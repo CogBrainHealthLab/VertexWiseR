@@ -33,7 +33,6 @@ SystemRequirements: Miniconda3 (v24.9.2), Python (<= v3.12), BrainStat
 Depends: 
     R (>= 4.0.0)
 Imports: 
-    ciftiTools,
     doParallel,
     doSNOW,
     foreach,
@@ -41,12 +40,15 @@ Imports:
     fs,
     gifti,
     grDevices,
+    grid,
     igraph,
     methods,
+    parallel,
     plotly,
     png,
     rappdirs,
     reticulate,
     stats,
     stringr,
+    tools,
     utils
