@@ -3,6 +3,9 @@
 ## NEW FEATURES
 * The ciftiTools package and connectome workbench are no longer needed to extract FSLR32K surface when using FSLRvextract() or DTSERIESvextract(). The surface extraction tutorial was updated accordingly.
 
+## FIXES
+* If Brainstat was not installed, CAT12vextract() failed as it assumed the nibabel package (a dependency of Brainstat) to be installed and only checked for Python. Brainstat is now required for the function to run, to simplify dependency management. It will also be required for FSLRvextract() and DTSERIESvextract(). 
+
 # VertexWiseR v1.4.0
 
 ## NEW FEATURES
