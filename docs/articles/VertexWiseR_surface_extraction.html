@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2025-07-16</h4>
+            <h4 data-toc-skip class="date">2025-08-18</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_surface_extraction.Rmd</code></div>
@@ -183,9 +183,7 @@ be the matrix object</p>
 Human Connectome Project (HCP) <span class="citation">(Van Essen et al.
 2013)</span>, fMRIprep <span class="citation">(Esteban et al.
 2019)</span> preprocessing output directories, as well as XCP-D <span class="citation">(Mehta et al. 2024)</span> postprocessing output
-directories . FSLRvextract() requires the <a href="https://humanconnectome.org/software/get-connectome-workbench" class="external-link">HCP
-workbench</a> to be installed, and uses the ciftiTools R package to read
-the .dscalar.nii files.</p>
+directories.</p>
 <p>For demonstration, we provide a subsample of 2 participants from the
 <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">SPRENG
 dataset</a> <span class="citation">(Spreng et al. 2022)</span>, after
@@ -195,23 +193,26 @@ were removed and only the dscalar.nii and associated json files were
 preserved, to minimise its size.</p>
 <p>FSLRvextract() gets the data from .dscalar.nii files associated with
 the specified measure (e.g. thickness, curv), and can extract it as
-follows (specify your own connectome workbench path):</p>
+follows:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu"><a href="../reference/FSLRvextract.html">FSLRvextract</a></span><span class="op">(</span></span>
 <span>  sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/spreng_surf_data/"</span><span class="op">)</span>,</span>
-<span>  wb_path<span class="op">=</span><span class="st">"path/to/workbench"</span>,</span>
 <span>  filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span>
-<span>  dscaler<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
+<span>  dscalar<span class="op">=</span><span class="st">"_space-fsLR_den-91k_thickness.dscalar.nii"</span>,</span>
 <span>  subj_ID <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Checking for VertexWiseR system requirements ...</span></span></code></pre>
+<pre><code><span><span class="co">## Processing (1/2) sub-122/ses-1/anat/sub-122_ses-1_space-fsLR_den-91k_thickness.dscalar.nii ...</span></span></code></pre>
+<pre><code><span><span class="co">## Processing (2/2) sub-129/ses-1/anat/sub-129_ses-1_space-fsLR_den-91k_thickness.dscalar.nii ...</span></span></code></pre>
+<pre><code><span><span class="co">## Saving output as dat_fslr32k.rds</span></span></code></pre>
+<pre><code><span><span class="co">## done!</span></span></code></pre>
 <ul>
 <li>The following arguments can be used:
 <ul>
 <li>sdirpath: Path to the preprocessed subjects directory</li>
-<li>wb_path: Path to the HCP workbench directory</li>
 <li>filename: Name of the saved .rds output (can include a specific path
 to it)</li>
-<li>dscaler: Suffix of the dscaler surface files. Because these files
+<li>dscalar: Suffix of the dscalar surface files. Because these files
 are named differently depending on the preprocessing pipeline, the user
 needs to specify what they are in the dataset.</li>
 <li>subj_ID Whether to obtain a list object containing both subject ID
@@ -247,13 +248,16 @@ different possible surface measures. Only the 32k mesh .gii and .dat
 files were kept.</p>
 <p>CAT12vextract() extracts surface data resampled to 32k meshes (with
 or without smoothing) and can be used as in this example:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CATsurf</span><span class="op">=</span><span class="fu"><a href="../reference/CAT12vextract.html">CAT12vextract</a></span><span class="op">(</span></span>
 <span>  sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">"/SPRENG_CAT12_subsample"</span><span class="op">)</span>,</span>
 <span>  filename<span class="op">=</span><span class="st">'thickness.rds'</span>, </span>
 <span>  measure<span class="op">=</span><span class="st">'thickness'</span>, </span>
 <span>  subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Checking for VertexWiseR system requirements ...</span></span></code></pre>
+<pre><code><span><span class="co">## Saving output as thickness.rds</span></span></code></pre>
+<pre><code><span><span class="co">## done!</span></span></code></pre>
 <ul>
 <li>The following arguments can be used:
 <ul>
@@ -275,11 +279,11 @@ and data matrix instead of just the matrix (TRUE OR FALSE)</li>
 <p>Accordingly, the matrix will contained 2 rows (for 2 participants)
 and 64,984 columns (the subject’s cortical thickness values in every
 vertex of the 32k mesh):</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#The surface object contains the surface matrix and the list of subjects ID (and session number if applicable)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">CATsurf</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub_list" "surf_obj"</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#The surface matrix dimensions:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">CATsurf</span><span class="op">$</span><span class="va">surf_obj</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]     2 64984</span></span></code></pre>
@@ -298,7 +302,7 @@ preprocessing their surface data using HippUnfold, keeping all output
 .gii files.</p>
 <p>To extract and collate the data of the two participants,
 HIPvextract() can be run as follows:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">=</span><span class="fu"><a href="../reference/HIPvextract.html">HIPvextract</a></span><span class="op">(</span>sdirpath<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,</span>
 <span>                                      <span class="st">"/fink_surf_data"</span><span class="op">)</span>,</span>
 <span>            filename<span class="op">=</span><span class="st">"hippocampal_surf.rds"</span>,</span>
@@ -322,14 +326,14 @@ TRUE.</li>
 </ul>
 <p>Note that when subjects directories have multiple sessions, the
 matrix object will contain N rows per participant and per session.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub-season101_ses-1" "sub-season101_ses-2" "sub-season101_ses-3"</span></span>
 <span><span class="co">## [4] "sub-season102_ses-1" "sub-season102_ses-2" "sub-season102_ses-3"</span></span></code></pre>
 <p>Here the matrix has 6 rows for 2 particiants with 3 sessions each;
 and 14,524 columns (the hippocampal thickness values in every vertex of
 the CITI168 surface).</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]     6 14524</span></span></code></pre>
 </div>

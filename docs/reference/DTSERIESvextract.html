@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">DTSERIESvextract</span><span class="op">(</span><span class="va">dtseries</span>, <span class="va">wb_path</span>, <span class="va">filename</span>, silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">DTSERIESvextract</span><span class="op">(</span><span class="va">dtseries</span>, <span class="va">filename</span>, silent <span class="op">=</span> <span class="cn">FALSE</span>, VWR_check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,16 +64,16 @@
 <dd><p>A string object containing the full path to the dtseries files to extract from.</p></dd>
 
 
-<dt id="arg-wb-path">wb_path<a class="anchor" aria-label="anchor" href="#arg-wb-path"></a></dt>
-<dd><p>The filepath to the workbench folder that you have previously downloaded and unzipped</p></dd>
-
-
 <dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
 <dd><p>A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).</p></dd>
 
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
 <dd><p>A logical object to determine whether messages will be silenced. Set to 'FALSE' by default</p></dd>
+
+
+<dt id="arg-vwr-check">VWR_check<a class="anchor" aria-label="anchor" href="#arg-vwr-check"></a></dt>
+<dd><p>A boolean object specifying whether to check and validate system requirements. Default is TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -100,10 +100,10 @@
 <span class="r-in"><span><span class="va">sub_dtseries</span><span class="op">=</span><span class="fu">DTSERIESvextract</span><span class="op">(</span></span></span>
 <span class="r-in"><span>dtseries<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             <span class="st">"/demo_91k_bold.dtseries.nii"</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>wb_path<span class="op">=</span><span class="st">"/path/to/workbench"</span>,</span></span>
-<span class="r-in"><span>filename<span class="op">=</span><span class="st">"demo_91k_bold.dtseries.rds"</span>, </span></span>
-<span class="r-in"><span>silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The path to the workbench directory could be not found in the set wb_path.</span>
+<span class="r-in"><span>silent<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving output as C:\Users\CHARLY~1.BIL\AppData\Local\Temp\Rtmp2BcWXS/dtseries.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> done!</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">##visualizing e.g. the first 4 frames of the fMRI volume</span></span></span>
 <span class="r-in"><span><span class="co">#plot_surf(sub_dtseries[c(1,10,20,40),], </span></span></span>

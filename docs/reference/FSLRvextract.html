@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,11 +55,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FSLRvextract</span><span class="op">(</span></span>
 <span>  sdirpath <span class="op">=</span> <span class="st">"./"</span>,</span>
-<span>  <span class="va">wb_path</span>,</span>
 <span>  <span class="va">filename</span>,</span>
 <span>  <span class="va">dscalar</span>,</span>
 <span>  subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  silent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  VWR_check <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -69,10 +69,6 @@
 
 <dl><dt id="arg-sdirpath">sdirpath<a class="anchor" aria-label="anchor" href="#arg-sdirpath"></a></dt>
 <dd><p>A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").</p></dd>
-
-
-<dt id="arg-wb-path">wb_path<a class="anchor" aria-label="anchor" href="#arg-wb-path"></a></dt>
-<dd><p>The filepath to the workbench folder that you have previously downloaded and unzipped</p></dd>
 
 
 <dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
@@ -97,6 +93,10 @@
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
 <dd><p>A logical object to determine whether messages will be silenced. Set to 'FALSE' by default</p></dd>
 
+
+<dt id="arg-vwr-check">VWR_check<a class="anchor" aria-label="anchor" href="#arg-vwr-check"></a></dt>
+<dd><p>A boolean object specifying whether to check and validate system requirements. Default is TRUE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -110,12 +110,12 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dat_fslr32k</span><span class="op">=</span><span class="fu">FSLRvextract</span><span class="op">(</span>sdirpath<span class="op">=</span><span class="st">"./"</span>, </span></span>
-<span class="r-in"><span>wb_path<span class="op">=</span><span class="st">"/path/to/workbench"</span>,</span></span>
 <span class="r-in"><span>filename<span class="op">=</span><span class="st">"dat_fslr32k.rds"</span>,</span></span>
 <span class="r-in"><span>dscalar<span class="op">=</span><span class="st">".thickness_MSMAll.32k_fs_LR.dscalar.nii"</span>, </span></span>
-<span class="r-in"><span>subj_ID <span class="op">=</span> <span class="cn">TRUE</span>, silent<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>subj_ID <span class="op">=</span> <span class="cn">TRUE</span>, </span></span>
+<span class="r-in"><span>silent<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No *.thickness_MSMAll.32k_fs_LR.dscalar.nii files could be found in the set sdirpath</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
