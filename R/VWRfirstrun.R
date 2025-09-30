@@ -93,7 +93,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           #check if virtual environment available with the right settings and initialize it.
           message('Installing Python ephemeral environment via reticulate\'s py_require() and UV...\n')
-          reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1"), python_version = "<3.11")
+          reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1", "nilearn==0.12.0"), python_version = "<3.11")
           reticulate::py_config()
           
           #will store cache path in .Renviron in tools::R_user_dir() 
@@ -137,6 +137,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                                    envname = defaultpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE, 
                                    envname = defaultpath) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("nilearn==0.12.0",pip = TRUE, 
+                                   envname = defaultpath) # latest is incompatible with decode_surf_data()
+            
             
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, create it if not existing:
@@ -220,6 +223,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                                    envname=userpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE, 
                                    envname=userpath) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("nilearn==0.12.0",pip = TRUE, 
+                                   envname = userpath) # latest is incompatible with decode_surf_data()
             
             #get path to python executable (will differ across OS)
             #silenced with sink and con
@@ -286,6 +291,17 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message('Could not install package with pip, trying pip3...\n')
             status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install vtk==9.3.1")); 
           if (status2 != 0) {message("vtk 9.3.1 was not installed successfully. This may cause further issues.")}
+          }
+          
+          #nilearn installation
+          message('A specific version of the Nilearn package (v0.12.0) will be installed.\n')
+          #latest is incompatible with decode_surf_data()
+          status <- system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip install nilearn==0.12.0"));
+          #if failed then try pip3 
+          if (status != 0) { 
+            message('Could not install package with pip, trying pip3...\n')
+            status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install nilearn==0.12.0")); 
+            if (status2 != 0) {message("nilearn==0.12.0 was not installed successfully. This may cause further issues.")}
           }
           
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')

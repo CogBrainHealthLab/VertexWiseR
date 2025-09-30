@@ -1,8 +1,8 @@
 Package: VertexWiseR
 Title: Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal
     Surface
-Version: 1.4.1
-Date: 2025-08-18
+Version: 1.4.2
+Date: 2025-09-30
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
@@ -29,7 +29,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 SystemRequirements: Miniconda3 (v24.9.2), Python (<= v3.12), BrainStat
-    (v0.4.2), vtk (v9.3.1), numpy (<= v1.26.4)
+    (v0.4.2), vtk (v9.3.1), numpy (<= v1.26.4), nilearn (<= v0.12.0)
 Depends: 
     R (>= 4.0.0)
 Imports: 
