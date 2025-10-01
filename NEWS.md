@@ -1,7 +1,8 @@
 # VertexWiseR v1.4.2
 
 ## FIXES
-* decode_surf_data() no longer works with the latest nilearn package version as currently imported by NiMARE (which is used for the meta-analytic decoding). Until this gets updated, nilearn's version 0.12.0 is now installed by default with VWRfirstrun(). Current VertexWiseR users may either install the nilearn version themselves (reticulate::py_require("nilearn", action = "remove"); reticulate::py_install("nilearn==0.12.0")), or remove their python environment altogether and run VWRfirstrun() again.
+* decode_surf_data() does not work with nilearn package version > 0.12.0 (as currently imported by NiMARE, used for the meta-analytic decoding). By default, Brainstat's installation collected nilearn v0.11.1 already (in the classic Miniconda or Python installations), but this does not happen when the default UV Python virtual environment is installed with VWRfirstrun(). Now, nilearn v0.11.1 is also installed systematically with the virtual environment.
+Current virtual environment users encountering the error can install the right version themselves (reticulate::py_require("nilearn", action = "remove"); reticulate::py_install("nilearn==0.11.1")), or install a new fresh python virtual environment following [this tutorial](https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html).
 
 # VertexWiseR v1.4.1
 
