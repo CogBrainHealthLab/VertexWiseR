@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,13 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.2" id="vertexwiser-v142">VertexWiseR v1.4.2<a class="anchor" aria-label="anchor" href="#vertexwiser-v142"></a></h2><p class="text-muted">CRAN release: 2025-10-01</p>
+<div class="section level3">
+<h3 id="fixes-1-4-2">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-4-2"></a></h3>
+<ul><li>decode_surf_data() does not work with nilearn package version &gt; 0.12.0 (as currently imported by NiMARE, used for the meta-analytic decoding). By default, Brainstat’s installation collected nilearn v0.11.1 already (in the classic Miniconda or Python installations), but this does not happen when the default UV Python virtual environment is installed with VWRfirstrun(). Now, nilearn v0.11.1 is also installed systematically with the virtual environment. Current virtual environment users encountering the error can install the right version themselves (reticulate::py_require(“nilearn”, action = “remove”); reticulate::py_install(“nilearn==0.11.1”)), or install a new fresh python virtual environment following <a href="https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html">this tutorial</a>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.1" id="vertexwiser-v141">VertexWiseR v1.4.1<a class="anchor" aria-label="anchor" href="#vertexwiser-v141"></a></h2><p class="text-muted">CRAN release: 2025-08-19</p>
 <div class="section level3">
