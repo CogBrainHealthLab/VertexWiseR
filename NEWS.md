@@ -1,3 +1,8 @@
+# VertexWiseR v1.4.3
+
+## FIXES
+* netneurotools version 0.2.5 is now a dependency as the subsequent versions conflict with brainstat's use of netneurotools.civet (notably, to fetch fsaverage templates when running VWRfirstrun()).
+
 # VertexWiseR v1.4.2
 
 ## FIXES
