@@ -21,7 +21,7 @@
 #' @return No returned value in interactive session. In non-interactive sessions, a string object informing that system requirements are missing.
 #' @examples
 #' VWRfirstrun()
-#' @importFrom reticulate conda_binary py_module_available miniconda_path py_require
+#' @importFrom reticulate conda_binary py_module_available miniconda_path py_require use_miniconda use_virtualenv
 #' @importFrom fs path_home
 #' @importFrom methods is 
 #' @importFrom utils menu
@@ -48,17 +48,18 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
   # If custom installation paths have been defined by the user, source
   # them from the package directory:
   Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
-  if (file.exists(Renvironpath)) {
+  if (file.exists(Renvironpath)) 
+  {
     readRenviron(Renvironpath)
   
-  #if cache was cleared and UV environment no longer exists, remove it
-  if (!file.exists(Sys.getenv('VIRTUAL_ENV')))
-  {
-    Sys.unsetenv('VIRTUAL_ENV')
-    lines = readLines(Renvironpath) 
-    lines = lines[!grepl("^VIRTUAL_ENV", lines)]
-    writeLines(lines, Renvironpath)
-  }
+    #if cache was cleared and UV environment no longer exists, remove it
+    if (!file.exists(Sys.getenv('VIRTUAL_ENV')))
+    {
+      Sys.unsetenv('VIRTUAL_ENV')
+      lines = readLines(Renvironpath) 
+      lines = lines[!grepl("^VIRTUAL_ENV", lines)]
+      writeLines(lines, Renvironpath)
+    }
   }
   
   #default time limit to download is 60s which can be too short:
@@ -76,8 +77,14 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     if(reticulate::py_available()==FALSE) #fast, but unreliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
       
+      #load r-miniconda if installed (set RETICULATE_MINICONDA_PATH to NA
+      #if user does not want to use the reticulate miniconda installation)
+      if (is.null(tryCatch(reticulate::py_discover_config(), error = function(e) NULL)) & dir.exists(reticulate::miniconda_path()) & !is.na(Sys.getenv('RETICULATE_MINICONDA_PATH')) & !is.na(Sys.getenv('RETICULATE_PYTHON')))
+      {reticulate::use_miniconda(condaenv=reticulate::miniconda_path())}
+      
       if (is.null(tryCatch(reticulate::py_discover_config(), error = function(e) NULL))) #slow but reliable check if first time 
       {
+        
         missingobj=1
         
         prompt = utils::menu(title="A suitable Python environment for reticulate or Miniconda could not be found in the environment. \n Do you want Miniconda or Python to be installed now?",
@@ -131,40 +138,32 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             #custom url to get version 24.9.2
             on.exit(options(reticulate.miniconda.url=NULL))
             options(reticulate.miniconda.url=miniconda_installer_py39url())
-            reticulate::install_miniconda(update = FALSE)
+            reticulate::install_miniconda(update = FALSE, force = TRUE)
             message("Installing dependency packages with appropriate versions...")
             reticulate::py_install("numpy==1.26.4", pip=TRUE, 
                                    envname = defaultpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE, 
                                    envname = defaultpath) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("netneurotools==0.2.5",pip = TRUE,  envname = defaultpath) # latest v3.0.0 causes problems
             
             #will store path in .Renviron in tools::R_user_dir() 
-            #location specified by CRAN, create it if not existing:
+            #location specified by CRAN, creates it if not existing:
             envpath=tools::R_user_dir(package='VertexWiseR')
             if (!dir.exists(envpath)) {dir.create(envpath, 
                                                   recursive = TRUE) }
             
             #get path to python executable (will differ across OS)
-            #silenced with sink and con
-            defaultpathexe <- tryCatch({
-              tmpfile <- tempfile()
-              con <- file(tmpfile, open = "wt")
-              sink(con, type = "message")
-              result <- reticulate::py_discover_config()$python  
-              # Close sink and connection 
-              sink(type = "message")
-              close(con)
-              file.remove(tmpfile)
-              result
-            }, error = function(e) {
-              # Ensure cleanup in case of error
-              sink(type = "message")
-              close(con)
-              file.remove(tmpfile)
-              NULL
-            })
-            
-            
+            #List all python executables
+            all_pythons <- list.files(path = defaultpath, pattern = "^python(\\.exe)?$", recursive = TRUE, full.names = TRUE)
+            #only executable files
+            all_pythons <- all_pythons[file.access(all_pythons, 1) == 0]
+            #prioritise best candidates
+            parent_python <- file.path(defaultpath, if (.Platform$OS.type == "windows") "python.exe" else "bin/python")
+            env_python <- grep("envs/r-reticulate/bin/python(\\.exe)?$", all_pythons, value = TRUE)
+            if (file.exists(parent_python)) { defaultpathexe=parent_python
+            }else if (length(env_python)>0) { defaultpathexe=env_python[1]
+            }else if (length(all_pythons)>0) { defaultpathexe=all_pythons[1]} 
+                                       
             #make .Renviron file there and set conda/python paths:
             renviron_path <- file.path(envpath, ".Renviron")
             env_vars <- c(
@@ -212,7 +211,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             on.exit(options(reticulate.miniconda.url=NULL))
             options(reticulate.miniconda.url=miniconda_installer_py39url())
             #install_miniconda will use miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
-            reticulate::install_miniconda(update = FALSE)
+            reticulate::install_miniconda(update = FALSE, force=TRUE)
             message("Installing dependency packages with appropriate versions...")
             #set environment variable to make sure packages 
             #arrive at the same place, not in 'r-miniconda'
@@ -220,26 +219,20 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                                    envname=userpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE, 
                                    envname=userpath) # latest vtk==9.4.0 causes problems
+            reticulate::py_install("netneurotools==0.2.5",pip = TRUE, 
+                                   envname=userpath) # latest v3.0.0 causes problems
             
             #get path to python executable (will differ across OS)
-            #silenced with sink and con
-            userpathexe <- tryCatch({
-              tmpfile <- tempfile()
-              con <- file(tmpfile, open = "wt")
-              sink(con, type = "message")
-              result <- reticulate::py_discover_config()$python  
-              # Close sink and connection 
-              sink(type = "message")
-              close(con)
-              file.remove(tmpfile)
-              result
-            }, error = function(e) {
-              # Ensure cleanup in case of error
-              sink(type = "message")
-              close(con)
-              file.remove(tmpfile)
-              NULL
-            })
+            #List all python executables
+            all_pythons <- list.files(path = userpath, pattern = "^python(\\.exe)?$", recursive = TRUE, full.names = TRUE)
+            #only executable files
+            all_pythons <- all_pythons[file.access(all_pythons, 1) == 0]
+            #prioritise best candidates
+            parent_python <- file.path(userpath, if (.Platform$OS.type == "windows") "python.exe" else "bin/python")
+            env_python <- grep("envs/r-reticulate/bin/python(\\.exe)?$", all_pythons, value = TRUE)
+            if (file.exists(parent_python)) { userpathexe=parent_python
+            } else if (length(env_python)>0) { userpathexe=env_python[1]
+            } else if (length(all_pythons)>0) { userpathexe=all_pythons[1]}
             
             #add user path to the .Renviron:
             env_vars <- paste0('RETICULATE_PYTHON="',
@@ -256,6 +249,9 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
         }
         else if (prompt==3) #Install Python instead of Miniconda
         { 
+          #tag that classic python was chosen for subsequent
+          #brainstat installation:
+          python_classic=T
           
           #give the choices to specify path
           choice = utils::menu(title=paste0("Reticulate's Python default installation is done within 'r-reticulate' in your OS libraries, via install_python(). Type \"1\" or \"Default\" if you want the default installation. \nYou can, alternatively, specify the path where Python will be installed."),
@@ -277,6 +273,16 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
           if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
           
+          #numpy installation (brainstat may fail to rectify the version it needs)
+          message('A specific version of the numpy package (v1.26.4) will be installed.\n')
+          status <- system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip install numpy==1.26.4"));
+          #if failed then try pip3 
+          if (status != 0) { 
+            message('Could not install package with pip, trying pip3...\n')
+            status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install numpy==1.26.4")); 
+            if (status2 != 0) {message("numpy==1.26.4 was not installed successfully. This may cause further issues.")}
+          }
+          
           #vtk installation
           message('A specific version of the vtk package (v9.3.1) will be installed.\n')
           #latest vtk==9.4.0 causes problems
@@ -286,6 +292,17 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
             message('Could not install package with pip, trying pip3...\n')
             status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install vtk==9.3.1")); 
           if (status2 != 0) {message("vtk 9.3.1 was not installed successfully. This may cause further issues.")}
+          }
+          
+          #netneurotools installation
+          message('A specific version of the netneurotools package (v0.2.5) will be installed.\n')
+          #latest v3.0.0 causes problems
+          status <- system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip install netneurotools==0.2.5"));
+          #if failed then try pip3 
+          if (status != 0) { 
+            message('Could not install package with pip, trying pip3...\n')
+            status2 = system(paste0(Sys.getenv('RETICULATE_PYTHON')," -m pip3 install netneurotools==0.2.5")); 
+            if (status2 != 0) {message("netneurotools 0.2.5 was not installed successfully. This may cause further issues.")}
           }
           
           message('Please restart R after Python installation for its environment to be properly detected by reticulate.')
@@ -301,7 +318,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
     }} 
     
     #################################################################
-    ##################################################################
+    ################################################################# 
     ###check if BrainStat is installed
     if (requirement!="python/conda only")
     {message('Checking for BrainStat package...')}
@@ -315,8 +332,8 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
       if (prompt==1)
       {	
         
-        #if miniconda exists, use reticulate to install
-        if (tryCatch(file.exists(reticulate::conda_binary()), error = function(e) FALSE)) {
+        #if miniconda exists and classic python was not selected for installation, use reticulate to install
+        if (tryCatch(file.exists(reticulate::conda_binary()), error = function(e) FALSE) & !exists('python_classic')) {
           reticulate::py_install("brainstat==0.4.2",pip=TRUE) 
         }
         else { #if only Python, install via pip
@@ -549,6 +566,11 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     #miniconda or python missing?
     if(reticulate::py_available()==FALSE) #fast, but unreliable check if Python is in a custom location. It will work if VWRfirstrun() was run once already
     {
+      #load r-miniconda if installed (set RETICULATE_MINICONDA_PATH to NA
+      #if user does not want to use the reticulate miniconda installation)
+      if (is.null(tryCatch(reticulate::py_discover_config(), error = function(e) NULL)) & dir.exists(reticulate::miniconda_path()) & !is.na(Sys.getenv('RETICULATE_MINICONDA_PATH')) & !is.na(Sys.getenv('RETICULATE_PYTHON')))
+      {reticulate::use_miniconda(condaenv=reticulate::miniconda_path())}
+      
       if (is.null(reticulate::py_discover_config()) |
           is(tryCatch(reticulate::py_discover_config(), error=function(e) e))[1] == 'simpleError') #slow but reliable check if first time 
       {
