@@ -101,6 +101,7 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           #check if virtual environment available with the right settings and initialize it.
           message('Installing Python ephemeral environment via reticulate\'s py_require() and UV...\n')
           reticulate::py_require(packages=c("numpy<=1.26.4","matplotlib","brainstat==0.4.2","vtk==9.3.1", "nilearn==0.11.1", "netneurotools==0.2.5"), python_version = "<3.11")
+          Sys.getenv('VIRTUAL_ENV') #additional security to be sure py_config catches the right virutal environment after py_require
           reticulate::py_config()
           
           #will store cache path in .Renviron in tools::R_user_dir() 
