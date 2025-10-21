@@ -33,7 +33,7 @@ reference:
     contents:
     - VWRfirstrun
     
-  - title: Surface data extraction and 
+  - title: Surface data extraction 
     contents:
     - HIPvextract
     - SURFvextract
