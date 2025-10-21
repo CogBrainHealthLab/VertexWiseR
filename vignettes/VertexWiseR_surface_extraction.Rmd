@@ -1,7 +1,7 @@
 ---
 title: "Extracting surface data in VertexWiseR"
 author: "Charly Billaud, Junhong Yu"
-date: "2025-08-18"
+date: "2025-10-21"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Extracting surface data in VertexWiseR}
@@ -15,15 +15,17 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(VertexWiseR)
 ```
 
-As of version 1.2.0, four functions in VertexWiseR do surface data extraction and synthesis:
+As of version 1.4.1, 5 functions in VertexWiseR do surface data extraction and synthesis:
 
--   SURFvextract()
+-   [SURFvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/SURFvextract.html)
 
--   FSLRvextract()
+-   [FSLRvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/FSLRvextract.html)
 
--   CAT12vextract()
+-   [CAT12vextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/CAT12vextract.html)
 
--   HIPvextract()
+-   [DTSERIESvextract](https://cogbrainhealthlab.github.io/VertexWiseR/reference/DTSERIESvextract.html)
+
+-   [HIPvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/HIPvextract.html)
 
 Surface extraction consists in reading through a preprocessing pipeline's subjects directory, collating the surface data (for a chosen vertex-wise measure, e.g. thickness), and summarising it into one compact matrix R object, with N rows per subject and M columns per vertex values.
 
