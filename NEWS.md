@@ -4,7 +4,7 @@
 * netneurotools version 0.2.5 is now a dependency as the subsequent versions conflict with brainstat's use of netneurotools.civet (notably, to fetch fsaverage templates when running VWRfirstrun()).
 * More dependency error safety installations for the different python installation options offered by VWRfirstrun() (for numpy and netneurotools in particular)
 * Brainstat installed automatically in the available reticulate miniconda installation, but this should not happen if python alone was installed as the preferred environment beforehand, this is now fixed.
-* reticulate::py_discover_config() no longer retrieves the Python executable in r-miniconda and returns NULL. VWRfirsturn() now searches for it manually inside the miniconda path when miniconda is chosen to be installed to prevent issues with empty python path defined.
+* reticulate::py_discover_config() no longer detects r-miniconda if installed before VertexWiseR. VWRfirsturn() now searches for it, based on reticulate::miniconda_path(). It will not be possible to automatically detect standalone python installation made with reticulate::install_python() independently from VWRfirstrun(). An alternative is to [predefine your python path yourself](https://rstudio.github.io/reticulate/reference/use_python.html).
 
 # VertexWiseR v1.4.2
 
