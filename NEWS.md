@@ -1,3 +1,8 @@
+# VertexWiseR v1.4.4
+
+## FIXES
+* In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value ended up being a list object instead of numeric, which prevented it to be rounded in results ("non-numeric argument to mathematical function")
+
 # VertexWiseR v1.4.3
 
 ## FIXES

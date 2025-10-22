@@ -187,6 +187,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   } else
   {
     #creating new result variables in the cluster_pos objects
+    if(inherits(cluster_pos$P,"list")){cluster_pos$P=unlist(cluster_pos$P)}
     cluster_pos$P=round(cluster_pos$P,3)
     cluster_pos$P[cluster_pos$P==0]="<0.001"
     cluster_pos=cluster_pos[ , !(names(cluster_pos) %in% "resels")] #removing the 'resels' column from the original brainstat output
@@ -227,6 +228,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
     neg_clusterIDmap=rep(0, NCOL(surf_data))
   } else
   { #creating new result variables in the cluster_pos objects
+    if(inherits(cluster_neg$P,"list")){cluster_neg$P=unlist(cluster_neg$P)}
     cluster_neg$P=round(cluster_neg$P,3)
     cluster_neg$P[cluster_neg$P==0]="<0.001"
     cluster_neg=cluster_neg[ , !(names(cluster_neg) %in% "resels")] #removing the 'resels' column from the original brainstat output
