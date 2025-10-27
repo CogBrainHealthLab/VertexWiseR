@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,22 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.4" id="vertexwiser-v144-tbc">VertexWiseR v1.4.4 (TBC)<a class="anchor" aria-label="anchor" href="#vertexwiser-v144-tbc"></a></h2>
+<div class="section level3">
+<h3 id="fixes-1-4-4">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-4-4"></a></h3>
+<ul><li>In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various errors when attempting to report cluster-wise results.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.3" id="vertexwiser-v143">VertexWiseR v1.4.3<a class="anchor" aria-label="anchor" href="#vertexwiser-v143"></a></h2><p class="text-muted">CRAN release: 2025-10-21</p>
+<div class="section level3">
+<h3 id="fixes-1-4-3">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-4-3"></a></h3>
+<ul><li>Dependency fixes for the different python installation options in VWRfirstrun(). netneurotools version 0.2.5 is now a dependency as the subsequent versions conflict with brainstat’s use of netneurotools.civet (notably, to fetch fsaverage templates when running VWRfirstrun()). VWRfirstrun() will automatically install 0.2.5, and current users may do it themselves via reticulate::py_install(“netneurotools==0.2.5”).</li>
+<li>Brainstat was installed automatically in the available reticulate miniconda installation, but this should not happen if python alone was installed as the preferred environment beforehand, this is now fixed.</li>
+<li>reticulate::py_discover_config() no longer detects r-miniconda if installed before VertexWiseR. VWRfirsturn() now searches for it, based on reticulate::miniconda_path(). It will not be possible to automatically detect standalone python installation made with reticulate::install_python() independently from VWRfirstrun(). An alternative is to <a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">predefine your python path yourself</a>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.2" id="vertexwiser-v142">VertexWiseR v1.4.2<a class="anchor" aria-label="anchor" href="#vertexwiser-v142"></a></h2><p class="text-muted">CRAN release: 2025-10-01</p>
 <div class="section level3">

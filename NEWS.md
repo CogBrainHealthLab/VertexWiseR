@@ -1,7 +1,7 @@
-# VertexWiseR v1.4.4
+# VertexWiseR v1.4.4 (TBC)
 
 ## FIXES
-* In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various reporting issues.
+* In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various errors when attempting to report cluster-wise results.
 
 # VertexWiseR v1.4.3
 
