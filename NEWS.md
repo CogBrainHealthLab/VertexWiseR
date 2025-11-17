@@ -2,6 +2,7 @@
 
 ## FIXES
 * In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various errors when attempting to report cluster-wise results.
+* plot_surf no longer fails if given as surf_data a 1-row matrix or data.frame object instead of a simple numeric vector for single subject data.
 
 # VertexWiseR v1.4.3
 
