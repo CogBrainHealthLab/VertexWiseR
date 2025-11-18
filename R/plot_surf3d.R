@@ -17,6 +17,8 @@
 #' surf_data = runif(20484);
 #' plot_surf3d(surf_data = surf_data, VWR_check=FALSE)
 #' @importFrom plotly plot_ly add_trace layout
+#' @importFrom grDevices colorRampPalette
+#' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
@@ -43,6 +45,21 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
       if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap=c("#A51122","#F5FACD")}
       else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap=c("#324DA0","#E7F1D5")}
       else  {cmap=c("#E7F1D5","#324DA0","#A51122","#F5FACD")}  
+    }
+    #build RColorBrewer colormaps manually to make sure plotly renders them properly on the mesh3d
+    if (length(cmap)==1)
+    {  
+      if (cmap %in% rownames(RColorBrewer::brewer.pal.info))
+      {#extract hex palette from selected cmap
+        pal <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(RColorBrewer::brewer.pal.info[cmap, "maxcolors"], cmap))
+        cols <- pal(100) #split color vector into palette of 100
+        #Plotly expects a colorscale as a list of pairs: [fraction, color]. So for each color, get fraction between 0 and 1 and its matching hex code
+        cmap <- lapply(seq_along(cols), function(i) 
+        {
+          list((i-1)/(length(cols)-1), #fraction
+               cols[i]) #hex
+        })
+      }
     }
     # enabling custom color scales
     if(length(cmap)==2) {cmap=list(list(0,cmap[1]), list(1,cmap[2]))} 
@@ -147,14 +164,16 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                         z = coords[,3],
                         i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                         j = tri[, 2] - 1,
-                        k = tri[, 3] - 1,facecolor=rep(surf_color,NROW(tri)))
+                        k = tri[, 3] - 1,
+                        facecolor=rep(surf_color,NROW(tri)))
   
   ##overlay statistical map on cortical surface
-    fig=add_trace(fig,type = 'mesh3d',
+    fig=plotly::add_trace(fig,type = 'mesh3d',
                   i = tri[face.stat.non0.idx,][, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
                   j = tri[face.stat.non0.idx,][, 2] - 1,
                   k = tri[face.stat.non0.idx,][, 3] - 1,
-                  intensitymode="cell",intensity=face.stat[face.stat.non0.idx],
+                  intensitymode="cell",
+                  intensity=face.stat[face.stat.non0.idx],
                   colorscale = cmap,
                   cauto = F,
                   cmin = limits[1],
