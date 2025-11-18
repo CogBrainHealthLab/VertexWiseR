@@ -13,7 +13,9 @@ plot_surf3d(
   hemi = "b",
   medial_gap = 0,
   orientation_labels = TRUE,
-  VWR_check = TRUE
+  VWR_check = TRUE,
+  plot_grid = TRUE,
+  transparent_bg = FALSE
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ plot_surf3d(
 \item{orientation_labels}{A boolean object specifying if orientation labels are to be displayed. Set to \code{TRUE} by default}
 
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
+
+\item{plot_grid}{A boolean object specifying whether to plot the orientation grid or not (default is \code{TRUE}).}
+
+\item{transparent_bg}{A boolean object specifying whether to get a transparent background upon saving the image (default is \code{FALSE}, white background).}
 }
 \value{
 a plot_ly object

@@ -10,6 +10,8 @@
 #' @param hemi A string specifying the hemisphere to plot. Possible values are `l` (left), `r` (right) or `b` (both).
 #' @param medial_gap A numeric value specifying the amount of gap (in MNI coordinate units) to separate the left and right hemispheres. Set to `0` (no gap between hemispheres) by default. In order to view the medial surfaces clearly, it is recommended that this value is set to `20`. This argument is ignored if `hemi!='b'`
 #' @param orientation_labels A boolean object specifying if orientation labels are to be displayed. Set to `TRUE` by default
+#' @param plot_grid A boolean object specifying whether to plot the orientation grid or not (default is `TRUE`).
+#' @param transparent_bg A boolean object specifying whether to get a transparent background upon saving the image (default is `FALSE`, white background).
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns a plot_ly object
@@ -22,7 +24,7 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",medial_gap=0,orientation_labels=TRUE,VWR_check=TRUE)
+plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",medial_gap=0,orientation_labels=TRUE,VWR_check=TRUE,plot_grid=TRUE,transparent_bg=FALSE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -109,7 +111,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
     maxlimit=max(abs(range(face.stat,na.rm = TRUE)))
     if(missing(limits)) 
     {
-      limits.range=range(face.stat,na.rm = T)
+      limits.range=range(face.stat,na.rm = TRUE)
       if(limits.range[1]>=0) {limits=c(0,limits.range[2])} ##if image contains all positive values
       else if(limits.range[2]<=0) {limits=c(limits.range[1],0)} ##if image contains all negative values
       else if(limits.range[1]<0 & limits.range[2]>0){limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
@@ -175,7 +177,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                   intensitymode="cell",
                   intensity=face.stat[face.stat.non0.idx],
                   colorscale = cmap,
-                  cauto = F,
+                  cauto = FALSE,
                   cmin = limits[1],
                   cmax = limits[2])
 
@@ -188,7 +190,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
     customdata[(mid.idx+1):n_vert]=customdata[(mid.idx+1):n_vert]-medial_gap
     
     ##add mouse-over text
-    fig=add_trace(fig,text=ROI.text,hovertext=surf_data,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
+    fig=add_trace(fig,text=ROI.text,hovertext=surf_data,intensitymode="vertex", intensity=0, opacity=0,showscale=FALSE,
                   x = coords[,1],
                   y = coords[,2],
                   z = coords[,3],
@@ -201,7 +203,7 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                                       "statistic:%{hovertext:.2f}<extra></extra>"))
   } else
   {
-    fig=add_trace(fig,text=ROI.text,intensitymode="vertex", intensity=0, opacity=0,showscale= F,
+    fig=add_trace(fig,text=ROI.text,intensitymode="vertex", intensity=0, opacity=0,showscale= FALSE,
                   x = coords[,1],
                   y = coords[,2],
                   z = coords[,3],
@@ -213,22 +215,47 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                                       "MNI coords: %{x:.1f},%{y:.1f},%{z:.1f}<br>",
                                       "statistic:%{customdata:.2f}<extra></extra>"))
   }
-  ##axis parameters
-  fig=plotly::layout(fig,
-                   hoverlabel = list(align = "left"),
-                   scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
-                                xaxis = list(showgrid = T,showticklabels=T,showspikes=F,zeroline=F, title=""),
-                                yaxis = list(showgrid = T,showticklabels=T,showspikes=F,zeroline=F, title=""),
-                                zaxis = list(showgrid = T,showticklabels=T,showspikes=F,zeroline=F, title="")))
-  
-  ##add optional orientation labels
-  if(orientation_labels==T)
-  {
-    axx = list(ticketmode = 'array',ticktext = xlab,tickvals = range(coords[,1]))
-    axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
-    axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
     
-    fig = layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+    
+  if (plot_grid==TRUE)
+  {
+    ##axis parameters
+    fig=plotly::layout(fig,
+                     hoverlabel = list(align = "left"),
+                     scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
+                                  xaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
+                                  yaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
+                                  zaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title="")))
+    
+    ##add optional orientation labels
+    if(orientation_labels==TRUE)
+    {
+      axx = list(ticketmode = 'array',ticktext = xlab,tickvals = range(coords[,1]))
+      axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
+      axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
+      
+      fig = layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+    }
+  }
+  else #to remove grid
+  {  fig <- plotly::layout(
+      fig,
+      scene = list(
+        xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
+        yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
+        zaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
+        bgcolor = "rgba(0,0,0,0)")
+  )
+  }
+    
+  #to get transparent background
+  if (transparent_bg==TRUE)
+  { 
+    fig <- plotly::layout(
+    fig,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)" 
+    )
   }
   return(fig)
 }
