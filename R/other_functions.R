@@ -112,11 +112,19 @@ extract.t=function(mod,row)
   Qr = mod$qr
   p1 = 1L:p
   r = mod$residuals
-  rss = colSums(r^2)
-  resvar = rss/rdf
   R = chol2inv(Qr[p1, p1, drop = FALSE])  
-  se = (sqrt(diag(R) %*% t(resvar)))[row,]
-  est = mod$coefficients[row,]
+  if(is.matrix(mod$coefficients))
+  {
+    rss = colSums(r^2)
+    resvar = rss/rdf 
+    se = (sqrt(diag(R) %*% t(resvar)))[row,]
+    est = mod$coefficients[row,]
+  } else {
+    rss = sum(r^2)
+    resvar = rss/rdf
+    se = (sqrt(diag(R) * resvar))[row]
+    est = mod$coefficients[row]
+  }
   tval = est/se 
   return(tval)
 }

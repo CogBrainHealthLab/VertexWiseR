@@ -16,6 +16,7 @@
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
+#' @param inverse A boolean object stating whether to set the surface data as predictor of the contrast variable, instead of as dependent variable (default is FALSE). Other covariates in the model remain independent variables.
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
@@ -59,7 +60,7 @@
 
 ##Main function
 
-TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
+TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=FALSE, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, VWR_check=TRUE)
 {
   #gets surface matrix if is surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
@@ -132,13 +133,36 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
   
   ##unpermuted model
   model=data.matrix(model)
-  mod=.lm.fit(y=surf_data,x=data.matrix(cbind(1,model)))
+  #if inverse, contrast will be a DV, and vertex-wise surface data an IV
+  if (inverse==FALSE)
+  {
+    mod=.lm.fit(y=surf_data,x=data.matrix(cbind(1,model)))
+    tmap.orig=extract.t(mod,colno+1)
+  } else
+  { #swap contrast with vertex-wise data
+    #identify and drop contrast column if multiple variables
+    if (!is.null(dim(model)) & dim(as.data.frame(model))[2]!=1)
+    {
+      for (cont_col in 1:ncol(model)) 
+      {if (all(as.vector(model[,cont_col])==contrast)){break}}
+      invmodel=model[ , -cont_col, drop = FALSE]
+    } else #if only 1, empty placeholder to add surf_data as IV
+    {invmodel=data.frame(matrix(ncol=0, 
+                                nrow=nrow(surf_data)))}
+    
+    tmap.orig=c()
+    for (vert in 1:ncol(surf_data)) 
+    { #one lm for every vertex
+      vertmodel=cbind(invmodel,surf_data[,vert])
+      invmod=.lm.fit(y=contrast,x=data.matrix(cbind(1,vertmodel)))
+      tmap.orig=c(tmap.orig, extract.t(invmod, ncol(vertmodel)+1))
+    }
+  }
   
   #extract tstat and calculate tfce image
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
   
-  tmap.orig=extract.t(mod,colno+1)
   TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv, edgelist=edgelist))
   remove(mod)
   
@@ -184,8 +208,35 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, surf_dat
       #model.permuted[,colno]=model.permuted[permseq[,perm],colno] ##permute only the contrast
       #mod.permuted=lm(surf_data~data.matrix(model.permuted))
       
-      mod.permuted=.lm.fit(y=surf_data[permseq[,perm],],x=data.matrix(cbind(1,model)))
-      tmap=extract.t(mod.permuted,colno+1)
+      #permuted model
+      #if inverse, contrast will be a DV, and vertex-wise surface data an IV
+      if (inverse==FALSE)
+      {
+        mod.permuted=.lm.fit(y=surf_data[permseq[,perm],],
+                             x=data.matrix(cbind(1,model)))
+        tmap=extract.t(mod.permuted,colno+1)
+      }
+      else
+      { #swap contrast with vertex-wise data
+        #identify and drop contrast column if multiple variables
+        if (!is.null(dim(model)) & dim(as.data.frame(model))[2]!=1)
+        {
+          for (cont_col in 1:ncol(model)) 
+          {if (all(as.vector(model[,cont_col])==contrast)){break}}
+          invmodel=model[ , -cont_col, drop = FALSE]
+        } else #if only 1, empty placeholder to add surf_data as IV
+        {invmodel=data.frame(matrix(ncol=0, 
+                                    nrow=nrow(surf_data)))}
+        
+        tmap=c()
+        for (vert in 1:ncol(surf_data)) 
+        { #one lm for every vertex
+          vertmodel=cbind(invmodel,surf_data[,vert])
+          mod.permuted=.lm.fit(y=contrast[permseq[,perm]],
+                               x=data.matrix(cbind(1,vertmodel)))
+          tmap=c(tmap,extract.t(mod.permuted,colno+1))
+        }
+      }
       
       . <- model.permuted <- NULL #visible binding needed if commented out 
       remove(mod.permuted,model.permuted)
