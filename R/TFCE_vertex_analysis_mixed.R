@@ -163,9 +163,6 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
                 cluster_threshold=1, 
                 data_dir=data_dir)
   
-  #fit will fetch parcellation data in a different place
-  model.fit$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
-
   #save model to temp dir
   temp.dir=tempdir()
   if(!dir.exists(temp.dir))  {dir.create(temp.dir)}

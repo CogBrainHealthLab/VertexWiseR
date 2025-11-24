@@ -126,8 +126,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   . <- MixedEffect <- NULL
   
   ##import python libaries
+  #version of SLM that allows to specify the directory for the
+  #fetch_template_surface option
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
-  
 
   ##fitting model
   #preparing mask for model
@@ -151,11 +152,6 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   if(missing(random)) {model0=FixedEffect(model, "_check_categorical" = FALSE)}
   else {model0=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
   
-
-  #read version of SLM that allows to specify the directory for the
-  #fetch_template_surface option
-  
-  
   model=SLM(model = model0,
             contrast=contrast,
             surf = template,
@@ -163,9 +159,6 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
             correction=c("fdr", "rft"),
             cluster_threshold=p,
             data_dir=data_dir)
-  
-  #fit will fetch parcellation data in a different place
-  model$data_dir=paste0(brainstat_data_path,'/brainstat_data/parcellation_data/')
   
   #fit model
   SLM$fit(model,surf_data)

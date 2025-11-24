@@ -5,7 +5,7 @@
    -added 'brainstat.stats' to lines 37-39 to avoid relative import
    -added the "data_dir" argument to the fetch_template_surface instead of going with default
    -qc() was removed as it was causing issues with reticulate import
-   -the fetch_yeo_networks_metadata() function and Yeo parcellation data fetching were removed as not needed here
+   -the fetch_parcellation and fetch_yeo_networks_metadata functions and Yeo parcellation data fetching were removed as not needed here
 """
 
 
@@ -27,7 +27,7 @@ from brainspace.vtk_interface.wrappers.data_object import BSPolyData
 from nibabel.nifti1 import Nifti1Image
 
 from brainstat._typing import ArrayLike
-from brainstat.datasets import fetch_parcellation, fetch_template_surface
+from brainstat.datasets import fetch_template_surface
 from brainstat.datasets.base import fetch_template_surface
 from brainstat.mesh.utils import _mask_edges, mesh_edges
 from brainstat.stats.terms import FixedEffect, MixedEffect
@@ -128,7 +128,6 @@ class SLM:
                 raise ValueError("Random Field Theory corrections require a surface.")
 
         # We have to initialize fit parameters for our unit tests here.
-        # TODO: remove this requirement.
         self._reset_fit_parameters()
 
 
