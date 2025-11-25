@@ -321,7 +321,7 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
   {
     for (column in 1:NCOL(model))
     {
-      if(inherits(model[,column],"character")==TRUE)
+      if(inherits(model[,column],"character")==TRUE | inherits(model[,column],"factor")==TRUE)
       {
         if(length(unique(model[,column]))==2)
         {
@@ -336,7 +336,7 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }
   } else
   {
-    if(inherits(model,"character")==TRUE) 
+    if(inherits(model,"character")==TRUE | inherits(model[,column],"factor")==TRUE) 
     {
       if(length(unique(model))==2)
       {
