@@ -2,12 +2,13 @@
    (as fetch_template_surface set to default in the original function)
    Modified from BrainStat toolbox https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM
    © Copyright 2021, MICA Lab, CNG Lab Revision 1f3068fb
+   VertexWiseR-related modifications include:
    -added 'brainstat.stats' to lines 37-39 to avoid relative import
    -added the "data_dir" argument to the fetch_template_surface instead of going with default
    -qc() was removed as it was causing issues with reticulate import
    -the fetch_parcellation and fetch_yeo_networks_metadata functions and Yeo parcellation data fetching were removed as not needed here
+   -A new "inverse" option was included to allow surface to be treated as a predictor and the contrast variable as its dependent variable, so there are more checks and manually computed parameters whether the effect is fixed or mixed.
 """
-
 
 # type: ignore
 """ Standard Linear regression models. """
@@ -18,6 +19,7 @@ from pprint import pformat
 from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
+import numpy.linalg as la
 import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
@@ -32,7 +34,8 @@ from brainstat.datasets.base import fetch_template_surface
 from brainstat.mesh.utils import _mask_edges, mesh_edges
 from brainstat.stats.terms import FixedEffect, MixedEffect
 from brainstat.stats.utils import apply_mask, undo_mask
-
+from brainstat.stats._linear_model import _get_design_matrix, _check_constant_term, _model_univariate_fixed_effects, _model_univariate_mixed_effects, _compute_resls 
+from brainstat.stats._t_test import _t_test
 
 class SLM:
     """Core Class for running BrainStat linear models"""
@@ -54,7 +57,8 @@ class SLM:
         drlim: float = 0.1,
         two_tailed: bool = True,
         cluster_threshold: float = 0.001,
-        data_dir: Optional[Union[str, Path]] = None
+        data_dir: Optional[Union[str, Path]] = None,
+        inverse: bool = False
     ) -> None:
         """Constructor for the SLM class.
 
@@ -97,8 +101,14 @@ class SLM:
         data_dir : str, pathlib.Path, optional
             Path to the location to store BrainStat data files, defaults to
             $HOME_DIR/brainstat_data.
+        inverse : bool, optional
+            Determines whether to test the surface data as contrast instead of 
+            as dependent variable (vertex-wise value swapped with contrast in each 
+            vertex-wise linear model, covariates remaining in place), by default 
+            False.
         """
         # Input arguments.
+        self.inverse = inverse
         self.model = model
         self.contrast = np.array(contrast)
         """ 
@@ -165,13 +175,65 @@ class SLM:
             Y_masked = apply_mask(Y, self.mask, axis=1)
         else:
             Y_masked = Y.copy()
-        self._linear_model(Y_masked)
-        self._t_test()
+            
+        if not self.inverse:    
+            self._linear_model(Y_masked)
+            self._t_test()
+        #inverse orientation
+        else:
+            #mimics linear_model but modifies Y and X to reverse contrast
+            #and DV
+            n_samples = Y_masked.shape[0]
+            
+            self.X, self.V = _get_design_matrix(self, n_samples)
+            _check_constant_term(self.X)
+            X_base, V_base = self.X.copy(), (None if self.V is None else self.V.copy())
+            self.df = n_samples - la.matrix_rank(self.X)
+            #read predictors and remove the contrast variable from among them
+            contrast_idx = [j for j in range(self.X.shape[1]) if np.allclose(self.X[:, j], self.contrast.reshape(-1))]
+            covariates = np.delete(self.X, contrast_idx, axis=1)
+            n_vertices = Y_masked.shape[1]
+            #make the contrast the DV
+            DV = self.X[:, contrast_idx].reshape(-1, 1) #as 2D array
+            #prepare covariates (always the same besides vertex IV)
+            X_cov = np.concatenate([covariates, np.empty((covariates.shape[0], 1), dtype=covariates.dtype)], axis=1)
+            #For every vertex, test covariates+vertex against DV
+            t_stats = np.zeros(n_vertices)
+            coefs = np.zeros((covariates.shape[1]+1, n_vertices))
+            residuals_all=np.empty((Y_masked.shape[0], n_vertices))
+            for v in range(n_vertices):
+                #add vertex column as predictor
+                X_cov[:, -1] = Y_masked[:, v]
+                self.X = X_cov
+                self.Y = DV
+                self.V = V_base
+                #run model manually for single-column Y matrix
+                if isinstance(self.model, MixedEffect):
+                    residuals,  self.V, self.coef, self.SSE, self.r, self.dr = _model_univariate_mixed_effects(self,DV)
+                else:
+                    residuals, self.V, self.coef, self.SSE = _model_univariate_fixed_effects(self,DV)
+                
+                coefs[:, v] = self.coef[:, 0]
+                residuals_all[:, v] = residuals[:, 0]
+                self.contrast = self.X[:,-1] #vertex variable
+                self._t_test() #update self.t 
+                t_stats[v] = self.t[0, 0]
+            
+            #restore base definitions to
+            self.X = X_base
+            self.V = V_base
+            self.t = t_stats.reshape(1, -1) #needs to be 2D to match
+            self.coef = coefs
+            #computing resels, normally in _linear_model
+            if self.surf is not None:  
+                self.resl, mesh_connections = _compute_resls(self, residuals_all)
+                key = list(mesh_connections.keys())[0]
+                setattr(self, key, mesh_connections[key])
+        
         if self.mask is not None:
             self._unmask()
         if self.correction is not None:
-            self.multiple_comparison_corrections(student_t_test)
-
+            self.multiple_comparison_corrections(student_t_test=True)
 
     def multiple_comparison_corrections(self, student_t_test: bool) -> None:
         """Performs multiple comparisons corrections. If a (one-sided) student-t

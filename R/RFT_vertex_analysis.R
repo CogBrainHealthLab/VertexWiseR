@@ -23,6 +23,7 @@
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
+#' @param inverse A boolean object stating whether to set the surface data as predictor of the contrast variable, instead of as dependent variable (default is FALSE). Other covariates in the model remain independent variables. This makes modelling slower.
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param p A numeric object specifying the p-value to threshold the results (Default is 0.05)
 #' @param atlas A numeric integer object corresponding to the atlas of interest.  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
@@ -57,7 +58,7 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
   #gets surface matrix if is surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
@@ -149,7 +150,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   data_dir=paste0(brainstat_data_path,'/brainstat_data/surface_data/')
   
   #define model to fit
-  if(missing(random)) {model0=FixedEffect(model, "_check_categorical" = FALSE)}
+  if(is.null(random)) {model0=FixedEffect(model, "_check_categorical" = FALSE)}
   else {model0=MixedEffect(ran = as.factor(random),fix = model,"_check_categorical" = FALSE)}
   
   model=SLM(model = model0,
@@ -158,7 +159,8 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
             mask=mask,
             correction=c("fdr", "rft"),
             cluster_threshold=p,
-            data_dir=data_dir)
+            data_dir=data_dir,
+            inverse=inverse)
   
   #fit model
   SLM$fit(model,surf_data)
@@ -168,7 +170,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   
   ##extracting positive results
   cluster_pos=reticulate::py_to_r(model$P[["clus"]][[1]]) #pulling out results from brainstat's output
-  cluster_pos=cluster_pos[cluster_pos$P<p,] #removing clusters that are not significant
+  cluster_pos=cluster_pos[which(cluster_pos$P<p & !is.na(cluster_pos$P)),] #removing clusters that are not significant
+  if(NROW(cluster_pos)!=0)
+  {cluster_pos$clusid=1:nrow(cluster_pos)} #safe renumbering as NaN Ps can be introduced first in the list
   
   #extracting positive cluster map
   pos_clusterIDmap=model$P$clusid[[1]]
@@ -215,7 +219,9 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, s
   
   ##extracting negative results
   cluster_neg=reticulate::py_to_r(model$P[["clus"]][[2]]) #pulling out results from brainstat's output
-  cluster_neg=cluster_neg[cluster_neg$P<p,] #removing clusters that are not significant
+  cluster_neg=cluster_neg[which(cluster_neg$P<p & !is.na(cluster_neg$P)),] #removing clusters that are not significant
+  if(NROW(cluster_neg)!=0)
+  {cluster_neg$clusid=1:nrow(cluster_neg)} #safe renumbering as NaN Ps can be introduced first in the list
   
   #extracting negative cluster map
   neg_clusterIDmap=model$P$clusid[[2]]
