@@ -9,6 +9,7 @@ TFCE_vertex_analysis(
   contrast,
   formula,
   formula_dataset,
+  inverse = FALSE,
   surf_data,
   nperm = 100,
   tail = 2,
@@ -24,12 +25,14 @@ TFCE_vertex_analysis(
 
 \item{formula}{An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
 \itemize{
-\item The dependent variable is not needed, as it will always be the surface data values.
+\item The dependent variable (DV) is not needed, and the formula will start with ~. The DV will be the surface data value by default, but it can be swapped with contrast as IV via the "inverse" argument.
 \item The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps.
 \item Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 }}
 
 \item{formula_dataset}{An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).}
+
+\item{inverse}{A boolean object stating whether to set the surface data as predictor of the contrast variable, instead of as dependent variable (default is FALSE). Other covariates in the model remain independent variables. This makes modelling slower.}
 
 \item{surf_data}{A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.}
 

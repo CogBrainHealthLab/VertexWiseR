@@ -13,10 +13,11 @@
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
 #' @param random A N x 1 numeric vector or object containing the values of the random variable (optional). Its length should be equal to the number of subjects in model (it should NOT be inside the model data.frame).
 #' @param formula An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
-#' - The dependent variable is not needed, as it will always be the surface data values. 
+#' - The dependent variable (DV) is not needed, and the formula will start with ~. The DV will be the surface data value by default, but it can be swapped with contrast as IV via the "inverse" argument.
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
+#' @param inverse A boolean object stating whether to set the surface data as predictor of the contrast variable, instead of as dependent variable (default is FALSE). Other covariates in the model remain independent variables. Formula cannot be modified (with surf_data as predictor) to trigger inverse. This makes modelling substantially slower.
 #' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
 #' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
@@ -59,7 +60,7 @@
 
 ##Main function
 
-TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
+TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
 {
   #gets surface matrix if is surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
@@ -97,31 +98,28 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   surf_data=model_summary$surf_data;
   if (!is.null(model_summary$random)) {random=model_summary$random}
 
-  #creating local environment
-  edgelistenv <- new.env()
-  
   #check length of CT data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)
   {
     edgelist <- get_edgelist('fsaverage5') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==81924)
   {
     edgelist <- get_edgelist('fsaverage6') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==64984)
   {
     edgelist <- get_edgelist('fslr32k') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==14524)
   {
     edgelist_hip <- get('edgelist_hip')
     edgelist <- edgelist_hip@data
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
   
@@ -133,8 +131,6 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
 
-  
-  
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 
   . <- MixedEffect <- NULL
@@ -161,7 +157,8 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
                 contrast=contrast,
                 correction="None",
                 cluster_threshold=1, 
-                data_dir=data_dir)
+                data_dir=data_dir,
+                inverse=inverse)
   
   #save model to temp dir
   temp.dir=tempdir()
@@ -175,9 +172,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   #compute unpermuted TFCE stats
   tmap.orig=rep(0,n_vert)
   tmap.orig[inc.vert.idx]=as.numeric(model.fit$t)  
-  
-  TFCE.multicore = utils::getFromNamespace("TFCE.multicore", "VertexWiseR")
-  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2), envir=edgelistenv, edgelist=edgelist) #divide by 2 because more threads made things slower
+  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2), envir=environment(), edgelist=edgelist) #divide by 2 because more threads made things slower
   
   end=Sys.time()
   
@@ -200,12 +195,21 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   }
   unregister_dopar()
   
-  #getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
-  #TFCE = utils::getFromNamespace("TFCE", "VertexWiseR")
-  
   cl=parallel::makeCluster(nthread)
   doParallel::registerDoParallel(cl)
-  parallel::clusterExport(cl, c("edgelist"), envir=edgelistenv)
+  #preload variables for the cluster workers
+  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","temp.dir"), envir=environment())
+  parallel::clusterEvalQ(cl, {
+    #makes sure python instance per parallel job is restricted to 1 thread
+    #these are picked by NumPy upon reticulate initialization
+    Sys.setenv(OPENBLAS_NUM_THREADS="1",
+               OMP_NUM_THREADS="1",
+               MKL_NUM_THREADS="1",
+               NUMEXPR_NUM_THREADS="1")
+    library(VertexWiseR)
+    library(reticulate)
+    source_python(system.file("python/brainstat.stats.SLM_VWR.py", package="VertexWiseR"))
+  })
   `%dopar%` = foreach::`%dopar%`
   
   #progress bar
@@ -214,29 +218,23 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   progress=function(n) setTxtProgressBar(pb, n)
   opts=list(progress = progress)
   
-  #preset path to SLM
-  SLMpath= paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py')
-  
   #fitting permuted model and extracting max-TFCE values in parallel streams
   start=Sys.time()
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export="getClusters",.options.snow = opts)  %dopar%
+  TFCE.max <- foreach::foreach(perm=1:nperm, .combine="c",.options.snow = opts)  %dopar%
     {
-      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/brainstat.stats.SLM_VWR.py'))
-
       #load previously saved model
       modelfit=reticulate::py_load_object(filename = paste0(temp.dir,"/modelfit.pickle"))
-
-      #fit model to permuted data
-      SLM$fit(modelfit,surf_data[permseq[,perm],inc.vert.idx])
       
+      #fit model to permuted data
+      modelfit$fit(surf_data[permseq[, perm], inc.vert.idx])
       return(max(abs(suppressWarnings(TFCE(data = modelfit$t,tail = tail,
                                            edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
+  parallel::stopCluster(cl)
   unregister_dopar()
   
-  unlink(temp.dir, recursive = TRUE) 
   ##saving list objects
   returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)
   names(returnobj)=c("t_stat","TFCE.orig","TFCE.max","tail")

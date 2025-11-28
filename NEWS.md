@@ -1,12 +1,15 @@
 # VertexWiseR v1.4.4 (TBC)
 
 ## NEW FEATURES
+* RFT_vertex_analysis(), TFCE_vertex_analysis() and now TFCE_vertex_analysis_mixed()  have an "inverse" boolean argument allowing to treat every vertex of the surface data as the predictor of the "contrast" variable instead of the dependent variable, keeping the other covariates in place. Note that this increases the modelling time substantially for mixed models.
 * plot_surf3d now has the option to disable the background grid and to save the image with a transparent background.
 
 ## FIXES
-* In special circumstances, possibly due to the conversions of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various errors when attempting to report cluster-wise results.
+* In special circumstances, possibly due to the conversion of python objects in recent reticulate versions, the cluster-wise p.value/cluster IDs ended up being a list object instead of numeric, which caused various errors when attempting to report cluster-wise results. This is now accounted for.
 * plot_surf no longer fails if given as surf_data a 1-row matrix or data.frame object instead of a simple numeric vector for single subject data.
-* plot_surf3d is now able to render all palettes provided with RColorBrewer.
+* plot_surf3d is now able to render all colour palettes provided with RColorBrewer.
+* TFCE_vertex_analysis_mixed was cleaning up the temp.dir which affected functions that store files there in the same session, such as the default plot_surf(). It is now let for R to clean it up itself after the R session ends.
+* TFCE permutation optimisation: data preloaded and internal python calls regulated to use strictly one thread per parallel jobs. The phenomenon of computing time increasing with nthreads for certain CPU systems (as in the [paper's Table 6](https://direct.mit.edu/imag/article/doi/10.1162/imag_a_00372/125038/VertexWiseR-a-package-for-simplified-vertex-wise)) should no longer manifest itself. 
 
 # VertexWiseR v1.4.3
 

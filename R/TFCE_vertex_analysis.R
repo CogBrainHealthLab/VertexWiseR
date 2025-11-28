@@ -12,7 +12,7 @@
 #' @param model An N X P data.frame object containing N rows for each subject and P columns for each predictor included in the model
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
 #' @param formula An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
-#' - The dependent variable is not needed, as it will always be the surface data values. 
+#' - The dependent variable (DV) is not needed, and the formula will start with ~. The DV will be the surface data value by default, but it can be swapped with contrast as IV via the "inverse" argument.
 #' - The first independent variable in the formula will always be interpreted as the contrast of interest for which to estimate cluster-thresholded t-stat maps. 
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
@@ -95,27 +95,24 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   surf_data=model_summary$surf_data;
   colno=model_summary$colno
   
-  #make internal invironment to save edgelist
-  edgelistenv <- new.env()
-  
   #check length of surface data and load the appropriate edgelist files
   n_vert=ncol(surf_data)
   if(n_vert==20484)  {
     edgelist <- get_edgelist('fsaverage5') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==81924)  {
     edgelist <- get_edgelist('fsaverage6') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==64984)  {
     edgelist <- get_edgelist('fslr32k') 
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else if (n_vert==14524)  {
     edgelist_hip <- get('edgelist_hip')
     edgelist <- edgelist_hip@data
-    assign("edgelist", edgelist, envir = edgelistenv)
+    assign("edgelist", edgelist)
   }
   else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
   
@@ -131,6 +128,22 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     }
   }
   
+  
+  #if model is inverse, prepare covariates without contrast (vertex will be
+  #added to it as the contrast further down)
+  #identify and drop contrast column if multiple variables
+  if (inverse==TRUE)
+  {  
+    if (!is.null(dim(model)) & dim(as.data.frame(model))[2]!=1)
+    {
+      for (cont_col in 1:ncol(model)) 
+      {if (all(as.vector(model[,cont_col])==contrast)){break}}
+      invmodel=model[ , -cont_col, drop = FALSE]
+    } else #if only one variable, empty placeholder to add surf_data as IV
+    {invmodel=data.frame(matrix(ncol=0, 
+                              nrow=nrow(surf_data)))}
+  }
+  
   ##unpermuted model
   model=data.matrix(model)
   #if inverse, contrast will be a DV, and vertex-wise surface data an IV
@@ -139,17 +152,8 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     mod=.lm.fit(y=surf_data,x=data.matrix(cbind(1,model)))
     tmap.orig=extract.t(mod,colno+1)
   } else
-  { #swap contrast with vertex-wise data
-    #identify and drop contrast column if multiple variables
-    if (!is.null(dim(model)) & dim(as.data.frame(model))[2]!=1)
-    {
-      for (cont_col in 1:ncol(model)) 
-      {if (all(as.vector(model[,cont_col])==contrast)){break}}
-      invmodel=model[ , -cont_col, drop = FALSE]
-    } else #if only 1, empty placeholder to add surf_data as IV
-    {invmodel=data.frame(matrix(ncol=0, 
-                                nrow=nrow(surf_data)))}
-    
+  { 
+    #inverse models, vertex by vertex
     tmap.orig=c()
     for (vert in 1:ncol(surf_data)) 
     { #one lm for every vertex
@@ -163,7 +167,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
   
-  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=edgelistenv, edgelist=edgelist))
+  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=environment(), edgelist=edgelist))
   remove(mod)
   
   end=Sys.time()
@@ -183,13 +187,9 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   
   cl=parallel::makeCluster(nthread)
   
-  #The functions from otherfunc.r below are not exported for users in library(VertexWiseR). For vertTFCE to use them, They are manually exported below beforehand:
-  TFCE = utils::getFromNamespace("TFCE", "VertexWiseR")
-  extract.t = utils::getFromNamespace("extract.t", "VertexWiseR")
-  getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
-  
   doParallel::registerDoParallel(cl)
-  parallel::clusterExport(cl, c("edgelist"), envir=edgelistenv)
+  #preload variables for the cluster workers
+  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","contrast"), envir=environment())
   `%dopar%` = foreach::`%dopar%`
   
   #progress bar
@@ -201,7 +201,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   ##fitting permuted regression model and extracting t-stats in parallel streams
   start=Sys.time()
   
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="rbind",.export=c("getClusters"), .options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm, .combine="c", .options.snow = opts)  %dopar%
     {
       ##commented out alternative method of permutation— permuting only the contrast variable
       #model.permuted=model
@@ -217,36 +217,28 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
         tmap=extract.t(mod.permuted,colno+1)
       }
       else
-      { #swap contrast with vertex-wise data
-        #identify and drop contrast column if multiple variables
-        if (!is.null(dim(model)) & dim(as.data.frame(model))[2]!=1)
-        {
-          for (cont_col in 1:ncol(model)) 
-          {if (all(as.vector(model[,cont_col])==contrast)){break}}
-          invmodel=model[ , -cont_col, drop = FALSE]
-        } else #if only 1, empty placeholder to add surf_data as IV
-        {invmodel=data.frame(matrix(ncol=0, 
-                                    nrow=nrow(surf_data)))}
-        
+      { 
+        #inverse models, vertex by vertex
         tmap=c()
         for (vert in 1:ncol(surf_data)) 
         { #one lm for every vertex
-          vertmodel=cbind(invmodel,surf_data[,vert])
-          mod.permuted=.lm.fit(y=contrast[permseq[,perm]],
-                               x=data.matrix(cbind(1,vertmodel)))
-          tmap=c(tmap,extract.t(mod.permuted,colno+1))
+          vertmodel.permuted=cbind(invmodel,surf_data[,vert])
+          invmod.permuted=.lm.fit(y=contrast[permseq[,perm]],
+                               x=data.matrix(cbind(1,vertmodel.permuted)))
+          tmap=c(tmap,extract.t(invmod.permuted,colno+1))
         }
       }
       
       . <- model.permuted <- NULL #visible binding needed if commented out 
       remove(mod.permuted,model.permuted)
-      return(max(abs(suppressWarnings(TFCE(data = tmap,tail = tail,
+      return(max(abs(suppressWarnings(TFCE(data = tmap,
+                                           tail = tail,
                                            edgelist=edgelist)))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
+  parallel::stopCluster(cl)
   unregister_dopar()
-  
   
   ##saving list objects
   returnobj=list(tmap.orig,
@@ -371,9 +363,6 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
       rm(list=ls(name=env), pos=env)
     }
     unregister_dopar()
-    
-    #The functions from otherfunc.r below are not exported for users in library(VertexWiseR). For vertTFCE to use them, They are manually exported below beforehand:
-    getClusters = utils::getFromNamespace("getClusters", "VertexWiseR")
     
     cl=parallel::makeCluster(nthread)
     parallel::clusterExport(cl, c("edgelist"), envir=envir)

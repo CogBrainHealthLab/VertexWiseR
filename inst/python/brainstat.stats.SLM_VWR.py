@@ -199,7 +199,7 @@ class SLM:
             X_cov = np.concatenate([covariates, np.empty((covariates.shape[0], 1), dtype=covariates.dtype)], axis=1)
             #For every vertex, test covariates+vertex against DV
             t_stats = np.zeros(n_vertices)
-            coefs = np.zeros((covariates.shape[1]+1, n_vertices))
+            coefs_all = np.zeros((covariates.shape[1]+1, n_vertices))
             residuals_all=np.empty((Y_masked.shape[0], n_vertices))
             for v in range(n_vertices):
                 #add vertex column as predictor
@@ -213,7 +213,7 @@ class SLM:
                 else:
                     residuals, self.V, self.coef, self.SSE = _model_univariate_fixed_effects(self,DV)
                 
-                coefs[:, v] = self.coef[:, 0]
+                coefs_all[:, v] = self.coef[:, 0]
                 residuals_all[:, v] = residuals[:, 0]
                 self.contrast = self.X[:,-1] #vertex variable
                 self._t_test() #update self.t 
@@ -223,7 +223,7 @@ class SLM:
             self.X = X_base
             self.V = V_base
             self.t = t_stats.reshape(1, -1) #needs to be 2D to match
-            self.coef = coefs
+            self.coef = coefs_all
             #computing resels, normally in _linear_model
             if self.surf is not None:  
                 self.resl, mesh_connections = _compute_resls(self, residuals_all)
