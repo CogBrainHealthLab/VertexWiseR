@@ -336,7 +336,7 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }
   } else
   {
-    if(inherits(model,"character")==TRUE | inherits(model[,column],"factor")==TRUE) 
+    if(inherits(model,"character")==TRUE) 
     {
       if(length(unique(model))==2)
       {
