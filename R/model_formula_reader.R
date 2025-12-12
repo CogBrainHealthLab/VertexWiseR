@@ -104,11 +104,11 @@ model_formula_reader=function(formula, formula_dataset)
   #Run the regular vertex analysis with the right objects
     if (exists('random')) {
       RFTmodel=list(model=model,
-                    contrast=data.matrix(model[,1]), 
+                    contrast=data.matrix(model)[,1], 
                     random=random)
     } else {
       RFTmodel=list(model=model,
-                    contrast=data.matrix(model[,1]))
+                    contrast=data.matrix(model)[,1])
     }
 
 
