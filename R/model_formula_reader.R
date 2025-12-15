@@ -56,10 +56,20 @@ model_formula_reader=function(formula, formula_dataset)
   #if there is a DV defined in the formula, removes it
   DV=stringr::str_split(formula_str, pattern = "~")[[1]][1]
   formula_str=gsub(DV, "", formula_str) 
+  #assign IV name if formula_dataset is an unnamed single vector
+  if (is.null(ncol(formula_dataset))) 
+  {
+   if(length(stringr::str_split(formula_str, pattern = "\\+")[[1]])>1)
+   {stop('The formula_dataset is 1 variable but the formula has multiple ones.')}
+   IV_name=stringr::str_split(formula_str, pattern = "~")[[1]][2]
+   formula_dataset=data.frame(formula_dataset)
+   colnames(formula_dataset)=IV_name
+  }
   #create dummy DV to formula as default
   formula_str=paste('surfmeasure',formula_str)
-  data=cbind(runif(length(formula_dataset[,1]), min=1, max=100),formula_dataset); 
+  data=cbind(runif(NROW(formula_dataset), min=1, max=100),formula_dataset); 
   colnames(data)[1]='surfmeasure';
+
   
   ##Run dummy model to create the data.frame
   #if has random variable, will be saved separately

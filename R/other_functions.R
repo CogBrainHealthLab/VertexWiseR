@@ -340,7 +340,7 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     {
       if(length(unique(model))==2)
       {
-        message(paste("The binary variable '",colnames(model),"' will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
+        message(paste("The model variable is binary and will be recoded such that ",unique(model)[1],"=0 and ",unique(model)[2],"=1 for the analysis\n",sep=""))
         
         recode=rep(0,NROW(model))
         recode[model==unique(model)[2]]=1

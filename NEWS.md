@@ -1,3 +1,11 @@
+# VertexWiseR v1.4.5
+
+## NEW FEATURES
+* The formula option now also works with (non-data.frame) single-vector data and will automatically name the single variable after whatever IV name was written inside the formula.
+
+## FIXES
+* Model checks for single-column/vector factor variables failed and prevented models from running. The script has been corrected.
+
 # VertexWiseR v1.4.4
 
 ## NEW FEATURES
