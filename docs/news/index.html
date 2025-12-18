@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,18 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.4.4" id="vertexwiser-v144">VertexWiseR v1.4.4<a class="anchor" aria-label="anchor" href="#vertexwiser-v144"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.4.5" id="vertexwiser-v145">VertexWiseR v1.4.5<a class="anchor" aria-label="anchor" href="#vertexwiser-v145"></a></h2><p class="text-muted">CRAN release: 2025-12-15</p>
+<div class="section level3">
+<h3 id="new-features-1-4-5">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-4-5"></a></h3>
+<ul><li>The formula option now also works with (non-data.frame) single-vector data and will automatically name the single variable after whatever IV name was written inside the formula.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-1-4-5">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-4-5"></a></h3>
+<ul><li>Model checks for single-column/vector factor variables failed and prevented models from running. The script has been corrected.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.4" id="vertexwiser-v144">VertexWiseR v1.4.4<a class="anchor" aria-label="anchor" href="#vertexwiser-v144"></a></h2><p class="text-muted">CRAN release: 2025-12-04</p>
 <div class="section level3">
 <h3 id="new-features-1-4-4">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-4-4"></a></h3>
 <ul><li>RFT_vertex_analysis(), TFCE_vertex_analysis() and TFCE_vertex_analysis_mixed() now have an “inverse” boolean argument allowing to treat every vertex of the surface data as the predictor, and the “contrast” variable as the dependent variable, keeping the other covariates in place. Note that this increases the modelling time substantially.</li>
