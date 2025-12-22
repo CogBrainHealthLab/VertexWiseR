@@ -72,9 +72,9 @@
 #' @format ## `hip_points_cells` 
 #' A list object with two data frame objects: () 
 #' \describe{
-#'   \item{vertices}{data frame with 7262 rows (vertices), 3 columns (MNI coordinates X, y, Z)}
+#'   \item{vertices}{data frame with 7262 rows (vertices), 3 columns (MNI coordinates X, Y, Z)}
 #'   \item{vertices}{data frame with 14266 rows (vertices), 3 columns (vertices of all unique triangles}
-#'   \item{vertices}{data frame with 7262 rows (vertices), 3 columns (MNI coordinates X, y, Z for unfolded hippocampal surface)}
+#'   \item{vertices}{data frame with 7262 rows (vertices), 3 columns (MNI coordinates X, Y, Z for unfolded hippocampal surface)}
 #' }
 #' @docType data
 "hip_points_cells"
