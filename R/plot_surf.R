@@ -74,7 +74,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   if(rows>1) 
   {
     if(missing("title")) {title=rep(NULL,rows)}
-    else if (missing("title")) {title=rep(title,rows)}
+    else if (!missing("title")) {title=rep(title,rows)}
   }
   
   #check length of vector
