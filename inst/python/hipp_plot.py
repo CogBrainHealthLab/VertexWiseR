@@ -32,7 +32,7 @@ def surfplot_canonical_foldunfold(cdata, hipdat, hemis=['L','R'],size=[350,400],
 
     # do some cdata formatting
     cdata = np.reshape(cdata,[cdata.shape[0],len(hemis),-1])
-    if len(cdata.shape) == 2: cdata = np.expand_dims(t,axis=2)
+    if len(cdata.shape) == 2: cdata = np.expand_dims(cdata,axis=2)
 
     # set up layout
     surfDict = {'Lf':lh, 'Lu':lu, 'Rf':rh, 'Ru':ru}
