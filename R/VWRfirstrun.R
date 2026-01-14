@@ -512,14 +512,12 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     #####################################################################
     #Check if neurosynth database is present and download
     if ((requirement=="any" | requirement=='neurosynth')==TRUE 
-        & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR')))
+        & !file.exists(paste0(system.file('extdata',package='VertexWiseR'),'/neurosynth_dataset.pkl.gz')))
     {
       missingobj=1
       
       prompt = utils::menu(c("Yes", "No"), title=paste0(
-        "\nneurosynth_dataset.pkl is not detected inside VertexWiseR's installed package directory (", 
-        system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'), 
-        "). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n\nDo you want the neurosynth database (7.5 MB) to be downloaded now?"))
+        "\nneurosynth_dataset.pkl.gz is not detected inside VertexWiseR's installed package directory (", paste0(system.file('extdata',package='VertexWiseR'),'/neurosynth_dataset.pkl.gz'), "). It is needed to be able to run decode_surf_data(). It can be downloaded from the github VertexWiseR directory.\n\nDo you want the neurosynth database (7.5 MB) to be downloaded now?"))
       if (prompt==1) {
         
         #function to check if url exists
@@ -644,9 +642,9 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
     } 
     
     #neurosynth data missing
-    if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'))) 
+    if ((requirement=="any" | requirement=='neurosynth')==TRUE & !file.exists(paste0(system.file('extdata',package='VertexWiseR'),'/neurosynth_dataset.pkl.gz'))) 
     {
-      missingobj=paste0("neurosynth_dataset.pkl is not detected inside VertexWiseR's installed package directory (", system.file('extdata','neurosynth_dataset.pkl.gz', package='VertexWiseR'), "). It is needed to be able to run decode_surf_data().\n");
+      missingobj=paste0("neurosynth_dataset.pkl.gz is not detected inside VertexWiseR's installed package directory (", paste0(system.file('extdata',package='VertexWiseR'),'/neurosynth_dataset.pkl.gz'), "). It is needed to be able to run decode_surf_data().\n");
       
       if (interactive()==FALSE)
       { non_interactive=paste0(missingobj,non_interactive)
