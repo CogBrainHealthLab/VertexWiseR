@@ -26,6 +26,7 @@
 #' subj_ID = TRUE, 
 #' silent=FALSE,
 #' VWR_check=FALSE)
+#' @importFrom reticulate import source_python
 #' @export
 
 FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=FALSE, VWR_check=TRUE)
