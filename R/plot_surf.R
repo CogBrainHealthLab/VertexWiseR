@@ -74,7 +74,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   if(rows>1) 
   {
     if(missing("title")) {title=rep(NULL,rows)}
-    else if (!missing("title")) {title=rep(title,rows)}
+    else if (!missing("title") & length(title)==1) {title=rep(title,rows)}
+    else if (!missing("title") & length(title)!=rows) {stop(paste0('The number of titles provided (', length(title), ') does not match the number of rows in the surf_data: ', rows,'.'))}
   }
   
   #check length of vector
