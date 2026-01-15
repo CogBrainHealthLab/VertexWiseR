@@ -87,18 +87,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   #if atlas object is inputted
   else if (max(dim(t(surf_data))) == 10) {template="CIT168";
   surf_data=atlas_to_surf(surf_data, template)} 
-  else if (max(dim(t(surf_data))) == 70) {template="fsaverage5";
+  else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5";
   surf_data=atlas_to_surf(surf_data, template)} 
-  else if (max(dim(t(surf_data))) == 148) {template="fsaverage5";
-  surf_data=atlas_to_surf(surf_data, template)}
-  else if (max(dim(t(surf_data))) == 360) {template="fsaverage5";
-  surf_data=atlas_to_surf(surf_data, template)} 
-  else if (max(dim(t(surf_data))) == 100) {template="fsaverage5";
-  surf_data=atlas_to_surf(surf_data, template)}
-  else if (max(dim(t(surf_data))) == 200) {template="fsaverage5";
-  surf_data=atlas_to_surf(surf_data, template)}
-  else if (max(dim(t(surf_data))) == 400) {template="fsaverage5";
-  surf_data=atlas_to_surf(surf_data, template)}
   else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
   }
   
@@ -268,6 +258,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
   if(show.plot.window==TRUE)
   {
+    grid::grid.newpage() #resets window if another plot was made
     img=png::readPNG(source =filename)
     grid::grid.raster(img)
   }
