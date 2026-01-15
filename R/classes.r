@@ -9,7 +9,7 @@
 #' @export
 
 setClass("ROImap",
-         slots = list(data = "data", 
+         slots = list(data = "matrix", 
                       atlases = 'data.frame',
                       name = 'character')
         )
@@ -20,6 +20,17 @@ ROI_map <- function(data,atlases)
   if (nrow(data)==81924) {templatename='fsaverage6'}
   if (nrow(data)==14524) {templatename='CITI168'}
   if (nrow(data)==64984) {templatename='fslr32k'}
+  #aseg subcortices:
+  if (nrow(data)==1702) {templatename='Accumbens-area'}
+  if (nrow(data)==2998) {templatename='Amygdala'}
+  if (nrow(data)==6216) {templatename='Caudate'}
+  if (nrow(data)==43330) {templatename='Cerebellum-Cortex'}
+  if (nrow(data)==7472) {templatename='Hippocampus'}
+  if (nrow(data)==2788) {templatename='Pallidum'}
+  if (nrow(data)==7806) {templatename='Putamen'}
+  if (nrow(data)==7342) {templatename='Thalamus'}
+  if (nrow(data)==6752) {templatename='VentralDC'}
+  if (nrow(data)==9212) {templatename='Brain-Stem'}
   
   new("ROImap", data = data, atlases = atlases, name = templatename)
 }
@@ -48,7 +59,7 @@ setMethod("show", "ROImap", function(object) {
 #' @export
 
 setClass("MNIsurface",
-         slots = list(data = "data", 
+         slots = list(data = "matrix", 
                       name = 'character')
          )
 
@@ -76,7 +87,7 @@ setMethod("show", "MNIsurface", function(object) {
 #' @export
 
 setClass("edgelist",
-slots = list(data = "data", 
+slots = list(data = "matrix", 
              name = 'character')
         )
 
