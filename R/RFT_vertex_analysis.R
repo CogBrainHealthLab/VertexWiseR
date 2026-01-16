@@ -60,7 +60,7 @@
 ##vertex wise analysis with mixed effects
 RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
 {
-  #gets surface matrix if is surf_data is a list or path
+  #gets surface matrix if surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
   
   #Check required python dependencies. If files missing:

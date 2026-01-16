@@ -532,7 +532,7 @@ if (requirement!="python/conda only" & requirement!='conda/brainstat')
         #Check if URL works and avoid returning error but only print message as requested by CRAN:
         url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz"
         if(valid_url(url)) {
-          download.file(url="https://raw.githubusercontent.com/CogBrainHealthLab/VertexWiseR/main/inst/extdata/neurosynth_dataset.pkl.gz",destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
+          download.file(url=url,destfile = paste0(system.file(package='VertexWiseR'),'/extdata/neurosynth_dataset.pkl.gz'))
         } else { 
           warning("The neurosynth database (neurosynth_dataset.pkl.gz) failed to be downloaded from the github VertexWiseR directory. Please check your internet connection. Alternatively, you may visit https://github.com/CogBrainHealthLab/VertexWiseR/tree/main/inst/extdata and download the object manually.") #ends function
         } 
