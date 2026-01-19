@@ -267,6 +267,10 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }  }
   }
   
+  #if contrast or model is a data.frame with 1 column, the variable needs to be flattened for the inherits() checks to work properly
+  if(inherits(contrast,"data.frame")==TRUE & NCOL(contrast)==1){contrast=contrast[[1]]}
+  if(inherits(model,"data.frame")==TRUE & NCOL(model)==1){model=model[[1]]}
+
   #numerise contrast
   if(inherits(contrast,"integer")==TRUE) {contrast=as.numeric(contrast)}
   
@@ -336,6 +340,7 @@ model_check=function(contrast, model, random, surf_data, smooth_FWHM)
     }
   } else
   {
+    
     if(inherits(model,"character")==TRUE | inherits(model,"factor")==TRUE)
     {
       if(length(unique(model))==2)
