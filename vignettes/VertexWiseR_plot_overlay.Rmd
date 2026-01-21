@@ -28,7 +28,7 @@ demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 
 ## Running a vertex-wise linear model
 
-In this example, we use the Spreng dataset cortical thickness and behavioural data as in [Example 1](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html) and the [home  example](https://cogbrainhealthlab.github.io/VertexWiseR/index.html) , selecting young adults:
+In this example, we use the Spreng dataset cortical thickness and behavioural data as in [Example 1](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_1.html) and the [home example](https://cogbrainhealthlab.github.io/VertexWiseR/index.html) , selecting young adults:
 
 ```{r, eval=TRUE}
 SPRENG_CTv = readRDS(file=paste0(demodata,"/SPRENG_CTv_site1.rds"))
@@ -68,6 +68,7 @@ plot_surf(surf_data = results$tstat_map,
           size=c(1400,291),
           show.plot.window=FALSE)
 ```
+
 ```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Unthresholded t-statistic map"}
 knitr::include_graphics('sexdiff_nothresh.png')
 ```
@@ -80,6 +81,7 @@ plot_surf(surf_data = results$thresholded_tstat_map,
           size=c(1400,291),
           show.plot.window=FALSE)
 ```
+
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
 knitr::include_graphics('sexdiff_thresh.png')
 ```
@@ -107,6 +109,7 @@ plot_overlay_surf(model_output=results,
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
+
 ```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map"}
 knitr::include_graphics('overlay_plot.png')
 ```
@@ -125,6 +128,7 @@ plot_overlay_surf(model_output=results,
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
+
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps"}
 knitr::include_graphics('overlay_plot_twocmaps.png')
 ```
@@ -140,8 +144,44 @@ plot_overlay_surf(model_output=results,
                   title="Significant effect\nof sex",
                   show.plot.window=FALSE)
 ```
+
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
 knitr::include_graphics('overlay_plot_twolimits.png')
+```
+
+## Overlaying hippocampal plots
+
+The same can be applied to HippUnfold hippocampal surfaces. We reproduce the results from the first analysis in [Example 2](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html):
+
+```{r, eval=TRUE, results = 'hide'}
+FINK_Tv_ses13 = readRDS(file=paste0(demodata,"/FINK_Tv_ses13.rds"))
+dat_beh_ses13 = readRDS(paste0(demodata,"/FINK_behdata_ses13.rds"))
+model2_RFT=RFT_vertex_analysis(
+  model = dat_beh_ses13[,c("session","group","session_x_group")],
+  contrast = dat_beh_ses13[,"session_x_group"],
+  surf_data=FINK_Tv_ses13,
+  random=dat_beh_ses13[,"participant_id"], 
+  smooth_FWHM = 5,
+  p=0.05)
+```
+
+Plotted in the same manner:
+
+```{r, eval=TRUE, results = 'hide'}
+plot_overlay_surf(model_output=model2_RFT, 
+                  cmap_1='RdBu_r', cmap_2='RdBu_r',
+                  colorbar_1=FALSE, colorbar_2=TRUE,
+                  alpha_1=0.4, alpha_2=1,
+                  limits_2='same',
+                  filename='overlay_plot_hippocampus.png',
+                  overlay_boundaries=TRUE,
+                  size=c(1400,300),
+                  title="Effect of session\nand group",
+                  show.plot.window=FALSE)
+```
+
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
+knitr::include_graphics('overlay_plot_hippocampus.png')
 ```
 
 ## References:

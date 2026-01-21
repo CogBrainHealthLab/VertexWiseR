@@ -141,18 +141,7 @@ plot_overlay_surf=function(model_output=NULL,
   #if atlas object is inputted
   } else if (max(dim(t(surf_data_1))) == 10) {template="CIT168";
   surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 70) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 148) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 360) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 100) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 200) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data_1))) == 400) {template="fsaverage5";
-  surf_data_1=atlas_to_surf(surf_data_1, template)
+  } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
   } else{stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
   }
   
@@ -265,41 +254,42 @@ plot_overlay_surf=function(model_output=NULL,
     {limits=as.numeric(c(limits_2[1],limits_2[2]))} 
   }
   
+  
+  #import python libraries
+  brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
+  brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
+  #need PTuple function for overlays
+  utils=reticulate::import("brainspace.plotting.utils", delay_load = TRUE) 
+  
+
+############################################################################
+############################################################################
+############################################################################  
   if(template %in% c('fsaverage5','fsaverage6','fslr32k'))
   {
     ##cortical surface plots
-    #import python libraries
-    brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
-    brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
-    #need PTuple function for overlays
-    utils=reticulate::import("brainspace.plotting.utils", delay_load = TRUE) 
-    
     #For brainstat data, it will look either in default $HOME path or 
     #custom if it's been set
     # If custom installation paths have been defined by the user, source
     # them from the package directory:
     Renvironpath=paste0(tools::R_user_dir(package='VertexWiseR'),'/.Renviron')
     if (file.exists(Renvironpath)) {readRenviron(Renvironpath)}
-    
     if (Sys.getenv('BRAINSTAT_DATA')=="")
-    { 
-      brainstat_data_path=fs::path_home()
+    { brainstat_data_path=fs::path_home()
     } else if (!Sys.getenv('BRAINSTAT_DATA')=="") 
-    {
-      brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')
-    }
+    {brainstat_data_path=Sys.getenv('BRAINSTAT_DATA')}
     
     #loading fsaverage surface
-    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[1]
-    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[2]
+    left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[[1]]
+    right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[[2]]
     
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1700,400)}
     if(missing("zoom")) { zoom=1.25 }
 
     #slice surface hemisphere-wise
-    n_lh = left[[1]]$GetNumberOfPoints()
-    n_rh = right[[1]]$GetNumberOfPoints()
+    n_lh = left$GetNumberOfPoints()
+    n_rh = right$GetNumberOfPoints()
     surf_data_1_lh = surf_data_1[1:n_lh]
     surf_data_1_rh = surf_data_1[(n_lh + 1):(n_lh + n_rh)]
     surf_data_2_lh = surf_data_2[1:n_lh]
@@ -310,21 +300,22 @@ plot_overlay_surf=function(model_output=NULL,
     vtk_np = reticulate::import("vtk.util.numpy_support", convert = FALSE)
     vtk_array_lh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_lh), deep = TRUE)
     vtk_array_lh_1$SetName("lh_data_1")
-    left[[1]]$GetPointData()$AddArray(vtk_array_lh_1)
+    left$GetPointData()$AddArray(vtk_array_lh_1)
     
     vtk_array_rh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_rh), deep = TRUE)
     vtk_array_rh_1$SetName("rh_data_1")
-    right[[1]]$GetPointData()$AddArray(vtk_array_rh_1)
+    right$GetPointData()$AddArray(vtk_array_rh_1)
     
     vtk_array_lh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_lh, dtype = "float"), deep = TRUE)
     vtk_array_lh_2$SetName("lh_data_2")
-    left[[1]]$GetPointData()$AddArray(vtk_array_lh_2)
+    left$GetPointData()$AddArray(vtk_array_lh_2)
   
     vtk_array_rh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_rh, dtype = "float"), deep = TRUE)
     vtk_array_rh_2$SetName("rh_data_2")
-    right[[1]]$GetPointData()$AddArray(vtk_array_rh_2)
+    right$GetPointData()$AddArray(vtk_array_rh_2)
     
-    surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
+    surf_obj <- reticulate::py_dict(keys = c("lh","rh"), 
+                                    values = list(left, right))
     
     ###
     #If NaN are plotted, add a coloured NaN layer under both layers if show_nan==T, because the default NaN has to be removed for the background to show behind the overlay's own NaN 
@@ -342,17 +333,18 @@ plot_overlay_surf=function(model_output=NULL,
     vtk_array_rh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_rh), deep = TRUE); 
     vtk_array_rh_nan$SetName("rh_data_nan")
     # Add nan plot to surf_obj
-    left[[1]]$GetPointData()$AddArray(vtk_array_lh_nan)
-    right[[1]]$GetPointData()$AddArray(vtk_array_rh_nan)
-    surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
+    left$GetPointData()$AddArray(vtk_array_lh_nan)
+    right$GetPointData()$AddArray(vtk_array_rh_nan)
+    surf_obj <- reticulate::py_dict(keys = c("lh","rh"), 
+                                    values = list(left, right))
     
     ###
     #If user wants boundaries plotted around overlay:
     mesh_ops <- reticulate::import("brainspace.mesh.array_operations", convert = FALSE)
     binary_mask_lh <- ifelse(is.na(surf_data_2_lh), 0L, 1L)
     binary_mask_rh <- ifelse(is.na(surf_data_2_rh), 0L, 1L)
-    boundary_lh <- mesh_ops$get_labeling_border(left[[1]], reticulate::np_array(binary_mask_lh))$astype("float")
-    boundary_rh <- mesh_ops$get_labeling_border(right[[1]], reticulate::np_array(binary_mask_rh))$astype("float")
+    boundary_lh <- mesh_ops$get_labeling_border(left, reticulate::np_array(binary_mask_lh))$astype("float")
+    boundary_rh <- mesh_ops$get_labeling_border(right, reticulate::np_array(binary_mask_rh))$astype("float")
 
     #NaN for non boundaries if wanted, and all NaN if to be hidden
     if (overlay_boundaries==TRUE)
@@ -367,16 +359,16 @@ plot_overlay_surf=function(model_output=NULL,
       boundary_rh=rep(NaN, length(surf_data_1_rh))
     }
 
-    
     # Create VTK arrays for boundaries too
     vtk_array_lh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_lh), deep = TRUE); 
     vtk_array_lh_bd$SetName("lh_data_bd")
     vtk_array_rh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_rh), deep = TRUE); 
     vtk_array_rh_bd$SetName("rh_data_bd")
     # Add nan plot to surf_obj
-    left[[1]]$GetPointData()$AddArray(vtk_array_lh_bd)
-    right[[1]]$GetPointData()$AddArray(vtk_array_rh_bd)
-    surf_obj=reticulate::dict(lh = left[[1]],rh = right[[1]])
+    left$GetPointData()$AddArray(vtk_array_lh_bd)
+    right$GetPointData()$AddArray(vtk_array_rh_bd)
+    surf_obj <- reticulate::py_dict(keys = c("lh","rh"), 
+                                    values = list(left, right))
     
     #############################################################
     #Produce the plot 
@@ -413,98 +405,267 @@ plot_overlay_surf=function(model_output=NULL,
       transparent_bg = transparent_bg
     )
     
-    #color bars need to be added on top of the original plot, since brainspace's plot_surf won't render them properly
-    #plot_hemispheres does, so we can plot the bar(s) with it, take the bar(s), and append it to the main image
-    if (colorbar_1==TRUE | colorbar_2==TRUE)
-    {
-      dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))
+    
+############################################################################
+############################################################################
+############################################################################
+    
+    
+    } else if (template=='CIT168'){
+    
+      #python libraries
+      brainspace.mesh=reticulate::import('brainspace.mesh')
+      mc=brainspace.mesh$mesh_creation
+        
+      #loading hippocampal surface (and unfolded version)
+      hipdat=get('hip_points_cells')
+      right=mc$build_polydata(hipdat[[1]], cells=hipdat[[2]])
+      rightu=mc$build_polydata(hipdat[[3]], cells=hipdat[[2]])
+      rightu$Points <- cbind(rightu$Points[,2], 
+                             -rightu$Points[,1], 
+                             rightu$Points[,3]) # reorient unfolded
+      rightu$Points[,1]=-rightu$Points[,1]    
+      #left hemisphere is same but flipped
+      left = mc$build_polydata(hipdat[[1]], cells=hipdat[[2]])
+      left$Points[,1] = -left$Points[,1]
+      leftu = mc$build_polydata(hipdat[[3]], cells=hipdat[[2]])
+      leftu$Points <- cbind(leftu$Points[,2], 
+                            -leftu$Points[,1], 
+                            leftu$Points[,3]) # reorient unfolded
+      leftu$Points[,1] = -leftu$Points[,1]
       
-      background_plot=brainspace.plotting$plot_hemispheres(
-        left[[1]], right[[1]],  
-        array_name=reticulate::np_array(dummy_mesh),
-        cmap=cmap_1,
-        size=reticulate::tuple(as.integer(size)),
-        nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0), 
-        background=reticulate::tuple(as.integer(c(1,1,1))),
-        zoom=zoom,
-        color_range=list(list(limits_1)),
-        return_plotter = TRUE,
-        interactive=FALSE, 
-        color_bar=TRUE,  
-        transparent_bg=transparent_bg)  
-      bg_bar <- background_plot$screenshot(filename=paste0(tempdir(),"/background_cbar.png"),transparent_bg = transparent_bg)
-        
-        overlay_plot=brainspace.plotting$plot_hemispheres(
-          left[[1]], right[[1]],  
-          array_name=reticulate::np_array(dummy_mesh),
-          cmap=cmap_2,
-          size=reticulate::tuple(as.integer(size)),
-          nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0),
-          background=reticulate::tuple(as.integer(c(1,1,1))),
-          zoom=zoom,
-          color_range=list(list(limits_2)),
-          return_plotter = TRUE,
-          interactive=FALSE, 
-          color_bar=TRUE,  
-          transparent_bg=transparent_bg)  
-        ol_bar <- overlay_plot$screenshot(filename=paste0(tempdir(),"/overlay_cbar.png"), transparent_bg = transparent_bg)
-        
-        #Get colorbar position/size depending on plot size (approximate % of color bar depending on pic size)
-        crop_scalar_bar <- function(img_path, start_frac = 0.90, end_frac = 0.947) {
-          img <- png::readPNG(img_path)
-          #get width based on proportion of image width
-          start_col <- round(dim(img)[2] * start_frac)
-          end_col   <- round(dim(img)[2] * end_frac)
-          #crops based on dimensions 
-          cropped_img <- img[, start_col:end_col, ]
-          #overwrite
-          png::writePNG(cropped_img, img_path)
-        }
-        crop_scalar_bar(paste0(tempdir(),"/background_cbar.png"))
-        crop_scalar_bar(paste0(tempdir(),"/overlay_cbar.png"))
-        
-        #now append the cbar images
-        # Load the images
-        #Save with no color bar
-        img_main=surf_plot$screenshot(filename=paste0(tempdir(),"/no_bar.png"),transparent_bg = transparent_bg)
-        img_main <- png::readPNG(paste0(tempdir(),"/no_bar.png"))
-        bg_bar  <- png::readPNG(paste0(tempdir(),"/background_cbar.png"))
-        ol_bar  <- png::readPNG(paste0(tempdir(),"/overlay_cbar.png"))
-        
-        # Ensure same height and channels
-        h <- dim(img_main)[1]; c <- dim(img_main)[3]
-        w1 <- dim(img_main)[2]; w2 <- dim(bg_bar)[2]; w3 <- dim(ol_bar)[2]
-        #expand dimensions depending on which color bars will be present
-        w_total = w1
-        if (colorbar_1==T) w_total <- w_total + w2
-        if (colorbar_2==T) w_total <- w_total + w3
-        # Create combined image
-        combined_img <- array(0, dim = c(h, w_total, c))
-        # Fill slices conditionally
-        pos <- 1 #index of where color bar start in the plot
-        combined_img[, pos:(pos + w1 - 1), ] <- img_main
-        pos <- pos + w1
-        if (colorbar_1==T) {
-          combined_img[, pos:(pos + w2 - 1), ] <- bg_bar
-          pos <- pos + w2}
-        if (colorbar_2==T) {
-          combined_img[, pos:(pos + w3 - 1), ] <- ol_bar}
-        # Save
-        png::writePNG(combined_img, filename) 
-    } else
-    {
-      #Save with no color bar
-      img_main=surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
-    }
+      #default cortical size and zoom parametes
+      if(missing("size")) { size=c(860,200)}
+      if(missing("zoom")) { zoom=1.2 }
+      
+      #slice surface hemisphere-wise
+      n_lh = left$n_points
+      n_rh = right$n_points
+      surf_data_1_lh = surf_data_1[1:n_lh]
+      surf_data_1_rh = surf_data_1[(n_lh + 1):(n_lh + n_rh)]
+      surf_data_2_lh = surf_data_2[1:n_lh]
+      surf_data_2_rh = surf_data_2[(n_lh + 1):(n_lh + n_rh)]
+      
+      #Convert your overlay to VTK and name surface
+      #and attach it to the corresponding surface template
+      vtk_np = reticulate::import("vtk.util.numpy_support", convert = FALSE)
+      vtk_array_lh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_lh), deep = TRUE)
+      vtk_array_lh_1$SetName("lh_data_1")
+      left$GetPointData()$AddArray(vtk_array_lh_1)
+      leftu$GetPointData()$AddArray(vtk_array_lh_1)
+      
+      vtk_array_rh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_rh), deep = TRUE)
+      vtk_array_rh_1$SetName("rh_data_1")
+      right$GetPointData()$AddArray(vtk_array_rh_1)
+      rightu$GetPointData()$AddArray(vtk_array_rh_1)
+      
+      vtk_array_lh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_lh, dtype = "float"), deep = TRUE)
+      vtk_array_lh_2$SetName("lh_data_2")
+      left$GetPointData()$AddArray(vtk_array_lh_2)
+      leftu$GetPointData()$AddArray(vtk_array_lh_2)
+      
+      vtk_array_rh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_rh, dtype = "float"), deep = TRUE)
+      vtk_array_rh_2$SetName("rh_data_2")
+      right$GetPointData()$AddArray(vtk_array_rh_2)
+      rightu$GetPointData()$AddArray(vtk_array_rh_2)
+      
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      ###
+      #If NaN are plotted, add a coloured NaN layer under both layers if show_nan==T, because the default NaN has to be removed for the background to show behind the overlay's own NaN 
+      if (show_nan==TRUE)
+      { nan_mesh_lh=rep(0.43, length(surf_data_1_lh))
+        nan_mesh_rh=rep(0.43, length(surf_data_1_rh))
+      } else 
+      { nan_mesh_lh=rep(NaN, length(surf_data_1_lh))
+        nan_mesh_rh=rep(NaN, length(surf_data_1_rh))
+      }
+      
+      # Create VTK arrays for NaN too
+      vtk_array_lh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_lh), deep = TRUE); 
+      vtk_array_lh_nan$SetName("lh_data_nan")
+      vtk_array_rh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_rh), deep = TRUE); 
+      vtk_array_rh_nan$SetName("rh_data_nan")
+      # Add nan plot to surf_obj
+      left$GetPointData()$AddArray(vtk_array_lh_nan)
+      leftu$GetPointData()$AddArray(vtk_array_lh_nan)
+      right$GetPointData()$AddArray(vtk_array_rh_nan)
+      rightu$GetPointData()$AddArray(vtk_array_rh_nan)
+
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      ###
+      #If user wants boundaries plotted around overlay:
+      mesh_ops <- reticulate::import("brainspace.mesh.array_operations", convert = FALSE)
+      binary_mask_lh <- ifelse(is.na(surf_data_2_lh), 0L, 1L)
+      binary_mask_rh <- ifelse(is.na(surf_data_2_rh), 0L, 1L)
+      boundary_lh <- mesh_ops$get_labeling_border(left, reticulate::np_array(binary_mask_lh))$astype("float")
+      boundary_rh <- mesh_ops$get_labeling_border(right, reticulate::np_array(binary_mask_rh))$astype("float")
+      
+      #NaN for non boundaries if wanted, and all NaN if to be hidden
+      if (overlay_boundaries==TRUE)
+      {
+        #mask out non boundary vertices
+        boundary_lh = reticulate::py_to_r(boundary_lh)
+        boundary_rh = reticulate::py_to_r(boundary_rh) 
+        boundary_lh[boundary_lh==0] = NaN
+        boundary_rh[boundary_rh==0] = NaN
+      } else {
+        boundary_lh=rep(NaN, length(surf_data_1_rh))
+        boundary_rh=rep(NaN, length(surf_data_1_rh))
+      }
+      
+      # Create VTK arrays for boundaries too
+      vtk_array_lh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_lh), deep = TRUE); 
+      vtk_array_lh_bd$SetName("lh_data_bd")
+      vtk_array_rh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_rh), deep = TRUE); 
+      vtk_array_rh_bd$SetName("rh_data_bd")
+      # Add nan plot to surf_obj
+      left$GetPointData()$AddArray(vtk_array_lh_bd)
+      leftu$GetPointData()$AddArray(vtk_array_lh_bd)
+      right$GetPointData()$AddArray(vtk_array_rh_bd)
+      rightu$GetPointData()$AddArray(vtk_array_rh_bd)
+
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      #############################################################
+      #Produce the plot 
+      surf_plot = brainspace.plotting$plot_surf(
+        surfs = surf_obj,
+        array_name = list(list(
+          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd"),
+          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd")
+        )
+        ), #Referencing the attached scalar by name
+        layout = list(list("lh","lu","ru","rh")),
+        view = list(list('ventral','dorsal','dorsal','ventral')),
+        cmap = list(list(
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys')
+        )),
+        size = as.integer(size),
+        nan_color = reticulate::tuple(0.7, 0.7, 0.7, 0),
+        background = reticulate::tuple(as.integer(c(1, 1, 1))),
+        zoom = zoom,
+        color_range = list(list(
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1))
+        )),
+        label_text = title,
+        return_plotter=TRUE,
+        interactive = FALSE,
+        transparent_bg = transparent_bg
+      )
+  
+    } else { stop('This function only works with fsaverage5,fsaverage6, and fslr32k templates')}
+  
+  
+############################################################################
+############################################################################
+############################################################################
+  
+  #color bars need to be added on top of the original plot, since brainspace's plot_surf won't render them properly
+  #plot_hemispheres does, so we can plot the bar(s) with it, take the bar(s), and append it to the main image
+  if (colorbar_1==TRUE | colorbar_2==TRUE)
+  {
+    dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))
     
-    #display plot
-    if(show.plot.window==TRUE)
-    {
-      img=png::readPNG(source=filename)
-      grid::grid.raster(img)
-    }
+    background_plot=brainspace.plotting$plot_hemispheres(
+      left, right,  
+      array_name=reticulate::np_array(dummy_mesh),
+      cmap=cmap_1,
+      size=reticulate::tuple(as.integer(size)),
+      nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0), 
+      background=reticulate::tuple(as.integer(c(1,1,1))),
+      zoom=zoom,
+      color_range=list(list(limits_1)),
+      return_plotter = TRUE,
+      interactive=FALSE, 
+      color_bar=TRUE,  
+      transparent_bg=transparent_bg)  
+    bg_bar <- background_plot$screenshot(filename=paste0(tempdir(),"/background_cbar.png"),transparent_bg = transparent_bg)
     
-  } else { stop('This function only works with fsaverage5,fsaverage6, and fslr32k templates')}
+    overlay_plot=brainspace.plotting$plot_hemispheres(
+      left, right,  
+      array_name=reticulate::np_array(dummy_mesh),
+      cmap=cmap_2,
+      size=reticulate::tuple(as.integer(size)),
+      nan_color=reticulate::tuple(0.7, 0.7, 0.7, 0),
+      background=reticulate::tuple(as.integer(c(1,1,1))),
+      zoom=zoom,
+      color_range=list(list(limits_2)),
+      return_plotter = TRUE,
+      interactive=FALSE, 
+      color_bar=TRUE,  
+      transparent_bg=transparent_bg)  
+    ol_bar <- overlay_plot$screenshot(filename=paste0(tempdir(),"/overlay_cbar.png"), transparent_bg = transparent_bg)
+    
+    #Get colorbar position/size depending on plot size (approximate % of color bar depending on pic size)
+    crop_scalar_bar <- function(img_path, start_frac = 0.90, end_frac = 0.973) {
+      img <- png::readPNG(img_path)
+      #get width based on proportion of image width
+      start_col <- round(dim(img)[2] * start_frac)
+      end_col   <- round(dim(img)[2] * end_frac)
+      #crops based on dimensions 
+      cropped_img <- img[, start_col:end_col, ]
+      #overwrite
+      png::writePNG(cropped_img, img_path)
+    }
+    crop_scalar_bar(paste0(tempdir(),"/background_cbar.png"))
+    crop_scalar_bar(paste0(tempdir(),"/overlay_cbar.png"))
+    
+    #now append the cbar images
+    # Load the images
+    #Save with no color bar
+    img_main=surf_plot$screenshot(filename=paste0(tempdir(),"/no_bar.png"),transparent_bg = transparent_bg)
+    img_main <- png::readPNG(paste0(tempdir(),"/no_bar.png"))
+    bg_bar  <- png::readPNG(paste0(tempdir(),"/background_cbar.png"))
+    ol_bar  <- png::readPNG(paste0(tempdir(),"/overlay_cbar.png"))
+    
+    # Ensure same height and channels
+    h <- dim(img_main)[1]; c <- dim(img_main)[3]
+    w1 <- dim(img_main)[2]; w2 <- dim(bg_bar)[2]; w3 <- dim(ol_bar)[2]
+    #expand dimensions depending on which color bars will be present
+    w_total = w1
+    if (colorbar_1==T) w_total <- w_total + w2
+    if (colorbar_2==T) w_total <- w_total + w3
+    # Create combined image
+    combined_img <- array(0, dim = c(h, w_total, c))
+    # Fill slices conditionally
+    pos <- 1 #index of where color bar start in the plot
+    combined_img[, pos:(pos + w1 - 1), ] <- img_main
+    pos <- pos + w1
+    if (colorbar_1==T) {
+      combined_img[, pos:(pos + w2 - 1), ] <- bg_bar
+      pos <- pos + w2}
+    if (colorbar_2==T) {
+      combined_img[, pos:(pos + w3 - 1), ] <- ol_bar}
+    # Save
+    png::writePNG(combined_img, filename) 
+  } else
+  {
+    #Save with no color bar
+    img_main=surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
+  }
+  
+  #display plot
+  if(show.plot.window==TRUE)
+  {
+    img=png::readPNG(source=filename)
+    grid::grid.raster(img)
+  }
 } 
 
 
