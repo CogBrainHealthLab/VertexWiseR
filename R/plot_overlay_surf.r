@@ -2,7 +2,7 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #' @param model_output A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.
-#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
+#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
 #' @param surf_data_2 Same as surf_data_1. This is the overlay surface.
 #' @param cmap_1 A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
 #' 
@@ -16,11 +16,11 @@
 #' @param alpha_2 Same as alpha_2. This is meant for the overlay surface. Default is the same as alpha_1.
 #' @param overlay_boundaries A logical object stating whether to plot black contour of the overlay layer.
 #' @param show_nan A logical object to determine if the NaN vertices are to be plotted (Default is TRUE). This is meant for the background surface. The overlay surface will always omit NaN vertices to make the background visible.
-#' @param filename A string object containing the desired name of the output .png. Default is 'combined_plots.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
+#' @param filename A string object containing the desired name of the output .png. Default is 'combined_plots.png' in the R temporary directory (tempdir()). Only filenames with a .png extension are allowed.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 #' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). 
-#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1700,400). Note that the size will depend on the inclusion of color bar(s), which will expand the width to ~5% per color bar.
-#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25.
+#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1700,400) for cortical surfaces and c(860,200) for Hippunfold hippocampal surfaces. Note that the size will depend on the inclusion of color bar(s), which will expand the width to ~5% per color bar.
+#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for cortical surfaces and 1.2 for Hippunfold hippocampal surfaces.
 #' @param transparent_bg A logical object to determine if the background of the image is set to transparent (Default is FALSE).
 #' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
@@ -142,7 +142,7 @@ plot_overlay_surf=function(model_output=NULL,
   } else if (max(dim(t(surf_data_1))) == 10) {template="CIT168";
   surf_data_1=atlas_to_surf(surf_data_1, template)
   } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else{stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
+  } else{stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) and 14524 (CIT168) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
   }
   
   #NA-ify vertices if alpha=0 before computing color maps
@@ -569,7 +569,7 @@ plot_overlay_surf=function(model_output=NULL,
         transparent_bg = transparent_bg
       )
   
-    } else { stop('This function only works with fsaverage5,fsaverage6, and fslr32k templates')}
+    } else { stop('This function only works with fsaverage5,fsaverage6,  fslr32k and CIT168 templates')}
   
   
 ############################################################################
