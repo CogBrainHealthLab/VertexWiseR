@@ -46,17 +46,6 @@
 #' }
 "ROImap_hip"
 
-#' Hippocampal surface in MNI space
-#'
-#' A matrix with 14524 columns corresponding to the hippocampal template vertices and 3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space
-#'
-#' @format ## `MNImap_hip`
-#' A 3x14524 matrix object
-#' \describe{
-#'   \item{coordinates}{14524 rows (vertices), 3 columns (X,Y,Z coordinates)}
-#' }
-"MNImap_hip"
-
 #' List of edges for the hippocampal template
 #'
 #' A Nx2 matrix object listing each vertex of the hippocampal template and the vertices adjacent to it (making an edge together).

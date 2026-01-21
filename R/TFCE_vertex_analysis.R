@@ -512,8 +512,10 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
     ROImap=list(data.matrix(ROImap[[1]]),ROImap[[2]])
     assign("ROImap", ROImap, envir = internalenv)
     
-    MNImap <- get('MNImap_hip')
-    MNImap <- MNImap@data
+    brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io",
+                                               delay_load = TRUE)
+    template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
+    MNImap <- t(template$Points)
     assign("MNImap", MNImap, envir = internalenv)
   } 
   ##generating p map
