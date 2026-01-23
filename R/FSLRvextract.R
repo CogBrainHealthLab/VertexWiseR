@@ -1,9 +1,9 @@
 #' @title FSLRvextract
 #'
-#' @description Extracts vertex-wise surface-based measures for each subject from HCP, fMRIprep or XCP-D preprocessed directories, and stores it as a single .RDS file.
-#' @details The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. 
+#' @description Extracts vertex-wise surface-based measures for each subject from sMRIprep, fMRIprep, ASLprep, HCP processing or XCP-D preprocessed directories, and stores it as a single .RDS file.
+#' @details The function searches in the preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object. 
 #'
-#' @param sdirpath A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").
+#' @param sdirpath A string object containing the path to the sMRIprep, fMRIprep, ASLprep, HCP preprocessed directory. Default is the current working directory ("./").
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
 #' @param dscalar A string object containing the filename suffix of the dscalar file. These dscalar files are named differently depending on the preprocessing pipeline used. Examples of filename suffixes are shown below
 #' \itemize{
@@ -11,9 +11,9 @@
 #'  \item `.sulc_MSMAll.32k_fs_LR.dscalar.nii` (HCP MSMAll pipeline)
 #'  \item `.thickness.32k_fs_LR.dscalar.nii` (HCP legacy pipeline)
 #'  \item `.sulc.32k_fs_LR.dscalar.nii` (HCP legacy pipeline)
-#'  \item `_space-fsLR_den-91k_thickness.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)
-#'  \item `_space-fsLR_den-91k_curv.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)
-#'  \item `_space-fsLR_den-91k_sulc.dscalar.nii` (fMRIprep; using the `--cifti-output 91k` flag)}
+#'  \item `_space-fsLR_den-91k_thickness.dscalar.nii` (sMRIprep/fMRIprep/ASLprep; using the `--cifti-output 91k` flag)
+#'  \item `_space-fsLR_den-91k_curv.dscalar.nii` (sMRIprep/fMRIprep/ASLprep; using the `--cifti-output 91k` flag)
+#'  \item `_space-fsLR_den-91k_sulc.dscalar.nii` (sMRIprep/fMRIprep/ASLprep; using the `--cifti-output 91k` flag)}
 #' @param subj_ID A logical object to determine whether to return a list object containing both subject ID and data matrix.
 #' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.

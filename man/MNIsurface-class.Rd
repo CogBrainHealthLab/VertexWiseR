@@ -10,7 +10,7 @@ A class for surface coordinates in MNI space
 \section{Slots}{
 
 \describe{
-\item{\code{matrix}}{A matrix object with N vertices columns x  3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space.}
+\item{\code{data}}{A matrix object with N vertices columns x  3 rows corresponding to each vertex's X,Y,Z coordinates in MNI space.}
 
 \item{\code{name}}{The name of the template surface}
 }}

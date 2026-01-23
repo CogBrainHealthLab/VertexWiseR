@@ -14,7 +14,7 @@ FSLRvextract(
 )
 }
 \arguments{
-\item{sdirpath}{A string object containing the path to the HCP or fMRIprep preprocessed directory. Default is the current working directory ("./").}
+\item{sdirpath}{A string object containing the path to the sMRIprep, fMRIprep, ASLprep, HCP preprocessed directory. Default is the current working directory ("./").}
 
 \item{filename}{A string object containing the desired name of the output RDS file. Default is 'fslr32k.rds' in the R temporary directory (tempdir()).}
 
@@ -24,9 +24,9 @@ FSLRvextract(
 \item \code{.sulc_MSMAll.32k_fs_LR.dscalar.nii} (HCP MSMAll pipeline)
 \item \code{.thickness.32k_fs_LR.dscalar.nii} (HCP legacy pipeline)
 \item \code{.sulc.32k_fs_LR.dscalar.nii} (HCP legacy pipeline)
-\item \verb{_space-fsLR_den-91k_thickness.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
-\item \verb{_space-fsLR_den-91k_curv.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)
-\item \verb{_space-fsLR_den-91k_sulc.dscalar.nii} (fMRIprep; using the \verb{--cifti-output 91k} flag)}}
+\item \verb{_space-fsLR_den-91k_thickness.dscalar.nii} (sMRIprep/fMRIprep/ASLprep; using the \verb{--cifti-output 91k} flag)
+\item \verb{_space-fsLR_den-91k_curv.dscalar.nii} (sMRIprep/fMRIprep/ASLprep; using the \verb{--cifti-output 91k} flag)
+\item \verb{_space-fsLR_den-91k_sulc.dscalar.nii} (sMRIprep/fMRIprep/ASLprep; using the \verb{--cifti-output 91k} flag)}}
 
 \item{subj_ID}{A logical object to determine whether to return a list object containing both subject ID and data matrix.}
 
@@ -38,10 +38,10 @@ FSLRvextract(
 A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
-Extracts vertex-wise surface-based measures for each subject from HCP, fMRIprep or XCP-D preprocessed directories, and stores it as a single .RDS file.
+Extracts vertex-wise surface-based measures for each subject from sMRIprep, fMRIprep, ASLprep, HCP processing or XCP-D preprocessed directories, and stores it as a single .RDS file.
 }
 \details{
-The function searches for the HCP preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
+The function searches in the preprocessed directory by listing out files with certain suffixes, extracts the data from these files, and organizes the left and right hemisphere vertex data for each subject as rows in a N x 64984 data matrix within a .rds object.
 }
 \examples{
 dat_fslr32k=FSLRvextract(sdirpath="./", 

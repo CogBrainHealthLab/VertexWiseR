@@ -80,9 +80,9 @@ What dim(SPRENG_CTv) shows is that the matrix object contains the surface values
 
 When the subj_ID argument is set to TRUE, the object returned is not a matrix on its own but a list containing both the matrix and an array listing the subject IDs from the directory. In our example: \* SPRENG_CTv[[1]] will be the list of subject IDs \* SPRENG_CTv[[2]] will be the matrix object
 
-## Extracting cortical surface data: from HCP, fMRIprep or XCP-D
+## Extracting cortical surface data: from HCP processing, sMRIprep, fMRIprep, ASLprep or XCP-D
 
-FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013], fMRIprep [@esteban_fmriprep_2019] preprocessing output directories, as well as XCP-D [@mehta2024xcp] postprocessing output directories.
+FSLRvextract() extracts cortical data in FSLR32k surface space from Human Connectome Project (HCP) [@van_essen_wu-minn_2013], sMRIprep [@esteban2021smriprep] (and outputs derived from it such as fMRIprep [@esteban_fmriprep_2019] and ASLprep [@adebimpe2022aslprep]) preprocessing output directories, as well as XCP-D [@mehta2024xcp] postprocessing output directories.
 
 For demonstration, we provide a subsample of 2 participants from the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022], after preprocessing their surface data using fMRIprep. The latter outputs fslr32k surface data when using the "--cifti-output" option [@esteban_fmriprep_2019]. Other anatomical files were removed and only the dscalar.nii and associated json files were preserved, to minimise its size.
 

@@ -51,7 +51,7 @@ For this example, we use Spreng and colleagues' neurocognitive aging [openneuro 
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))
 ```
 
-The dataset T1 weighted images were preprocessed using the recon-all [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki) pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, CAT12, fMRIprep/XCP-D/HPC and HippUnfold outputs), see the [Extracting surface data in VertexWiseR](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html) article.
+The dataset T1 weighted images were preprocessed using the recon-all [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki) pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, CAT12, sMRIprep/fMRIprep/ASLprep, XCP-D/HCP processing and HippUnfold outputs), see the [Extracting surface data in VertexWiseR](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html) article.
 
 Here, we explain how, from a given FreeSurfer subject directory, VertexWiseR extracts surface-based measures and synthesizes the whole-sample data into a compact matrix object (.rds) for later analyses.
 
