@@ -108,7 +108,7 @@ plot_overlay_surf=function(model_output=NULL,
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
-    message('No filename argument was given. The plot will be saved as "overlay_plot.png" in R temporary directory (tempdir()).\n')
+    message('No filename argument was given. The plot will be saved as "overlay_plot.png" in R temporary directory (tempdir(): ', basename(tempdir()),').\n')
     filename=paste0(tempdir(),'/combined_plots.png')
   }
   

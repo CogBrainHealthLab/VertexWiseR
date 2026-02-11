@@ -52,7 +52,7 @@ FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=F
   
   ## filename check
   if (missing("filename") & silent==FALSE) {
-    warning(paste0('No filename argument was given. The matrix object "fslr32k.rds" will be saved in R temporary directory (tempdir()).\n'))
+    warning(paste0('No filename argument was given. The matrix object "fslr32k.rds" will be saved in R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/fslr32k.rds')
   }
   
