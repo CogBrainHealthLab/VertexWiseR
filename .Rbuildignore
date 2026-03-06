@@ -23,6 +23,7 @@
 ^inst/demo_data/SUDMEX_CONN_caudate_thickness.rds
 ^inst/demo_data/SUDMEX_CONN_thalamus_curvature.rds
 ^inst/demo_data/SUDMEX_CONN_thalamus_thickness.rds
+^inst/demo_data/SUDMEX_CONN_allaseg_thickness.rds
 ^man/figures/logo.png
 ^vignettes/*.png
 ^.gitattributes
