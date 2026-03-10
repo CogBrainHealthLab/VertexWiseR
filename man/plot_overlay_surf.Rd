@@ -24,6 +24,7 @@ plot_overlay_surf(
   size,
   zoom,
   transparent_bg = FALSE,
+  smooth_mesh = 0,
   show.plot.window = TRUE,
   VWR_check = TRUE
 )
@@ -31,7 +32,7 @@ plot_overlay_surf(
 \arguments{
 \item{model_output}{A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.}
 
-\item{surf_data_1}{A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.}
+\item{surf_data_1}{A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.}
 
 \item{surf_data_2}{Same as surf_data_1. This is the overlay surface.}
 
@@ -69,6 +70,8 @@ Default cmap is set to \code{"Reds"} for positive values, \code{"Blues_r"} for n
 
 \item{transparent_bg}{A logical object to determine if the background of the image is set to transparent (Default is FALSE).}
 
+\item{smooth_mesh}{A numeric object stating the number of iterations of smoothing to make the surface appear smoother. Default is 0.}
+
 \item{show.plot.window}{A logical object to determine if the generated plot is to be shown within RStudio's plot window}
 
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
@@ -101,7 +104,7 @@ plot_overlay_surf(surf_data_1=background,
                 cmap_1='RdBu_r', cmap_2='Reds',
                 alpha_1=0.4, alpha_2=1,
                 filename=paste0(tempdir(),"/simulated_plot.png"), 
-               title="Significant effects",
-               overlay_boundaries=TRUE,
-               VWR_check=FALSE)
+                title="Significant effects",
+                overlay_boundaries=TRUE,
+                VWR_check=FALSE)
 }

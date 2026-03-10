@@ -2,20 +2,21 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #'
-#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions. Alternatively, atlas ROI values as supported by atlas_to_surf() may be given.
+#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. Alternatively, atlas ROI values as supported by atlas_to_surf() may be given.
 #' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
-#' @param surface A string object containing the name of the type of cortical surface background rendered. Possible options include "white", "smoothwm","pial" and "inflated" (default). The surface parameter is ignored for hippocampal surface data.
+#' @param surface A string object containing the name of the type of cortical surface background rendered (only applicable on fsaverage5 and fsaverage6). Possible options include "white", "smoothwm","pial" and "inflated" (default).  
 #' @param cmap A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
 #' 
 #' Default cmap is set to `"Reds"` for positive values, `"Blues_r"` for negative values and `"RdBu"` when both positive and negative values exist. 
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. If the limits are specified, the same limits will be applied to all subplots. When left unspecified, the same symmetrical limits c(-max(abs(surf_dat),max(abs(surf_dat))) will be used for all subplots. If set to NULL, each subplot will have its own limits corresponding to their min and max values
 #' @param colorbar A logical object stating whether to include a color bar in the plot or not (default is TRUE).
-#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for hippocampal surface.
-#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for hippocampal surface.
+#' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1920,400) for whole-brain surface and c(400,200) for HippUnfold hippocampal surface.
+#' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for whole-brain surface and 1.20 for HippUnfold hippocampal surface.
 #' @param transparent_bg A logical object to determine if the background of the image is set to transparent (Default is FALSE).
 #' @param show_nan A logical object to determine if the NaN vertices are to be plotted (Default is TRUE).
 #' @param alpha A numeric object between 0 and 1 to determine the opacity of the non-empty vertices. Note that this is not a true opacity setting, it will blend the colour into that of the NaN vertices (white if show_nan is FALSE)
+#' @param smooth_mesh A numeric object stating the number of iterations of smoothing to make the surface appear smoother. Not applicable for HippUnfold hippocampal data. Default is 0.
 #' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -31,10 +32,11 @@
 #' @importFrom grDevices col2rgb
 #' @importFrom png readPNG
 #' @importFrom grid grid.raster
+#' @importFrom utils tail
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, transparent_bg=FALSE, show_nan=T, alpha=1, show.plot.window=TRUE,VWR_check=TRUE)
+plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits, colorbar=TRUE, size, zoom, transparent_bg=FALSE, show_nan=T, alpha=1, smooth_mesh=0, show.plot.window=TRUE,VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
@@ -46,9 +48,27 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   if (missing("filename")) {
-    message('No filename argument was given. The plot will be saved as "plot.png" in R temporary directory (tempdir()).\n')
+    message(paste0('No filename argument was given. The plot will be saved as "plot.png" in the R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/plot.png')
   }
+  
+  #stop or drop surface data with all NA values
+  if (all(is.na(surf_data)))
+    {stop('All values provided in surf_data are NA and have nothing to plot.')}
+  if (!is.null(nrow(surf_data))) 
+  { toexclude=c()
+    for (datarow in 1:nrow(surf_data)) 
+    { if (all(is.na(surf_data[datarow,]))) 
+      {toexclude=c(toexclude,datarow); warning(paste('Row',datarow,'of surf_data only has NA values. It will not be plotted.')) }
+    }
+    #if empty rows, drop them
+    if (!is.null(toexclude)) 
+      {
+      if(length(title)==nrow(surf_data)) {title=title[-toexclude]}
+      surf_data=surf_data[-toexclude,];
+      }
+  }
+  
   
   #format title for single row
   if(is.null(nrow(surf_data)))
@@ -90,7 +110,9 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   surf_data=atlas_to_surf(surf_data, template)} 
   else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5";
   surf_data=atlas_to_surf(surf_data, template)} 
-  else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
+  else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))
+  { scm_database_check(); template="aseg" } 
+  else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For aseg subcortices, please refer to ?ASEGvextract().")
   }
   
   #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
@@ -98,7 +120,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   {
     if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap="Reds"}
     else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap="Blues_r"}
-    else  {cmap="RdBu_r"}  
+    else {cmap="RdBu_r"}  
   }
   
   #custom cmap— if a vector of hex color codes is specified
@@ -169,6 +191,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     #import python libraries
     brainstat.datasets=reticulate::import("brainstat.datasets", delay_load = TRUE)  
     brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)
+    vtk=reticulate::import('vtk', delay_load = TRUE)
     
     #For brainstat data, it will look either in default $HOME path or 
     #custom if it's been set
@@ -189,6 +212,24 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     #loading fsaverage surface
     left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[1]
     right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[2]
+    
+    #smooth if applicable
+    if (smooth_mesh > 0){ 
+      mesh_smoother <- function(mesh, n_iter=as.integer(smooth_mesh)) 
+      {
+        s <- vtk$vtkWindowedSincPolyDataFilter()
+        s$SetInputData(mesh$VTKObject)
+        s$SetNumberOfIterations(n_iter)
+        s$SetPassBand(0.001)
+        s$NonManifoldSmoothingOn()
+        s$NormalizeCoordinatesOn()
+        s$Update()
+        mesh$VTKObject$ShallowCopy(s$GetOutput())
+        return(mesh)
+      }
+      left[[1]]=mesh_smoother(left[[1]])
+      right[[1]]=mesh_smoother(right[[1]])
+    }
     
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1920,rows*400)}
@@ -254,7 +295,68 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
       label_text=title, 
       return_plotter=TRUE,
       interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
-  }
+    
+  #######aseg subcortical template
+  } else if (template=='aseg')
+  {
+
+    #Solves the "no visible binding for global variable" issue
+    . <- surfplot_subcortical  <- NULL 
+    internalenv <- new.env()
+    assign("surfplot_subcortical", surfplot_subcortical, envir = internalenv)
+    
+    #import python libraries
+    reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/surfplot_subcortical.py'))
+    
+    #ROI-specific cell data for plotter, default size and zoom parameters
+    if (missing("size")) {size=NULL}; 
+    if (missing("zoom")) {zoom=NULL};
+    ROIparam=aseg_plot_parameters(surf_data,size,zoom)
+    lh_celldata=ROIparam$lh_celldata;  lh_vert=ROIparam$lh_vert;
+    rh_celldata=ROIparam$rh_celldata; rh_vert=ROIparam$rh_vert;
+    size=ROIparam$size; 
+    zoom=ROIparam$zoom;
+    
+    #reshaping surf_data into a N vert x 2 x N array
+    #array nrow as the bigger hemisphere, the smaller one padded with NA
+    max_vert=max(c(nrow(lh_celldata[[1]]),nrow(rh_celldata[[1]])))
+    #if N=1
+    if(is.null(nrow(surf_data))) {
+      surfarr=matrix(nrow=max_vert,ncol = 2)
+      surfarr[,1][1:lh_vert]=surf_data[1:lh_vert] #lh col
+      surfarr[,2][1:rh_vert]=tail(surf_data,rh_vert) #rh col
+    } else if(nrow(surf_data)==1) {
+      surfarr=matrix(nrow=max_vert,ncol = 2)
+      surfarr[,1][1:lh_vert]=surf_data[1:lh_vert] #lh col
+      surfarr[,2][1:rh_vert]=tail(surf_data,rh_vert) #rh col
+    } else #if N>1
+    {
+      surfarr.3d=array(NA,c(max_vert,2,nrow(surf_data))) #if N>1
+      for (row in 1:nrow(surf_data))  
+      {
+        surfarr.3d[,1,row][1:lh_vert]=surf_data[row,1:lh_vert]
+        surfarr.3d[,2,row][1:rh_vert]=tail(surf_data[row,],rh_vert)
+      }
+      surfarr=surfarr.3d
+    }
+    
+    surf_plot=surfplot_subcortical(
+      cdata=surfarr,
+      lh_celldata=lh_celldata,
+      rh_celldata=rh_celldata,
+      color_bar=colorbar,
+      share="row",
+      nan_color=nan_color,
+      size=as.integer(size), 
+      smoothing=smooth_mesh,
+      zoom=zoom,
+      cmap=cmap,
+      color_range=limits,
+      label_text=title, 
+      return_plotter=TRUE,
+      interactive=FALSE) #disabling interactive mode because this causes RStudio to hang
+    
+  }  
   #output plot as a .png image
   surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
   if(show.plot.window==TRUE)

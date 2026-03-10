@@ -40,6 +40,7 @@ reference:
     - FSLRvextract
     - CAT12vextract
     - DTSERIESvextract
+    - ASEGvextract
     
   - title: Smoothing
     contents:
@@ -93,7 +94,6 @@ reference:
     contents:
     - fs6_to_fs5_map
     - hip_points_cells
-    - MNImap_hip
     
   - subtitle: Parcellation maps
     contents:

@@ -1,7 +1,7 @@
 ---
 title: "Overlaying plots and transparent thresholding"
 author: "Charly H. A. Billaud"
-date: "2025-07-16"
+date: "2026-03-05"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Overlaying plots and transparent thresholding}
@@ -11,7 +11,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dpi = 80, fig.path = tempdir()) 
 library(VertexWiseR)
 ```
 
@@ -19,7 +19,7 @@ library(VertexWiseR)
 
 This article presents the plot_overlay_surf() function which can be used to overlay plots similar to those produced with surf_plot() in VertexWiseR. We show how we can use the function to apply "transparent thresholding", which consists in reporting spatial neuroimaging results at a lower, non-significant subthreshold, to contextualise significant findings and improve broader interpretation across studies [@taylor2025go].
 
-The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+The demo data (\~216 MB) required to run the plotting examples, and can be downloaded from the package's github repository with the following function:
 
 ```{r, eval=TRUE}
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
@@ -62,28 +62,18 @@ Both RFT_vertex_analysis() and TFCE_threshold() return thresholded and unthresho
 
 Unthresholded t-map:
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Unthresholded t-statistic map", fig.width=10, fig.height=2} 
 plot_surf(surf_data = results$tstat_map,
           filename = "sexdiff_nothresh.png",
-          size=c(1400,291),
-          show.plot.window=FALSE)
-```
-
-```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Unthresholded t-statistic map"}
-knitr::include_graphics('sexdiff_nothresh.png')
+          show.plot.window=TRUE)
 ```
 
 Thresholded (significant) t-map:
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Thresholded t-statistic map", fig.width=10, fig.height=2}
 plot_surf(surf_data = results$thresholded_tstat_map,
           filename = "sexdiff_thresh.png",
-          size=c(1400,291),
-          show.plot.window=FALSE)
-```
-
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction"}
-knitr::include_graphics('sexdiff_thresh.png')
+          show.plot.window=TRUE)
 ```
 
 ## Overlaying plots together
@@ -94,7 +84,7 @@ To work in this context, we plot a thresholded (significant) t-stat map on top o
 
 We reduce the alpha opacity of the background surface to highlight the surface on top:
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid plots with the same color map", fig.width=10, fig.height=2}
 plot_overlay_surf(model_output=results,
                   #To specify maps manually:
                   #surf_data_1=results$tstat_map,
@@ -107,18 +97,15 @@ plot_overlay_surf(model_output=results,
                   filename='overlay_plot.png',
                   size=c(1400,291), 
                   title="Significant effect\nof sex",
-                  show.plot.window=FALSE)
+                  show.plot.window=TRUE)
 ```
 
-```{r, eval=TRUE, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map"}
-knitr::include_graphics('overlay_plot.png')
-```
 
 By default, both color bars are plotted but either can be set to FALSE (removed), which was done for the faded background colours here.
 
 The function also give freedom to have two separate color maps, in order to highlight the significant t-values even more:
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid plots with different color maps", fig.width=10, fig.height=2}
 plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='Reds',
                   alpha_1=1, alpha_2=1,
@@ -126,30 +113,22 @@ plot_overlay_surf(model_output=results,
                   filename='overlay_plot_twocmaps.png',
                   size=c(1400,291), 
                   title="Significant effect\nof sex",
-                  show.plot.window=FALSE)
-```
-
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps"}
-knitr::include_graphics('overlay_plot_twocmaps.png')
+                  show.plot.window=TRUE)
 ```
 
 A similar procedure can be used if one wants the range of values to be independent (which is the default if the limits=='same' option is not provided):
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid plots with different color maps and limits", fig.width=10, fig.height=2}
 plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='hot_r',
                   alpha_1=1, alpha_2=1,
                   filename='overlay_plot_twolimits.png',
                   size=c(1400,291),
                   title="Significant effect\nof sex",
-                  show.plot.window=FALSE)
+                  show.plot.window=TRUE)
 ```
 
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
-knitr::include_graphics('overlay_plot_twolimits.png')
-```
-
-## Overlaying hippocampal plots
+## Overlaying HippUnfold hippocampal plots
 
 The same can be applied to HippUnfold hippocampal surfaces. We reproduce the results from the first analysis in [Example 2](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html):
 
@@ -167,7 +146,7 @@ model2_RFT=RFT_vertex_analysis(
 
 Plotted in the same manner:
 
-```{r, eval=TRUE, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid hippocampal plots", fig.width=10, fig.height=2}
 plot_overlay_surf(model_output=model2_RFT, 
                   cmap_1='RdBu_r', cmap_2='RdBu_r',
                   colorbar_1=FALSE, colorbar_2=TRUE,
@@ -177,11 +156,35 @@ plot_overlay_surf(model_output=model2_RFT,
                   overlay_boundaries=TRUE,
                   size=c(1400,300),
                   title="Effect of session\nand group",
-                  show.plot.window=FALSE)
+                  show.plot.window=TRUE)
 ```
 
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant vertices on top of transparent t map, with different color maps and different ranges"}
-knitr::include_graphics('overlay_plot_hippocampus.png')
+## Overlaying SubCortexMesh subcortical plots
+
+Likewise subcortices obtained via ASEGvextract() can also be overlaid, but that requires downloading associated template data (the package will prompt you automatically or you may do it directly by typing VertexWiseR:::scm_database_check()).
+
+We reproduce the results from the example analysis in [the dedicated vignette](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_3.html):
+
+```{r, eval=TRUE, results = 'hide'}
+beh_data = readRDS(paste0(demodata,"/SUDMEX_CONN_behdata.rds"))
+thalamus_thickness = readRDS(file=paste0(demodata,"/SUDMEX_CONN_thalamus_thickness.rds"))
+model_thalamus_thickness=RFT_vertex_analysis(
+  model = as.factor(beh_data$group),
+  contrast = as.factor(beh_data$group),
+  surf_data = thalamus_thickness)
+```
+
+Plotted in the same manner:
+
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid thalamic plots", fig.width=10, fig.height=5}
+plot_overlay_surf(model_thalamus_thickness, 
+                  colorbar_1=F, 
+                  filename = 'overlay_plot_thalamus.png',
+                  cmap_1 = c('blue','blue'), 
+                  cmap_2=c('yellow','white'), 
+                  overlay_boundaries = FALSE,
+                  show.plot.window = TRUE
+                  )
 ```
 
 ## References:

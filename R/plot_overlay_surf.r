@@ -2,7 +2,7 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #' @param model_output A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.
-#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
+#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
 #' @param surf_data_2 Same as surf_data_1. This is the overlay surface.
 #' @param cmap_1 A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
 #' 
@@ -22,6 +22,7 @@
 #' @param size A combined pair of numeric vector indicating the image dimensions (width and height in pixels). Default is c(1700,400) for cortical surfaces and c(860,200) for Hippunfold hippocampal surfaces. Note that the size will depend on the inclusion of color bar(s), which will expand the width to ~5% per color bar.
 #' @param zoom A numeric value for adjusting the level of zoom on the figures. Default is 1.25 for cortical surfaces and 1.2 for Hippunfold hippocampal surfaces.
 #' @param transparent_bg A logical object to determine if the background of the image is set to transparent (Default is FALSE).
+#' @param smooth_mesh A numeric object stating the number of iterations of smoothing to make the surface appear smoother. Default is 0.
 #' @param show.plot.window A logical object to determine if the generated plot is to be shown within RStudio's plot window
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
@@ -48,14 +49,15 @@
 #'                 cmap_1='RdBu_r', cmap_2='Reds',
 #'                 alpha_1=0.4, alpha_2=1,
 #'                 filename=paste0(tempdir(),"/simulated_plot.png"), 
-#'                title="Significant effects",
-#'                overlay_boundaries=TRUE,
-#'                VWR_check=FALSE)
+#'                 title="Significant effects",
+#'                 overlay_boundaries=TRUE,
+#'                 VWR_check=FALSE)
 #' @importFrom reticulate tuple import np_array source_python
 #' @importFrom grDevices col2rgb
 #' @importFrom png readPNG writePNG
 #' @importFrom grid grid.raster
 #' @importFrom stringr str_extract 
+#' @importFrom utils tail
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
@@ -73,7 +75,8 @@ plot_overlay_surf=function(model_output=NULL,
                            overlay_boundaries=FALSE,
                            size, 
                            zoom, 
-                           transparent_bg=FALSE, 
+                           transparent_bg=FALSE,
+                           smooth_mesh=0,
                            show.plot.window=TRUE,
                            VWR_check=TRUE)
 {
@@ -141,8 +144,10 @@ plot_overlay_surf=function(model_output=NULL,
   #if atlas object is inputted
   } else if (max(dim(t(surf_data_1))) == 10) {template="CIT168";
   surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else{stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) and 14524 (CIT168) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases.")
+  } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400))     {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
+  } else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))
+  { scm_database_check(); template="aseg"  
+  } else{ stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) and 14524 (CIT168) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For aseg subcortices, please refer to ?ASEGvextract().")
   }
   
   #NA-ify vertices if alpha=0 before computing color maps
@@ -240,18 +245,21 @@ plot_overlay_surf=function(model_output=NULL,
   }
   
   
-  if(missing("limits_1")) {limits_1=limit_function(1)} 
-  else #user specified limits
+  if(missing("limits_1")) {limits_1=limit_function(1)
+  } else #user specified limits
   {
     if(!is.null(limits_1)) 
-    {limits=as.numeric(c(limits_1[1],limits_1[2]))} 
+    {limits_1=as.numeric(c(limits_1[1],limits_1[2]))} 
   }
-  if(missing("limits_2")) {limits_2=limit_function(2)} 
-  else #user specified limits
+  if(missing("limits_2")) {limits_2=limit_function(2)
+  } else #user specified limits
   {
-    if(limits_2=='same'){limits_2=limits_1}
-    else if(!is.null(limits_2)) 
-    {limits=as.numeric(c(limits_2[1],limits_2[2]))} 
+    if(is.character(limits_2))
+    {
+      if (limits_2=='same'){limits_2=limits_1
+      } else {stop('The only string that can be given to limits_2 is `same`. Otherwise, provide a numeric vector of two numbers.')}
+    } else if(!is.null(limits_2)) 
+    {limits_2=as.numeric(c(limits_2[1],limits_2[2]))} 
   }
   
   
@@ -260,8 +268,22 @@ plot_overlay_surf=function(model_output=NULL,
   brainspace.plotting=reticulate::import("brainspace.plotting", delay_load = TRUE)  
   #need PTuple function for overlays
   utils=reticulate::import("brainspace.plotting.utils", delay_load = TRUE) 
-  
 
+  #smoother function if smooth_smesh used
+  vtk=reticulate::import('vtk', delay_load = TRUE)
+  mesh_smoother <- function(mesh, n_iter=as.integer(smooth_mesh)) 
+  {
+    s <- vtk$vtkWindowedSincPolyDataFilter()
+    s$SetInputData(mesh$VTKObject)
+    s$SetNumberOfIterations(n_iter)
+    s$SetPassBand(0.001)
+    s$NonManifoldSmoothingOn()
+    s$NormalizeCoordinatesOn()
+    s$Update()
+    mesh$VTKObject$ShallowCopy(s$GetOutput())
+    return(mesh)
+  }
+  
 ############################################################################
 ############################################################################
 ############################################################################  
@@ -283,6 +305,12 @@ plot_overlay_surf=function(model_output=NULL,
     left=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[[1]]
     right=brainstat.datasets$fetch_template_surface(template, join=FALSE, layer=surface,data_dir = paste0(brainstat_data_path,'/brainstat_data/surface_data/'))[[2]]
     
+    #smooth if applicable
+    if (smooth_mesh > 0){    
+      left=mesh_smoother(left,as.integer(smooth_mesh))
+      right=mesh_smoother(right,as.integer(smooth_mesh))
+    }
+    
     #default cortical size and zoom parametes
     if(missing("size")) { size=c(1700,400)}
     if(missing("zoom")) { zoom=1.25 }
@@ -298,11 +326,11 @@ plot_overlay_surf=function(model_output=NULL,
     #Convert your overlay to VTK and name surface
     #and attach it to the corresponding surface template
     vtk_np = reticulate::import("vtk.util.numpy_support", convert = FALSE)
-    vtk_array_lh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_lh), deep = TRUE)
+    vtk_array_lh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_lh, dtype = "float"), deep = TRUE)
     vtk_array_lh_1$SetName("lh_data_1")
     left$GetPointData()$AddArray(vtk_array_lh_1)
     
-    vtk_array_rh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_rh), deep = TRUE)
+    vtk_array_rh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_rh, dtype = "float"), deep = TRUE)
     vtk_array_rh_1$SetName("rh_data_1")
     right$GetPointData()$AddArray(vtk_array_rh_1)
     
@@ -355,7 +383,7 @@ plot_overlay_surf=function(model_output=NULL,
       boundary_lh[boundary_lh==0] = NaN
       boundary_rh[boundary_rh==0] = NaN
     } else {
-      boundary_lh=rep(NaN, length(surf_data_1_rh))
+      boundary_lh=rep(NaN, length(surf_data_1_lh))
       boundary_rh=rep(NaN, length(surf_data_1_rh))
     }
 
@@ -411,7 +439,8 @@ plot_overlay_surf=function(model_output=NULL,
 ############################################################################
     
     
-    } else if (template=='CIT168'){
+    
+  } else if (template=='CIT168'){
     
       #python libraries
       brainspace.mesh=reticulate::import('brainspace.mesh')
@@ -433,6 +462,14 @@ plot_overlay_surf=function(model_output=NULL,
                             -leftu$Points[,1], 
                             leftu$Points[,3]) # reorient unfolded
       leftu$Points[,1] = -leftu$Points[,1]
+      
+      #smooth if applicable
+      if (smooth_mesh > 0){    
+        left=mesh_smoother(left,as.integer(smooth_mesh))
+        leftu=mesh_smoother(left,as.integer(smooth_mesh))
+        right=mesh_smoother(right,as.integer(smooth_mesh))
+        rightu=mesh_smoother(right,as.integer(smooth_mesh))
+      }
       
       #default cortical size and zoom parametes
       if(missing("size")) { size=c(860,200)}
@@ -515,7 +552,7 @@ plot_overlay_surf=function(model_output=NULL,
         boundary_lh[boundary_lh==0] = NaN
         boundary_rh[boundary_rh==0] = NaN
       } else {
-        boundary_lh=rep(NaN, length(surf_data_1_rh))
+        boundary_lh=rep(NaN, length(surf_data_1_lh))
         boundary_rh=rep(NaN, length(surf_data_1_rh))
       }
       
@@ -568,8 +605,221 @@ plot_overlay_surf=function(model_output=NULL,
         interactive = FALSE,
         transparent_bg = transparent_bg
       )
-  
-    } else { stop('This function only works with fsaverage5,fsaverage6,  fslr32k and CIT168 templates')}
+
+
+############################################################################
+############################################################################
+############################################################################
+      
+      
+    } else if (template=='aseg'){
+      
+      #Solves the "no visible binding for global variable" issue
+      internalenv <- new.env()
+      . <- coord_optimizer <- NULL 
+      assign("coord_optimizer", coord_optimizer , envir = internalenv)
+      . <- rotate_points <- NULL 
+      assign("rotate_points", rotate_points  , envir = internalenv)
+      
+      #python libraries
+      brainspace.mesh=reticulate::import('brainspace.mesh')
+      mc=brainspace.mesh$mesh_creation
+      reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/surfplot_subcortical.py'))
+
+      #import python libraries
+      if (missing("size")) {size=NULL}; 
+      if (missing("zoom")) {zoom=NULL};
+      if (colorbar_1==TRUE & colorbar_2==TRUE) 
+        {twocbars=TRUE} else {twocbars=FALSE}
+      ROIparam=aseg_plot_parameters(surf_data,size,zoom,twocbars=twocbars)
+        
+      #loading bilateral surfaces
+      rh_cell=ROIparam$rh_celldata$triangles; 
+      rh_vert=ROIparam$rh_celldata$vertices;
+      lh_cell=ROIparam$lh_celldata$triangles;  
+      lh_vert=ROIparam$lh_celldata$vertices;
+      
+      #default cortical size and zoom parametes
+      size=ROIparam$size; 
+      zoom=ROIparam$zoom;
+      
+      #slice surface hemisphere-wise
+      right=mc$build_polydata(rh_vert, cells=rh_cell)
+      left=mc$build_polydata(lh_vert, cells=lh_cell)
+      
+      #smooth if applicable
+      if (smooth_mesh > 0){    
+        left=mesh_smoother(left,as.integer(smooth_mesh))
+        right=mesh_smoother(right,as.integer(smooth_mesh))
+      }
+      
+      #reshaping surf_data into a N vert x 2 x N array
+      #array nrow as the bigger hemisphere, the smaller one padded with NA
+      max_vert=max(c(nrow(ROIparam$lh_celldata[[1]]),nrow(ROIparam$rh_celldata[[1]])))
+      surfarr=matrix(nrow=max_vert,ncol = 2)
+      surfarr[,1][1:ROIparam$lh_vert]=surf_data[1:ROIparam$lh_vert] #lh col
+      surfarr[,2][1:ROIparam$rh_vert]=utils::tail(surf_data,ROIparam$rh_vert) #rh col
+      coordfix=coord_optimizer(surfarr, left, right)
+      #get back to brainspace polydata
+      left  <- coordfix[[1]]
+      right <- coordfix[[2]]
+      
+      #view to slightly differ for Brain-Stem (as no hemispheres)
+      #and cerebellum (as inside/coronal view may be less relevant)
+      if (n_vert == 9452 | n_vert == 95718) {
+        view=list(list('ventral','dorsal','medial','lateral'))
+      } else if (n_vert == 19559) {
+        view=list(list('ventral','medial','lateral','ventral'))
+        left$Points = rotate_points(left$Points, axis='x', angle_deg=90)
+        right$Points = rotate_points(right$Points, axis='x', angle_deg=90)
+      } else { 
+        view=list(list('ventral','dorsal','dorsal','ventral'))
+      }
+      leftu = left; rightu=right
+      
+      n_lh = left$n_points
+      n_rh = right$n_points
+      #reformat (split for ROIs that have hemispheres, duplicate for
+      #the brain-stem and all ROIs combined)
+      if (n_vert!=9452 & n_vert!=95718)
+      {
+        surf_data_1_lh = surf_data_1[1:n_lh]
+        surf_data_1_rh = surf_data_1[(n_lh + 1):(n_lh + n_rh)]
+        surf_data_2_lh = surf_data_2[1:n_lh]
+        surf_data_2_rh = surf_data_2[(n_lh + 1):(n_lh + n_rh)]
+      } else {
+        surf_data_1_rh = surf_data_1_lh = surf_data_1
+        surf_data_2_rh = surf_data_2_lh = surf_data_2
+      }
+      
+      #Convert your overlay to VTK and name surface
+      #and attach it to the corresponding surface template
+      vtk_np = reticulate::import("vtk.util.numpy_support", convert = FALSE)
+      vtk_array_lh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_lh, dtype = "float"), deep = TRUE)
+      vtk_array_lh_1$SetName("lh_data_1")
+      left$GetPointData()$AddArray(vtk_array_lh_1)
+      leftu$GetPointData()$AddArray(vtk_array_lh_1)
+      
+      vtk_array_rh_1 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_1_rh, dtype = "float"), deep = TRUE)
+      vtk_array_rh_1$SetName("rh_data_1")
+      right$GetPointData()$AddArray(vtk_array_rh_1)
+      rightu$GetPointData()$AddArray(vtk_array_rh_1)
+      
+      vtk_array_lh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_lh, dtype = "float"), deep = TRUE)
+      vtk_array_lh_2$SetName("lh_data_2")
+      left$GetPointData()$AddArray(vtk_array_lh_2)
+      leftu$GetPointData()$AddArray(vtk_array_lh_2)
+      
+      vtk_array_rh_2 = vtk_np$numpy_to_vtk(reticulate::np_array(surf_data_2_rh, dtype = "float"), deep = TRUE)
+      vtk_array_rh_2$SetName("rh_data_2")
+      right$GetPointData()$AddArray(vtk_array_rh_2)
+      rightu$GetPointData()$AddArray(vtk_array_rh_2)
+      
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      ###
+      #If NaN are plotted, add a coloured NaN layer under both layers if show_nan==T, because the default NaN has to be removed for the background to show behind the overlay's own NaN 
+      if (show_nan==TRUE)
+      { nan_mesh_lh=rep(0.43, length(surf_data_1_lh))
+      nan_mesh_rh=rep(0.43, length(surf_data_1_rh))
+      } else 
+      { nan_mesh_lh=rep(NaN, length(surf_data_1_lh))
+      nan_mesh_rh=rep(NaN, length(surf_data_1_rh))
+      }
+      
+      # Create VTK arrays for NaN too
+      vtk_array_lh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_lh), deep = TRUE); 
+      vtk_array_lh_nan$SetName("lh_data_nan")
+      vtk_array_rh_nan <- vtk_np$numpy_to_vtk(reticulate::np_array(nan_mesh_rh), deep = TRUE); 
+      vtk_array_rh_nan$SetName("rh_data_nan")
+      # Add nan plot to surf_obj
+      left$GetPointData()$AddArray(vtk_array_lh_nan)
+      leftu$GetPointData()$AddArray(vtk_array_lh_nan)
+      right$GetPointData()$AddArray(vtk_array_rh_nan)
+      rightu$GetPointData()$AddArray(vtk_array_rh_nan)
+      
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      ###
+      #If user wants boundaries plotted around overlay:
+      mesh_ops <- reticulate::import("brainspace.mesh.array_operations", convert = FALSE)
+      binary_mask_lh <- ifelse(is.na(surf_data_2_lh), 0L, 1L)
+      binary_mask_rh <- ifelse(is.na(surf_data_2_rh), 0L, 1L)
+      boundary_lh <- mesh_ops$get_labeling_border(left, reticulate::np_array(binary_mask_lh))$astype("float")
+      boundary_rh <- mesh_ops$get_labeling_border(right, reticulate::np_array(binary_mask_rh))$astype("float")
+      
+      #NaN for non boundaries if wanted, and all NaN if to be hidden
+      if (overlay_boundaries==TRUE)
+      {
+        #mask out non boundary vertices
+        boundary_lh = reticulate::py_to_r(boundary_lh)
+        boundary_rh = reticulate::py_to_r(boundary_rh) 
+        boundary_lh[boundary_lh==0] = NaN
+        boundary_rh[boundary_rh==0] = NaN
+      } else {
+        boundary_lh=rep(NaN, length(surf_data_1_lh))
+        boundary_rh=rep(NaN, length(surf_data_1_rh))
+      }
+      
+      # Create VTK arrays for boundaries too
+      vtk_array_lh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_lh), deep = TRUE); 
+      vtk_array_lh_bd$SetName("lh_data_bd")
+      vtk_array_rh_bd <- vtk_np$numpy_to_vtk(reticulate::np_array(boundary_rh), deep = TRUE); 
+      vtk_array_rh_bd$SetName("rh_data_bd")
+      # Add nan plot to surf_obj
+      left$GetPointData()$AddArray(vtk_array_lh_bd)
+      leftu$GetPointData()$AddArray(vtk_array_lh_bd)
+      right$GetPointData()$AddArray(vtk_array_rh_bd)
+      rightu$GetPointData()$AddArray(vtk_array_rh_bd)
+      
+      surf_obj <- reticulate::py_dict(keys = c("lh","lu","ru","rh"), 
+                                      values = list(left, leftu, 
+                                                    rightu, right))
+      
+      #############################################################
+      #Produce the plot 
+      surf_plot = brainspace.plotting$plot_surf(
+        surfs = surf_obj,
+        array_name = list(list(
+          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+          utils$PTuple("lh_data_nan","lh_data_1", "lh_data_2","lh_data_bd"),
+          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd"),
+          utils$PTuple("rh_data_nan","rh_data_1", "rh_data_2","rh_data_bd")
+        )
+        ), #Referencing the attached scalar by name
+        layout = list(list("lh","lu","ru","rh")),
+        view = view,
+        cmap = list(list(
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys'), 
+          utils$PTuple('Greys',cmap_1,cmap_2,'Greys')
+        )),
+        size = as.integer(size),
+        nan_color = reticulate::tuple(0.7, 0.7, 0.7, 0),
+        background = reticulate::tuple(as.integer(c(1, 1, 1))),
+        zoom = zoom,
+        color_range = list(list(
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1)), 
+          utils$PTuple(c(0,1),limits_1,limits_2,c(0,1))
+        )),
+        label_text = title,
+        return_plotter=TRUE,
+        interactive = FALSE,
+        transparent_bg = transparent_bg
+      )
+
+############################################################################
+############################################################################
+############################################################################
+      
+    } else { stop('This function only works with fsaverage5,fsaverage6,  fslr32k, CIT168, and SubCortexMesh aseg templates')}
   
   
 ############################################################################
@@ -580,7 +830,10 @@ plot_overlay_surf=function(model_output=NULL,
   #plot_hemispheres does, so we can plot the bar(s) with it, take the bar(s), and append it to the main image
   if (colorbar_1==TRUE | colorbar_2==TRUE)
   {
-    dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))
+    #dummy mesh needs to contain two folds, so duplicate for ROIs
+    #that cannot be split
+    if (n_vert!=9452 & n_vert!=95718){dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))}
+    else {dummy_mesh <- as.numeric(rep(NaN, left$n_points + right$n_points))}
     
     background_plot=brainspace.plotting$plot_hemispheres(
       left, right,  
@@ -613,11 +866,11 @@ plot_overlay_surf=function(model_output=NULL,
     ol_bar <- overlay_plot$screenshot(filename=paste0(tempdir(),"/overlay_cbar.png"), transparent_bg = transparent_bg)
     
     #Get colorbar position/size depending on plot size (approximate % of color bar depending on pic size)
-    crop_scalar_bar <- function(img_path, start_frac = 0.90, end_frac = 0.973) {
+    crop_scalar_bar <- function(img_path, start_frac = 0.90) {
       img <- png::readPNG(img_path)
       #get width based on proportion of image width
       start_col <- round(dim(img)[2] * start_frac)
-      end_col   <- round(dim(img)[2] * end_frac)
+      end_col   <- dim(img)[2]
       #crops based on dimensions 
       cropped_img <- img[, start_col:end_col, ]
       #overwrite
@@ -654,15 +907,14 @@ plot_overlay_surf=function(model_output=NULL,
       combined_img[, pos:(pos + w3 - 1), ] <- ol_bar}
     # Save
     png::writePNG(combined_img, filename) 
-  } else
-  {
+  } else {
     #Save with no color bar
     img_main=surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
   }
   
   #display plot
-  if(show.plot.window==TRUE)
-  {
+  if(show.plot.window==TRUE) {
+    grid::grid.newpage() #resets window if another plot was made
     img=png::readPNG(source=filename)
     grid::grid.raster(img)
   }

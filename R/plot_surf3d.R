@@ -2,16 +2,17 @@
 #'
 #' @description Plots 3D cortical surfaces
 #'
-#' @param surf_data  A numeric vector (length of V) 
-#' @param surf_color  color of the cortical surface. Set to `'grey'` by default
+#' @param surf_data  A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract().
+#' @param surf_color  color of the cortical surface for NA values. Set to `'grey'` by default. A RGBA string can also be given, with A as the opacity (0 to 1), e.g. for transparent grey: surf_color="rgba(100,100,100,0.5)".
 #' @param cmap A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale; or a single string object with the name of a color map listed in `RColorBrewer::display.brewer.all()`. If none are specified, appropriate colors will be automatically selected according to `range(surf_data)`
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits `c(-max(abs(surf_dat),max(abs(surf_dat)))` will be used. 
-#' @param atlas atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for hippocampal surfaces.
+#' @param atlas atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument is ignored for HippUnfold hippocampal surfaces and SubCortexMesh subcortical surface.
 #' @param hemi A string specifying the hemisphere to plot. Possible values are `l` (left), `r` (right) or `b` (both).
 #' @param medial_gap A numeric value specifying the amount of gap (in MNI coordinate units) to separate the left and right hemispheres. Set to `0` (no gap between hemispheres) by default. In order to view the medial surfaces clearly, it is recommended that this value is set to `20`. This argument is ignored if `hemi!='b'`
 #' @param orientation_labels A boolean object specifying if orientation labels are to be displayed. Set to `TRUE` by default
 #' @param plot_grid A boolean object specifying whether to plot the orientation grid or not (default is `TRUE`).
 #' @param transparent_bg A boolean object specifying whether to get a transparent background upon saving the image (default is `FALSE`, white background).
+#' @param smooth_mesh A numeric object stating the number of iterations of (Laplacian) smoothing to make the surface appear smoother. Not applicable for HippUnfold hippocampal data. Default is 0.
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'
 #' @returns a plot_ly object
@@ -24,162 +25,227 @@
 #' @export
 ######################################################################################################################################################
 ######################################################################################################################################################
-plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b",medial_gap=0,orientation_labels=TRUE,VWR_check=TRUE,plot_grid=TRUE,transparent_bg=FALSE)
+plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="b", medial_gap=0, orientation_labels=TRUE, plot_grid=TRUE,transparent_bg=FALSE, smooth_mesh=0, VWR_check=TRUE)
 {
   #Check required python dependencies. If files missing:
   #Will prompt the user to get them in interactive session 
   #Will stop if it's a non-interactive session 
-    if (VWR_check == TRUE){
-      message("Checking for VertexWiseR system requirements ...")
-      check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
-      if (!is.null(check)) {return(check)}
-    } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
+  if (VWR_check == TRUE){
+    message("Checking for VertexWiseR system requirements ...")
+    check = VWRfirstrun(n_vert=max(dim(t(surf_data))))
+    if (!is.null(check)) {return(check)}
+  } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
     
-  ##check selected hemispheres and write orientation labels
-    if(hemi=="l") {xlab=c("Left", "Medial")}
-    else if(hemi=="r") {xlab=c("Medial", "Right")}
-    else if(hemi=="b") {xlab=c("Left", "Right")}
-    else {stop("hemi can only take values of 'l' (left), 'r' (right) or 'b' (both)")}
+##check selected hemispheres and write orientation labels
+  if(hemi=="l") {xlab=c("Left", "Medial")}
+  else if(hemi=="r") {xlab=c("Medial", "Right")}
+  else if(hemi=="b") {xlab=c("Left", "Right")}
+  else {stop("hemi can only take values of 'l' (left), 'r' (right) or 'b' (both)")}
     
-  ##color scale
-    if(missing("cmap"))
-    {
-      if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap=c("#A51122","#F5FACD")}
-      else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap=c("#324DA0","#E7F1D5")}
-      else  {cmap=c("#E7F1D5","#324DA0","#A51122","#F5FACD")}  
+##color scale
+  if(missing("cmap"))
+  {
+    if(range(surf_data,na.rm = TRUE)[1]>=0)  {cmap=c("#F5FACD","#A51122")}
+    else if (range(surf_data,na.rm = TRUE)[2]<=0)  {cmap=c("#E7F1D5","#324DA0")}
+    else  {cmap=c("#324DA0","#E7F1D5","#E7F1D5","#A51122")}  
+  }
+  #build RColorBrewer colormaps manually to make sure plotly renders them properly on the mesh3d
+  if (length(cmap)==1)
+  {  
+    if (cmap %in% rownames(RColorBrewer::brewer.pal.info))
+    {#extract hex palette from selected cmap
+      pal <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(RColorBrewer::brewer.pal.info[cmap, "maxcolors"], cmap))
+      cols <- pal(100) #split color vector into palette of 100
+      #Plotly expects a colorscale as a list of pairs: [fraction, color]. So for each color, get fraction between 0 and 1 and its matching hex code
+      cmap <- lapply(seq_along(cols), function(i) 
+      {
+        list((i-1)/(length(cols)-1), #fraction
+             cols[i]) #hex
+      })
     }
-    #build RColorBrewer colormaps manually to make sure plotly renders them properly on the mesh3d
-    if (length(cmap)==1)
-    {  
-      if (cmap %in% rownames(RColorBrewer::brewer.pal.info))
-      {#extract hex palette from selected cmap
-        pal <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(RColorBrewer::brewer.pal.info[cmap, "maxcolors"], cmap))
-        cols <- pal(100) #split color vector into palette of 100
-        #Plotly expects a colorscale as a list of pairs: [fraction, color]. So for each color, get fraction between 0 and 1 and its matching hex code
-        cmap <- lapply(seq_along(cols), function(i) 
-        {
-          list((i-1)/(length(cols)-1), #fraction
-               cols[i]) #hex
-        })
-      }
-    }
-    # enabling custom color scales
-    if(length(cmap)==2) {cmap=list(list(0,cmap[1]), list(1,cmap[2]))} 
-    else if(length(cmap)==3){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(1,cmap[3]))}
-    else if(length(cmap)==4){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(0.51,cmap[3]),list(1,cmap[4]))}
-  
-  ## selecting template and ROI map depending on no. vertices
-    n_vert=length(surf_data)
-    if(n_vert==20484)
-    {
-      tri=t(get_faces("fsaverage5"))
-      coords=t(get_MNIcoords("fsaverage5"))
-      ROImap_fs5 <- get('ROImap_fs5')
-      ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
-    } else if (n_vert==64984)
-    {
-      tri=t(get_faces("fslr32k"))
-      coords=t(get_MNIcoords("fslr32k"))
-      ROImap_fslr32k <- get('ROImap_fslr32k')
-      ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
-    } else if (n_vert==81924)
-    {
-      tri=t(get_faces("fsaverage6"))
-      coords=t(get_MNIcoords("fsaverage6"))
-      ROImap_fs6 <- get('ROImap_fs6')
-      ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
-    } else if (n_vert==14524)
-    {
-      LH.hip.mni=get("hip_points_cells")[[1]]
-      RH.hip.mni=LH.hip.mni
-      RH.hip.mni[,1]=LH.hip.mni[,1]*-1
-      coords=rbind(LH.hip.mni,RH.hip.mni)
-      LH.tri=get("hip_points_cells")[[2]]+1
-      tri=rbind(LH.tri,LH.tri+7262)
-      
-      ROImap_hip <- get('ROImap_hip')
-      ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
-      atlas=1
-    } else 
-    {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
+  }
+  # enabling custom color scales
+  if(length(cmap)==2) {cmap=list(list(0,cmap[1]), list(1,cmap[2]))} 
+  else if(length(cmap)==3){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(1,cmap[3]))}
+  else if(length(cmap)==4){cmap=list(list(0,cmap[1]), list(0.5,cmap[2]),list(0.51,cmap[3]),list(1,cmap[4]))}
 
-  ##Averaging vertices values to obtain face values
-    face.stat=rowMeans(cbind(surf_data[tri[,1]],surf_data[tri[,2]],surf_data[tri[,3]]))
-    non0.idx=which(face.stat>0)
-  
   ##setting color scale limits
-    maxlimit=max(abs(range(face.stat,na.rm = TRUE)))
-    if(missing(limits)) 
-    {
-      limits.range=range(face.stat,na.rm = TRUE)
-      if(limits.range[1]>=0) {limits=c(0,limits.range[2])} ##if image contains all positive values
-      else if(limits.range[2]<=0) {limits=c(limits.range[1],0)} ##if image contains all negative values
-      else if(limits.range[1]<0 & limits.range[2]>0){limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
-    } else {limits=c(limits[1],limits[2])}
+  maxlimit=max(abs(range(surf_data,na.rm = TRUE)))
+  if(missing(limits)) 
+  {
+    limits.range=range(surf_data,na.rm = TRUE)
+    if(limits.range[1]>=0) {limits=c(0,limits.range[2])} ##if image contains all positive values
+    else if(limits.range[2]<=0) {limits=c(limits.range[1],0)} ##if image contains all negative values
+    else if(limits.range[1]<0 & limits.range[2]>0){limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values
+  } else {limits=c(limits[1],limits[2])}
+
+  ## selecting template and ROI map depending on no. vertices
+  n_vert=length(surf_data)
+  if(n_vert==20484)
+  {
+    tri=t(get_faces("fsaverage5"))
+    coords=t(get_MNIcoords("fsaverage5"))
+    ROImap_fs5 <- get('ROImap_fs5')
+    ROImap <- list(ROImap_fs5@data,ROImap_fs5@atlases)
+  } else if (n_vert==64984)
+  {
+    tri=t(get_faces("fslr32k"))
+    coords=t(get_MNIcoords("fslr32k"))
+    ROImap_fslr32k <- get('ROImap_fslr32k')
+    ROImap <- list(ROImap_fslr32k@data,ROImap_fslr32k@atlases)
+  } else if (n_vert==81924)
+  {
+    tri=t(get_faces("fsaverage6"))
+    coords=t(get_MNIcoords("fsaverage6"))
+    ROImap_fs6 <- get('ROImap_fs6')
+    ROImap <- list(ROImap_fs6@data,ROImap_fs6@atlases)
+  } else if (n_vert==14524)
+  {
+    LH.hip.mni=get("hip_points_cells")[[1]]
+    RH.hip.mni=LH.hip.mni
+    RH.hip.mni[,1]=LH.hip.mni[,1]*-1
+    coords=rbind(LH.hip.mni,RH.hip.mni)
+    LH.tri=get("hip_points_cells")[[2]]+1
+    tri=rbind(LH.tri,LH.tri+7262)
     
+    ROImap_hip <- get('ROImap_hip')
+    ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
+    atlas=1
+  } else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452))
+  { 
+    scm_database_check() #check if database directory is present
+    celldat=scm_database_fetcher(n_vert,'points_cells')
+    LH.aseg.mni=readRDS(celldat[[1]])[[1]]
+    RH.aseg.mni=readRDS(celldat[[2]])[[1]]
+    coords=rbind(LH.aseg.mni,RH.aseg.mni)
+    #fix coordinate for ASEG as mismatching
+    coords <- rotator(coords, axis='x', -90)
+    coords <- rotator(coords, axis='z', 180)
+    
+    LH.tri=readRDS(celldat[[1]])[[2]]+1
+    RH.tri=readRDS(celldat[[2]])[[2]]+1+max(LH.tri)
+    tri=rbind(LH.tri,RH.tri)
+
+    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+    ROImap <- list(ROImap@data, ROImap@atlases)
+  } else if (n_vert == 95718) #need special code for all subcortices
+  {
+    scm_database_check() #check if database directory is present
+    celldat=readRDS(scm_database_fetcher(n_vert,'points_cells')[[1]])
+    coords=celldat$vertices
+    #fix coordinate for ASEG as mismatching
+    coords <- rotator(coords, axis='x', -90)
+    coords <- rotator(coords, axis='z', 180)
+    
+    tri=matrix(as.integer(celldat$triangles), ncol=3)
+    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+
+    #function specialised for all aseg
+    fig=plotsurf_3d_allaseg(surf_data=surf_data, 
+                            surf_color=surf_color,
+                            coords=coords, 
+                            tri=tri,
+                            ROImap=ROImap, 
+                            plot_grid=plot_grid,
+                            limits=limits, 
+                            cmap=cmap,
+                            transparent_bg=transparent_bg,
+                            orientation_labels=orientation_labels,
+                            smooth_mesh=smooth_mesh)
+    return(fig)
+    
+  } else
+  {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+
+  ##Smmoothing of surface if applicable
+  if (smooth_mesh > 0){
+    smootheddata=mesh_smoother(coords,tri,as.integer(smooth_mesh))
+    coords=smootheddata$coords; tri=smootheddata$tri
+  } 
+  
+  ##Averaging vertices values to obtain face values
+  face.stat=rowMeans(cbind(surf_data[tri[,1]],surf_data[tri[,2]],surf_data[tri[,3]]))
+  non0.idx=which(face.stat>0)
+
   ##splitting cortical data in to LH and RH if necessary 
+  #cannot split by 2 for aseg as unique n_verts per hemi
+  if (n_vert %in% c(2044,3430,6940,39238,8132,3200,8394,7768,7144)){
+    plot_details=aseg_plot_parameters(surf_data=surf_data,
+                                      size=NULL,zoom=NULL)
+    mid.idx=plot_details$lh_vert
+    mid.tri=NROW(LH.tri)
+  }else if (n_vert==9452 & (hemi=="l"|hemi=="r"))
+  {
+    warning('hemi argument ignored for the Brain-stem')
+    hemi="b"
+    #placeholder that does not mess with the plot
+    mid.idx=n_vert/2; mid.tri=NROW(tri)/2
+  } else {
     mid.idx=n_vert/2
     mid.tri=NROW(tri)/2
+  }
+  
+  if(hemi=="l")
+  {
+    surf_data=surf_data[1:mid.idx]
+    coords=coords[1:mid.idx,]
+    tri=tri[1:mid.tri,]
+    face.stat=face.stat[1:mid.tri]
+    face.stat.non0.idx=which(abs(face.stat)>0)
     
-    if(hemi=="l")
-    {
-      surf_data=surf_data[1:mid.idx]
-      coords=coords[1:mid.idx,]
-      tri=tri[1:mid.tri,]
-      face.stat=face.stat[1:mid.tri]
-      face.stat.non0.idx=which(abs(face.stat)>0)
-      
-      ROI.idx=ROImap[[1]][,atlas][1:mid.idx]
-      ROI.idx[ROI.idx==0]=max(ROI.idx)+1
-      ROI.text=ROImap[[2]][,atlas][ROI.idx]
-      ROI.text=ROI.text[1:mid.idx]
-      
-    } else if(hemi=="r")
-    {
-      surf_data=surf_data[(mid.idx+1):n_vert]
-      coords=coords[(mid.idx+1):n_vert,]
-      tri=tri[(mid.tri+1):NROW(tri),]-mid.idx
-      face.stat=face.stat[(mid.tri+1):length(tri)]
-      face.stat.non0.idx=which(abs(face.stat)>0)
-      
-      ROI.idx=ROImap[[1]][,atlas]
-      ROI.idx[ROI.idx==0]=max(ROI.idx)+1
-      ROI.text=ROImap[[2]][,atlas][ROI.idx]
-      ROI.text=ROI.text[(mid.idx+1):n_vert]
-      
-    } else if(hemi=="b")
-    {
-      #add x-coord offset to increase separation between left and right hemi
-      coords[1:mid.idx,1]=coords[1:mid.idx,1]-medial_gap
-      coords[(mid.idx+1):n_vert,1]=coords[(mid.idx+1):n_vert,1]+medial_gap
-      
-      face.stat.non0.idx=which(abs(face.stat)>0)
-      ROI.idx=ROImap[[1]][,atlas]
-      ROI.idx[ROI.idx==0]=max(ROI.idx)+1
-      ROI.text=ROImap[[2]][,atlas][ROI.idx]
-    }
-  
-  ##create blank cortical surface
-    fig=plotly::plot_ly(type = 'mesh3d',
-                        x = coords[,1],
-                        y = coords[,2],
-                        z = coords[,3],
-                        i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
-                        j = tri[, 2] - 1,
-                        k = tri[, 3] - 1,
-                        facecolor=rep(surf_color,NROW(tri)))
-  
-  ##overlay statistical map on cortical surface
-    fig=plotly::add_trace(fig,type = 'mesh3d',
-                  i = tri[face.stat.non0.idx,][, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
-                  j = tri[face.stat.non0.idx,][, 2] - 1,
-                  k = tri[face.stat.non0.idx,][, 3] - 1,
-                  intensitymode="cell",
-                  intensity=face.stat[face.stat.non0.idx],
-                  colorscale = cmap,
-                  cauto = FALSE,
-                  cmin = limits[1],
-                  cmax = limits[2])
+    ROI.idx=ROImap[[1]][,atlas][1:mid.idx]
+    ROI.idx[ROI.idx==0]=max(ROI.idx)+1
+    ROI.text=ROImap[[2]][,atlas][ROI.idx]
+    ROI.text=ROI.text[1:mid.idx]
+    
+  } else if(hemi=="r")
+  {
+    surf_data=surf_data[(mid.idx+1):n_vert]
+    coords=coords[(mid.idx+1):n_vert,]
+    tri=tri[(mid.tri+1):NROW(tri),]-mid.idx
+    face.stat=face.stat[(mid.tri+1):length(tri)]
+    face.stat.non0.idx=which(abs(face.stat)>0)
+    
+    ROI.idx=ROImap[[1]][,atlas]
+    ROI.idx[ROI.idx==0]=max(ROI.idx)+1
+    ROI.text=ROImap[[2]][,atlas][ROI.idx]
+    ROI.text=ROI.text[(mid.idx+1):n_vert]
+    
+  } else if(hemi=="b")
+  {
+    #add x-coord offset to increase separation between left and right hemi
+    coords[1:mid.idx,1]=coords[1:mid.idx,1]-medial_gap
+    coords[(mid.idx+1):n_vert,1]=coords[(mid.idx+1):n_vert,1]+medial_gap
+    
+    face.stat.non0.idx=which(abs(face.stat)>0)
+    ROI.idx=ROImap[[1]][,atlas]
+    ROI.idx[ROI.idx==0]=max(ROI.idx)+1
+    ROI.text=ROImap[[2]][,atlas][ROI.idx]
+  }
+
+##create blank cortical surface
+  fig=plotly::plot_ly(type = 'mesh3d',
+                      x = coords[,1],
+                      y = coords[,2],
+                      z = coords[,3],
+                      i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                      j = tri[, 2] - 1,
+                      k = tri[, 3] - 1,
+                      facecolor=rep(surf_color,NROW(tri)))
+
+##overlay statistical map on cortical surface
+  fig=plotly::add_trace(
+                fig,
+                type = 'mesh3d',
+                i = tri[face.stat.non0.idx,][, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                j = tri[face.stat.non0.idx,][, 2] - 1,
+                k = tri[face.stat.non0.idx,][, 3] - 1,
+                intensitymode="cell",
+                intensity=face.stat[face.stat.non0.idx],
+                colorscale = cmap,
+                cauto = FALSE,
+                cmin = limits[1],
+                cmax = limits[2])
 
  ##x coordinate is mapped differently depending on whether a medial_gap is specified
   if(hemi=="b" & medial_gap>0)
@@ -190,11 +256,17 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
     customdata[(mid.idx+1):n_vert]=customdata[(mid.idx+1):n_vert]-medial_gap
     
     ##add mouse-over text
-    fig=add_trace(fig,text=ROI.text,hovertext=surf_data,intensitymode="vertex", intensity=0, opacity=0,showscale=FALSE,
+    fig=plotly::add_trace(fig,
+                  text=ROI.text,
+                  hovertext=surf_data,
+                  intensitymode="vertex", 
+                  intensity=0, 
+                  opacity=0,
+                  showscale=FALSE,
                   x = coords[,1],
                   y = coords[,2],
                   z = coords[,3],
-                  i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                  i = tri[, 1] - 1, 
                   j = tri[, 2] - 1,
                   k = tri[, 3] - 1,
                   customdata=customdata,
@@ -203,11 +275,16 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                                       "statistic:%{hovertext:.2f}<extra></extra>"))
   } else
   {
-    fig=add_trace(fig,text=ROI.text,intensitymode="vertex", intensity=0, opacity=0,showscale= FALSE,
+    fig=plotly::add_trace(fig,
+                  text=ROI.text,
+                  intensitymode="vertex", 
+                  intensity=0, 
+                  opacity=0,
+                  showscale= FALSE,
                   x = coords[,1],
                   y = coords[,2],
                   z = coords[,3],
-                  i = tri[, 1] - 1,  # plotly uses 0-based indexing, so subtract 1
+                  i = tri[, 1] - 1,  #plotly's 0-based indexing, so -1
                   j = tri[, 2] - 1,
                   k = tri[, 3] - 1,
                   customdata=surf_data,
@@ -216,52 +293,16 @@ plot_surf3d=function(surf_data, surf_color="grey",cmap,limits, atlas=1, hemi="b"
                                       "statistic:%{customdata:.2f}<extra></extra>"))
   }
     
+  #apply grid/background parameters
+  fig=plot_grid_function(fig, coords, plot_grid, orientation_labels)
+  fig=transparent_bg_function(fig, transparent_bg)
     
-  if (plot_grid==TRUE)
-  {
-    ##axis parameters
-    fig=plotly::layout(fig,
-                     hoverlabel = list(align = "left"),
-                     scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
-                                  xaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
-                                  yaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
-                                  zaxis = list(showgrid = TRUE,showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title="")))
-    
-    ##add optional orientation labels
-    if(orientation_labels==TRUE)
-    {
-      axx = list(ticketmode = 'array',ticktext = xlab,tickvals = range(coords[,1]))
-      axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
-      axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
-      
-      fig = layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
-    }
-  }
-  else #to remove grid
-  {  fig <- plotly::layout(
-      fig,
-      scene = list(
-        xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
-        yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
-        zaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE, visible = FALSE),
-        bgcolor = "rgba(0,0,0,0)")
-  )
-  }
-    
-  #to get transparent background
-  if (transparent_bg==TRUE)
-  { 
-    fig <- plotly::layout(
-    fig,
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)" 
-    )
-  }
   return(fig)
 }
 
 ############################################################################################################################
 ############################################################################################################################
+
 ##getting the triangle faces of brainstat templates
 get_faces=function(template)
 {
@@ -286,4 +327,227 @@ get_faces=function(template)
   
   #Returns MNI coordinates
   return(t(brainspace.mesh.mesh_elements$get_cells(surf.template))+1) #python indices start from 0, hence+1
+}
+
+############################################################################################################################
+############################################################################################################################
+
+#plot grid (with or without orientation labels) or remove grid
+plot_grid_function=function(fig, coords, plot_grid, orientation_labels)
+{
+  if (plot_grid==TRUE)
+  {
+    ##axis parameters
+    fig=plotly::layout(fig,
+                       hoverlabel = list(align = "left"),
+                       scene = list(camera=list(eye = list(x = 0, y = 1.5, z = 1.5)),
+                                    xaxis = list(showgrid = TRUE, showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
+                                    yaxis = list(showgrid = TRUE, showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title=""),
+                                    zaxis = list(showgrid = TRUE, showticklabels=TRUE,showspikes=FALSE,zeroline=FALSE, title="")))
+    
+    ##add optional orientation labels
+    if(orientation_labels==TRUE)
+    {
+      axx = list(ticketmode = 'array',ticktext = c("Left","Right"),tickvals = range(coords[,1]))
+      axy = list(ticketmode = 'array',ticktext = c("Posterior","Anterior"),tickvals = range(coords[,2]))
+      axz = list(ticketmode = 'array',ticktext = c("Inferior","Superior"),tickvals = range(coords[,3]))
+      
+      fig = plotly::layout(fig,scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+    }
+  } else #if FALSE, remove grid
+  {  fig <- plotly::layout(
+    fig,
+    scene = list(
+      xaxis = list(showgrid = FALSE, zeroline = FALSE, 
+                   showticklabels = FALSE, visible = FALSE),
+      yaxis = list(showgrid = FALSE, zeroline = FALSE, 
+                   showticklabels = FALSE, visible = FALSE),
+      zaxis = list(showgrid = FALSE, zeroline = FALSE, 
+                   showticklabels = FALSE, visible = FALSE),
+      bgcolor = "rgba(0,0,0,0)")
+  )
+  }
+  return(fig)
+}
+
+#to get transparent background
+transparent_bg_function=function(fig, transparent_bg)
+{
+  if (transparent_bg==TRUE)
+  { 
+    fig <- plotly::layout(
+      fig,
+      paper_bgcolor = "rgba(0,0,0,0)",
+      plot_bgcolor  = "rgba(0,0,0,0)" 
+    )
+  }
+  return(fig)
+}
+
+############################################################################################################################
+############################################################################################################################
+
+#function to fix default coords when needed
+rotator <- function(coords, axis, degree) {
+  angle <- degree * pi/180 #degrees to radians
+  if (axis=='x') { Rx <- matrix(c(1, 0, 0,
+                                  0, cos(angle), -sin(angle),
+                                  0, sin(angle),  cos(angle)), 
+                                nrow=3, byrow=TRUE)
+  t(Rx %*% t(coords))
+  } else if (axis=='z') {Rz <- matrix(c(cos(angle), -sin(angle), 0, 
+                                        sin(angle), cos(angle), 0, 
+                                        0, 0, 1), 
+                                      nrow=3, byrow=TRUE)
+  t(Rz %*% t(coords))
+  }
+}
+
+############################################################################################################################
+############################################################################################################################
+
+#function to smooth the mesh's shape, if the user wants to 
+mesh_smoother <- function(coords, tri, n_iter=as.integer(0)) 
+{
+  #python libraries required (no VTK here as it mixes up the order of the coords and tri which must remain constant for the mapping)
+  tm <- reticulate::import("trimesh")
+  smoothing <- reticulate::import("trimesh.smoothing")
+  
+  # Detect indexing convention for the triangles (depends on template)
+  if (min(tri) == 0) {
+    faces <- tri # Already 0-based
+  } else {
+    faces <- tri - 1L # 1-based, convert to 0-based for Python
+  }
+  
+  #load mesh
+  mesh <- tm$Trimesh(vertices=coords, faces=faces, process=FALSE)
+  
+  # Apply Laplacian smoothing
+  smoothing$filter_laplacian(mesh, lamb=0.5, iterations=n_iter)
+
+  new_coords <- mesh$vertices
+  
+  return(list(coords=new_coords,tri=tri))
+}
+ 
+############################################################################################################################
+############################################################################################################################
+
+#special function for all aseg subcortices together
+plotsurf_3d_allaseg=function(surf_data, surf_color, coords,tri,ROImap,limits,cmap,plot_grid,transparent_bg,orientation_labels,smooth_mesh)
+{
+  
+  ##Smmoothing of surface if applicable
+  if (smooth_mesh > 0){
+    smootheddata=mesh_smoother(coords,tri,as.integer(smooth_mesh))
+    coords=smootheddata$coords; tri=smootheddata$tri
+  } 
+  
+  ##Averaging vertices values to obtain face values
+  face_vals <- rowMeans(cbind(surf_data[tri[,1]+ 1], surf_data[tri[,2]+ 1], surf_data[tri[,3]+ 1]))
+  face.stat.non0.idx <- which(abs(face_vals) > 0)
+  tri_overlay <- tri[face.stat.non0.idx, ]
+  face_vals_overlay <- face_vals[face.stat.non0.idx]
+  
+  #function to create mesh at X distance spacing factor
+  aseg_distancer <- function(coords, tri, face_vals, roi_ids, roi_names, distfactor=0) {
+
+    #Get centroid across all ROIs, and each ROI's centroid
+    global_centroid <- colMeans(coords)
+    centroids <- t(sapply(unique(roi_ids), function(r) colMeans(coords[roi_ids == r, , drop=FALSE])))
+    
+    #create coordinates as a function of their distance (distfactor)
+    #from the global centroid
+    spaced_coords <- coords
+    for (r in unique(roi_ids)) {
+      direction=centroids[r, ] - global_centroid #offset from global ctr
+      #gets the length of distance (Euclidean norm)
+      #we use it to normalize the spacing based on how far are the ROIs
+      norm=sqrt(sum(direction^2)) 
+      direction=direction / norm 
+      #apply spacing and reassign new coordinates
+      translation <- direction * distfactor
+      idx = which(roi_ids == r)
+      spaced_coords[idx, ] <- coords[idx, , drop=FALSE] + 
+        matrix(translation, nrow=length(idx), ncol=3, byrow=TRUE)
+    }
+    
+    #hovering function to show ROI labels
+    hover_labels <- roi_names[roi_ids]
+    
+    #create 1 mesh at distance iteration
+    return(
+      list(
+        type = "mesh3d",
+        x= spaced_coords[,1], 
+        y=spaced_coords[,2], 
+        z=spaced_coords[,3],
+        i = tri[,1],  
+        j = tri[,2], 
+        k = tri[,3],
+        intensity = face_vals, 
+        cmin = limits[1], 
+        cmax = limits[2],
+        colorscale = cmap,
+        text = hover_labels, 
+        hoverinfo = "text+intensity"
+        )
+    )
+  }
+  
+  #distance slider to be plotted
+  #here, applied 5 by 5 from to 50 which gives a reasonable range
+  dist_vals <- seq(0, 50, by = 5)
+  meshframes <- lapply(dist_vals, function(distf) {
+    # full mesh for grey base (all faces, just for coordinates)
+    base <- aseg_distancer(coords, tri, rep(0, nrow(tri)),
+                           ROImap@data[,1], ROImap@atlases$ASEG, distf)
+    base$intensity <- NULL; base$colorscale <- NULL; base$cmin <- NULL;
+    base$cmax <- NULL; base$facecolor <- rep(surf_color, nrow(tri))
+    # filtered mesh for overlay
+    overlay <- aseg_distancer(coords, tri_overlay, face_vals_overlay,
+                              ROImap@data[,1], ROImap@atlases$ASEG, distf)
+    list(base=base, overlay=overlay, frame=distf)
+  })
+
+  #build animation frames by assigning each new mesh 
+  ##create blank cortical surface
+  fig <- plotly::plot_ly(
+    type = 'mesh3d',
+    x = meshframes[[1]]$base$x, y = meshframes[[1]]$base$y, z = meshframes[[1]]$base$z,
+    i = meshframes[[1]]$base$i, j = meshframes[[1]]$base$j, k = meshframes[[1]]$base$k,
+    facecolor = rep(surf_color, length(meshframes[[1]]$base$i))
+  )
+  ## overlay
+  fig <- plotly::add_trace(
+    fig,
+    type = "mesh3d",
+    x = meshframes[[1]]$overlay$x, y = meshframes[[1]]$overlay$y, z = meshframes[[1]]$overlay$z,
+    i = meshframes[[1]]$overlay$i, j = meshframes[[1]]$overlay$j, k = meshframes[[1]]$overlay$k,
+    intensity = meshframes[[1]]$overlay$intensity,
+    intensitymode = "cell",
+    colorscale = meshframes[[1]]$overlay$colorscale,
+    cmin = meshframes[[1]]$overlay$cmin,
+    cmax = meshframes[[1]]$overlay$cmax
+  )
+  
+  fig$x$frames <- lapply(meshframes, function(tr) {
+    list(name = tr$frame, traces = list(0, 1), data = list(tr$base, tr$overlay))
+  })
+  
+  fig$x$layout$sliders <- list(list(
+    active = 0,
+    steps = lapply(meshframes, function(tr) {
+      list(method = "animate", 
+           args = list(list(tr$frame)), 
+           label = tr$frame)
+    })
+  ))
+  
+  #apply grid/background parameters
+  fig=plot_grid_function(fig, coords, plot_grid, orientation_labels)
+  fig=transparent_bg_function(fig, transparent_bg)
+  
+  return(fig)
 }

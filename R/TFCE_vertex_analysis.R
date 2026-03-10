@@ -114,7 +114,13 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     edgelist <- edgelist_hip@data
     assign("edgelist", edgelist)
   }
-  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
+  {
+    scm_database_check() #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    assign("edgelist", edgelist)
+  }
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
   
   #check for collinearity
   if(NCOL(model)>1)
@@ -512,12 +518,31 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
     ROImap=list(data.matrix(ROImap[[1]]),ROImap[[2]])
     assign("ROImap", ROImap, envir = internalenv)
     
+    #here, MNImap is extracted from template surface
     brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io",
                                                delay_load = TRUE)
     template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
     MNImap <- t(template$Points)
     assign("MNImap", MNImap, envir = internalenv)
   } 
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
+  {
+    scm_database_check() #check if database directory is present
+    
+    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    assign("edgelist", edgelist, envir = internalenv)
+    
+    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+    ROImap <- list(ROImap@data, ROImap@atlases)
+    assign("ROImap", ROImap, envir = internalenv)
+    
+    #here, MNImap is extracted from template surface
+    brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
+    templatepath <- scm_database_fetcher(n_vert,'template')
+    template=brainspace.mesh.mesh_io$read_surface(templatepath)
+    MNImap <- t(template$Points)
+    assign("MNImap", MNImap, envir = internalenv)
+  }
   ##generating p map
   tfce.p=rep(NA,n_vert)
   TFCEoutput$t_stat[is.na(TFCEoutput$t_stat)]=0

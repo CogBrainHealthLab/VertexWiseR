@@ -19,9 +19,9 @@ library(VertexWiseR)
 
 **Note: This is the most up-to-date demo. Its version published in [Imaging Neuroscience (2024) 2: 1--14](https://doi.org/10.1162/imag_a_00372) no longer applies since the v1.3.0** **fixes made to the** **TFCE_vertex_analysis_mixed() function (see our [updates page](https://cogbrainhealthlab.github.io/VertexWiseR/news/index.html) for details).**
 
-The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had extracted cortical thickness (CT) data from a Hippunfold preprocessing directory of  the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021].
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had extracted thickness data from a Hippunfold preprocessing directory of  the [Fink dataset](https://openneuro.org/datasets/ds003799/versions/2.0.0) [@fink_two-week_2021].
 
-The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+The demo data (~216 MB) required to run the example analysis, and can be downloaded from the package's github repository with the following function:
 
 ```{r, eval=TRUE}
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
@@ -77,7 +77,7 @@ model2_TFCE=TFCE_vertex_analysis_mixed(
   nperm=1000, 
   random = dat_beh_ses13[,"participant_id"], 
   perm_type="within_between", 
-  nthread=1) 
+  nthread=4) 
 TFCEoutput = TFCE_threshold(model2_TFCE, p=0.05)
 ```
 

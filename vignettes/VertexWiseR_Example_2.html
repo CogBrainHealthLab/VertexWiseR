@@ -380,11 +380,10 @@ page</a> for details).</strong></p>
 <p>The analysis will use surface data already extracted in R from a
 preprocessed subjects directory, which we make available so you do not
 need to preprocess a sample yourself. To obtain it, we had extracted
-cortical thickness (CT) data from a Hippunfold preprocessing directory
-of the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0">Fink
+thickness data from a Hippunfold preprocessing directory of the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0">Fink
 dataset</a> <span class="citation">(Fink et al. 2021)</span>.</p>
-<p>The demo data (218 MB) required to run the package demos can be
-downloaded from the package’s github repository with the following
+<p>The demo data (~216 MB) required to run the example analysis, and can
+be downloaded from the package’s github repository with the following
 function:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>demodata<span class="ot">=</span>VertexWiseR<span class="sc">:::</span><span class="fu">dl_demo</span>(<span class="at">path=</span><span class="fu">tempdir</span>(), <span class="at">quiet=</span><span class="cn">TRUE</span>)</span></code></pre></div>
@@ -427,12 +426,12 @@ on hippocampal thickness, with subject ID as a random variable:</p>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">nperm=</span><span class="dv">1000</span>, </span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">random =</span> dat_beh_ses13[,<span class="st">&quot;participant_id&quot;</span>], </span>
 <span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">perm_type=</span><span class="st">&quot;within_between&quot;</span>, </span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">nthread=</span><span class="dv">1</span>) </span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">nthread=</span><span class="dv">4</span>) </span>
 <span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>TFCEoutput <span class="ot">=</span> <span class="fu">TFCE_threshold</span>(model2_TFCE, <span class="at">p=</span><span class="fl">0.05</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>TFCEoutput<span class="sc">$</span>cluster_level_results</span></code></pre></div>
 <pre><code>## $`Positive contrast`
 ##   clusid nverts     P     X    Y   Z tstat      region
-## 1      1     73 0.033 -27.5 27.5 1.3  4.14 L Subiculum
+## 1      1     73 0.033 -13.3 27.5 1.3  4.14 L Subiculum
 ## 
 ## $`Negative contrasts`
 ## [1] &quot;No significant clusters&quot;</code></pre>

@@ -121,7 +121,13 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
     edgelist <- edgelist_hip@data
     assign("edgelist", edgelist)
   }
-  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns.")}
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
+  {
+    scm_database_check() #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    assign("edgelist", edgelist)
+  }
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
   
   ##unpermuted model
   #preparing mask for model

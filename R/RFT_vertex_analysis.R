@@ -96,7 +96,7 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, i
   if (!is.null(model_summary$random)) {random=model_summary$random}
  
     #check length of CT data and load the appropriate fsaverage files
-    n_vert=ncol(surf_data)
+    n_vert=max(dim(t(surf_data)))
     if(n_vert==20484)
     {
       template="fsaverage5"
@@ -118,8 +118,16 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, i
       template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
       ROImap_hip <- get('ROImap_hip')
       ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
-    } else 
-    {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
+    } else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718)) 
+    {
+      scm_database_check() #check if database directory is present
+      brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
+      templatepath <- scm_database_fetcher(n_vert,'template')
+      template=brainspace.mesh.mesh_io$read_surface(templatepath)
+      ROImap <- scm_database_fetcher(n_vert,'ROImap')
+      ROImap <- list(ROImap@data, ROImap@atlases)
+    }
+    else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 

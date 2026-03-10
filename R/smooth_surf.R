@@ -48,9 +48,8 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
   ##source python function
   reticulate::source_python(paste0(system.file(package='VertexWiseR'),'/python/smooth.py'))
   
-  n_vert=ncol(surf_data)
   ##select template, set its FWHM parameter and load its edgelist file
-  
+  n_vert=max(dim(t(surf_data)))
   if(n_vert==20484) 
   {
     edgelist <- get_edgelist('fsaverage5') 
@@ -68,7 +67,15 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     edgelist_hip <- get('edgelist_hip') 
     edgelist <- edgelist_hip@data
     FWHM=FWHM/0.5 #converting m to mesh units
-  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns")}
+  #subcortexmesh subortices 
+  } 
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718)) 
+  {
+    scm_database_check() #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    #based off fsaverage's aseg.mgz (1mm isotropic) but euclidian distance (np.linalg.norm) suggests it's 0.9
+    FWHM=FWHM/0.9 #converting m to mesh units
+  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
   
   #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
   idx0=which(colSums(data.matrix(surf_data))==0)

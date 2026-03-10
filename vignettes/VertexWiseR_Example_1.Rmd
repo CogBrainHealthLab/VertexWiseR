@@ -36,7 +36,7 @@ VWRfirstrun()
 
 The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had extracted cortical thickness (CT) data from a FreeSurfer preprocessing directory of the [SPRENG dataset](https://openneuro.org/datasets/ds003592/versions/1.0.13) [@spreng_neurocognitive_2022]. 
 
-The demo data (218 MB) required to run the package demos can be downloaded from the package's github repository with the following function:
+The demo data (~216 MB) required to run the example analysis, and can be downloaded from the package's github repository with the following function:
 
 ```{r, eval=TRUE}
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)

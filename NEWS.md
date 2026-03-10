@@ -1,3 +1,18 @@
+# VertexWiseR v1.5.0 (TBC)
+
+## NEW FEATURES
+* VertexWiseR can now analyse surface-based metrics for FreeSurfer's ASeg subcortical regions, converted to surface meshes via the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh), and extracted with the new R function ASEGvextract(). A new example tutorial was created as a demonstration:  "Example analyses with VertexWiseR - Example 3".
+* plot_overlay_surf() now works with HippUnfold's hippocampal data (CIT168 template) and SubCortexMesh subcortical data.
+* plot_surf(), and plot_overlay_surf() and plot_surf3d() now have a smooth_mesh argument to make the surface appear smoother in the plot.
+
+## FIXES
+* In VWRfirstrun(), the check and message prompt for the neurosynth database now prints the path in which it is meant to be stored, instead of an empty "()".
+* The model_check() internal function inside the modelling functions could fail if 'model' or 'contrast' were given as a one-column data.frame instead of a simple vector, as the inherits() checks would not detect numeric or character classes.
+* plot_surf() (with show.plot.window=TRUE) will no longer plot on top of the previous plot in the RStudio "Plots" tab when running the function multiple times, and reset it first.
+* plot_overlay_surf() now accepts a custom limits_2 instead of failing. 
+* Clearer error message for plot_surf() when provided with surf_data that only contains NA values, and if surf_data has multiple rows, empty rows are simply not plotted.
+* Clearer error management and messaging when the title argument is wrongly inputted in plot_surf() (e.g. if there are more titles than there are surface rows).
+
 # VertexWiseR v1.4.5
 
 ## NEW FEATURES

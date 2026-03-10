@@ -13,21 +13,22 @@ plot_surf3d(
   hemi = "b",
   medial_gap = 0,
   orientation_labels = TRUE,
-  VWR_check = TRUE,
   plot_grid = TRUE,
-  transparent_bg = FALSE
+  transparent_bg = FALSE,
+  smooth_mesh = 0,
+  VWR_check = TRUE
 )
 }
 \arguments{
-\item{surf_data}{A numeric vector (length of V)}
+\item{surf_data}{A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract().}
 
-\item{surf_color}{color of the cortical surface. Set to \code{'grey'} by default}
+\item{surf_color}{color of the cortical surface for NA values. Set to \code{'grey'} by default. A RGBA string can also be given, with A as the opacity (0 to 1), e.g. for transparent grey: surf_color="rgba(100,100,100,0.5)".}
 
 \item{cmap}{A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale; or a single string object with the name of a color map listed in \code{RColorBrewer::display.brewer.all()}. If none are specified, appropriate colors will be automatically selected according to \code{range(surf_data)}}
 
 \item{limits}{A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits \verb{c(-max(abs(surf_dat),max(abs(surf_dat)))} will be used.}
 
-\item{atlas}{atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for hippocampal surfaces.}
+\item{atlas}{atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for HippUnfold hippocampal surfaces and SubCortexMesh subcortical surface.}
 
 \item{hemi}{A string specifying the hemisphere to plot. Possible values are \code{l} (left), \code{r} (right) or \code{b} (both).}
 
@@ -35,11 +36,13 @@ plot_surf3d(
 
 \item{orientation_labels}{A boolean object specifying if orientation labels are to be displayed. Set to \code{TRUE} by default}
 
-\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
-
 \item{plot_grid}{A boolean object specifying whether to plot the orientation grid or not (default is \code{TRUE}).}
 
 \item{transparent_bg}{A boolean object specifying whether to get a transparent background upon saving the image (default is \code{FALSE}, white background).}
+
+\item{smooth_mesh}{A numeric object stating the number of iterations of (Laplacian) smoothing to make the surface appear smoother. Not applicable for HippUnfold hippocampal data. Default is 0.}
+
+\item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
 a plot_ly object

@@ -26,4 +26,5 @@
 ^inst/demo_data/SUDMEX_CONN_allaseg_thickness.rds
 ^man/figures/logo.png
 ^vignettes/*.png
+^vignettes/*.jpg
 ^.gitattributes
