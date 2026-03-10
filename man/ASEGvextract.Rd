@@ -33,10 +33,10 @@ ASEGvextract(
 A directory containing - for each bilateral subcortical region separately - a .RDS files, each with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. Each matrix has N subjects x M vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values (if applicable).
 }
 \description{
-Extracts surface-based measures from ASEG subcortical segmentations in each subject. These must be specifically computed from a FreeSurfer output subjects directory using the python toolbox "subcortexmesh". The function reads through the metrics .vtk files outputted by subcortexmesh, extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres.
+Extracts surface-based measures from ASeg subcortical segmentations in each subject. These must be specifically computed from a FreeSurfer output subjects directory using the python toolbox "SubCortexMesh". ASEGvextract() reads through the metrics .vtk files outputted by SubCortexMesh (surface_metrics/ directory), extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres when applicable, for each (selected) subcortical region.
 }
 \details{
-The function looks for standard subject folder names (starting "sub-") and surface file names as defined by subcortexmesh (starting "left-","right-", or "brain-Stem"). It requires reticulate and python to read the .vtk files.
+The function looks for standard subject folder names (starting "sub-") and surface file names as defined by SubCortexMesh (starting "left-","right-", or "brain-stem"). ASEGvextract() requires reticulate and python to read the .vtk files.
 
 Number of vertices in the (bilateral) matrix for each region-of-interest:
 \itemize{

@@ -1,7 +1,7 @@
 #' @title ASEGvextract
 #'
-#' @description Extracts surface-based measures from ASEG subcortical segmentations in each subject. These must be specifically computed from a FreeSurfer output subjects directory using the python toolbox "subcortexmesh". The function reads through the metrics .vtk files outputted by subcortexmesh, extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres. 
-#' @details The function looks for standard subject folder names (starting "sub-") and surface file names as defined by subcortexmesh (starting "left-","right-", or "brain-Stem"). It requires reticulate and python to read the .vtk files. 
+#' @description Extracts surface-based measures from ASeg subcortical segmentations in each subject. These must be specifically computed from a FreeSurfer output subjects directory using the python toolbox "SubCortexMesh". ASEGvextract() reads through the metrics .vtk files outputted by SubCortexMesh (surface_metrics/ directory), extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres when applicable, for each (selected) subcortical region. 
+#' @details The function looks for standard subject folder names (starting "sub-") and surface file names as defined by SubCortexMesh (starting "left-","right-", or "brain-stem"). ASEGvextract() requires reticulate and python to read the .vtk files. 
 #' 
 #' Number of vertices in the (bilateral) matrix for each region-of-interest:
 #'  - 2044: accumbens area
