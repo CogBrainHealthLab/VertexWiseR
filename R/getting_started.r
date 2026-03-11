@@ -14,10 +14,10 @@ if (interactive()==TRUE) #only works in interactive session
 {
   cat("Welcome to VertexWiseR's demo!\n")
   
-  if (demo_data==TRUE)
+  if (demo_data==TRUE & !dir.exists(paste0(tempdir(),'/demo_data')) )
   {
    prompt = utils::menu(title="Before starting, you may want to download the demo_data folder (~216 MB) used by the various tutorials. Would you like to download it now?",
-     choices = c(paste0("Yes, in a temporary R directory (default path is tempdir())"),
+     choices = c(paste0("Yes, in a temporary R directory (default path is tempdir(): ", tempdir(), ")"),
                  paste0("Yes, in the current working directory (",getwd(),")"),
                  "Yes, let me type a path where it will go", 
                  "No"), 
@@ -38,13 +38,15 @@ if (interactive()==TRUE) #only works in interactive session
                         "Example analyses with VertexWiseR - Example 1",
                         "Example analyses with VertexWiseR - Example 2",
                         "Example analyses with VertexWiseR - Example 3",
-                        "Overlaying plots and transparent thresholding"
+                        "Overlaying plots and transparent thresholding",
+                        "Python troubleshooting"
                         ))
   if (prompt_2==1) { utils::vignette(package='VertexWiseR', topic='VertexWiseR_surface_extraction')}
   else if (prompt_2==2) { utils::vignette(package='VertexWiseR', topic='VertexWiseR_Example_1')}
   else if (prompt_2==3) { utils::vignette(package='VertexWiseR', topic='VertexWiseR_Example_2')}
   else if (prompt_2==4) { utils::vignette(package='VertexWiseR', topic='VertexWiseR_Example_3')}
   else if (prompt_2==5) { utils::vignette(package='VertexWiseR', topic='VertexWiseR_plot_overlay')}
+  else if (prompt_2==6) { utils::vignette(package='VertexWiseR', topic='Python_troubleshooting')}
 }
 }
 

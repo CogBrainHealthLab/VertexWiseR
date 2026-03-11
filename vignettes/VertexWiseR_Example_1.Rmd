@@ -11,7 +11,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.path = tempdir()) 
 ```
 
 ## Installing VertexWiseR and checking for requirements
