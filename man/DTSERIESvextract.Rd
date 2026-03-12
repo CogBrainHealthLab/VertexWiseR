@@ -28,9 +28,9 @@ The function extracts the data from the dtseries.nii file provided, and organize
 #demo cifti dtseries from openneuro
 #(ds005012, sub-18_ses-1_task-mid, run-01, 
 #reduced to 50 time points)
-download.file(paste0("https://github.com/CogBrainHealthLab",
-"/VertexWiseR/blob/main/inst/demo_data/",
-"demo_91k_bold.dtseries.nii?raw=TRUE"),
+download.file(paste0("https://raw.githubusercontent.com/",
+"CogBrainHealthLab/VertexWiseR/main/inst/demo_data/",
+"demo_91k_bold.dtseries.nii"),
 destfile=paste0(tempdir(),
 "/demo_91k_bold.dtseries.nii"), 
 mode = "wb")
