@@ -136,7 +136,7 @@ plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.png'
 
 -   `surf_data`: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), CAT12vextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.
 
--   `filename`: A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
+-   `filename`: A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()). Only filenames with a .png extension are allowed.
 
 -   `cmap` (optional) : A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{Matplotlib plotting library}.
 
@@ -146,7 +146,7 @@ plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.png'
 
 -   `surface` (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include `"white"`, `"smoothwm"`,`"pial"` and `"inflated"` (default). The surface parameter is ignored for hippocampal surface data.
 
-![Significant clusters for the effect of age on thickness](man/figures/sigcluster.png)
+![Significant clusters for the effect of age on thickness](man/figures/sigcluster.jpg)
 
 #### Extracting the CT values for each subject
 
@@ -248,7 +248,7 @@ results$cluster_level_results
 plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.png")
 ```
 
-![Significant clusters for effect of sex on cortical thickness](man/figures/sexdiff.png)
+![Significant clusters for effect of sex on cortical thickness](man/figures/sexdiff.jpg)
 
 According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.
 

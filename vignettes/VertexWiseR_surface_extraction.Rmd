@@ -11,7 +11,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.path = tempdir())
+knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 75, fig.path = tempdir())
 library(VertexWiseR)
 ```
 

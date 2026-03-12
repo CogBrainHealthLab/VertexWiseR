@@ -11,7 +11,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, dpi = 80, fig.path = tempdir()) 
+knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 75, fig.path = tempdir())
 library(VertexWiseR)
 ```
 
@@ -103,20 +103,7 @@ plot_overlay_surf(model_output=results,
 
 By default, both color bars are plotted but either can be set to FALSE (removed), which was done for the faded background colours here.
 
-The function also give freedom to have two separate color maps, in order to highlight the significant t-values even more:
-
-```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid plots with different color maps", fig.width=10, fig.height=2}
-plot_overlay_surf(model_output=results, 
-                  cmap_1='RdBu_r', cmap_2='Reds',
-                  alpha_1=1, alpha_2=1,
-                  limits_2='same',
-                  filename='overlay_plot_twocmaps.png',
-                  size=c(1400,291), 
-                  title="Significant effect\nof sex",
-                  show.plot.window=TRUE)
-```
-
-A similar procedure can be used if one wants the range of values to be independent (which is the default if the limits=='same' option is not provided):
+The function also give freedom to have two separate color maps and independent ranges of values (which is the default if the limits=='same' option is not provided):
 
 ```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Overlaid plots with different color maps and limits", fig.width=10, fig.height=2}
 plot_overlay_surf(model_output=results, 
@@ -180,7 +167,7 @@ Plotted in the same manner:
 plot_overlay_surf(model_thalamus_thickness, 
                   colorbar_1=F, 
                   filename = 'overlay_plot_thalamus.png',
-                  cmap_1 = c('blue','blue'), 
+                  cmap_1 = c('darkblue','blue'), 
                   cmap_2=c('yellow','white'), 
                   overlay_boundaries = FALSE,
                   show.plot.window = TRUE
