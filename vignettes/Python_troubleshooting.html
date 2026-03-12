@@ -12,7 +12,7 @@
 
 <meta name="author" content="Charly H. A. Billaud, Junhong Yu" />
 
-<meta name="date" content="2026-03-11" />
+<meta name="date" content="2026-03-12" />
 
 <title>Python troubleshooting</title>
 
@@ -363,28 +363,55 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Python troubleshooting</h1>
 <h4 class="author">Charly H. A. Billaud, Junhong Yu</h4>
-<h4 class="date">2026-03-11</h4>
+<h4 class="date">2026-03-12</h4>
 
 
 
 <p>VertexWiseR uses Python functions from various toolboxes that can
 flexibly be called and executed in R using the <em>reticulate</em>
-package <span class="citation">(Ushey, Allaire, and Tang
-2023)</span>. We explain in this article how to solve a number of issues
-that may arise from the interaction with Python.</p>
-<div id="summary" class="section level2">
-<h2>Summary</h2>
+package <span class="citation">(Ushey, Allaire, and Tang 2023)</span>.
+As of version &lt; 1.41.0 reticulate favours creating a virtual
+environment, where the python version and specific packages needed for
+VertexWiseR can be stored, leaving any other system installations
+intact. This is also the option we recommend. The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
+documentation</a> explains:</p>
+<blockquote>
+<p>When installing Python packages it’s best practice to isolate them
+within a Python environment (a named Python installation that exists for
+a specific project or purpose). This provides a measure of isolation, so
+that updating a Python package for one project doesn’t impact other
+projects. The risk for package incompatibilities is significantly higher
+with Python packages than it is with R packages, because unlike CRAN,
+PyPI does not enforce, or even check, if the current versions of
+packages currently available are compatible.</p>
+</blockquote>
+<p>More details on why using virtual environments can be found in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
+documentation</a>.</p>
+<p>Note that VertexWiseR will install a specific version of Python
+itself and of each package it needs to work properly, whether in the
+virtual environment or a stable environment VWRfirstrun(). If users
+struggle to create a virtual environment, they may opt to install a
+(non-virtual) Miniconda/Python environment in a path of their choice.
+Those options are given when running VWRfirstrun().</p>
+<p>We explain in this article how to solve a number of issues that may
+arise from the interaction with Python:</p>
 <ol style="list-style-type: decimal">
-<li><a href="#id1">How to make VWRfirstrun() ignore the system’s Python
-environment when starting a fresh installation</a></li>
-<li><a href="#id2">How to make VWRfirstrun() use a specific Python
-installation</a></li>
-<li><a href="#id3">About the message: “Would you like to create a
+<li><p><a href="#id1">How to make VWRfirstrun() ignore the system’s
+Python environment when starting a fresh installation</a></p></li>
+<li><p><a href="#id2">How to make VWRfirstrun() use a specific Python
+installation</a></p>
+<ol style="list-style-type: lower-alpha">
+<li><p><a href="#id2.a">For a new, fresh VertexWiseR set-up</a></p></li>
+<li><p><a href="#id2.b">If the VWRfirstrun() installations were already
+done before</a></p></li>
+</ol></li>
+<li><p><a href="#id3">VWRfirstrun() shows the message “Clearing
+reticulate’s uv cache…”</a></p></li>
+<li><p><a href="#id4">About the message: “Would you like to create a
 default Python environment for the reticulate package? (Yes/no/cancel)”
-(reticulate &lt; 1.41.0)</a></li>
+(reticulate &lt; 1.41.0)</a></p></li>
 </ol>
 <hr />
-</div>
 <div id="id1" class="section level2">
 <h2>1. How to make VWRfirstrun() ignore the system’s Python environment
 when starting a fresh installation</h2>
@@ -421,7 +448,7 @@ should not need to do this again.</p>
 <p>This section explains how users can choose a different Python
 installation - other than the one automatically detected - if they wish
 to, instead of installing a new one.</p>
-<div id="a.-for-a-new-fresh-vertexwiser-set-up" class="section level3">
+<div id="id2.a" class="section level3">
 <h3>a. For a new, fresh VertexWiseR set-up</h3>
 <p>Reticulate allows users to predefine the Python environment to be
 used by entering their Python’s directory path into the <a href="https://rstudio.github.io/reticulate/reference/use_python.html">following
@@ -442,7 +469,7 @@ reticulate is currently using. If that is still not the path specified
 in the functions listed above, users should try restarting R and/or
 clearing the R workspace first.</p>
 </div>
-<div id="b.-if-the-vwrfirstrun-installations-were-already-done-before" class="section level3">
+<div id="id2.b" class="section level3">
 <h3>b. If the VWRfirstrun() installations were already done before</h3>
 <p>If Python or Miniconda was already installed using
 <code>VWRfirstrun()</code>, users will not be able to modify the Python
@@ -482,7 +509,7 @@ with that command line:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)</span></code></pre></div>
 <p>To stop using this environment, users may choose to clear the cache
 completely:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">unlink</span>(tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">unlink</span>(tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>If they do not wish to get rid of the previous virtual environment,
 users will have to modify and/or remove the VIRTUAL_ENV variable which
 has been stored in the <code>.Renviron</code> file, in the standard path
@@ -496,7 +523,22 @@ ephemeral environment generated by py_require() to use the latter.</p>
 </div>
 </div>
 <div id="id3" class="section level2">
-<h2>3. About the message: “Would you like to create a default Python
+<h2>3. VWRfirstrun() shows the message “Clearing reticulate’s uv
+cache…”</h2>
+<p>That is the <a href="https://pkgs.rstudio.com/reticulate/reference/py_require.html">default
+behaviour of reticulate</a>. The default duration of a virtual
+environment is 120 days, but one may choose to extend by setting this
+option in [.Rprofile] (<a href="https://rstats.wtf/r-startup.html#rprofile" class="uri">https://rstats.wtf/r-startup.html#rprofile</a>)
+manually:</p>
+<p><code>options(reticulate.max_cache_age = as.difftime(30, units = &quot;days&quot;))</code></p>
+<p>In the event that a cache clearing is triggered, the message
+“Clearing reticulate’s uv cache…” will appear and the VertexWiseR
+function that triggered it will most likely fail. Simply restart the R
+session and run VWRfirstrun() again to install a fresh virtual python
+environment.</p>
+</div>
+<div id="id4" class="section level2">
+<h2>4. About the message: “Would you like to create a default Python
 environment for the reticulate package? (Yes/no/cancel)” (reticulate
 &lt; 1.41.0)</h2>
 <p>As explained in the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/">home page</a>
@@ -504,27 +546,6 @@ footnote, this is a pop-up or prompt from the reticulate package.
 Choosing ‘Yes’ will let reticulate install Python in a virtual
 environment. This is entirely optional. Simply choose/click No/Cancel to
 ignore.</p>
-<p>The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
-documentation</a> explains:</p>
-<blockquote>
-<p>When installing Python packages it’s best practice to isolate them
-within a Python environment (a named Python installation that exists for
-a specific project or purpose). This provides a measure of isolation, so
-that updating a Python package for one project doesn’t impact other
-projects. The risk for package incompatibilities is significantly higher
-with Python packages than it is with R packages, because unlike CRAN,
-PyPI does not enforce, or even check, if the current versions of
-packages currently available are compatible.</p>
-</blockquote>
-<p>Note that VertexWiseR will install a stable specific version of
-Python itself and of each package it needs to work properly. If users
-believe they will be using the Miniconda/Python installation for more
-than VertexWiseR and will need to update them, it may be more stable to
-install a specific Miniconda/Python environment in a path of their
-choice (as allowed by VWRfirstrun()), or to use a reticulate isolated
-virtual environment.</p>
-<p>More details on why using virtual environments can be found in the <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
-documentation</a>.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References:</h2>

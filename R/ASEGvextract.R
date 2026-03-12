@@ -47,11 +47,10 @@ ASEGvextract=function(sdirpath="./", outputdir, measure = 'thickness', roilabel,
   } else if(interactive()==FALSE) { return(message('Non-interactive sessions need requirement checks'))}
   
   #Output directory
+  #will be created right before saving .RDS to avoid making an empty directory
   if (missing("outputdir")) {
     warning(paste0('No outputdir argument was given. The matrix objects will be saved in a directory named "subcortices" inside the R temporary directory (tempdir()).\n'))
     outputdir=paste0(tempdir(),'\\subcortices')
-  } else if (!dir.exists(outputdir)) {
-    dir.create(outputdir)
   }
   
   #list all Left/Right files
@@ -93,7 +92,11 @@ ASEGvextract=function(sdirpath="./", outputdir, measure = 'thickness', roilabel,
     
   ##Function stops if files not found
   if (length(subcortical_list) == 0) 
-  {return(message('Subcortical meshes could not be found in the set sdirpath.'))}
+  {
+    return(message('Subcortical meshes could not be found in the set sdirpath.'))
+  } else {
+    dir.create(outputdir, showWarnings=FALSE)
+  }
   
   #subject list
   sublist=unique(stringr::str_extract(lh.filelist, "sub-[^/]+"))
