@@ -11,7 +11,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.path = tempdir()) 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dpi = 80, fig.path = tempdir())  
 ```
 
 ## Installing VertexWiseR and checking for requirements
@@ -99,7 +99,7 @@ TFCEoutput$cluster_level_results
 
 To plot the results of both models on an inflated fsaverage5 surface:
 
-```{r, results = 'hide'}
+```{r, eval=TRUE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction and TFCE correction", fig.width=20, fig.height=10} 
 tmaps = rbind(model1_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
 plot_surf(surf_data = tmaps, 
           filename ='SPRENG_tstatmaps.png', 
@@ -107,10 +107,7 @@ plot_surf(surf_data = tmaps,
           surface = 'inflated', 
           title=c("RFT-corrected\nclusters", "TFCE-corrected\nclusters"),
           cmap='RdBu_r',
-          show.plot.window=FALSE)
-```
-```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction and TFCE correction"}
-knitr::include_graphics('SPRENG_tstatmaps.png')
+          show.plot.window=TRUE)
 ```
 
 To run meta-analytic decoding of the significant negative clusters (the neurosynth dataset needs to be installed as VWRfirstrun() allows):
@@ -122,4 +119,11 @@ surf_decoding=decode_surf_data(TFCEoutput$thresholded_tstat_map, contrast="negat
 ```{r}
 head(surf_decoding)
 ```
+
+
+```{r, echo=FALSE}
+#to clean up images written:
+unlink('SPRENG_tstatmaps.png')
+```
+
 ## References:

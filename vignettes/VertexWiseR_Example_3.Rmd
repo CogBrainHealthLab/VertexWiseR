@@ -148,7 +148,7 @@ plot_surf3d(surf_data = allaseg_model$thresholded_tstat_map,
 ```
 
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction across all ASeg  subcortices, 3D plot (screenshot)"}
-knitr::include_graphics('allaseg_plotsurf3d.png')
+knitr::include_graphics('allaseg_plotsurf3d.jpg')
 ```
 (This is just a screenshot)
 
@@ -190,6 +190,13 @@ allaseg_model_nocerebellum=RFT_vertex_analysis(
 ```
 ```{r}
 allaseg_model_nocerebellum$cluster_level_results
+```
+
+```{r, echo=FALSE}
+#to clean up images written:
+unlink('SUDMEX_CONN_thalamus_tstatmaps.png')
+unlink('SUDMEX_CONN_caudate_tstatmaps.png')
+unlink('SUDMEX_CONN_allaseg_tstatmaps.png')
 ```
 
 ## References:

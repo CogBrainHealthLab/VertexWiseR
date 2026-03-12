@@ -187,4 +187,15 @@ plot_overlay_surf(model_thalamus_thickness,
                   )
 ```
 
+```{r, echo=FALSE}
+#to clean up images written:
+unlink('sexdiff_nothresh.png')
+unlink('sexdiff_thresh.png')
+unlink('overlay_plot.png')
+unlink('overlay_plot_twocmaps.png')
+unlink('overlay_plot_twolimits.png')
+unlink('overlay_plot_hippocampus.png')
+unlink('overlay_plot_thalamus.png')
+```
+
 ## References:
