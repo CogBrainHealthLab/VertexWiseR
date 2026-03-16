@@ -1,4 +1,4 @@
-# VertexWiseR v1.5.0 (TBC)
+# VertexWiseR v1.5.0
 
 ## NEW FEATURES
 * VertexWiseR can now analyse surface-based metrics for FreeSurfer's ASeg subcortical regions, converted to surface meshes via the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh), and extracted with the new R function ASEGvextract(). A new example tutorial was created as a demonstration:  "Example analyses with VertexWiseR - Example 3".

@@ -48,7 +48,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.5.0" id="vertexwiser-v150-tbc">VertexWiseR v1.5.0 (TBC)<a class="anchor" aria-label="anchor" href="#vertexwiser-v150-tbc"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.5.0" id="vertexwiser-v150">VertexWiseR v1.5.0<a class="anchor" aria-label="anchor" href="#vertexwiser-v150"></a></h2><p class="text-muted">CRAN release: 2026-03-12</p>
 <div class="section level3">
 <h3 id="new-features-1-5-0">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-5-0"></a></h3>
 <ul><li>VertexWiseR can now analyse surface-based metrics for FreeSurfer’s ASeg subcortical regions, converted to surface meshes via the python module <a href="https://github.com/chabld/SubCortexMesh" class="external-link">SubCortexMesh</a>, and extracted with the new R function ASEGvextract(). A new example tutorial was created as a demonstration: “Example analyses with VertexWiseR - Example 3”.</li>
@@ -59,7 +59,7 @@
 <h3 id="fixes-1-5-0">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-5-0"></a></h3>
 <ul><li>In VWRfirstrun(), the check and message prompt for the neurosynth database now prints the path in which it is meant to be stored, instead of an empty “()”.</li>
 <li>The model_check() internal function inside the modelling functions could fail if ‘model’ or ‘contrast’ were given as a one-column data.frame instead of a simple vector, as the inherits() checks would not detect numeric or character classes.</li>
-<li>plot_surf() (with show.plot.window=TRUE) will no longer plot on top of the previous plot in the RStudio “Plots” tab when running the function multiple times, and reset it first.</li>
+<li>plot_surf() (with show.plot.window=TRUE) will no longer plot on top of the previous plot in the RStudio “Plots” tab when running the function multiple times, and will reset it first.</li>
 <li>plot_overlay_surf() now accepts a custom limits_2 instead of failing.</li>
 <li>Clearer error message for plot_surf() when provided with surf_data that only contains NA values, and if surf_data has multiple rows, empty rows are simply not plotted.</li>
 <li>Clearer error management and messaging when the title argument is wrongly inputted in plot_surf() (e.g. if there are more titles than there are surface rows).</li>
