@@ -15,9 +15,10 @@
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal Surface">
-<meta name="description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, XCP-D, HCP and CAT12 preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
-<meta property="og:description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, XCP-D, HCP and CAT12 preprocessed datasets and HippUnfold hippocampal segmentation outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal Surface">
+<meta name="description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, XCP-D, HCP and CAT12 preprocessed datasets, HippUnfold hippocampal outputs and SubCortexMesh subcortical outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
+<meta property="og:description" content="Provides functions to run statistical analyses on surface-based neuroimaging data, computing measures including cortical thickness and surface area of the whole-brain and of the hippocampi. It can make use of FreeSurfer, fMRIprep, XCP-D, HCP and CAT12 preprocessed datasets, HippUnfold hippocampal outputs and SubCortexMesh subcortical outputs for a given sample by restructuring the data values into a single file. The single file can then be used by the package for analyses independently from its base dataset and without need for its access.">
 <meta property="og:image" content="https://cogbrainhealthlab.github.io/VertexWiseR/logo.png">
 </head>
 <body>
@@ -28,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +45,7 @@
 <li><a class="dropdown-item" href="articles/Python_troubleshooting.html">Python troubleshooting</a></li>
     <li><a class="dropdown-item" href="articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
     <li><a class="dropdown-item" href="articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a></li>
+    <li><a class="dropdown-item" href="articles/VertexWiseR_Example_3.html">Example analyses with VertexWiseR - Example 3</a></li>
     <li><a class="dropdown-item" href="articles/VertexWiseR_plot_overlay.html">Overlaying plots and transparent thresholding</a></li>
     <li><a class="dropdown-item" href="articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a></li>
   </ul>
@@ -116,7 +118,7 @@
 <p>For this example, we use Spreng and colleagues’ neurocognitive aging <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">openneuro dataset ds003592</a>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demodata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'demo_data/SPRENG_behdata_site1.rds'</span>, package <span class="op">=</span> <span class="st">'VertexWiseR'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The dataset T1 weighted images were preprocessed using the recon-all <a href="https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki" class="external-link">FreeSurfer</a> pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, CAT12, fMRIprep/XCP-D/HPC and HippUnfold outputs), see the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a> article.</p>
+<p>The dataset T1 weighted images were preprocessed using the recon-all <a href="https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferWiki" class="external-link">FreeSurfer</a> pipeline. This tutorial will not reiterate these steps. For a detailed guide about surface extraction (from FreeSurfer, CAT12, sMRIprep/fMRIprep/ASLprep, XCP-D/HCP processing, HippUnfold and SubCortexMesh outputs), see the <a href="https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a> article.</p>
 <p>Here, we explain how, from a given FreeSurfer subject directory, VertexWiseR extracts surface-based measures and synthesizes the whole-sample data into a compact matrix object (.rds) for later analyses.</p>
 <p>The SURFvextract() function can extract surface-based measures including ‘thickness’, ‘curv’, ‘sulc’, and ‘area’. Here, we were interested in cortical thickness (CT), so the command which we entered to extract CT from the Spreng dataset was as follows (the sdirpath is just an example):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -179,7 +181,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>, filename <span class="op">=</span> <span class="st">'sigcluster.png'</span>, surface <span class="op">=</span> <span class="st">'inflated'</span>, cmap <span class="op">=</span> <span class="st">'seismic'</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li><p><code>surf_data</code>: A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), FSLRvextract(), CAT12vextract(), HIPvextract() as well as masks or vertex-wise results outputted by analyses functions.</p></li>
-<li><p><code>filename</code>: A string object containing the desired name of the output .png. Default is ‘plot.png’ in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.</p></li>
+<li><p><code>filename</code>: A string object containing the desired name of the output .png. Default is ‘plot.png’ in the R temporary directory (tempdir()). Only filenames with a .png extension are allowed.</p></li>
 <li>
 <p><code>cmap</code> (optional) : A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the .</p>
 <p>Default cmap is set to <code>"Reds"</code> for positive values, <code>"Blues_r"</code> for negative values and <code>"RdBu"</code> when both positive and negative values exist.</p>
@@ -188,7 +190,7 @@
 <li><p><code>surface</code> (optional) : A string object containing the name of the type of cortical surface background rendered. Possible options include <code>"white"</code>, <code>"smoothwm"</code>,<code>"pial"</code> and <code>"inflated"</code> (default). The surface parameter is ignored for hippocampal surface data.</p></li>
 </ul>
 <div class="float">
-<img src="reference/figures/sigcluster.png" alt="Significant clusters for the effect of age on thickness"><div class="figcaption">Significant clusters for the effect of age on thickness</div>
+<img src="reference/figures/sigcluster.jpg" alt="Significant clusters for the effect of age on thickness"><div class="figcaption">Significant clusters for the effect of age on thickness</div>
 </div>
 </div>
 <div class="section level4">
@@ -272,7 +274,7 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_surf.html">plot_surf</a></span><span class="op">(</span>surf_data <span class="op">=</span> <span class="va">results</span><span class="op">$</span><span class="va">thresholded_tstat_map</span>,filename <span class="op">=</span> <span class="st">"sexdiff.png"</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="reference/figures/sexdiff.png" alt="Significant clusters for effect of sex on cortical thickness"><div class="figcaption">Significant clusters for effect of sex on cortical thickness</div>
+<img src="reference/figures/sexdiff.jpg" alt="Significant clusters for effect of sex on cortical thickness"><div class="figcaption">Significant clusters for effect of sex on cortical thickness</div>
 </div>
 <p>According to these results, since the female sex is coded as 0 and males as 1 (this can be done manually beforehand), the regions colored in red are thicker in males.</p>
 </div>
@@ -306,12 +308,12 @@
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#install.packages("wordcloud","paletteer")</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://blog.fellstat.com/?cat=11" class="external-link">wordcloud</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EmilHvitfeldt/paletteer" class="external-link">paletteer</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://emilhvitfeldt.github.io/paletteer/" class="external-link">paletteer</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">wordcloud</span><span class="op">(</span>words <span class="op">=</span> <span class="va">keywords</span><span class="op">$</span><span class="va">keyword</span>, <span class="co">##keyword input</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/wordcloud/man/wordcloud.html" class="external-link">wordcloud</a></span><span class="op">(</span>words <span class="op">=</span> <span class="va">keywords</span><span class="op">$</span><span class="va">keyword</span>, <span class="co">##keyword input</span></span>
 <span>          freq <span class="op">=</span> <span class="va">keywords</span><span class="op">$</span><span class="va">r</span>, <span class="co">##setting the size of the keyword to vary with its r value</span></span>
 <span>          min.freq <span class="op">=</span> <span class="fl">0.05</span>, <span class="co">##minimum r value in order for the keyword to be displayed</span></span>
-<span>          colors<span class="op">=</span><span class="fu">paletteer_c</span><span class="op">(</span><span class="st">"grDevices::Temps"</span>, <span class="fl">10</span><span class="op">)</span> <span class="co">##color scheme</span></span>
+<span>          colors<span class="op">=</span><span class="fu"><a href="https://emilhvitfeldt.github.io/paletteer/reference/paletteer_c.html" class="external-link">paletteer_c</a></span><span class="op">(</span><span class="st">"grDevices::Temps"</span>, <span class="fl">10</span><span class="op">)</span> <span class="co">##color scheme</span></span>
 <span>          ,scale<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span> </span>
 <span>          <span class="op">)</span> </span>
 <span>          <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -364,7 +366,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

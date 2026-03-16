@@ -13,7 +13,7 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 70, fig.path = tempdir())  
+knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 70)  
 library(VertexWiseR)
 ```
 
@@ -89,19 +89,19 @@ caudatemaps= rbind(model_caudate_thickness$thresholded_tstat_map,
 
 ```
 
-```{r, echo=TRUE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction on the thalamus and caudate",fig.width=10, fig.height=7}
-plot_surf(thalamusmaps, 
+```{r, results = 'hide', fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction on the thalamus",fig.width=10, fig.height=7}
+thalamusplot=plot_surf(thalamusmaps, 
           filename='SUDMEX_CONN_thalamus_tstatmaps.png',
           title=c('Thickness','Curvature'),
           smooth_mesh=20,
-          show.plot.window=TRUE,
-          VWR_check = FALSE)
-plot_surf(caudatemaps, 
+          show.plot.window=TRUE)
+```
+```{r, results = 'hide', fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction on the caudate nuclei",fig.width=10, fig.height=7}
+caudateplot=plot_surf(caudatemaps, 
           filename='SUDMEX_CONN_caudate_tstatmaps.png',
           title=c('Thickness','Curvature'), 
           smooth_mesh=20,
-          show.plot.window=TRUE,
-          VWR_check = FALSE)
+          show.plot.window=TRUE)
 ```
 
 
@@ -131,7 +131,7 @@ allaseg_model$cluster_level_results
 
 We can plot the subcortices together the same way:
 
-```{r, results = 'hide',  fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction across all ASeg  subcortices, 2D plot", fig.width=10, fig.height=2}
+```{r, results = 'hide', fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction across all ASeg  subcortices, 2D plot", fig.width=10, fig.height=2}
 allasegplot=plot_surf(
   surf_data=allaseg_model$thresholded_tstat_map,
   filename='SUDMEX_CONN_allaseg_tstatmaps.png',

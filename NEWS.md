@@ -8,7 +8,7 @@
 ## FIXES
 * In VWRfirstrun(), the check and message prompt for the neurosynth database now prints the path in which it is meant to be stored, instead of an empty "()".
 * The model_check() internal function inside the modelling functions could fail if 'model' or 'contrast' were given as a one-column data.frame instead of a simple vector, as the inherits() checks would not detect numeric or character classes.
-* plot_surf() (with show.plot.window=TRUE) will no longer plot on top of the previous plot in the RStudio "Plots" tab when running the function multiple times, and reset it first.
+* plot_surf() (with show.plot.window=TRUE) will no longer plot on top of the previous plot in the RStudio "Plots" tab when running the function multiple times, and will reset it first.
 * plot_overlay_surf() now accepts a custom limits_2 instead of failing. 
 * Clearer error message for plot_surf() when provided with surf_data that only contains NA values, and if surf_data has multiple rows, empty rows are simply not plotted.
 * Clearer error management and messaging when the title argument is wrongly inputted in plot_surf() (e.g. if there are more titles than there are surface rows).

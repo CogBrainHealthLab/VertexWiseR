@@ -27,4 +27,6 @@
 ^man/figures/logo.png
 ^vignettes/*.png
 ^vignettes/*.jpg
+^vignettes/*.html
+^vignettes/*_files/
 ^.gitattributes

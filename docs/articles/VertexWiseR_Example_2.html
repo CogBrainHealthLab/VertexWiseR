@@ -15,7 +15,8 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Example analyses with VertexWiseR - Example 2">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Example analyses with VertexWiseR - Example 2">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +42,7 @@
 <li><a class="dropdown-item" href="../articles/Python_troubleshooting.html">Python troubleshooting</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_1.html">Example analyses with VertexWiseR - Example 1</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_2.html">Example analyses with VertexWiseR - Example 2</a></li>
+    <li><a class="dropdown-item" href="../articles/VertexWiseR_Example_3.html">Example analyses with VertexWiseR - Example 3</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_plot_overlay.html">Overlaying plots and transparent thresholding</a></li>
     <li><a class="dropdown-item" href="../articles/VertexWiseR_surface_extraction.html">Extracting surface data in VertexWiseR</a></li>
   </ul>
@@ -98,11 +100,10 @@ page</a> for details).</strong></p>
 <p>The analysis will use surface data already extracted in R from a
 preprocessed subjects directory, which we make available so you do not
 need to preprocess a sample yourself. To obtain it, we had extracted
-cortical thickness (CT) data from a Hippunfold preprocessing directory
-of the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0" class="external-link">Fink
+thickness data from a Hippunfold preprocessing directory of the <a href="https://openneuro.org/datasets/ds003799/versions/2.0.0" class="external-link">Fink
 dataset</a> <span class="citation">(Fink et al. 2021)</span>.</p>
-<p>The demo data (218 MB) required to run the package demos can be
-downloaded from the package’s github repository with the following
+<p>The demo data (~216 MB) required to run the example analysis, and can
+be downloaded from the package’s github repository with the following
 function:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)</span></span>
@@ -153,13 +154,13 @@ on hippocampal thickness, with subject ID as a random variable:</p>
 <span>  nperm<span class="op">=</span><span class="fl">1000</span>, </span>
 <span>  random <span class="op">=</span> <span class="va">dat_beh_ses13</span><span class="op">[</span>,<span class="st">"participant_id"</span><span class="op">]</span>, </span>
 <span>  perm_type<span class="op">=</span><span class="st">"within_between"</span>, </span>
-<span>  nthread<span class="op">=</span><span class="fl">1</span><span class="op">)</span> </span>
+<span>  nthread<span class="op">=</span><span class="fl">4</span><span class="op">)</span> </span>
 <span><span class="va">TFCEoutput</span> <span class="op">=</span> <span class="fu"><a href="../reference/TFCE_threshold.html">TFCE_threshold</a></span><span class="op">(</span><span class="va">model2_TFCE</span>, p<span class="op">=</span><span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <pre><code><span><span class="co">## $`Positive contrast`</span></span>
 <span><span class="co">##   clusid nverts     P     X    Y   Z tstat      region</span></span>
-<span><span class="co">## 1      1     73 0.033 -27.5 27.5 1.3  4.14 L Subiculum</span></span>
+<span><span class="co">## 1      1     73 0.033 -13.3 27.5 1.3  4.14 L Subiculum</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $`Negative contrasts`</span></span>
 <span><span class="co">## [1] "No significant clusters"</span></span></code></pre>
@@ -171,8 +172,8 @@ hippocampal template surface:</p>
 <span>          filename <span class="op">=</span> <span class="st">'FINK_tstatmaps.png'</span>,</span>
 <span>          title<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'RFT-corrected\nclusters'</span>,<span class="st">'TFCE-corrected\nclusters'</span><span class="op">)</span>, </span>
 <span>          cmap<span class="op">=</span><span class="st">'Reds'</span>,</span>
-<span>          show.plot.window<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FINK_tstatmaps.png" alt="Significant hippocampal clusters, RFT corrected and TFCE corrected" width="100%" style="display: block; margin: auto;"></p>
+<span>          show.plot.window<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="VertexWiseR_Example_2_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Significant hippocampal clusters, RFT corrected and TFCE corrected" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="example-2-follow-up-plotting-and-post-hoc-analyses-of-hippocampal-clusters-across-regression-models">Example 2 follow-up: plotting and post-hoc analyses of hippocampal
@@ -211,21 +212,24 @@ models, demonstrating a steeper curve toward group 2:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Group"</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group 1"</span>, <span class="st">"group 2"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">1.55</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span>filename<span class="op">=</span><span class="st">"traj.png"</span>, res<span class="op">=</span><span class="fl">250</span>, width<span class="op">=</span><span class="fl">1400</span>,height<span class="op">=</span><span class="fl">604</span><span class="op">)</span></span>
-<span><span class="va">plots</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">a</span>,<span class="va">b</span>, nrow<span class="op">=</span><span class="fl">1</span>,rel_widths<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">0.40</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="traj.png" alt="Graph showing average cluster thickness per group and correction method for each cluster" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="co">#to write the image file</span></span>
+<span><span class="co">#png(filename="traj.png", res=250, width=1400,height=604)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plots</span><span class="op">=</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">a</span>,<span class="va">b</span>, nrow<span class="op">=</span><span class="fl">1</span>,rel_widths<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">0.40</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span></span></code></pre></div>
+<p><img src="VertexWiseR_Example_2_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="Graph showing average cluster thickness per group and correction method for each cluster" width="100%" style="display: block; margin: auto;"></p>
+<pre><code><span><span class="co">## null device </span></span>
+<span><span class="co">##           1</span></span></code></pre>
 <p>As an additional validation of these results, these significant
 clusters were extracted as regions-of-interests and fitted in a linear
 mixed effects model using another R package— lmerTest <span class="citation">(Kuznetsova, Brockhoff, and Christensen
 2017)</span>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/runehaubo/lmerTestR" class="external-link">lmerTest</a></span><span class="op">)</span></span></code></pre></div>
 <p>Linear mixed effect testing the effect of session, group, and session
 * group interaction on the positive RFT clusters’ average thickness
 value</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lme.RFT</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/lmerTest/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">clustRFT</span><span class="op">~</span><span class="va">session</span><span class="op">+</span><span class="va">group</span><span class="op">+</span><span class="va">session</span><span class="op">*</span><span class="va">group</span><span class="op">+</span><span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">participant_id</span><span class="op">)</span>,data <span class="op">=</span><span class="va">dat_beh_ses13</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lme.RFT</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Linear mixed model fit by REML. t-tests use Satterthwaite's method [</span></span>
@@ -262,7 +266,7 @@ value</p>
 <p>Linear mixed effect testing the effect of session, group, and session
 * group interaction on the positive TFCE clusters’ average thickness
 value</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lme.posTFCE</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/lmerTest/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">clustCTTFCE</span><span class="op">~</span><span class="va">session</span><span class="op">+</span><span class="va">group</span><span class="op">+</span><span class="va">session</span><span class="op">*</span><span class="va">group</span><span class="op">+</span><span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">participant_id</span><span class="op">)</span>,data <span class="op">=</span><span class="va">dat_beh_ses13</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lme.posTFCE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Linear mixed model fit by REML. t-tests use Satterthwaite's method [</span></span>
@@ -328,7 +332,7 @@ Statistical Software</em> 82 (December): 1–26. <a href="https://doi.org/10.186
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -1,0 +1,4 @@
+[data-bs-theme="dark"] body img.r-plt,
+[data-bs-theme="dark"] body .cell-output-display img {
+  filter: none !important;
+}

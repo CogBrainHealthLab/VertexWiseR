@@ -125,7 +125,7 @@ This variable is automatically removed when the virtual environment can no longe
 
 ## 3. VWRfirstrun() shows the message "Clearing reticulate's uv cache..." {#id3}
 
-That is the [default behaviour of reticulate](https://pkgs.rstudio.com/reticulate/reference/py_require.html). The default duration of a virtual environment is 120 days, but one may choose to extend by setting this option in [.Rprofile] (<https://rstats.wtf/r-startup.html#rprofile>) manually:
+That is the [default behaviour of reticulate](https://pkgs.rstudio.com/reticulate/reference/py_require.html). The default duration of a virtual environment is 120 days, but one may choose to extend by setting this option in [.Rprofile](https://rstats.wtf/r-startup.html#rprofile) manually:
 
 `options(reticulate.max_cache_age = as.difftime(30, units = "days"))`
 

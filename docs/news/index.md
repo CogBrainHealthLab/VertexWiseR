@@ -1,0 +1,369 @@
+# Changelog
+
+## VertexWiseR v1.5.0 (TBC)
+
+### NEW FEATURES
+
+- VertexWiseR can now analyse surface-based metrics for FreeSurfer’s
+  ASeg subcortical regions, converted to surface meshes via the python
+  module [SubCortexMesh](https://github.com/chabld/SubCortexMesh), and
+  extracted with the new R function ASEGvextract(). A new example
+  tutorial was created as a demonstration: “Example analyses with
+  VertexWiseR - Example 3”.
+- plot_overlay_surf() now works with HippUnfold’s hippocampal data
+  (CIT168 template) and SubCortexMesh subcortical data.
+- plot_surf(), and plot_overlay_surf() and plot_surf3d() now have a
+  smooth_mesh argument to make the surface appear smoother in the plot.
+
+### FIXES
+
+- In VWRfirstrun(), the check and message prompt for the neurosynth
+  database now prints the path in which it is meant to be stored,
+  instead of an empty “()”.
+- The model_check() internal function inside the modelling functions
+  could fail if ‘model’ or ‘contrast’ were given as a one-column
+  data.frame instead of a simple vector, as the inherits() checks would
+  not detect numeric or character classes.
+- plot_surf() (with show.plot.window=TRUE) will no longer plot on top of
+  the previous plot in the RStudio “Plots” tab when running the function
+  multiple times, and reset it first.
+- plot_overlay_surf() now accepts a custom limits_2 instead of failing.
+- Clearer error message for plot_surf() when provided with surf_data
+  that only contains NA values, and if surf_data has multiple rows,
+  empty rows are simply not plotted.
+- Clearer error management and messaging when the title argument is
+  wrongly inputted in plot_surf() (e.g. if there are more titles than
+  there are surface rows).
+
+## VertexWiseR v1.4.5
+
+CRAN release: 2025-12-15
+
+### NEW FEATURES
+
+- The formula option now also works with (non-data.frame) single-vector
+  data and will automatically name the single variable after whatever IV
+  name was written inside the formula.
+
+### FIXES
+
+- Model checks for single-column/vector factor variables failed and
+  prevented models from running. The script has been corrected.
+
+## VertexWiseR v1.4.4
+
+CRAN release: 2025-12-04
+
+### NEW FEATURES
+
+- RFT_vertex_analysis(), TFCE_vertex_analysis() and
+  TFCE_vertex_analysis_mixed() now have an “inverse” boolean argument
+  allowing to treat every vertex of the surface data as the predictor,
+  and the “contrast” variable as the dependent variable, keeping the
+  other covariates in place. Note that this increases the modelling time
+  substantially.
+- plot_surf3d now has the option to disable the background grid and to
+  save the image with a transparent background.
+
+### FIXES
+
+- In special circumstances, possibly due to the conversion of python
+  objects in recent reticulate versions, the cluster-wise
+  p.value/cluster IDs ended up being a list object instead of numeric,
+  which caused various errors when attempting to report cluster-wise
+  results. This is now accounted for.
+- plot_surf no longer fails if given as surf_data a 1-row matrix or
+  data.frame object instead of a simple numeric vector for single
+  subject data.
+- plot_surf3d is now able to render all colour palettes provided with
+  RColorBrewer.
+- TFCE_vertex_analysis_mixed was cleaning up the temp.dir which affected
+  functions that store files there in the same session, such as the
+  default plot_surf(). It is now let for R to clean it up itself after
+  the R session ends.
+- TFCE permutation optimisation: more data is preloaded and internal
+  python calls regulated to use strictly one thread per parallel jobs.
+  The phenomenon of computing time increasing with nthreads for certain
+  CPU systems (as in the [paper’s Table
+  6](https://doi.org/10.1162/imag_a_00372)) should no longer manifest
+  itself, as it seems parallel jobs would use more threads than required
+  in their python processes.
+
+## VertexWiseR v1.4.3
+
+CRAN release: 2025-10-21
+
+### FIXES
+
+- Dependency fixes for the different python installation options in
+  VWRfirstrun(). netneurotools version 0.2.5 is now a dependency as the
+  subsequent versions conflict with brainstat’s use of
+  netneurotools.civet (notably, to fetch fsaverage templates when
+  running VWRfirstrun()). VWRfirstrun() will automatically install
+  0.2.5, and current users may do it themselves via
+  reticulate::py_install(“netneurotools==0.2.5”).
+- Brainstat was installed automatically in the available reticulate
+  miniconda installation, but this should not happen if python alone was
+  installed as the preferred environment beforehand, this is now fixed.
+- reticulate::py_discover_config() no longer detects r-miniconda if
+  installed before VertexWiseR. VWRfirsturn() now searches for it, based
+  on reticulate::miniconda_path(). It will not be possible to
+  automatically detect standalone python installation made with
+  reticulate::install_python() independently from VWRfirstrun(). An
+  alternative is to [predefine your python path
+  yourself](https://rstudio.github.io/reticulate/reference/use_python.html).
+
+## VertexWiseR v1.4.2
+
+CRAN release: 2025-10-01
+
+### FIXES
+
+- decode_surf_data() does not work with nilearn package version \>
+  0.12.0 (as currently imported by NiMARE, used for the meta-analytic
+  decoding). By default, Brainstat’s installation collected nilearn
+  v0.11.1 already (in the classic Miniconda or Python installations),
+  but this does not happen when the default UV Python virtual
+  environment is installed with VWRfirstrun(). Now, nilearn v0.11.1 is
+  also installed systematically with the virtual environment. Current
+  virtual environment users encountering the error can install the right
+  version themselves (reticulate::py_require(“nilearn”, action =
+  “remove”); reticulate::py_install(“nilearn==0.11.1”)), or install a
+  new fresh python virtual environment following [this
+  tutorial](https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html).
+
+## VertexWiseR v1.4.1
+
+CRAN release: 2025-08-19
+
+### NEW FEATURES
+
+- The ciftiTools package and connectome workbench are no longer needed
+  to extract FSLR32K surface when using FSLRvextract() or
+  DTSERIESvextract(). The surface extraction tutorial was updated
+  accordingly.
+
+### FIXES
+
+- If Brainstat was not installed, CAT12vextract() failed as it assumed
+  the nibabel package (a dependency of Brainstat) to be installed and
+  only checked for Python. Brainstat is now required for the function to
+  run, to simplify dependency management. It will also be required for
+  FSLRvextract() and DTSERIESvextract().
+
+## VertexWiseR v1.4.0
+
+CRAN release: 2025-07-30
+
+### NEW FEATURES
+
+- New function getting_started(): allows users to run through the
+  package’s tutorials and to download all the demo data at once. Article
+  vignettes now propose downloading the demo data in bulk rather than
+  running a downloading line every step of the way.
+- New function plot_overlay_surf(): allows users to plot two surfaces on
+  top of each other, with boundaries, varying opacity, color maps and
+  value ranges (for cortical surfaces). A new tutorial/vignette called
+  [Overlaying plots and transparent
+  thresholding](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_plot_overlay.html)
+  was also created to showcase it.
+- New function DTSERIESvextract(): allows users to extract vertex-wise
+  surface-based CIFTI dense time-series data from an individual dtseries
+  .nii file from HCP, fMRIprep or XCP-D preprocessed directories.
+- New options for plot_surf: alpha setting to reduce transparency of
+  non-NaN vertices, and option to not plot the NaN vertices.
+
+### FIXES
+
+- When VWRfirstrun() was set to promptless, it checked the wrong
+  directory path for brainstat’s fslr32k data and considered it missing.
+- Successful check message stopped showing except when
+  promptless==FALSE, which should be the opposite.
+- Fix to ensure the right numpy version gets installed when installing
+  miniconda, in case brainstat does not upon installation.
+- Fix to still run UV if the RETICULATE_PYTHON variable was explicitly
+  set to NA (a suggestion given in [our
+  article](https://cogbrainhealthlab.github.io/VertexWiseR/articles/Python_troubleshooting.html)
+  for users whose systems already have , a python installed but want to
+  dedicate VWR to a virtual environment).
+
+## VertexWiseR v1.3.2
+
+CRAN release: 2025-06-11
+
+### FIXES
+
+- Function argument: FSLRvextract()’s argument “dscaler” changed to
+  “dscalar”
+
+## VertexWiseR v1.3.1
+
+CRAN release: 2025-04-14
+
+### NEW FEATURES
+
+- Slight modification of the cluster building process, which speeds up
+  TFCE analyses.
+- plot_surf() now includes the transparent_bg argument which uses a
+  boolean to make the plot’s background transparent (default is FALSE,
+  white background).
+- fslr32k can now be used in surf_to_vol() and decode_surf_data()
+- BrainStat’s Yeo parcellation data are no longer required by
+  VWRfirstrun(). They were fetched by default in BrainStat’s SLM script,
+  when VertexWiseR used it with hippocampal surfaces.
+- Slightly clearer message in VWRfirstrun()’s check of the BrainStat
+  data path: the actual user’s home path is printed instead of
+  “\$HOME_DIR/”.
+
+### FIXES
+
+- Documentation mistake: surf_to_vol() does NOT work with fsaverage6.
+
+## VertexWiseR v1.3.0
+
+CRAN release: 2025-03-18
+
+### NEW FEATURES
+
+- TFCE computation is now optimized for speed: previously, the parallel
+  steps in the permutation loop were building the linear model again
+  every time; now the model will be saved as a file in a temporary
+  directory (tempdir(), which will automatically be cleaned up), and
+  loaded within the loops instead of rebuilt.
+
+### FIXES
+
+- TFCE_vertex_analysis_mixed(): The random variable was not being
+  processed identically in BrainStat across the permuted and unpermuted
+  models, because of a setting factorizing the variable in only one
+  case. Now random variables are factorized in both. This error affected
+  the coefficients and t-stat estimations, and by extension the results
+  of Example 2, which no longer shows negative clusters and now displays
+  a smaller positive cluster for TFCE. This makes the outcome more
+  consistent with the RFT results (TFCE being more conservative instead
+  of the opposite). We apologise for overlooking this inconsistency in
+  the code. Please refer to Example 2 as presented in its
+  vignette/[website
+  page](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html)
+  for the most up-to-date and accurate results.
+
+## VertexWiseR v1.2.1
+
+CRAN release: 2025-03-10
+
+### NEW FEATURES
+
+- Reticulate’s [last update](https://posit.co/blog/reticulate-1-41/)
+  allows users to install ephemeral Python environments with UV instead
+  of requiring a stable Python/Miniconda installation. If users create
+  their own with py_require() before running VertexWiseR, such
+  environment will be selected automatically. If no Python environment
+  is found, VertexWiseR now gives the choice to either install an
+  ephemeral environment with UV, or to install Miniconda or Python via
+  the classic ways.
+
+### FIXES
+
+- SURFvextract() now gives a proper error message if subjects’ surface
+  measure files could not be found. It also will get rid of the
+  sublist.txt which was outputted automatically if subj_ID was set to
+  FALSE.
+- Fix for messages that were silenced by mistake during Miniconda’s
+  installations process.
+- Fix for the script using pip/pip3 to install properly vtk (9.3.1) when
+  choosing the classic Python installation.
+
+## VertexWiseR v1.2.0
+
+CRAN release: 2024-12-12
+
+### NEW FEATURES
+
+- Update for RFT_vertex_analysis: now outputs also the unthresholded
+  tstat map; Rdoc fixed accordingly (setting p=1 as previously advised
+  caused errors, it doesn’t simply output the unthresholded tstat map)
+- SURFvextract() now has the optional argument fshomepath. This ensures
+  FreeSurfer’s environment is accessed by R and set up again if the
+  function is used from RStudio and the FREESURFER_HOME variable has
+  been defined before running Rstudio. This is needed because RStudio
+  does not inherit the system variables set before opening it from a
+  terminal.
+- If the surf_data argument (in modelling or smoothing functions) is a
+  list object with the subject list along with the surface matrix (as
+  outputted by extraction functions with subj_ID=TRUE), the code
+  automatically detects the matrix in that list, named “surf_obj”,
+  instead of forcing users to specify the matrix.
+- Modelling functions now accept a string with the path to the .rds file
+  outputted by extraction functions, instead of only the matrix itself
+  as the surf_data argument
+- New function CAT12vextract() which allows surface data resampled to
+  32k meshes in CAT12 to be extracted and converted to a surface .rds
+  object. This works with any measure applicable for the 32k resampled
+  meshes (‘thickness’, ‘depth’, ‘fractaldimension’, ‘gyrification’, and
+  ‘toroGI20mm’).
+- New vignette/article gives advice on how to solve various
+  Python-related issues
+- Numpy’s version check is no longer present as pip replaces it upon
+  BrainStat’s installation with the compatible version
+
+### FIXES
+
+- Python package ‘vtk’ causes issues in latest 9.4.0 versions. The
+  correct 9.3.1 version is now installed when installing Miniconda or
+  reticulate’s Python environment via VWRfirstrun().
+- The cmap argument in plot_surf() is now converted to class color if
+  not in that class by default
+- Surface extracters fix: Working directory is restored before saving
+  the RDS instead of on exit for HIPvextract() and FSLRvextract(). This
+  ensures the filename is not interpreted as relative to the sdirpath
+  (subjects directory).
+- Fixed a parameter that was skipping VWR_check if smooth_surf() or
+  TFCE_threshold() were nested to avoid VWR_check’s repetition. This
+  caused issues for non-interactive sessions/other nesting situations.
+  Now, instead: For TFCE_threshold(), users calling it may manually set
+  the argument VWR_check=FALSE if they want it to be skipped. For
+  smooth_surf(), now VWR_check will be skipped if the parent function is
+  identified as “model_check” as it will mean the smooth function is run
+  from a function that already have a VWR_check (RFT_vertex_analysis,
+  TFCE_vertex_analysis and TFCE_vertex_analysis_mixed functions).
+- Fix for non-miniconda Python installation: numpy, vtk and brainstat
+  were installed via system(’‘) but the optional use of pip or pip3 did
+  not work properly in Windows due to a bash syntax error. The pip3
+  installation is now only triggered if an error occurs with the first
+  system(’pip …’) call. Furthermore, reticulate’s environment is loaded
+  immediately after the Python installation to make sure the pip
+  function can be used subsequently to install the required packages.
+  Other minor improvements in the messages printed during the
+  VWRfirstrun() installation process.
+- VWRfirstrun(): One message was still showing even if promptless=TRUE,
+  this is now fixed
+- FSLRvextract(): Default filename fixed (simply ‘fslr32k.rds’)
+- To avoid instability, the reticulate Miniconda installation is now set
+  at v.24.9.2 instead of the latest
+
+## VertexWiseR v1.1.0
+
+CRAN release: 2024-10-10
+
+### NEW FEATURES
+
+- New plotsurf_3d() function: allows surface data to be plotted in a 3D
+  viewer via the plotly interface
+- The [extraction
+  tutorial](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html)
+  now also gives FreeSurfer preprocessed data for demonstration
+- plot_surf() now accepts atlas ROI values from atlases supported by
+  atlas_to_surf()
+- atlas_to_surf() now works with hippocampal surface data
+- smooth_surf() allows to enter a path to a surface .rds object instead
+  of inputting the object itself
+
+### FIXES
+
+- For miniconda/python libraries installations via VWRfirstrun(), pip3
+  added as an alternative used if pip install fails
+- Fixed Surface extraction tutorial (download.file had the wrong
+  url/method, untar added as alternative as unzip had possible failures
+  for the demo surface data)
+- Fixes for MacOS (better custom path management, SURFvextract()
+  compatibility issue fixed)
