@@ -69,13 +69,19 @@ smooth_surf=function(surf_data, FWHM, VWR_check=TRUE)
     FWHM=FWHM/0.5 #converting m to mesh units
   #subcortexmesh subortices 
   } 
-  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718)) 
+  #subcortexmesh
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718, 2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))
   {
-    scm_database_check() #check if database directory is present
-    edgelist=scm_database_fetcher(n_vert,'edgelist')
-    #based off fsaverage's aseg.mgz (1mm isotropic) but euclidian distance (np.linalg.norm) suggests it's 0.9
+    #specify template 
+    if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))         {template='fsaverage'} 
+    else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))         {template='fslfirst'}
+    
+    scm_database_check(template) #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist', template)
+    #based off MNI (1mm isotropic) but euclidian distance (np.linalg.norm) calculated on meshes (both fsaverage/fslfirst) suggests it's 0.9
     FWHM=FWHM/0.9 #converting m to mesh units
-  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+    
+  } else {stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. For SubCortexMesh subcortices, please refer to ?SCMvextract().")}
   
   #to mask out the 0-value vertices (e.g., medial wall), so as to prevent the border regions from being significantly diluted by the 0-value vertices	  
   idx0=which(colSums(data.matrix(surf_data))==0)

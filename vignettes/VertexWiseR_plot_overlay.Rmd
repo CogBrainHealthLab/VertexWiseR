@@ -148,7 +148,7 @@ plot_overlay_surf(model_output=model2_RFT,
 
 ## Overlaying SubCortexMesh subcortical plots
 
-Likewise subcortices obtained via ASEGvextract() can also be overlaid, but that requires downloading associated template data (the package will prompt you automatically or you may do it directly by typing VertexWiseR:::scm_database_check()).
+Likewise subcortices obtained via SCMvextract() can also be overlaid, but that requires downloading associated template data (the package will prompt you automatically or you may do it directly by typing VertexWiseR:::scm_database_check()).
 
 We reproduce the results from the example analysis in [the dedicated vignette](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_3.html):
 

@@ -121,13 +121,18 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
     edgelist <- edgelist_hip@data
     assign("edgelist", edgelist)
   }
-  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
-  {
-    scm_database_check() #check if database directory is present
-    edgelist=scm_database_fetcher(n_vert,'edgelist')
+  #subcortexmesh
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718, 2026,3592,7570,31466,8244,3548,7908,8542,9516,82412) #fslfirst template
+    ){
+    #specify template 
+    if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))         {template='fsaverage'} 
+    else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))         {template='fslfirst'}
+    
+    scm_database_check(template) #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist',template)
     assign("edgelist", edgelist)
   }
-  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For SubCortexMesh subcortices, please refer to ?SCMvextract().")}
   
   ##unpermuted model
   #preparing mask for model

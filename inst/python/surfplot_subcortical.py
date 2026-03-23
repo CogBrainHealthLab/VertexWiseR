@@ -2,7 +2,8 @@
 """
 import numpy as np
 import copy
-
+import os
+os.environ["VTK_DEFAULT_RENDER_WINDOW_OFFSCREEN"] = "1" #safeguard for vtk crash
 from brainspace.plotting import plot_surf as ps
 from brainspace.mesh import mesh_creation as mc
 import vtk
@@ -79,9 +80,9 @@ def surfplot_subcortical(cdata, lh_celldata, rh_celldata, hemis=['L','R'],size=[
         
     #view to slightly differ for Brain-Stem (as no hemispheres)
     #and cerebellum (as inside/coronal view may be less relevant)
-    if cdata.shape[0] == 9452 or cdata.shape[0] == 95718:
+    if cdata.shape[0] in [9452, 95718, 9516, 82412]:
       view=['ventral','dorsal','medial','lateral']
-    elif cdata.shape[0] == 19559:
+    elif cdata.shape[0]==19559: #only applies to fsaverage
       view=['ventral','medial','lateral','ventral']
       lf.Points = rotate_points(lf.Points, axis='x', angle_deg=90)
       rf.Points = rotate_points(rf.Points, axis='x', angle_deg=90)
@@ -113,66 +114,137 @@ def rotate_points(points, axis='z', angle_deg=90):
     return points @ R.T
 
 #ROI-specific visual parameters
-#/!\ cdata.shape[0] will have the vertex count of the largest hemisphere, so not always the left
+#/!\ cdata.shape[0] will have the vertex count of the largest hemisphere, so NOT always the left
 def coord_optimizer(cdata, lh, rh):
+  #depends on template [fsaverage max, fslfirst max]
   #accumbens nuclei
-  if cdata.shape[0] == 1022:
-    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=-30)
-    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-25)
-    rh.Points[:,2]=rh.Points[:,2]/1.7 #Z changed due to asymmetry
-    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=60)
-  #amygdalae
-  if cdata.shape[0] == 1792:
-    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-10)
-    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=30)
-  #caudate
-  if cdata.shape[0] == 3500:
-    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=-30)
-    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=30)
+  if cdata.shape[0] == 1022: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=-40)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-215)
+    #rh.Points[:,2]=rh.Points[:,2]/1.5 #Z changed due to asymmetry
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=55)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-210)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-20)
+  if cdata.shape[0] == 1104: #fslflirt
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=30)
     lh.Points = rotate_points(lh.Points, axis='x', angle_deg=10)
-    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=10)
-  #cerebellum
-  if cdata.shape[0] == 19664:
-    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=0)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-50)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-50)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=0)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=60)
+  #amygdalae
+  if cdata.shape[0] == 1792: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-10)
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=10)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=190)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-20)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=180)
+  if cdata.shape[0] == 1834: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-90)
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=10)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-180)
+    lh.Points[:,2]=lh.Points[:,2]/1.5 #zoom: Z changed due to asymmetry
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-80)
     rh.Points = rotate_points(rh.Points, axis='y', angle_deg=0)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-190)
+  #caudate
+  if cdata.shape[0] == 3500: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=-50)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=50)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=40)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=50)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=40)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-30)
+  if cdata.shape[0] == 3970: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=-40)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-20)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=50)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=30)
+  #cerebellum
+  if cdata.shape[0] == 19664: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=0)
     lh.Points = rotate_points(lh.Points, axis='x', angle_deg=180)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=0)
     rh.Points = rotate_points(rh.Points, axis='x', angle_deg=180)
+  if cdata.shape[0] == 15806: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=0)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=90)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=0)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=90)
   #hippocampus
-  if cdata.shape[0] == 4086:
+  if cdata.shape[0] == 4086: #fsaverage
     lh.Points = rotate_points(lh.Points, axis='x', angle_deg=35)
     rh.Points = rotate_points(rh.Points, axis='x', angle_deg=35)
+  if cdata.shape[0] == 4200: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-60)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-60)
   #pallidum 
-  if cdata.shape[0] == 1600:
-    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=30)
-    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-30)
-    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=90)
-    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-90)
+  if cdata.shape[0] == 1600: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=60)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-20)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-100)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-60)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-20)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=100)
+  if cdata.shape[0] == 1778: #fslfirst 
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=120)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-20)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=10)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-140)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=20)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-10)
   #putamen 
-  if cdata.shape[0] == 4268:
+  if cdata.shape[0] == 4268: #fsaverage
     lh.Points = rotate_points(lh.Points, axis='y', angle_deg=60)
-    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-60)
-    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=90)
-    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-90)
-  #Thalamus 
-  if cdata.shape[0] == 3936:
-    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=60)
-    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-60)
     lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-90)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-60)
     rh.Points = rotate_points(rh.Points, axis='z', angle_deg=90)
+  if cdata.shape[0] == 3978: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=70)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-30)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-10)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-80)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-30)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=10)
+  #Thalamus 
+  if cdata.shape[0] == 3936: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=60)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-90)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-60)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=90)
+  if cdata.shape[0] == 4316: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-100)
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=80)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-100)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=60)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-100)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-60)
   #Ventral diencephalon 
-  if cdata.shape[0] == 3594:
+  if cdata.shape[0] == 3594: #fsaverage only
     lh.Points = rotate_points(lh.Points, axis='x', angle_deg=60)
     rh.Points = rotate_points(rh.Points, axis='x', angle_deg=60)
     lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-50)
     rh.Points = rotate_points(rh.Points, axis='z', angle_deg=50)
   #Brain-Stem 
-  if cdata.shape[0] == 9452:
-    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-180)
+  if cdata.shape[0] == 9452: #fsaverage
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-181)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=0)
     rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-100)
-  #All aseg
-  if cdata.shape[0] == 95718:
+  if cdata.shape[0] == 9516: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=-180)
+    lh.Points = rotate_points(lh.Points, axis='y', angle_deg=0)
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=90)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=-180)
+    rh.Points = rotate_points(rh.Points, axis='y', angle_deg=-180)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-5)
+  #All merged
+  if cdata.shape[0] == 95718: #fsaverage
     lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-30)
     lh.Points = rotate_points(lh.Points, axis='z', angle_deg=180)
     rh.Points = rotate_points(rh.Points, axis='x', angle_deg=-90)
-  
+  if cdata.shape[0] == 82412: #fslfirst
+    lh.Points = rotate_points(lh.Points, axis='x', angle_deg=-120)
+    lh.Points = rotate_points(lh.Points, axis='z', angle_deg=180)
+    rh.Points = rotate_points(rh.Points, axis='x', angle_deg=180)
+    rh.Points = rotate_points(rh.Points, axis='z', angle_deg=0)
   return lh, rh

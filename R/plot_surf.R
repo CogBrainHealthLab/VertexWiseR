@@ -2,7 +2,7 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #'
-#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. Alternatively, atlas ROI values as supported by atlas_to_surf() may be given.
+#' @param surf_data  A numeric vector (length of V) or a matrix (N rows x V columns), where N is the number of subplots, and V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), SCMvextract(), as well as masks or vertex-wise results outputted by analyses functions. Alternatively, atlas ROI values as supported by atlas_to_surf() may be given.
 #' @param filename A string object containing the desired name of the output .png. Default is 'plot.png' in the R temporary directory (tempdir()).Only filenames with a .png extension are allowed.
 #' @param title A string object for setting the title in the plot. Default is none. For titles that too long to be fully displayed within the plot, we recommend splitting them into multiple lines by inserting "\\n".
 #' @param surface A string object containing the name of the type of cortical surface background rendered (only applicable on fsaverage5 and fsaverage6). Possible options include "white", "smoothwm","pial" and "inflated" (default).  
@@ -110,9 +110,10 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   surf_data=atlas_to_surf(surf_data, template)} 
   else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5";
   surf_data=atlas_to_surf(surf_data, template)} 
-  else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))
-  { scm_database_check(); template="aseg" } 
-  else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For aseg subcortices, please refer to ?ASEGvextract().")
+  #subcortexmesh 
+  else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718)) {scm_database_check(template='fsaverage'); template="fsaverage"}  
+  else if (max(dim(t(surf_data))) %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412)) {scm_database_check(template='fslfirst'); template="fslfirst"} 
+  else{stop("surf_data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k), or 14524 (hippunfold hippocampal vertices) columns. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For subcortices, please refer to ?SCMvextract().")
   }
   
   #if cmap is missing, select cmaps depending on whether the image contains positive only or negative only values
@@ -296,8 +297,8 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
       return_plotter=TRUE,
       interactive=FALSE) ##disabling interactive mode because this causes RStudio to hang
     
-  #######aseg subcortical template
-  } else if (template=='aseg')
+  #######subcortexmesh subcortical template
+  } else if (template %in% c('fsaverage','fslfirst'))
   {
 
     #Solves the "no visible binding for global variable" issue
@@ -311,7 +312,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
     #ROI-specific cell data for plotter, default size and zoom parameters
     if (missing("size")) {size=NULL}; 
     if (missing("zoom")) {zoom=NULL};
-    ROIparam=aseg_plot_parameters(surf_data,size,zoom)
+    ROIparam=scm_plot_parameters(surf_data,size,zoom,template)
     lh_celldata=ROIparam$lh_celldata;  lh_vert=ROIparam$lh_vert;
     rh_celldata=ROIparam$rh_celldata; rh_vert=ROIparam$rh_vert;
     size=ROIparam$size; 
@@ -359,6 +360,7 @@ plot_surf=function(surf_data, filename, title="",surface="inflated",cmap,limits,
   }  
   #output plot as a .png image
   surf_plot$screenshot(filename=filename,transparent_bg = transparent_bg)
+  surf_plot$close() #safety close as repeated plots may crash
   if(show.plot.window==TRUE)
   {
     grid::grid.newpage() #resets window if another plot was made

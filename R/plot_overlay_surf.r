@@ -2,7 +2,7 @@
 #'
 #' @description Plots surface data in a grid with one or multiple rows in a .png file
 #' @param model_output A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.
-#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
+#' @param surf_data_1 A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), SCMvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.
 #' @param surf_data_2 Same as surf_data_1. This is the overlay surface.
 #' @param cmap_1 A string object specifying the name of an existing colormap or a vector of hexadecimal color codes to be used as a custom colormap. The names of existing colormaps are listed in the \href{https://matplotlib.org/stable/gallery/color/colormap_reference.html}{'Matplotlib' plotting library}. 
 #' 
@@ -144,10 +144,11 @@ plot_overlay_surf=function(model_output=NULL,
   #if atlas object is inputted
   } else if (max(dim(t(surf_data_1))) == 10) {template="CIT168";
   surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400))     {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
-  } else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))
-  { scm_database_check(); template="aseg"  
-  } else{ stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) and 14524 (CIT168) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For aseg subcortices, please refer to ?ASEGvextract().")
+  } else if (max(dim(t(surf_data))) %in% c(70,148,360,100,200,400)) {template="fsaverage5"; surf_data_1=atlas_to_surf(surf_data_1, template)
+  #subcortexmesh 
+  } else if (max(dim(t(surf_data))) %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718)) {scm_database_check(template='fsaverage'); template="fsaverage"
+  } else if (max(dim(t(surf_data))) %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412)) {scm_database_check(template='fslfirst'); template="fslfirst"  
+  } else{ stop("surf_data vectors should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) and 14524 (CIT168) numbers. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf() for information about accepted atlases. If you intended to plot an atlas' parcels, please refer to ?atlas_to_surf(). For subcortices, please refer to ?SCMvextract().")
   }
   
   #NA-ify vertices if alpha=0 before computing color maps
@@ -612,8 +613,8 @@ plot_overlay_surf=function(model_output=NULL,
 ############################################################################
       
       
-    } else if (template=='aseg'){
-      
+    } else if (template %in% c('fsaverage', 'fslfirst'))
+    {
       #Solves the "no visible binding for global variable" issue
       internalenv <- new.env()
       . <- coord_optimizer <- NULL 
@@ -631,7 +632,7 @@ plot_overlay_surf=function(model_output=NULL,
       if (missing("zoom")) {zoom=NULL};
       if (colorbar_1==TRUE & colorbar_2==TRUE) 
         {twocbars=TRUE} else {twocbars=FALSE}
-      ROIparam=aseg_plot_parameters(surf_data,size,zoom,twocbars=twocbars)
+      ROIparam=scm_plot_parameters(surf_data,size,zoom,twocbars=twocbars,template)
         
       #loading bilateral surfaces
       rh_cell=ROIparam$rh_celldata$triangles; 
@@ -666,7 +667,7 @@ plot_overlay_surf=function(model_output=NULL,
       
       #view to slightly differ for Brain-Stem (as no hemispheres)
       #and cerebellum (as inside/coronal view may be less relevant)
-      if (n_vert == 9452 | n_vert == 95718) {
+      if (n_vert %in% c(9452,95718,9516,82412)) {
         view=list(list('ventral','dorsal','medial','lateral'))
       } else if (n_vert == 19559) {
         view=list(list('ventral','medial','lateral','ventral'))
@@ -681,7 +682,7 @@ plot_overlay_surf=function(model_output=NULL,
       n_rh = right$n_points
       #reformat (split for ROIs that have hemispheres, duplicate for
       #the brain-stem and all ROIs combined)
-      if (n_vert!=9452 & n_vert!=95718)
+      if (! n_vert %in% c(9452,95718,9516,82412))
       {
         surf_data_1_lh = surf_data_1[1:n_lh]
         surf_data_1_rh = surf_data_1[(n_lh + 1):(n_lh + n_rh)]
@@ -819,7 +820,7 @@ plot_overlay_surf=function(model_output=NULL,
 ############################################################################
 ############################################################################
       
-    } else { stop('This function only works with fsaverage5,fsaverage6,  fslr32k, CIT168, and SubCortexMesh aseg templates')}
+    } else { stop('This function only works with fsaverage5,fsaverage6,  fslr32k, CIT168, and SubCortexMesh templates')}
   
   
 ############################################################################
@@ -832,7 +833,7 @@ plot_overlay_surf=function(model_output=NULL,
   {
     #dummy mesh needs to contain two folds, so duplicate for ROIs
     #that cannot be split
-    if (n_vert!=9452 & n_vert!=95718){dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))}
+    if (! n_vert %in% c(9452,95718,9516,82412)){dummy_mesh=as.numeric(rep(NaN, length(surf_data_1)))}
     else {dummy_mesh <- as.numeric(rep(NaN, left$n_points + right$n_points))}
     
     background_plot=brainspace.plotting$plot_hemispheres(

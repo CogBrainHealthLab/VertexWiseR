@@ -2,7 +2,7 @@
 #'
 #' @description Plots 3D cortical surfaces
 #'
-#' @param surf_data  A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract().
+#' @param surf_data  A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), SCMvextract().
 #' @param surf_color  color of the cortical surface for NA values. Set to `'grey'` by default. A RGBA string can also be given, with A as the opacity (0 to 1), e.g. for transparent grey: surf_color="rgba(100,100,100,0.5)".
 #' @param cmap A string vector containing 2 to 4 color names/codes specifying the colors to be used for the color scale; or a single string object with the name of a color map listed in `RColorBrewer::display.brewer.all()`. If none are specified, appropriate colors will be automatically selected according to `range(surf_data)`
 #' @param limits A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits `c(-max(abs(surf_dat),max(abs(surf_dat)))` will be used. 
@@ -111,37 +111,55 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
     ROImap_hip <- get('ROImap_hip')
     ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
     atlas=1
-  } else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452))
-  { 
-    scm_database_check() #check if database directory is present
-    celldat=scm_database_fetcher(n_vert,'points_cells')
-    LH.aseg.mni=readRDS(celldat[[1]])[[1]]
-    RH.aseg.mni=readRDS(celldat[[2]])[[1]]
-    coords=rbind(LH.aseg.mni,RH.aseg.mni)
+  } 
+  #subcortexmesh
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,2026,3592,7570,31466,8244,3548,7908,8542,9516))
+  {
+    
+    #specify template 
+    if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452)) {template='fsaverage'; 
+    } else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516)) {template='fslfirst';  
+    }
+    
+    scm_database_check(template=template) #check if database directory is present
+    celldat=scm_database_fetcher(n_vert,'points_cells', template)
+    LH.scm.mni=readRDS(celldat[[1]])[[1]]
+    RH.scm.mni=readRDS(celldat[[2]])[[1]]
+    coords=rbind(LH.scm.mni,RH.scm.mni)
     #fix coordinate for ASEG as mismatching
+    if (template=='fsaverage'){ #for ASeg
     coords <- rotator(coords, axis='x', -90)
-    coords <- rotator(coords, axis='z', 180)
+    coords <- rotator(coords, axis='z', 180)}
+    if (template=='fslfirst') #for FSL FIRST
+    {coords <- rotator(coords, axis='y', 180)}
     
     LH.tri=readRDS(celldat[[1]])[[2]]+1
     RH.tri=readRDS(celldat[[2]])[[2]]+1+max(LH.tri)
     tri=rbind(LH.tri,RH.tri)
 
-    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+    ROImap <- scm_database_fetcher(n_vert,'ROImap', template)
     ROImap <- list(ROImap@data, ROImap@atlases)
-  } else if (n_vert == 95718) #need special code for all subcortices
+  } else if (n_vert %in% c(95718,82412) ) #need special code for all subcortices
   {
-    scm_database_check() #check if database directory is present
-    celldat=readRDS(scm_database_fetcher(n_vert,'points_cells')[[1]])
+    #specify template 
+    if (n_vert==95718) {template='fsaverage'
+    } else if (n_vert==82412) {template='fslfirst'}
+    
+    scm_database_check(template) #check if database directory is present
+    celldat=readRDS(scm_database_fetcher(n_vert,'points_cells',template)[[1]])
     coords=celldat$vertices
-    #fix coordinate for ASEG as mismatching
-    coords <- rotator(coords, axis='x', -90)
-    coords <- rotator(coords, axis='z', 180)
+    #fix coordinate as mismatching plotly's grid
+    if (template=='fsaverage') #for ASeg
+    {coords <- rotator(coords, axis='x', -90)
+    coords <- rotator(coords, axis='z', 180)}
+    if (template=='fslfirst') #for FSL FIRST
+    {coords <- rotator(coords, axis='y', 180)}
     
     tri=matrix(as.integer(celldat$triangles), ncol=3)
-    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+    ROImap <- scm_database_fetcher(n_vert,'ROImap',template)
 
-    #function specialised for all aseg
-    fig=plotsurf_3d_allaseg(surf_data=surf_data, 
+    #function specialised for all roi merged
+    fig=plotsurf_3d_allmerged(surf_data=surf_data, 
                             surf_color=surf_color,
                             coords=coords, 
                             tri=tri,
@@ -155,7 +173,7 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
     return(fig)
     
   } else
-  {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+  {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For subcortices, please refer to ?SCMvextract().")}
 
   ##Smmoothing of surface if applicable
   if (smooth_mesh > 0){
@@ -168,9 +186,9 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
   non0.idx=which(face.stat>0)
 
   ##splitting cortical data in to LH and RH if necessary 
-  #cannot split by 2 for aseg as unique n_verts per hemi
+  #cannot split by 2 for SubCortexMesh subcortices as unique n_verts per hemi
   if (n_vert %in% c(2044,3430,6940,39238,8132,3200,8394,7768,7144)){
-    plot_details=aseg_plot_parameters(surf_data=surf_data,
+    plot_details=scm_plot_parameters(surf_data=surf_data,
                                       size=NULL,zoom=NULL)
     mid.idx=plot_details$lh_vert
     mid.tri=NROW(LH.tri)
@@ -395,7 +413,13 @@ rotator <- function(coords, axis, degree) {
                                   0, sin(angle),  cos(angle)), 
                                 nrow=3, byrow=TRUE)
   t(Rx %*% t(coords))
-  } else if (axis=='z') {Rz <- matrix(c(cos(angle), -sin(angle), 0, 
+  } else if (axis=='y') {Ry <- matrix(c(cos(angle), 0, -sin(angle),  
+                                        0, 1, 0,
+                                        sin(angle), 0, cos(angle)), 
+                                      nrow=3, byrow=TRUE)
+  t(Ry %*% t(coords))
+  } 
+  else if (axis=='z') {Rz <- matrix(c(cos(angle), -sin(angle), 0, 
                                         sin(angle), cos(angle), 0, 
                                         0, 0, 1), 
                                       nrow=3, byrow=TRUE)
@@ -434,8 +458,8 @@ mesh_smoother <- function(coords, tri, n_iter=as.integer(0))
 ############################################################################################################################
 ############################################################################################################################
 
-#special function for all aseg subcortices together
-plotsurf_3d_allaseg=function(surf_data, surf_color, coords,tri,ROImap,limits,cmap,plot_grid,transparent_bg,orientation_labels,smooth_mesh)
+#special function for all subcortices merged together
+plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,cmap,plot_grid,transparent_bg,orientation_labels,smooth_mesh)
 {
   
   ##Smmoothing of surface if applicable
@@ -451,7 +475,7 @@ plotsurf_3d_allaseg=function(surf_data, surf_color, coords,tri,ROImap,limits,cma
   face_vals_overlay <- face_vals[face.stat.non0.idx]
   
   #function to create mesh at X distance spacing factor
-  aseg_distancer <- function(coords, tri, face_vals, roi_ids, roi_names, distfactor=0) {
+  roi_distancer <- function(coords, tri, face_vals, roi_ids, roi_names, distfactor=0) {
 
     #Get centroid across all ROIs, and each ROI's centroid
     global_centroid <- colMeans(coords)
@@ -501,13 +525,13 @@ plotsurf_3d_allaseg=function(surf_data, surf_color, coords,tri,ROImap,limits,cma
   dist_vals <- seq(0, 50, by = 5)
   meshframes <- lapply(dist_vals, function(distf) {
     # full mesh for grey base (all faces, just for coordinates)
-    base <- aseg_distancer(coords, tri, rep(0, nrow(tri)),
-                           ROImap@data[,1], ROImap@atlases$ASEG, distf)
+    base <- roi_distancer(coords, tri, rep(0, nrow(tri)),
+                           ROImap@data[,1], ROImap@atlases$ROI, distf)
     base$intensity <- NULL; base$colorscale <- NULL; base$cmin <- NULL;
     base$cmax <- NULL; base$facecolor <- rep(surf_color, nrow(tri))
     # filtered mesh for overlay
-    overlay <- aseg_distancer(coords, tri_overlay, face_vals_overlay,
-                              ROImap@data[,1], ROImap@atlases$ASEG, distf)
+    overlay <- roi_distancer(coords, tri_overlay, face_vals_overlay,
+                              ROImap@data[,1], ROImap@atlases$ROI, distf)
     list(base=base, overlay=overlay, frame=distf)
   })
 

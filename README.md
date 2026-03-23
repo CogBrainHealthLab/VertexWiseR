@@ -1,6 +1,6 @@
 # VertexWiseR <img src="man/figures/logo.png" alt="logo" align="right" style="float:right; height:200px;"/>
 
-## A package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R
+## A package for simplified vertex-wise analyses of whole-brain and subcortical surface in R
 
 <!---start of badges-->
 

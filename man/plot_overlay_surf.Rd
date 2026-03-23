@@ -32,7 +32,7 @@ plot_overlay_surf(
 \arguments{
 \item{model_output}{A list object outputted by RFT_vertex_analysis() or TFCE_threshold(). The 'tstat_map' will automatically be treated as background map, and the 'thresholded_tstat_map' as overlay map. See surf_data_1 or surf_data_2 to assign any map manually.}
 
-\item{surf_data_1}{A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.}
+\item{surf_data_1}{A numeric vector (length of V), where V is the number of vertices. It can be one row from the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), SCMvextract(), as well as masks or vertex-wise results outputted by analyses functions. This is the background surface.}
 
 \item{surf_data_2}{Same as surf_data_1. This is the overlay surface.}
 

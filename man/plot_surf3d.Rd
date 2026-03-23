@@ -20,7 +20,7 @@ plot_surf3d(
 )
 }
 \arguments{
-\item{surf_data}{A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), ASEGvextract().}
+\item{surf_data}{A numeric vector (length of V), where V is the number of vertices. It can be the output from SURFvextract(), CAT12vextract(), FSLRvextract(), HIPvextract(), SCMvextract().}
 
 \item{surf_color}{color of the cortical surface for NA values. Set to \code{'grey'} by default. A RGBA string can also be given, with A as the opacity (0 to 1), e.g. for transparent grey: surf_color="rgba(100,100,100,0.5)".}
 

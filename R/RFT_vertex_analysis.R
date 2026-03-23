@@ -118,16 +118,22 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, i
       template=brainspace.mesh.mesh_io$read_surface(paste0(system.file(package='VertexWiseR'),'/extdata/hip_template.fs'))
       ROImap_hip <- get('ROImap_hip')
       ROImap <- list(ROImap_hip@data,ROImap_hip@atlases)
-    } else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718)) 
+    }   
+    #subcortexmesh
+    else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718, 2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))
     {
-      scm_database_check() #check if database directory is present
+      #specify template 
+      if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718))         {template='fsaverage'} 
+      else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))         {template='fslfirst'}
+      
+      scm_database_check(template) #check if database directory is present
       brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
-      templatepath <- scm_database_fetcher(n_vert,'template')
-      template=brainspace.mesh.mesh_io$read_surface(templatepath)
-      ROImap <- scm_database_fetcher(n_vert,'ROImap')
+      templatepath <- scm_database_fetcher(n_vert,'template',template)
+      ROImap <- scm_database_fetcher(n_vert,'ROImap',template)
       ROImap <- list(ROImap@data, ROImap@atlases)
+      template=brainspace.mesh.mesh_io$read_surface(templatepath)
     }
-    else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+    else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For SubCortexMesh subcortices, please refer to ?SCMvextract().")}
   
   #Solves the "no visible binding for global variable" issue
   . <- SLM <- NULL 

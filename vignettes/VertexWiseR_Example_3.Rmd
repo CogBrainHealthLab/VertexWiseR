@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 3"
 author: "Charly H. A. Billaud"
-date: "2026-03-09"
+date: "2026-03-23"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 3}
@@ -10,30 +10,35 @@ vignette: >
 bibliography: references.bib
 ---
 
----
+------------------------------------------------------------------------
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 70)  
 library(VertexWiseR)
 ```
 
-This article introduces vertex-wise statistical modelling of subcortical surfaces as per update v1.5.0. The subcortical surfaces it is currently compatible with are based on the "ASeg" (Automated subcortical segmentation) parcellation computed in FreeSurfer [@fischl_freesurfer_2012]. The latter volumes are converted to 3D meshes and surface-based metrics (thickness, surface area, curvature) produced using the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh). VertexWiseR can extract the measures obtained with the latter package.
+This article introduces vertex-wise statistical modelling of subcortical surfaces available since update v1.5.0. The subcortical surfaces it is currently compatible with are either based on the FSL FIRST [@PATENAUDE2011907] or on the FreeSurfer "ASeg" [@fischl_freesurfer_2012] subcortical volumetric segmentations. The volumes are converted to 3D meshes and surface-based metrics (thickness, surface area, curvature) produced using the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh). VertexWiseR can extract the surface measures obtained with the latter package.
 
 ## Requirements
 
-Analysis and manipulation of the subcortical surfaces require additional utility data (\~19.9 MB) to be downloaded and stored in the R package's external data (`system.file('extdata',package='VertexWiseR')`). A prompt will automatically be triggered to assist downloading it whenever subcortical surfaces are inputted (users can trigger it themselves by typing `VertexWiseR:::aseg_database_check()`).
+Analysis and manipulation of the subcortical surfaces require additional utility data to be downloaded and stored in the R package's external data (`system.file('extdata',package='VertexWiseR')`). A prompt will automatically be triggered to assist downloading it whenever subcortical surfaces are inputted (users can trigger it themselves by typing `VertexWiseR:::scm_database_check(template='fsaverage')`). The size depends on the template used (\~19.9 MB for FreeSurfer 'fsaverage', \~17.3 MB for FSL 'fslfirst').
 
 ## Extracting ASeg subcortical surfaces
 
 SubCortexMesh's surface metric output in template space can be extracted by VertexWiseR as in the other [surface extraction functions](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html), generating compact (bilateral) matrices for all applicable subcortical surfaces. Here is an example of code which was run to obtain the demo data:
 
 ```{r, eval=FALSE}
-aseg_CTv = ASEGvextract(sdirpath = 'surface_metrics/', outputdir = "aseg_matrices/",measure = 'thickness', roilabel = c('thalamus','caudate'), subj_ID = TRUE)
+aseg_CTv = SCMvextract(sdirpath = 'surface_metrics/', 
+                        outputdir = "aseg_matrices/",
+                        measure = c('thickness','curvature'), 
+                        roilabel = c('thalamus','caudate'), 
+                        template='fsaverage',
+                        subj_ID = TRUE)
 ```
 
 ## Example analysis on the thalamus and caudate nuclei
 
-The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had thickness and curvature metrics data from a SubCortexMesh processing directory of the SUDMEX_CONN dataset [@PMID:28485734].
+The analysis will use surface data already extracted in R from a preprocessed subjects directory, which we make available so you do not need to preprocess a sample yourself. To obtain it, we had thickness and curvature metrics data from a SubCortexMesh output directory based on FreeSurfer segmentations of the SUDMEX_CONN dataset [@PMID:28485734].
 
 The demo data (\~216 MB) can be downloaded from the package's github repository with the following function:
 
@@ -42,7 +47,7 @@ The demo data (\~216 MB) can be downloaded from the package's github repository 
 demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 ```
 
-As in the ASEGvextract() code above, metrics from the bilateral thalami and caudate nuclei were extracted. The surface data can be loaded that way:
+As in the SCMvextract() code above, metrics from the bilateral thalami and caudate nuclei were extracted. The surface data can be loaded that way:
 
 ```{r}
 thalamus_thickness = readRDS(file=paste0(demodata,"/SUDMEX_CONN_thalamus_thickness.rds"))
@@ -96,6 +101,7 @@ thalamusplot=plot_surf(thalamusmaps,
           smooth_mesh=20,
           show.plot.window=TRUE)
 ```
+
 ```{r, results = 'hide', fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction on the caudate nuclei",fig.width=10, fig.height=7}
 caudateplot=plot_surf(caudatemaps, 
           filename='SUDMEX_CONN_caudate_tstatmaps.png',
@@ -104,15 +110,22 @@ caudateplot=plot_surf(caudatemaps,
           show.plot.window=TRUE)
 ```
 
-
 The outcome shows that compared to controls, CUD patients had decreases in thickness of the bilateral thalami, and various shapes alterations in curvature.
+
+Note regarding anatomical orientations: for the amygdala, brain-stem and cerebellar plots, the upper part of the image is the superior part of the brain and lower the inferior. While for the rest, more horizontal structures, upper means anterior and lower means posterior, where the second and third panels are medial views (looking from the center toward the side/exterior of the brain) and vice versa for the first and fourth panel. You may use plot_surf3d() to get a more explicit orientation.
 
 ## Analysing all subcortices together
 
-SubCortexMesh has a function to merge all subcortices, assuming all of them are available, into one single object for each metric. For example, the "allaseg" can be outputted in SubCortexMesh's surface_metrics/ directory, and extracted via ASEGvextract():
+SubCortexMesh has a function to merge all subcortices, assuming all of them are available, into one single object for each metric. For example, the "allaseg" can be outputted in SubCortexMesh's surface_metrics/ directory, and extracted via SCMvextract():
 
 ```{r, eval=FALSE}
-allaseg_thickness_data = ASEGvextract(sdirpath = 'surface_metrics/', outputdir = "sudmex_conn_surf_data_scm/", measure = 'thickness', roilabel = 'allaseg', subj_ID = TRUE)
+allaseg_thickness_data = SCMvextract(sdirpath = 'surface_metrics/', 
+                                     outputdir = "sudmex_conn_surf_data_scm/", 
+                                     measure = 'thickness', 
+                                     roilabel = 'allaseg', 
+                                     template='fsaverage',
+                                     
+                                     subj_ID = TRUE)
 ```
 
 As an example, we provide the "allaseg" thickness for the same dataset and run the same analysis:
@@ -140,7 +153,7 @@ allasegplot=plot_surf(
   show.plot.window=TRUE)
 ```
 
-Since some regions may be harder to see in the 2d plot, plot_surf3d() function has a special interactive slider in the GUI that allows spacing out each regions from each other (this only applies to the merged surfaces):
+Since some regions may be harder to see in the 2d plot, plot_surf3d() function has a special interactive slider for the "all merged" surface in the GUI that allows spacing out each regions from each other (this only applies to the merged surfaces):
 
 ```{r, eval=FALSE}
 plot_surf3d(surf_data = allaseg_model$thresholded_tstat_map,
@@ -150,44 +163,47 @@ plot_surf3d(surf_data = allaseg_model$thresholded_tstat_map,
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction across all ASeg  subcortices, 3D plot (screenshot)"}
 knitr::include_graphics('allaseg_plotsurf3d.jpg')
 ```
+
 (This is just a screenshot)
 
-Although SubCortexMesh requires that all regions be processed for the encompassing surface to be created, it is possible to omit specific regions from the analysis by turning to NA their corresponding vertices. 
+Although SubCortexMesh requires that all regions be processed for the encompassing surface to be created, it is possible to omit specific regions from the analysis by turning to NA their corresponding vertices.
 
 Users can identify the exact vertex indices in the python module's template_data. Here is the table that applies for ASeg:
 
 |     |                         |        |              |
 |-----|-------------------------|--------|--------------|
 | id  | label                   | n_vert | n_vert_cumul |
-| 0   | right-caudate           | 3500   | 3500         |
-| 1   | right-putamen           | 4126   | 7626         |
-| 2   | left-accumbens-area     | 1022   | 8648         |
-| 3   | right-amygdala          | 1792   | 10440        |
-| 4   | right-pallidum          | 1600   | 12040        |
-| 5   | left-putamen            | 4268   | 16308        |
-| 6   | right-ventraldc         | 3594   | 19902        |
-| 7   | left-caudate            | 3440   | 23342        |
-| 8   | left-pallidum           | 1600   | 24942        |
-| 9   | left-amygdala           | 1638   | 26580        |
-| 10  | left-hippocampus        | 4046   | 30626        |
-| 11  | left-thalamus           | 3936   | 34562        |
-| 12  | brain-stem              | 9452   | 44014        |
-| 13  | left-ventraldc          | 3550   | 47564        |
-| 14  | left-cerebellum-cortex  | 19550  | 67114        |
-| 15  | right-accumbens-area    | 1022   | 68136        |
-| 16  | right-thalamus          | 3832   | 71968        |
-| 17  | right-cerebellum-cortex | 19664  | 91632        |
-| 18  | right-hippocampus       | 4086   | 95718        |
+| 0   | brain-stem              | 9452   | 9452         |
+| 1   | left-accumbens-area     | 1022   | 10474        |
+| 2   | left-amygdala           | 1638   | 12112        |
+| 3   | left-caudate            | 3440   | 15552        |
+| 4   | left-cerebellum-cortex  | 19550  | 35102        |
+| 5   | left-hippocampus        | 4046   | 39148        |
+| 6   | left-pallidum           | 1600   | 40748        |
+| 7   | left-putamen            | 4268   | 45016        |
+| 8   | left-thalamus           | 3936   | 48952        |
+| 9   | left-ventraldc          | 3550   | 52502        |
+| 10  | right-accumbens-area    | 1022   | 53524        |
+| 11  | right-amygdala          | 1792   | 55316        |
+| 12  | right-caudate           | 3500   | 58816        |
+| 13  | right-cerebellum-cortex | 19664  | 78480        |
+| 14  | right-hippocampus       | 4086   | 82566        |
+| 15  | right-pallidum          | 1600   | 84166        |
+| 16  | right-putamen           | 4126   | 88292        |
+| 17  | right-thalamus          | 3832   | 92124        |
+| 18  | right-ventraldc         | 3594   | 95718        |
 
 So, for example, if one does not want to count the cerebella in the analysis, they can follow the cumulative vertex count and set them to NA, like that:
+
 ```{r, results = 'hide'}
-allaseg_thickness$surf_obj[,c((47564+1):67114,(71968+1):91632)]=NA
+allaseg_thickness$surf_obj[,c((15552+1):35102,(58816+1):78480)]=NA
 
 allaseg_model_nocerebellum=RFT_vertex_analysis(
   model = as.factor(beh_data$group),
   contrast = as.factor(beh_data$group),
   surf_data = allaseg_thickness)
 ```
+
 ```{r}
 allaseg_model_nocerebellum$cluster_level_results
 ```

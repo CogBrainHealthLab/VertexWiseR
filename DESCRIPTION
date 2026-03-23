@@ -1,8 +1,8 @@
 Package: VertexWiseR
-Title: Simplified Vertex-Wise Analyses of Whole-Brain and Hippocampal
+Title: Simplified Vertex-Wise Analyses of Whole-Brain and Subcortical
     Surface
-Version: 1.5.0
-Date: 2026-03-10
+Version: 1.5.1
+Date: 2026-03-23
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
@@ -14,10 +14,11 @@ Description: Provides functions to run statistical analyses on
     surface-based neuroimaging data, computing measures including cortical
     thickness and surface area of the whole-brain and of the hippocampi.
     It can make use of 'FreeSurfer', 'fMRIprep', 'XCP-D', 'HCP' and 'CAT12' 
-    preprocessed datasets, 'HippUnfold' hippocampal outputs and 'SubCortexMesh'
-    subcortical outputs for a given sample by restructuring the data values into 
-    a single file. The single file can then be used by the package for analyses
-    independently from its base dataset and without need for its access.
+    preprocessed datasets, 'HippUnfold' hippocampal outputs and 
+    'SubCortexMesh' subcortical outputs for a given sample by 
+    restructuring the data values into a single file. The single file can 
+    then be used by the package for analyses independently from its base
+    dataset and without need for its access.
 License: GPL-3
 URL: https://cogbrainhealthlab.github.io/VertexWiseR/
 Suggests: 

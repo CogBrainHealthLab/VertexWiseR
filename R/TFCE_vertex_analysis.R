@@ -114,13 +114,19 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     edgelist <- edgelist_hip@data
     assign("edgelist", edgelist)
   }
-  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
+  #subcortexmesh
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718, 2026,3592,7570,31466,8244,3548,7908,8542,9516,82412))
   {
-    scm_database_check() #check if database directory is present
-    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    #specify template 
+    if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718)) {template='fsaverage'; 
+    } else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412)) {template='fslfirst';  
+    }
+    
+    scm_database_check(template) #check if database directory is present
+    edgelist=scm_database_fetcher(n_vert,'edgelist',template)
     assign("edgelist", edgelist)
   }
-  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For aseg subcortices, please refer to ?ASEGvextract().")}
+  else {stop("The surf_data can only be a matrix with 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippunfold hippocampal vertices) columns. For SubCortexMesh subcortices, please refer to ?SCMvextract().")}
   
   #check for collinearity
   if(NCOL(model)>1)
@@ -525,20 +531,26 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
     MNImap <- t(template$Points)
     assign("MNImap", MNImap, envir = internalenv)
   } 
-  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452,95718))
-  {
-    scm_database_check() #check if database directory is present
+  #subcortexmesh
+  else if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718, 2026,3592,7570,31466,8244,3548,7908,8542,9516,82412) #fslfirst template
+  ){
+    #specify template 
+    if (n_vert %in% c(2044,3430,6940,39214,8132,3200,8394,7768,7144,9452, 95718)) {template='fsaverage'; 
+    } else if (n_vert %in% c(2026,3592,7570,31466,8244,3548,7908,8542,9516,82412)) {template='fslfirst';  
+    }
     
-    edgelist=scm_database_fetcher(n_vert,'edgelist')
+    scm_database_check(template=template) #check if database directory is present
+    
+    edgelist=scm_database_fetcher(n_vert,'edgelist', template)
     assign("edgelist", edgelist, envir = internalenv)
     
-    ROImap <- scm_database_fetcher(n_vert,'ROImap')
+    ROImap <- scm_database_fetcher(n_vert,'ROImap', template)
     ROImap <- list(ROImap@data, ROImap@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
     #here, MNImap is extracted from template surface
     brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
-    templatepath <- scm_database_fetcher(n_vert,'template')
+    templatepath <- scm_database_fetcher(n_vert,'template', template)
     template=brainspace.mesh.mesh_io$read_surface(templatepath)
     MNImap <- t(template$Points)
     assign("MNImap", MNImap, envir = internalenv)

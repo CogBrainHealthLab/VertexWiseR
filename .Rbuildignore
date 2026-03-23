@@ -7,8 +7,7 @@
 ^doc$
 ^Meta$
 ^inst/extdata/neurosynth_dataset.pkl.gz
-^inst/extdata/scm_database
-^inst/extdata/scm_database.zip
+^inst/extdata/scm_database.*$
 ^inst/demo_data/FINK_Tv_ses13.rds
 ^inst/demo_data/SPRENG_CTv_site1.rds
 ^inst/demo_data/spreng_surf_data_freesurfer.zip
