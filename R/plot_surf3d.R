@@ -187,12 +187,15 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
 
   ##splitting cortical data in to LH and RH if necessary 
   #cannot split by 2 for SubCortexMesh subcortices as unique n_verts per hemi
-  if (n_vert %in% c(2044,3430,6940,39238,8132,3200,8394,7768,7144)){
+  if (n_vert %in% c(2044,3430,6940,39238,8132,3200,8394,7768,7144,
+                    2026,3592,7570,31466,8244,3548,7908,8542)){
     plot_details=scm_plot_parameters(surf_data=surf_data,
-                                      size=NULL,zoom=NULL)
+                                     size=NULL,zoom=NULL,
+                                     template=template)
     mid.idx=plot_details$lh_vert
     mid.tri=NROW(LH.tri)
-  }else if (n_vert==9452 & (hemi=="l"|hemi=="r"))
+  }else if ((n_vert==9452 | n_vert==9516) 
+            & (hemi=="l"|hemi=="r"))
   {
     warning('hemi argument ignored for the Brain-stem')
     hemi="b"
