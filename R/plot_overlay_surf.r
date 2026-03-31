@@ -239,10 +239,10 @@ plot_overlay_surf=function(model_output=NULL,
     
     maxlimit=max(abs(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)))
     if(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[1]>=0) 
-    {limits=reticulate::tuple(0,range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[2])} ##if image contains all positive values
-    else if(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[2]<=0) {limits=reticulate::tuple(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[1],0)} ##if image contains all negative values
-    else {limits=reticulate::tuple(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values 
-    return(as.numeric(reticulate::py_to_r(limits))) #still need numeric for plotter
+    {limits=c(0,range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[2])} ##if image contains all positive values
+    else if(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[2]<=0) {limits=c(range(get(paste0('surf_data_',suffix)),na.rm = TRUE)[1],0)} ##if image contains all negative values
+    else {limits=c(-maxlimit,maxlimit)} ##symmetrical limits will be used if image contains both positive and negative values 
+    return(as.numeric(limits)) #still need numeric for plotter
   }
   
   
@@ -250,7 +250,8 @@ plot_overlay_surf=function(model_output=NULL,
   } else #user specified limits
   {
     if(!is.null(limits_1)) 
-    {limits_1=as.numeric(c(limits_1[1],limits_1[2]))} 
+    {limits_1=as.numeric(c(limits_1[1],limits_1[2]))}
+    else {limits_1=range(surf_data_1, na.rm = TRUE)}
   }
   if(missing("limits_2")) {limits_2=limit_function(2)
   } else #user specified limits
@@ -261,6 +262,7 @@ plot_overlay_surf=function(model_output=NULL,
       } else {stop('The only string that can be given to limits_2 is `same`. Otherwise, provide a numeric vector of two numbers.')}
     } else if(!is.null(limits_2)) 
     {limits_2=as.numeric(c(limits_2[1],limits_2[2]))} 
+    else {limits_2=range(surf_data_2, na.rm = TRUE)}
   }
   
   

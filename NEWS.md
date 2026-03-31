@@ -5,6 +5,7 @@
 
 ## FIXES
 * There was a mismatch in VertexWiseR 1.5.0's template data and SubCortexMesh's template data for the allaseg surface, which has been reordered since to standardize across FreeSurfer and FSL postprocessing outputs. This is now fixed.
+* plot_overlay_surf's custom limits did not work properly with the NULL option breaking the plotter. This is now fixed
 
 # VertexWiseR v1.5.0
 
