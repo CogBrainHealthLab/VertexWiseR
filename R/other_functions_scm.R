@@ -101,7 +101,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1022; rh_vert=1022 
       if(is.null(size) & is.null(twocbars)) {size=c(600,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      }
       if(is.null(zoom)) {zoom=1.4}
     } 
     #amygdalae
@@ -109,7 +111,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1638; rh_vert=1792 
       if(is.null(size) & is.null(twocbars)) {size=c(600,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      }
       if(is.null(zoom)) {zoom=1.4}
     }
     #caudate
@@ -117,7 +121,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=3440; rh_vert=3500     
       if(is.null(size) & is.null(twocbars)) {size=c(500,500)}
-      if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      }
       if(is.null(zoom)) {zoom=2.5}
     }
     #cerebella
@@ -125,7 +131,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=19559; rh_vert=19664
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #hippocampi
@@ -133,7 +141,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=4046; rh_vert=4086 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf  
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #pallidum
@@ -141,7 +151,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1600; rh_vert=1600 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #putamen
@@ -149,7 +161,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=4268; rh_vert=4126 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #thalamus
@@ -157,7 +171,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=3936; rh_vert=3832 
       if(is.null(size) & is.null(twocbars)) {size=c(600,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.9}
     }
     #ventral diencephala
@@ -165,7 +181,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=3550; rh_vert=3594 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.9}
     }
     #brain stem
@@ -173,7 +191,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=9452; rh_vert=9452 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
+      else { #for plot_overlay_surf
       if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      }
       if(is.null(zoom)) {zoom=1.9}
     }
     #all aseg
@@ -196,7 +216,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1104; rh_vert=922 
       if(is.null(size) & is.null(twocbars)) {size=c(400,300)}
-      if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      }
       if(is.null(zoom)) {zoom=1.4}
     } 
     #amygdalae
@@ -204,7 +226,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1834; rh_vert=1758 
       if(is.null(size) & is.null(twocbars)) {size=c(500,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(800,400)}
+      }
       if(is.null(zoom)) {zoom=1.4}
     }
     #caudate
@@ -212,7 +236,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=3600; rh_vert=3970     
       if(is.null(size) & is.null(twocbars)) {size=c(500,500)}
-      if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      }
       if(is.null(zoom)) {zoom=2.5}
     }
     #cerebella
@@ -220,7 +246,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=15806; rh_vert=15660
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #hippocampi
@@ -228,7 +256,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=4044; rh_vert=4200 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #pallidum
@@ -236,7 +266,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=1778; rh_vert=1770 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #putamen
@@ -244,7 +276,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=3978; rh_vert=3930 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(700,400)}
+      }
       if(is.null(zoom)) {zoom=1.7}
     }
     #thalamus
@@ -252,8 +286,10 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=4316; rh_vert=4226 
       if(is.null(size) & is.null(twocbars)) {size=c(400,500)}
-      if(is.null(size) & twocbars==FALSE) {size=c(800,500)}
-      if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==FALSE) {size=c(800,500)}
+        if(is.null(size) & twocbars==TRUE) {size=c(600,400)}
+      }
       if(is.null(zoom)) {zoom=1.9}
     }
     #brain stem
@@ -261,7 +297,9 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
     {
       lh_vert=9516; rh_vert=9516 
       if(is.null(size) & is.null(twocbars)) {size=c(400,400)}
-      if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      else { #for plot_overlay_surf
+        if(is.null(size) & twocbars==TRUE) {size=c(500,400)}
+      }
       if(is.null(zoom)) {zoom=1.9}
     }
     #all aseg
