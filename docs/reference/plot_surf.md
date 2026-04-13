@@ -31,7 +31,7 @@ plot_surf(
   A numeric vector (length of V) or a matrix (N rows x V columns), where
   N is the number of subplots, and V is the number of vertices. It can
   be the output from SURFvextract(), CAT12vextract(), FSLRvextract(),
-  HIPvextract(), ASEGvextract(), as well as masks or vertex-wise results
+  HIPvextract(), SCMvextract(), as well as masks or vertex-wise results
   outputted by analyses functions. Alternatively, atlas ROI values as
   supported by atlas_to_surf() may be given.
 

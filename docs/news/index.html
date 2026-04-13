@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,18 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.1" id="vertexwiser-v151">VertexWiseR v1.5.1<a class="anchor" aria-label="anchor" href="#vertexwiser-v151"></a></h2>
+<div class="section level3">
+<h3 id="new-features-1-5-1">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-5-1"></a></h3>
+<ul><li>VertexWiseR can now analyse subcortical surfaces from SubCortexMesh in both the fsaverage ASeg template and fslfirst template as provided by the python toolbox. Template data required can be downloaded separately according to which template is used. ASEGvextract() is now SCMvextract() as it covers more than FreeSurfer’s segmentations.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-1-5-1">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-5-1"></a></h3>
+<ul><li>There was a mismatch in VertexWiseR 1.5.0’s template data and SubCortexMesh’s template data for the allaseg surface, which has been reordered since to standardize across FreeSurfer and FSL FIRST-based SCM outputs. This is now fixed.</li>
+<li>plot_overlay_surf’s custom limits did not work properly with the NULL option breaking the plotter. This is now fixed</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.0" id="vertexwiser-v150">VertexWiseR v1.5.0<a class="anchor" aria-label="anchor" href="#vertexwiser-v150"></a></h2><p class="text-muted">CRAN release: 2026-03-12</p>
 <div class="section level3">

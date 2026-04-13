@@ -27,7 +27,7 @@ plot_surf3d(
 
   A numeric vector (length of V), where V is the number of vertices. It
   can be the output from SURFvextract(), CAT12vextract(),
-  FSLRvextract(), HIPvextract(), ASEGvextract().
+  FSLRvextract(), HIPvextract(), SCMvextract().
 
 - surf_color:
 

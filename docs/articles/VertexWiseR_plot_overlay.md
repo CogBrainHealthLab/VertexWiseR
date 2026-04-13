@@ -183,7 +183,7 @@ plots](VertexWiseR_plot_overlay_files/figure-html/unnamed-chunk-9-1.png)
 
 ## Overlaying SubCortexMesh subcortical plots
 
-Likewise subcortices obtained via ASEGvextract() can also be overlaid,
+Likewise subcortices obtained via SCMvextract() can also be overlaid,
 but that requires downloading associated template data (the package will
 prompt you automatically or you may do it directly by typing
 VertexWiseR:::scm_database_check()).

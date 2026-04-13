@@ -1,6 +1,6 @@
 # VertexWiseR
 
-## A package for simplified vertex-wise analyses of whole-brain and hippocampal surface in R
+## A package for simplified vertex-wise analyses of whole-brain and subcortical surface in R
 
 [![](https://cranlogs.r-pkg.org/badges/grand-total/VertexWiseR)](https://CRAN.R-project.org/package=VertexWiseR)
 [![CRAN

@@ -1,6 +1,27 @@
 # Changelog
 
-## VertexWiseR v1.5.0 (TBC)
+## VertexWiseR v1.5.1
+
+### NEW FEATURES
+
+- VertexWiseR can now analyse subcortical surfaces from SubCortexMesh in
+  both the fsaverage ASeg template and fslfirst template as provided by
+  the python toolbox. Template data required can be downloaded
+  separately according to which template is used. ASEGvextract() is now
+  SCMvextract() as it covers more than FreeSurfer’s segmentations.
+
+### FIXES
+
+- There was a mismatch in VertexWiseR 1.5.0’s template data and
+  SubCortexMesh’s template data for the allaseg surface, which has been
+  reordered since to standardize across FreeSurfer and FSL FIRST-based
+  SCM outputs. This is now fixed.
+- plot_overlay_surf’s custom limits did not work properly with the NULL
+  option breaking the plotter. This is now fixed
+
+## VertexWiseR v1.5.0
+
+CRAN release: 2026-03-12
 
 ### NEW FEATURES
 
@@ -26,7 +47,7 @@
   not detect numeric or character classes.
 - plot_surf() (with show.plot.window=TRUE) will no longer plot on top of
   the previous plot in the RStudio “Plots” tab when running the function
-  multiple times, and reset it first.
+  multiple times, and will reset it first.
 - plot_overlay_surf() now accepts a custom limits_2 instead of failing.
 - Clearer error message for plot_surf() when provided with surf_data
   that only contains NA values, and if surf_data has multiple rows,

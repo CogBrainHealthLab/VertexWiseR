@@ -4,5 +4,9 @@
 .Ruserdata
 *.Rproj
 inst/doc
+inst/extdata/scm_database/fslfirst/
+inst/extdata/scm_database/fsaverage/
+vignettes/*.R
+vignettes/*_files/
 /doc/
 /Meta/

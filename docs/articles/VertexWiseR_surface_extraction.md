@@ -17,7 +17,7 @@ vertex-wise measure, e.g. thickness), and summarising it into one
 compact matrix R object, with N rows per subject and M columns per
 vertex values.
 
-![Surface extraction methods workflow](surfextract.jpg)
+![Surface extraction methods workflow](Flowchart_extraction.jpg)
 
 Surface extraction methods workflow
 
@@ -36,7 +36,7 @@ extraction and synthesis:
 - [CAT12vextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/CAT12vextract.html)
 - [DTSERIESvextract](https://cogbrainhealthlab.github.io/VertexWiseR/reference/DTSERIESvextract.html)
 - [HIPvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/HIPvextract.html)
-- [ASEGvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/ASEGvextract.html)
+- [SCMvextract()](https://cogbrainhealthlab.github.io/VertexWiseR/reference/SCMvextract.html)
 
 The demo data (~216 MB) required to run the surface extraction demos can
 be downloaded from the package’s github repository with the following
@@ -76,18 +76,20 @@ SPRENG_CTv = SURFvextract(
   subj_ID = FALSE)
 ```
 
-The following arguments can be used: - sdirpath: Path to the
-preprocessed subjects directory (will be used to define the SUBJECTS_DIR
-variable automatically). - filename: Name of the saved .rds output (can
-include a specific path to it). - template: The surface template space
-in which to extract the data, which can be ‘fsaverage5’ (default) or
-‘fsaverage6’. - measure: The name of the surface-based measure of
-interest computed [in
+The following arguments can be used:  
+- sdirpath: Path to the preprocessed subjects directory (will be used to
+define the SUBJECTS_DIR variable automatically).  
+- filename: Name of the saved .rds output (can include a specific path
+to it).  
+- template: The surface template space in which to extract the data,
+which can be ‘fsaverage5’ (default) or ‘fsaverage6’.  
+- measure: The name of the surface-based measure of interest computed
+[in
 FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/UserContributions/FAQ).
 That includes cortical thickness (‘thickness’), surface curvature
 (‘curv’), depth/height of vertex (‘sulc’), surface area (‘area’), and
-‘volume’ (for freesurfer 7.4.1 or later). Default is ‘thickness’. -
-subj_ID Whether to obtain a list object containing both subject ID and
+‘volume’ (for freesurfer 7.4.1 or later). Default is ‘thickness’.  
+- subj_ID Whether to obtain a list object containing both subject ID and
 data matrix instead of just the matrix (TRUE OR FALSE).
 
 Here is an example of surface matrix object, extracted from FreeSurfer
@@ -152,15 +154,18 @@ dat_fslr32k=FSLRvextract(
 
     ## done!
 
-The following arguments can be used: - sdirpath: Path to the
-preprocessed subjects directory. - filename: Name of the saved .rds
-output (can include a specific path to it). - dscalar: Suffix of the
-dscalar surface files. Because these files are named differently
-depending on the preprocessing pipeline, the user needs to specify what
-they are in the dataset. - subj_ID Whether to obtain a list object
-containing both subject ID and data matrix instead of just the matrix
-(TRUE OR FALSE). Default is TRUE. - silent: Whether to silence messages
-from the process (TRUE or FALSE). Default is FALSE.
+The following arguments can be used:  
+- sdirpath: Path to the preprocessed subjects directory.  
+- filename: Name of the saved .rds output (can include a specific path
+to it).  
+- dscalar: Suffix of the dscalar surface files. Because these files are
+named differently depending on the preprocessing pipeline, the user
+needs to specify what they are in the dataset.  
+- subj_ID Whether to obtain a list object containing both subject ID and
+data matrix instead of just the matrix (TRUE OR FALSE). Default is
+TRUE.  
+- silent: Whether to silence messages from the process (TRUE or FALSE).
+Default is FALSE.
 
 Accordingly, the dat_fslr32k matrix will contain 2 rows (for 2
 participants) and 64,984 columns (the subject’s cortical thickness
@@ -196,22 +201,28 @@ CATsurf=CAT12vextract(
   filename='CAT12_thickness.rds', 
   measure='thickness', 
   subj_ID = TRUE,
-  silent = FALSE,
-  VWR_check = FALSE)
+  silent = FALSE)
 ```
 
-    ## Non-interactive sessions need requirement checks
+    ## Checking for VertexWiseR system requirements ...
 
-The following arguments can be used: - sdirpath: Path to the
-preprocessed subjects directory (will be used to define the SUBJECTS_DIR
-variable automatically). We recommend that the directory follows the
-[BIDS](https://bids.neuroimaging.io/) structure for accuracy. -
-filename: Name of the saved .rds output (can include a specific path to
-it) - measure: The name of the surface-based measure of interest
-computed [in CAT12](https://neuro-jena.github.io/cat12-help/#sbm). That
-includes ‘thickness’, ‘depth’, ‘fractaldimension’, ‘gyrification’, and
-‘toroGI20mm’. - subj_ID Whether to obtain a list object containing both
-subject ID and data matrix instead of just the matrix (TRUE OR FALSE)
+    ## Saving output as CAT12_thickness.rds
+
+    ## done!
+
+The following arguments can be used:  
+- sdirpath: Path to the preprocessed subjects directory (will be used to
+define the SUBJECTS_DIR variable automatically). We recommend that the
+directory follows the [BIDS](https://bids.neuroimaging.io/) structure
+for accuracy.  
+- filename: Name of the saved .rds output (can include a specific path
+to it)  
+- measure: The name of the surface-based measure of interest computed
+[in CAT12](https://neuro-jena.github.io/cat12-help/#sbm). That includes
+‘thickness’, ‘depth’, ‘fractaldimension’, ‘gyrification’, and
+‘toroGI20mm’.  
+- subj_ID Whether to obtain a list object containing both subject ID and
+data matrix instead of just the matrix (TRUE OR FALSE)
 
 Accordingly, the matrix will contained 2 rows (for 2 participants) and
 64,984 columns (the subject’s cortical thickness values in every vertex
@@ -222,14 +233,14 @@ of the 32k mesh):
 names(CATsurf)
 ```
 
-    ## NULL
+    ## [1] "sub_list" "surf_obj"
 
 ``` r
 #The surface matrix dimensions:
 dim(CATsurf$surf_obj)
 ```
 
-    ## NULL
+    ## [1]     2 64984
 
 ## Extracting hippocampal surface data: from HippUnfold
 
@@ -254,15 +265,18 @@ hipp_surf=HIPvextract(sdirpath=paste0(demodata,
             subj_ID = TRUE) 
 ```
 
-The following arguments can be used: - sdirpath: Path to the
-preprocessed subjects directory. - filename: Name of the saved .rds
-output (can include a specific path to it). - measure: The name of the
-surface-based measure of interest computed [in
+The following arguments can be used:  
+- sdirpath: Path to the preprocessed subjects directory.  
+- filename: Name of the saved .rds output (can include a specific path
+to it).  
+- measure: The name of the surface-based measure of interest computed
+[in
 HippUnfold](https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics).
 That includes ‘thickness’,‘curvature’,‘gyrification’ and ‘surfarea’.
-Default is ‘thickness’. - subj_ID: Whether to obtain a list object
-containing both subject ID and data matrix instead of just the matrix
-(TRUE OR FALSE). Default is TRUE.
+Default is ‘thickness’.  
+- subj_ID: Whether to obtain a list object containing both subject ID
+and data matrix instead of just the matrix (TRUE OR FALSE). Default is
+TRUE.
 
 Note that when subjects directories have multiple sessions, the matrix
 object will contain N rows per participant and per session.
@@ -286,49 +300,71 @@ dim(hipp_surf[[2]])
 
 ## Extracting subcortical surface data: from SubCortexMesh
 
-ASEGvextract() extracts subcortical data based on FreeSurfer’s
-volumetric ASeg subcortical segmentations, converted to surfaces via the
-python pipeline from
-[SubCortexMesh](https://github.com/chabld/SubCortexMesh). ASEGvextract()
+SCMvextract() extracts subcortical data based on FreeSurfer ASeg (Fischl
+2012) or FSL FIRST (Patenaude et al. 2011) volumetric subcortical
+segmentations, converted to surfaces via the python pipeline from
+[SubCortexMesh](https://github.com/chabld/SubCortexMesh). SCMvextract()
 does not require any system requirement, but further plotting and
 modelling will require downloading associated template data (the package
 will prompt you automatically or you may do it directly by typing
-`VertexWiseR:::scm_database_check()`)
+`VertexWiseR:::scm_database_check(template='fsaverage')`, with
+‘fsaverage’ for FreeSurfer template data or ‘fslfirst’ for FSL FIRST
+template data).
 
 For demonstration, we provide a subsample of 2 participants from the
 [SUDMEX_CONN](https://openneuro.org/datasets/ds003346/versions/1.1.2)
-dataset (Garza-Villarreal et al. 2017), after computing their surface
-data using SubCortexMesh, keeping all output .vtk files.
+dataset (Garza-Villarreal et al. 2017), after preprocessing them via
+FreeSurfer’s recon-all pipeline, and computing their surface data using
+SubCortexMesh, keeping all output .vtk files.
 
 To extract and collate the data of the two participants:
 
 ``` r
-aseg_CTv = ASEGvextract(
+subcortical_Tv = SCMvextract(
   sdirpath = paste0(demodata,'/sudmex_conn_surf_data_subcortexmesh/'), 
   outputdir = "subcortical_matrices",
+  template = 'fsaverage',
   measure = 'thickness',
   roilabel= c('thalamus','caudate'),
   subj_ID = TRUE,
-  silent= FALSE,
-  VWR_check = FALSE)
+  silent= FALSE)
 ```
 
-    ## Non-interactive sessions need requirement checks
+    ## Checking for VertexWiseR system requirements ...
 
-The following arguments can be used: - sdirpath: Path to the
-surface_metrics output directory - filename: Name of the directory that
-will contain each subcortical region’s .rds matrix (can include a
-specific path to it) - measure: The name of the surface-based measure of
-interest computed [in
-SubCortexMesh](https://github.com/chabld/SubCortexMesh). That includes
-‘thickness’,‘curvature’,‘surfarea’. Default is ‘thickness’. - roilabel:
-One name or vector of names of the subcortical region(s) to extract.
-This is optional, all subcortices will be included if the argument is
-not provided. - subj_ID: For each separate subcortical matrix, whether
-to obtain a list object containing both subject ID and data matrix
-instead of just the matrix (TRUE OR FALSE). Default is TRUE. - silent:
-Whether to silence messages from the process (TRUE or FALSE). Default is
-FALSE.
+    ## Extracting sub-001's data... [1/2]
+
+    ## => caudate
+
+    ## => thalamus
+
+    ## Extracting sub-002's data... [2/2]
+
+    ## => caudate
+
+    ## => thalamus
+
+    ## Saving data to subcortical_matrices...
+
+    ## done!
+
+The following arguments can be used:  
+- sdirpath: Path to the surface_metrics output directory  
+- filename: Name of the directory that will contain each subcortical
+region’s .rds matrix (can include a specific path to it)  
+- template: The name of the template the surfaces are computed from in
+SubCortexMesh (includes ‘fsaverage’ and ‘fslfirst’).  
+- measure: The name of the surface-based measure of interest computed
+[in SubCortexMesh](https://github.com/chabld/SubCortexMesh). That
+includes ‘thickness’,‘curvature’,‘surfarea’. Default is ‘thickness’.  
+- roilabel: One name or vector of names of the subcortical region(s) to
+extract. This is optional, all subcortices will be included if the
+argument is not provided.  
+- subj_ID: For each separate subcortical matrix, whether to obtain a
+list object containing both subject ID and data matrix instead of just
+the matrix (TRUE OR FALSE). Default is TRUE.  
+- silent: Whether to silence messages from the process (TRUE or FALSE).
+Default is FALSE.
 
 As opposed to other extraction functions, multiple matrices (one for
 each subcortical area, bilateral when applicable) are saved inside the
@@ -336,28 +372,28 @@ path indicated in “outputdir”, and returned together in a single list
 object:
 
 ``` r
-names(aseg_CTv)
+names(subcortical_Tv)
 ```
 
-    ## NULL
+    ## [1] "caudate"  "thalamus"
 
 ``` r
-aseg_CTv[['caudate']]$sub_list
+subcortical_Tv[['caudate']]$sub_list
 ```
 
-    ## NULL
+    ## [1] "sub-001" "sub-002"
 
 ``` r
-dim(aseg_CTv[['caudate']]$surf_obj)
+dim(subcortical_Tv[['caudate']]$surf_obj)
 ```
 
-    ## NULL
+    ## [1]    2 6940
 
 ``` r
-dim(aseg_CTv[['thalamus']]$surf_obj)
+dim(subcortical_Tv[['thalamus']]$surf_obj)
 ```
 
-    ## NULL
+    ## [1]    2 7768
 
 ## References:
 
@@ -411,6 +447,11 @@ Mehta, Kahini, Taylor Salo, Thomas J Madison, Azeez Adebimpe, Danielle S
 Bassett, Max Bertolero, Matthew Cieslak, et al. 2024. “XCP-d: A Robust
 Pipeline for the Post-Processing of fMRI Data.” *Imaging Neuroscience*
 2: 1–26. <https://doi.org/10.1162/imag_a_00257>.
+
+Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark
+Jenkinson. 2011. “A Bayesian Model of Shape and Appearance for
+Subcortical Brain Segmentation.” *NeuroImage* 56 (3): 907–22.
+<https://doi.org/10.1016/j.neuroimage.2011.02.046>.
 
 Spreng, R. Nathan, Roni Setton, Udi Alter, Benjamin N. Cassidy, Bri
 Darboh, Elizabeth DuPre, Karin Kantarovich, et al. 2022. “Neurocognitive

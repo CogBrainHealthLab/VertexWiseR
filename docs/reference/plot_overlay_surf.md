@@ -44,7 +44,7 @@ plot_overlay_surf(
 
   A numeric vector (length of V), where V is the number of vertices. It
   can be one row from the output from SURFvextract(), CAT12vextract(),
-  FSLRvextract(), HIPvextract(), ASEGvextract(), as well as masks or
+  FSLRvextract(), HIPvextract(), SCMvextract(), as well as masks or
   vertex-wise results outputted by analyses functions. This is the
   background surface.
 

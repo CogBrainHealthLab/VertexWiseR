@@ -22,8 +22,8 @@
   : CAT12vextract
 - [`DTSERIESvextract()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/DTSERIESvextract.md)
   : DTSERIESvextract
-- [`ASEGvextract()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/ASEGvextract.md)
-  : ASEGvextract
+- [`SCMvextract()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/SCMvextract.md)
+  : SCMvextract
 
 ## Smoothing
 
