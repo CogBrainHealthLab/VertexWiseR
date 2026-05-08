@@ -43,8 +43,8 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
     
   }
   #check if FREESURFER_HOME/license.txt exists  
-  if(!file.exists(paste0(Sys.getenv('FREESURFER_HOME'),'/license.txt')) )
-  {return(message('No FREESURFER_HOME/license.txt file was found. FreeSurfer requires a license to be fully operational. See https://surfer.nmr.mgh.harvard.edu/fswiki/License'))}
+  if(!file.exists(paste0(Sys.getenv('FREESURFER_HOME'),'/license.txt')) & Sys.getenv('FS_LICENSE')=="")
+  {return(message('No FREESURFER_HOME/license.txt file was found. If it\'s in a different path, please set the path to teh FS_LICENSE environment variable. FreeSurfer requires a license to be fully operational. See https://surfer.nmr.mgh.harvard.edu/fswiki/License'))}
   #check if FreeSurfer has been setup (test freeview command)
   testFS <- suppressWarnings(try(system("which freesurfer", intern = TRUE, ignore.stderr = TRUE),silent=TRUE))
   if  (!length(testFS) > 0) {return(message('It seems that FreeSurfer has not been set up in your source environment as \'which freesurfer\' results in an error. SURFvextract() will not be able to work without FreeSurfer.'))}

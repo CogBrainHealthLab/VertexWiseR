@@ -1,3 +1,8 @@
+# VertexWiseR v1.5.2
+
+## FIXES
+* SURFvextract() now also detects the FreeSurfer license path set in the FS_LICENSE environment variable instead of only checking a default path.
+
 # VertexWiseR v1.5.1
 
 ## NEW FEATURES
