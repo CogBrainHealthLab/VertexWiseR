@@ -2,6 +2,7 @@
 
 ## FIXES
 * SURFvextract() now also detects the FreeSurfer license path set in the FS_LICENSE environment variable instead of only checking a default path.
+* SCMvextract() was mishandling subject surface file detection when a subject's ID was contained in another (e.g., processing for "sub-10" would include "sub-100"'s surfaces). A safeguard is now added to prevent it.
 
 # VertexWiseR v1.5.1
 

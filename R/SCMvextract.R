@@ -161,10 +161,10 @@ SCMvextract=function(sdirpath="./", outputdir, template, measure = 'thickness', 
   {
     if (silent==FALSE){message(paste0("Extracting ", sublist[sub], "\'s data... [",sub,"/", NROW(sublist),"]"))}
     #narrow down lists to particular subject
-    lh.filelist.sub=lh.filelist[grep(sublist[sub],lh.filelist)]
-    rh.filelist.sub=rh.filelist[grep(sublist[sub],rh.filelist)]
-    bstem.filelist.sub=bstem.filelist[grep(sublist[sub],bstem.filelist)]
-    allmerged.filelist.sub=allmerged.filelist[grep(sublist[sub],allmerged.filelist)]
+    lh.filelist.sub=lh.filelist[grep(paste0(sublist[sub],'/'),lh.filelist)]
+    rh.filelist.sub=rh.filelist[grep(paste0(sublist[sub],'/'),rh.filelist)]
+    bstem.filelist.sub=bstem.filelist[grep(paste0(sublist[sub],'/'),bstem.filelist)]
+    allmerged.filelist.sub=allmerged.filelist[grep(paste0(sublist[sub],'/'),allmerged.filelist)]
       
     for (vol in 1:NROW(subcortical_list))
     {
