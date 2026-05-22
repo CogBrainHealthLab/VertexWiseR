@@ -1,0 +1,71 @@
+# DTSERIESvextract
+
+Extracts vertex-wise surface-based CIFTI dense time-series data from an
+individual dtseries .nii file from HCP, fMRIprep or XCP-D preprocessed
+directories, and stores it as a single .RDS file.
+
+## Usage
+
+``` r
+DTSERIESvextract(dtseries, filename, silent = FALSE, VWR_check = TRUE)
+```
+
+## Arguments
+
+- dtseries:
+
+  A string object containing the full path to the dtseries files to
+  extract from.
+
+- filename:
+
+  A string object containing the desired name of the output RDS file.
+  Default is 'fslr32k.rds' in the R temporary directory (tempdir()).
+
+- silent:
+
+  A logical object to determine whether messages will be silenced. Set
+  to 'FALSE' by default
+
+- VWR_check:
+
+  A boolean object specifying whether to check and validate system
+  requirements. Default is TRUE.
+
+## Value
+
+A .RDSfile containing a surface data matrix object, with N time-point x
+M vertices dimensions and can be readily used by VertexWiseR statistical
+analysis functions. Each row corresponds to a time point in order and
+contains the left to right hemispheres' vertex-wise values.
+
+## Details
+
+The function extracts the data from the dtseries.nii file provided, and
+organizes the left and right hemisphere vertex data for each subject as
+rows in a N x 64984 data matrix within a .rds object.
+
+## Examples
+
+``` r
+#demo cifti dtseries from openneuro
+#(ds005012, sub-18_ses-1_task-mid, run-01, 
+#reduced to 50 time points)
+download.file(paste0("https://raw.githubusercontent.com/",
+"CogBrainHealthLab/VertexWiseR/main/inst/demo_data/",
+"demo_91k_bold.dtseries.nii"),
+destfile=paste0(tempdir(),
+"/demo_91k_bold.dtseries.nii"), 
+mode = "wb")
+             
+sub_dtseries=DTSERIESvextract(
+dtseries=paste0(tempdir(),
+             "/demo_91k_bold.dtseries.nii"), 
+silent=FALSE,
+VWR_check=FALSE)
+#> Non-interactive sessions need requirement checks
+
+##visualizing e.g. the first 4 frames of the fMRI volume
+#plot_surf(sub_dtseries[c(1,10,20,40),], 
+#            file="4frames.png")
+```

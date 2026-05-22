@@ -1,0 +1,91 @@
+# SURFvextract
+
+Extracts whole-brain vertex-wise surface-based measures for each subject
+in a 'FreeSurfer' output subjects directory, resamples the data to a
+common surface template, and stores it as a .rds file. This function
+requires the 'FreeSurfer' environment to be preset in the unix
+environment and a 'FreeSurfer' license key.
+
+## Usage
+
+``` r
+SURFvextract(
+  sdirpath = "./",
+  filename,
+  template = "fsaverage5",
+  measure = "thickness",
+  subj_ID = TRUE,
+  fshomepath
+)
+```
+
+## Arguments
+
+- sdirpath:
+
+  A string object containing the path to the 'FreeSurfer' preprocessed
+  subjects directory. This directory must be the output directory from a
+  [FreeSurfer preprocessing recon-all
+  pipeline](https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all).
+  Default is the current working directory ("./").
+
+- filename:
+
+  A string object containing the desired name of the output RDS file.
+  Default is 'brain_measure.rds' in the R temporary directory
+  (tempdir()).
+
+- template:
+
+  A string object containing the name of surface template (available:
+  'fsaverage5', 'fsaverage6'). Default is fsaverage5.
+
+- measure:
+
+  A string object containing the name of the measure of interest.
+  Options include thickness, curv, sulc, area, and volume (for
+  freesurfer 7.4.1 or later). Default is thickness. Note that
+  non-standard surface measures stored in "surf/" also work, provided
+  the full name and extension following lh./rh. is given (e.g.,
+  "w-g.pct.mgh" for grey-white matter contrast).
+
+- subj_ID:
+
+  A logical object stating whether to include subject IDs (folder names
+  in the subjects directory) as a first column to the output matrix.
+  Default is TRUE.
+
+- fshomepath:
+
+  An optional string object containing the path to the FreeSurfer
+  installation directory. This makes sure R accesses FreeSurfer if the
+  system environment variables are not inherited — as would be the case
+  if you are running the function from RStudio.
+
+## Value
+
+A .RDSfile with a list containing 1. the list of subject IDs (first
+element) and 2. a surface data matrix object (second element), or only a
+data matrix object. The matrix has N subjects x M vertices dimensions
+and can be used readily by VertexWiseR statistical analysis functions.
+Each row corresponds to a subject (in the order they are listed in the
+folder) and contains the left to right hemispheres' vertex-wise values.
+
+## Details
+
+Note that RStudio does not inherit the shell environment variables if it
+is open from a terminal. In that case, the fshomepath argument needs to
+be provided. The function runs system shell commands that will produce
+in the set subjects directory: 1) a sorted list of subjects
+"sublist.txt"; 2) a link file to the selected surface fsaverage
+template. 3) left and right hemisphere .mgh maps outputted by
+'FreeSurfer' 's mris_preproc.
+
+## Examples
+
+``` r
+SURFvextract(sdirpath = "freesurfer_subjdir", 
+filename=paste0(tempdir(), "/CTv.rds"), template="fsaverage5",
+measure="curv") 
+#> No FREESURFER_HOME variable has been set in the system environment or it could not be retrieved by R. If the latter is true, try specifying the path to FreeSurfer with the fshomepath argument. SURFvextract() will not be able to work without FreeSurfer. 
+```
