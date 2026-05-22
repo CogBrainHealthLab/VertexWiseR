@@ -1,0 +1,170 @@
+# Vertex-wise analysis with random field theory cluster correction
+
+Fits a linear or linear mixed model with the cortical or hippocampal
+surface data as the predicted outcome, and returns cluster-thresholded
+(Random field theory) t-stat map selected contrast.
+
+## Usage
+
+``` r
+RFT_vertex_analysis(
+  model,
+  contrast,
+  random,
+  formula,
+  formula_dataset,
+  inverse = FALSE,
+  surf_data,
+  p = 0.05,
+  atlas = 1,
+  smooth_FWHM,
+  VWR_check = TRUE
+)
+```
+
+## Arguments
+
+- model:
+
+  An N X P data.frame object containing N rows for each subject and P
+  columns for each predictor included in the model. This data.frame
+  should not include the random effects variable.
+
+- contrast:
+
+  A N x 1 numeric vector or object containing the values of the
+  predictor of interest. Its length should equal the number of subjects
+  in model (and can be a single column from model). The
+  cluster-thresholded t-stat maps will be estimated only for this
+  predictor.
+
+- random:
+
+  A N x 1 numeric vector or object containing the values of the random
+  variable (optional). Its length should be equal to the number of
+  subjects in model (it should NOT be inside the model data.frame).
+
+- formula:
+
+  An optional string or formula object describing the predictors to be
+  fitted against the surface data, replacing the model, contrast, or
+  random arguments. If this argument is used, the formula_dataset
+  argument must also be provided.
+
+  - The dependent variable (DV) is not needed, and the formula will
+    start with ~. The DV will be the surface data value by default, but
+    it can be swapped with contrast as IV via the "inverse" argument.
+
+  - The first independent variable in the formula will always be
+    interpreted as the contrast of interest for which to estimate
+    cluster-thresholded t-stat maps.
+
+  - Only one random regressor can be given and must be indicated as
+    '(1\|variable_name)'.
+
+- formula_dataset:
+
+  An optional data.frame object containing the independent variables to
+  be used with the formula (the IV names in the formula must match their
+  column names in the dataset).
+
+- inverse:
+
+  A boolean object stating whether to set the surface data as predictor
+  of the contrast variable, instead of as dependent variable (default is
+  FALSE). Other covariates in the model remain independent variables.
+  This makes modelling slower.
+
+- surf_data:
+
+  A N x V matrix object containing the surface data (N row for each
+  subject, V for each vertex), in fsaverage5 (20484 vertices),
+  fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal
+  (14524 vertices) space. See also Hipvextract(), SURFvextract() or
+  FSLRvextract output formats. Alternatively, a string object containing
+  the path to the surface object (.rds file) outputted by extraction
+  functions may be given.
+
+- p:
+
+  A numeric object specifying the p-value to threshold the results
+  (Default is 0.05)
+
+- atlas:
+
+  A numeric integer object corresponding to the atlas of interest.
+  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100,
+  5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument
+  is ignored for hippocampal surfaces.
+
+- smooth_FWHM:
+
+  A numeric vector object specifying the desired smoothing width in mm.
+  It should not be specified if the surf_data has been smoothed
+  previously with smooth_surf(), because this result in surf_data being
+  smoothed twice.
+
+- VWR_check:
+
+  A boolean object specifying whether to check and validate system
+  requirements. Default is TRUE.
+
+## Value
+
+A list object containing the cluster level results, unthresholded t-stat
+map, thresholded t-stat map, positive, negative and bidirectional
+cluster maps, and a FDR-corrected p-value map.
+
+## Details
+
+The function imports and adapts the ['BrainStat' Python
+library](https://brainstat.readthedocs.io/en/master/_modules/brainstat/stats/SLM.html#SLM)).
+
+By default, false discovery rate correction is used together with the
+Random field theory (RFT) cluster correction. To look at data without
+any form of cluster correction, users can simply refer to the outputted
+'tstat_map'.
+
+Output definitions:
+
+- `nverts`: number of vertices in the cluster
+
+- `P`: p-value of the cluster
+
+- `X, Y and Z`: MNI coordinates of the vertex with the highest
+  t-statistic in the cluster.
+
+- `tstat`: t statistic of the vertex with the highest t-statistic in the
+  cluster
+
+- `region`: the region this highest -statistic vertex is located in, as
+  determined/labelled by the selected atlas
+
+## See also
+
+[`TFCE_vertex_analysis`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis.md),
+[`TFCE_vertex_analysis_mixed`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis_mixed.md)
+
+## Examples
+
+``` r
+demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', 
+package = 'VertexWiseR'))[1:100,]
+CTv = readRDS(file = url(paste0("https://github.com",
+"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
+"SPRENG_CTv_site1.rds?raw=TRUE")))[1:100,] 
+
+vertexwise_model=RFT_vertex_analysis(model=demodata[,c("sex","age")], 
+contrast=demodata[,"age"], surf_data = CTv, atlas=1,p = 0.05, 
+VWR_check=FALSE)
+#> Non-interactive sessions need requirement checks
+
+#Description of the output:
+#vertexwise_model$cluster_level_results
+
+#Formula alternative:
+#formula= as.formula("~ age + sex")
+#vertexwise_model=RFT_vertex_analysis(formula=formula, 
+#formula_dataset=demodata, surf_data = CTv, atlas=1, p = 0.05, 
+#VWR_check=FALSE)
+```

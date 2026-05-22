@@ -1,0 +1,163 @@
+# Vertex-wise analysis with threshold-free cluster enhancement (mixed effect)
+
+Fits a linear mixed effects model with the cortical or hippocampal
+surface data as the predicted outcome, and returns t-stat and
+threshold-free cluster enhancement (TFCE) statistical maps for the
+selected contrast.
+
+## Usage
+
+``` r
+TFCE_vertex_analysis_mixed(
+  model,
+  contrast,
+  random,
+  formula,
+  formula_dataset,
+  inverse = FALSE,
+  surf_data,
+  nperm = 100,
+  tail = 2,
+  nthread = 10,
+  smooth_FWHM,
+  perm_type = "row",
+  VWR_check = TRUE
+)
+```
+
+## Arguments
+
+- model:
+
+  An N X P data.frame object containing N rows for each subject and P
+  columns for each predictor included in the model.This data.frame
+  should not include the random effects variable.
+
+- contrast:
+
+  A N x 1 numeric vector or object containing the values of the
+  predictor of interest. Its length should equal the number of subjects
+  in model (and can be a single column from model). The t-stat and TFCE
+  maps will be estimated only for this predictor.
+
+- random:
+
+  A N x 1 numeric vector or object containing the values of the random
+  variable (optional). Its length should be equal to the number of
+  subjects in model (it should NOT be inside the model data.frame).
+
+- formula:
+
+  An optional string or formula object describing the predictors to be
+  fitted against the surface data, replacing the model, contrast, or
+  random arguments. If this argument is used, the formula_dataset
+  argument must also be provided.
+
+  - The dependent variable (DV) is not needed, and the formula will
+    start with ~. The DV will be the surface data value by default, but
+    it can be swapped with contrast as IV via the "inverse" argument.
+
+  - The first independent variable in the formula will always be
+    interpreted as the contrast of interest for which to estimate
+    cluster-thresholded t-stat maps.
+
+  - Only one random regressor can be given and must be indicated as
+    '(1\|variable_name)'.
+
+- formula_dataset:
+
+  An optional data.frame object containing the independent variables to
+  be used with the formula (the IV names in the formula must match their
+  column names in the dataset).
+
+- inverse:
+
+  A boolean object stating whether to set the surface data as predictor
+  of the contrast variable, instead of as dependent variable (default is
+  FALSE). Other covariates in the model remain independent variables.
+  Formula cannot be modified (with surf_data as predictor) to trigger
+  inverse. This makes modelling substantially slower.
+
+- surf_data:
+
+  A N x V matrix object containing the surface data (N row for each
+  subject, V for each vertex), in fsaverage5 (20484 vertices),
+  fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal
+  (14524 vertices) space. See also Hipvextract(), SURFvextract() or
+  FSLRvextract output formats. Alternatively, a string object containing
+  the path to the surface object (.rds file) outputted by extraction
+  functions may be given.
+
+- nperm:
+
+  A numeric integer object specifying the number of permutations
+  generated for the subsequent thresholding procedures (default = 100)
+
+- tail:
+
+  A numeric integer object specifying whether to test a one-sided
+  positive (1), one-sided negative (-1) or two-sided (2) hypothesis
+
+- nthread:
+
+  A numeric integer object specifying the number of CPU threads to
+  allocate
+
+- smooth_FWHM:
+
+  A numeric vector object specifying the desired smoothing width in mm.
+  It should not be specified if the surf_data has been smoothed
+  previously with smooth_surf(), because this result in surf_data being
+  smoothed twice.
+
+- perm_type:
+
+  A string object specifying whether to permute the rows ("row"),
+  between subjects ("between"), within subjects ("within") or between
+  and within subjects ("within_between") for random subject effects.
+  Default is "row".
+
+- VWR_check:
+
+  A boolean object specifying whether to check and validate system
+  requirements. Default is TRUE.
+
+## Value
+
+A list object containing the t-stat and the TFCE statistical maps which
+can then be subsequently thresholded using TFCE_threshold()
+
+## Details
+
+This TFCE method is adapted from the ['Nilearn' Python
+library](https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8).
+
+## See also
+
+[`RFT_vertex_analysis`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/RFT_vertex_analysis.md),
+[`TFCE_vertex_analysis`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis.md),
+[`TFCE_threshold`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_threshold.md)
+
+## Examples
+
+``` r
+demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]
+CTv = readRDS(file = url(paste0("https://github.com",
+"/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/",
+"SPRENG_CTv_site1.rds?raw=TRUE")))[1:5,]
+
+TFCEpos=TFCE_vertex_analysis_mixed(model=demodata[,c("sex",
+"age")], contrast=demodata[,"age"], random=demodata[,"id"], 
+surf_data=CTv, nperm =5,tail = 1, nthread = 2, VWR_check=FALSE)
+#> Non-interactive sessions need requirement checks
+
+#To get significant clusters, you may then run:
+#results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)
+#results$cluster_level_results
+
+#Formula alternative:
+#formula= as.formula("~ age + sex + (1|id)")
+#TFCEpos=TFCE_vertex_analysis_mixed(formula=formula, 
+#formula_dataset=demodata, surf_data=CTv, tail=1, 
+#nperm=5, nthread = 2, VWR_check=FALSE) 
+```

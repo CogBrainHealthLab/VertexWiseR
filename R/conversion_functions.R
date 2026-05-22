@@ -9,11 +9,6 @@
 #  fsaverage6 to fsaverage5
 #- surf_to_vol()
 #  Surface to volume
-#- fslr_to_fs5()
-#  fslr32k to fsaverage5
-#- fs5_to_fslr()
-#  fsaverage5 to fslr
-
 
 ############################################################################################################################
 ############################################################################################################################
@@ -382,92 +377,4 @@ surf_to_vol=function(surf_data, filename, VWR_check=TRUE)
   stat_nii = interpolate$`_surf2vol`(template, surf_data)
   nibabel$save(stat_nii,filename)
   message(filename)
-}
-
-
-#' @title fslr to fsaverage5
-#'
-#' @description Remaps vertex-wise surface data in fslr space to fsaverage5 space using the nearest neighbor approach
-#'
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fslr (64984 vertices) space. See also SURFvextract() output format.  
-#'
-#' @returns A matrix object containing vertex-wise surface data mapped in fsaverage5 space
-#' @seealso \code{\link{fs5_to_fslr}}
-#' @examples
-#' surf_data = runif(64984,min=0, max=100);
-#' fs5_data=fslr_to_fs5(surf_data)
-#' @importFrom stats aggregate
-#' @export
-
-
-fslr_to_fs5=function(surf_data)
-{
-  #check length of vector
-  if(max(dim(t(surf_data)))%%64984!=0) {stop("Length of surf_data is not a multiple of 64984")}
-  
-  #load atlas mapping surf_data
-  fslr_to_fs5_map <- get('fslr_to_fs5_map')
-  
-  if(max(dim(t(surf_data)))==64984) #mapping fslr6 to fslr5 space if surf_data is a Nx64984 matrix
-  {
-    vert.idx=data.frame(fslr_to_fs5_map)
-    
-    if(inherits(surf_data, 'numeric'))
-    {
-      surf_data.fs5.dat=rep(NA,20484)
-      surf_data.fs5.table=aggregate(surf_data, list(vert.idx$fslr_to_fs5_map), FUN=mean)[-1,] 
-      surf_data.fs5.dat[surf_data.fs5.table[,1]]=surf_data.fs5.table[,2]
-    }
-    else if(inherits(surf_data, 'matrix'))
-    {
-      surf_data.fs5.dat=matrix(NA,ncol=20484,nrow=nrow(surf_data))
-      #if matrix, loops across rows
-      for (i in 1:nrow(surf_data))
-      {
-        surf_data.fs5.table=aggregate(surf_data[i,], list(vert.idx$fslr_to_fs5_map), FUN=mean)[-1,] 
-        surf_data.fs5.dat[i,surf_data.fs5.table[,1]]=surf_data.fs5.table[,2]
-      }
-      
-    }
-  }
-  return(surf_data.fs5.dat)
-}
-
-#' @title fsaverage5 to fslr
-#'
-#' @description Remaps vertex-wise surface data in fsaverage5 space to fslr space using the nearest neighbor approach 
-#'
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices)  space. See also SURFvextract() output format. 
-#'
-#' @returns A matrix object containing vertex-wise surface data mapped in fslr space
-#' @seealso \code{\link{fslr_to_fs5}}
-#' @examples
-#' CTv = runif(20484,min=0, max=100);
-#' CTv_fslr = fs5_to_fslr(CTv);
-#' @export
-
-#convert between fsaverage5 and fslr spacing
-fs5_to_fslr=function(surf_data)
-{
-  #check length of vector
-  if(length(surf_data)%%20484!=0) {stop("Length of surf_data is not a multiple of 20484")}
-  
-  #load atlas mapping surf_data
-  fslr_to_fs5_map <- get('fslr_to_fs5_map')
-  fslr_to_fs5_mapNO0=fslr_to_fs5_map[-which(fslr_to_fs5_map==0)]
-  fslr.idx=which(fslr_to_fs5_map>0)
-  #mapping fsaverage5 to fslr space if surf_data is a vector length of 20484
-  if(length(surf_data)==20484) 
-  {
-    surf_data.fslr=rep(NA,64984)
-    surf_data.fslr[fslr.idx]=surf_data[fslr_to_fs5_mapNO0]
-  } 
-  #mapping fsaverage5 to fslr space if surf_data is a Nx20484 matrix
-  else 
-  {
-    surf_data.fslr=matrix(NA,nrow=nrow(surf_data), ncol=64984)
-    surf_data.fslr[,fslr.idx]=surf_data[,fslr_to_fs5_mapNO0]
-  }
-  surf_data.fslr[is.na(surf_data.fslr)]=0
-  return(surf_data.fslr)
 }
