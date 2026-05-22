@@ -77,3 +77,14 @@
 #' }
 #' @docType data
 "fs6_to_fs5_map"
+
+#' fslr template object for nearest neighbor conversion in fslr_to_fs5()
+#'
+#' @format ## `fslr_to_fs5_map` 
+#' An array of 64984 integers () 
+#' \describe{
+#'   \item{vertices}{64984integers corresponding to each fslr vertex}
+#' }
+#' @docType data
+"fslr_to_fs5_map"
+

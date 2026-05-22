@@ -29,3 +29,5 @@
 ^vignettes/*.html
 ^vignettes/*_files/
 ^.gitattributes
+^\.positai$
+^\.claude$

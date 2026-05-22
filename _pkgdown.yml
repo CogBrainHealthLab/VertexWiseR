@@ -70,6 +70,8 @@ reference:
     contents: 
     - fs5_to_fs6
     - fs6_to_fs5
+    - fslr_to_fs5
+    - fs5_to_fslr
     - surf_to_vol
     - atlas_to_surf
     - surf_to_atlas
@@ -93,6 +95,7 @@ reference:
   - subtitle: Template maps
     contents:
     - fs6_to_fs5_map
+    - fslr_to_fs5_map
     - hip_points_cells
     
   - subtitle: Parcellation maps
