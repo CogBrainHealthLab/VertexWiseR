@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{hip_points_cells}}{
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 \describe{
 \item{vertices}{data frame with 7262 rows (vertices), 3 columns (MNI coordinates X, Y, Z)}
 \item{vertices}{data frame with 14266 rows (vertices), 3 columns (vertices of all unique triangles}

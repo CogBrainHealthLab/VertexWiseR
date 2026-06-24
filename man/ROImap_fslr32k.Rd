@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{ROImap_fslr32k}}{
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 \describe{
 \item{vertices}{data frame with 64984 rows (vertices), 6 columns (atlases)}
 \item{atlases}{data frame with 400 rows (labels, not all are filled depending on atlas), 6 columns (atlases)}

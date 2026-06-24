@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{ROImap_hip}}{
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 \describe{
 \item{vertices}{array of 14524 numeric vectors (vertices)}
 \item{atlases}{data frame with 10 rows listing names of left and right hippocampal subfields}
