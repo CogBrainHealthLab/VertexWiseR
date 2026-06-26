@@ -16,13 +16,27 @@ navbar:
       - reference
       - articles
       - news
-      - OHBMposter
+      - posters
   components:
-    OHBMposter:
-      title: OHBM 2025 poster
+    posters:
+      text: Posters
       icon: fa-solid fa-scroll
-      aria-label: OHBM 2025 poster PDF
-      href: poster/VertexWiseR_poster_OHBM2025.pdf
+      menu:
+        - text: OHBM 2025 poster
+          href: poster/VertexWiseR_poster_OHBM2025.pdf
+        - text: OHBM 2026 poster
+          href: poster/VertexWiseR_poster_OHBM2026.pdf
+
+articles:
+- title: Get started
+  navbar: ~
+  contents:
+  - Python_troubleshooting
+  - VertexWiseR_surface_extraction
+  - VertexWiseR_Example_1
+  - VertexWiseR_Example_2
+  - VertexWiseR_Example_3
+  - VertexWiseR_plot_overlay
 
 reference:
   - title: Demo & tutorials
@@ -69,7 +83,9 @@ reference:
   - subtitle: Conversion functions
     contents: 
     - fs5_to_fs6
+    - fs5_to_fslr
     - fs6_to_fs5
+    - fslr_to_fs5
     - surf_to_vol
     - atlas_to_surf
     - surf_to_atlas
@@ -93,6 +109,7 @@ reference:
   - subtitle: Template maps
     contents:
     - fs6_to_fs5_map
+    - fslr_to_fs5_map
     - hip_points_cells
     
   - subtitle: Parcellation maps

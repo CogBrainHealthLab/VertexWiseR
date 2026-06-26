@@ -1,5 +1,8 @@
 # VertexWiseR v1.5.2
 
+## NEW FEATURES
+* New conversion functions fslr_to_fs5() and fs5_to_fslr() to remap surface data in the fslr32k template to data in the fsaverage5 template, and vice versa
+
 ## FIXES
 * SURFvextract() now also detects the FreeSurfer license path set in the FS_LICENSE environment variable instead of only checking a default path.
 * SCMvextract() was mishandling subject surface file detection when a subject's ID was contained in another (e.g., processing for "sub-10" would include "sub-100"'s surfaces). A safeguard is now added to prevent it.
@@ -112,7 +115,7 @@ Current virtual environment users encountering the error can install the right v
 # VertexWiseR v1.2.1
 
 ## NEW FEATURES
-* Reticulate's [last update](https://posit.co/blog/reticulate-1-41/) allows users to install ephemeral Python environments with UV instead of requiring a stable Python/Miniconda installation. If users create their own with py_require() before running VertexWiseR, such environment will be selected automatically. If no Python environment is found, VertexWiseR now gives the choice to either install an ephemeral environment with UV, or to install Miniconda or Python via the classic ways.
+* Reticulate's [last update](https://posit.co/blog/reticulate-1-41) allows users to install ephemeral Python environments with UV instead of requiring a stable Python/Miniconda installation. If users create their own with py_require() before running VertexWiseR, such environment will be selected automatically. If no Python environment is found, VertexWiseR now gives the choice to either install an ephemeral environment with UV, or to install Miniconda or Python via the classic ways.
 
 ## FIXES
 * SURFvextract() now gives a proper error message if subjects' surface measure files could not be found. It also will get rid of the sublist.txt which was outputted automatically if subj_ID was set to FALSE. 

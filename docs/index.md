@@ -17,8 +17,8 @@ install.packages('VertexWiseR')
 library(VertexWiseR)
 
 ##Alternatively
-#install.packages(c("devtools","R.rsp")
-#devtools::install_github("CogBrainHealthLab/VertexWiseR", build_vignettes = TRUE)
+#install.packages("pak")
+#pak::pak("CogBrainHealthLab/VertexWiseR")
 ```
 
 VertexWiseR imports and makes use of the R package

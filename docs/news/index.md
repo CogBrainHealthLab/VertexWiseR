@@ -1,6 +1,26 @@
 # Changelog
 
+## VertexWiseR v1.5.2
+
+### NEW FEATURES
+
+- New conversion functions fslr_to_fs5() and fs5_to_fslr() to remap
+  surface data in the fslr32k template to data in the fsaverage5
+  template, and vice versa
+
+### FIXES
+
+- SURFvextract() now also detects the FreeSurfer license path set in the
+  FS_LICENSE environment variable instead of only checking a default
+  path.
+- SCMvextract() was mishandling subject surface file detection when a
+  subject’s ID was contained in another (e.g., processing for “sub-10”
+  would include “sub-100”’s surfaces). A safeguard is now added to
+  prevent it.
+
 ## VertexWiseR v1.5.1
+
+CRAN release: 2026-04-08
 
 ### NEW FEATURES
 

@@ -65,8 +65,12 @@
 
 - [`fs5_to_fs6()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs5_to_fs6.md)
   : fsaverage5 to fsaverage6
+- [`fs5_to_fslr()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs5_to_fslr.md)
+  : fsaverage5 to fslr
 - [`fs6_to_fs5()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5.md)
   : fsaverage6 to fsaverage5
+- [`fslr_to_fs5()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fslr_to_fs5.md)
+  : fslr to fsaverage5
 - [`surf_to_vol()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/surf_to_vol.md)
   : Surface to volume
 - [`atlas_to_surf()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/atlas_to_surf.md)
@@ -100,6 +104,9 @@
 - [`fs6_to_fs5_map`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fs6_to_fs5_map.md)
   : fsaverage6 template object for nearest neighbor conversion in
   fs6_to_fs5()
+- [`fslr_to_fs5_map`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/fslr_to_fs5_map.md)
+  : fslr template object for nearest neighbor conversion in
+  fslr_to_fs5()
 - [`hip_points_cells`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/hip_points_cells.md)
   : points and cells data required to build the hippocampus surface
   template

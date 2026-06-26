@@ -1,8 +1,8 @@
 Package: VertexWiseR
 Title: Simplified Vertex-Wise Analyses of Whole-Brain and Subcortical
     Surface
-Version: 1.5.1
-Date: 2026-04-08
+Version: 1.5.2
+Date: 2026-06-25
 Authors@R: c(
     person("Junhong", "Yu", , "junhong.yu@ntu.edu.sg", role = "aut",
            comment = c(ORCID = "0000-0002-2563-9658")),
