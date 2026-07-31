@@ -444,7 +444,7 @@ scm_plot_parameters=function(surf_data,size,zoom,template,twocbars=NULL)
 #'  - 95718/82412: all ROIs merged
 #'  
 #' @returns If data_object=='edgelist': A N x 2 matrix object listing each vertex of the template and the vertices adjacent to it (making an edge together).
-#' If data_object=='ROImap': A matrix object with N vertices from a template and each parcellation number the vertices correspond to in 6 atlases (6 columns).
+#' If data_object=='ROImap': A matrix object with N vertices from a template and each parcellation number the vertices correspond to in available atlases (1 for base ROI, 2 for anatomical atlas when it exists).
 #' If data_object=='template': A string object indicating the path to the ROI's surface template in the scm_database for reticulate to retrieve it.
 #' If data_object=='points_cells': A string object indicating the path to the ROI's points and cells data in the scm_database.
 #' @noRd

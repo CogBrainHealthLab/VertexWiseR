@@ -28,7 +28,7 @@ plot_surf3d(
 
 \item{limits}{A combined pair of numeric vector composed of the lower and upper color scale limits of the plot. When left unspecified, the symmetrical limits \verb{c(-max(abs(surf_dat),max(abs(surf_dat)))} will be used.}
 
-\item{atlas}{atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for HippUnfold hippocampal surfaces and SubCortexMesh subcortical surface.}
+\item{atlas}{atlas used for identifying region labels. 1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200, 6=Schaefer-400. Set to \code{1} by default. This argument is ignored for HippUnfold hippocampal surfaces. For applicable SubCortexMesh surfaces, 1=default base ROI, 2=anatomical atlas.}
 
 \item{hemi}{A string specifying the hemisphere to plot. Possible values are \code{l} (left), \code{r} (right) or \code{b} (both).}
 
