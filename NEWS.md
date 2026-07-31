@@ -1,3 +1,9 @@
+# VertexWiseR v1.5.3 (TBC)
+
+## NEW FEATURES
+
+* Since SubCortexMesh v1.1.0, some subcortical ROIs (in fsaverage space) also have [atlas subparcellations](https://subcortexmesh.readthedocs.io/en/1.1.0/atlases.html). They can be selected as descriptive region labels in the outputs of RFT and TFCE models, as well as in the hovering information in plotsurf_3d() (atlas=1 for default base ROI, atlas=2 for the anatomical atlas). This works with the thalamus, hippocampus, amygdala, ventral DC, pallidum, cerebellum and brain-stem.
+
 # VertexWiseR v1.5.2
 
 ## NEW FEATURES
