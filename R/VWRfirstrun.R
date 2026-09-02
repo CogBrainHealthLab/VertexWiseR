@@ -133,19 +133,28 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
           
           if (choice==1) #Install Miniconda within default path
           { 
-            message('Installing Miniconda (v24.9.2)...')
+            message('Installing Miniconda (v26.7.1)...')
             Sys.setenv(RETICULATE_PYTHON=defaultpath)
-            
-            #custom url to get version 24.9.2
-            on.exit(options(reticulate.miniconda.url=NULL))
-            options(reticulate.miniconda.url=miniconda_installer_py39url())
+            #overriding reticulate parameters to get python 3.10
+            condarc_file <- tempfile(fileext = ".yml")
+            writeLines(c(
+              "channels:", "  - conda-forge", "default_channels:",
+              "  - https://conda.anaconda.org/conda-forge", "channel_priority: strict"
+            ), condarc_file)
+            Sys.setenv(CONDARC = condarc_file)
+            on.exit(Sys.unsetenv("CONDARC"), add = TRUE)
+            on.exit(options(reticulate.miniconda.url=NULL), add = TRUE)
+            #custom url to get version 26.7.1
+            options(reticulate.miniconda.url=miniconda_installer_py310url())
             reticulate::install_miniconda(update = FALSE, force = TRUE)
+            
             message("Installing dependency packages with appropriate versions...")
             reticulate::py_install("numpy==1.26.4", pip=TRUE, 
                                    envname = defaultpath)
             reticulate::py_install("vtk==9.3.1",pip = TRUE, 
                                    envname = defaultpath) # latest vtk==9.4.0 causes problems
-            reticulate::py_install("netneurotools==0.2.5",pip = TRUE,  envname = defaultpath) # latest v3.0.0 causes problems
+            reticulate::py_install("netneurotools==0.2.5",pip = TRUE,  
+                                   envname = defaultpath) # latest v3.0.0 causes problems
             
             #will store path in .Renviron in tools::R_user_dir() 
             #location specified by CRAN, creates it if not existing:
@@ -207,12 +216,21 @@ VWRfirstrun=function(requirement="any", n_vert=0, promptless=FALSE)
                            renviron_path, ' \n'))
             
             #Install miniconda in the new path
-            message('Installing Miniconda (v24.9.2)...')
-            #custom url to get version 24.9.2
-            on.exit(options(reticulate.miniconda.url=NULL))
-            options(reticulate.miniconda.url=miniconda_installer_py39url())
+            message('Installing Miniconda (v26.7.1)...')
+            #overriding reticulate parameters to get python 3.10
+            condarc_file <- tempfile(fileext = ".yml")
+            writeLines(c(
+              "channels:", "  - conda-forge", "default_channels:",
+              "  - https://conda.anaconda.org/conda-forge", "channel_priority: strict"
+            ), condarc_file)
+            Sys.setenv(CONDARC = condarc_file)
+            on.exit(Sys.unsetenv("CONDARC"), add = TRUE)
+            on.exit(options(reticulate.miniconda.url=NULL), add = TRUE)
+            #custom url to get version 26.7.1
+            options(reticulate.miniconda.url=miniconda_installer_py310url())
             #install_miniconda will use miniconda_path() which relies on RETICULATE_MINICONDA_PATH defined above
-            reticulate::install_miniconda(update = FALSE, force=TRUE)
+            reticulate::install_miniconda(update = FALSE, force = TRUE)
+            
             message("Installing dependency packages with appropriate versions...")
             #set environment variable to make sure packages 
             #arrive at the same place, not in 'r-miniconda'
