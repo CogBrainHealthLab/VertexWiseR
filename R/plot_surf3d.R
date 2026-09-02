@@ -139,6 +139,15 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
 
     ROImap <- scm_database_fetcher(n_vert,'ROImap', template)
     ROImap <- list(ROImap@data, ROImap@atlases)
+    
+    #anatomical subparcellations do not exist for the caudate, putamen, or
+    #accumbens area, in fsaverage, we so ignore
+    if (atlas==2 & (n_vert %in% c(6940, 8394, 2044) | template=='fslfirst'))
+    {
+      warning('The atlas argument was set back to 1 as no parcellations apply to the selected ROI.')
+      atlas=1
+    }
+    
   } else if (n_vert %in% c(95718,82412) ) #need special code for all subcortices
   {
     #specify template 

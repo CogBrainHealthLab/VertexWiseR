@@ -58,7 +58,7 @@
 #' @export
 
 ##vertex wise analysis with mixed effects
-RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)  ## atlas: 1=Desikan, 2=Schaefer-100, 3=Schaefer-200, 4=Glasser-360, 5=Destrieux-148; ignored for hippocampal surfaces
+RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, p=0.05, atlas=1, smooth_FWHM, VWR_check=TRUE)
 {
   #gets surface matrix if surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
@@ -132,6 +132,15 @@ RFT_vertex_analysis=function(model,contrast, random, formula, formula_dataset, i
       ROImap <- scm_database_fetcher(n_vert,'ROImap',template)
       ROImap <- list(ROImap@data, ROImap@atlases)
       template=brainspace.mesh.mesh_io$read_surface(templatepath)
+      
+      #anatomical subparcellations do not exist for the caudate, putamen, or
+      #accumbens area, in fsaverage, we so ignore
+      if (atlas==2 & (n_vert %in% c(6940, 8394, 2044) | template=='fslfirst'))
+      {
+        warning('The atlas argument was set back to 1 as no parcellations apply to the selected ROI.')
+        atlas=1
+      }
+      
     }
     else {stop("data vector should only contain 20484 (fsaverage5), 81924 (fsaverage6), 64984 (fslr32k) or 14524 (hippocampal vertices) columns. For SubCortexMesh subcortices, please refer to ?SCMvextract().")}
   

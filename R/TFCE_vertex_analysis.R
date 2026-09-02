@@ -548,6 +548,14 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
     ROImap <- list(ROImap@data, ROImap@atlases)
     assign("ROImap", ROImap, envir = internalenv)
     
+    #anatomical subparcellations do not exist for the caudate, putamen, or
+    #accumbens area, in fsaverage, we so ignore
+    if (atlas==2 & (n_vert %in% c(6940, 8394, 2044) | template=='fslfirst'))
+    {
+      warning('The atlas argument was set back to 1 as no parcellations apply to the selected ROI.')
+      atlas=1
+    }
+    
     #here, MNImap is extracted from template surface
     brainspace.mesh.mesh_io=reticulate::import("brainspace.mesh.mesh_io", delay_load = TRUE)
     templatepath <- scm_database_fetcher(n_vert,'template', template)
