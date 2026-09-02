@@ -1,7 +1,7 @@
 ---
 title: "Python troubleshooting"
 author: "Charly H. A. Billaud, Junhong Yu"
-date: "2026-03-12"
+date: "2026-09-02"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Python troubleshooting}
@@ -100,6 +100,12 @@ RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
 ```
 
 To swap with another Python environment, users may choose to edit `.Renviron` directly, by replacing the paths with the Python installation they would like VertexWiseR to use instead. The `RETICULATE_MINICONDA_PATH` may also be safely removed if a non-conda Python library is to be used. Alternatively, users may choose to completely remove the `.Renviron` and redefine the path as described in section 3a.
+
+Miniconda must also be uninstalled if the default path was chosen:
+```
+reticulate::miniconda_uninstall() 
+```
+Which should remove the directory printed by reticulate::miniconda_path(). If it did not work, delete it manually.
 
 -   **If the user created an ephemeral virtual environment**
 

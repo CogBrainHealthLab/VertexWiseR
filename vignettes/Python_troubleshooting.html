@@ -12,7 +12,7 @@
 
 <meta name="author" content="Charly H. A. Billaud, Junhong Yu" />
 
-<meta name="date" content="2026-03-12" />
+<meta name="date" content="2026-09-02" />
 
 <title>Python troubleshooting</title>
 
@@ -50,8 +50,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +63,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -150,7 +151,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
-margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -363,17 +363,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Python troubleshooting</h1>
 <h4 class="author">Charly H. A. Billaud, Junhong Yu</h4>
-<h4 class="date">2026-03-12</h4>
+<h4 class="date">2026-09-02</h4>
 
 
 
 <p>VertexWiseR uses Python functions from various toolboxes that can
 flexibly be called and executed in R using the <em>reticulate</em>
-package <span class="citation">(Ushey, Allaire, and Tang 2023)</span>.
-As of version &lt; 1.41.0 reticulate favours creating a virtual
-environment, where the python version and specific packages needed for
-VertexWiseR can be stored, leaving any other system installations
-intact. This is also the option we recommend. The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
+package <span class="citation">(Ushey et al. 2023)</span>. As of version
+&lt; 1.41.0 reticulate favours creating a virtual environment, where the
+python version and specific packages needed for VertexWiseR can be
+stored, leaving any other system installations intact. This is also the
+option we recommend. The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html">reticulate
 documentation</a> explains:</p>
 <blockquote>
 <p>When installing Python packages it’s best practice to isolate them
@@ -498,6 +498,12 @@ installation they would like VertexWiseR to use instead. The
 non-conda Python library is to be used. Alternatively, users may choose
 to completely remove the <code>.Renviron</code> and redefine the path as
 described in section 3a.</p>
+<p>Miniconda must also be uninstalled if the default path was
+chosen:</p>
+<pre><code>reticulate::miniconda_uninstall() </code></pre>
+<p>Which should remove the directory printed by
+reticulate::miniconda_path(). If it did not work, delete it
+manually.</p>
 <ul>
 <li><strong>If the user created an ephemeral virtual
 environment</strong></li>
@@ -506,15 +512,15 @@ environment</strong></li>
 installation proposed by VWRfirstrun(), which calls
 reticulate::py_require(). The path to such environment is accessible
 with that command line:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>)</span></code></pre></div>
 <p>To stop using this environment, users may choose to clear the cache
 completely:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">unlink</span>(tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">unlink</span>(tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&quot;reticulate&quot;</span>, <span class="st">&quot;cache&quot;</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>If they do not wish to get rid of the previous virtual environment,
 users will have to modify and/or remove the VIRTUAL_ENV variable which
 has been stored in the <code>.Renviron</code> file, in the standard path
 generated via:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="at">package=</span><span class="st">&#39;VertexWiseR&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="at">package=</span><span class="st">&#39;VertexWiseR&#39;</span>)</span></code></pre></div>
 <p>This variable is automatically removed when the virtual environment
 can no longer be found in the cache, but will automatically be used by
 VWRfirstrun() after its installation to speed up the process, if it
@@ -549,10 +555,10 @@ ignore.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References:</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-ushey_reticulate_2023" class="csl-entry">
-Ushey, K, J Allaire, and Y Tang. 2023. <span>“Reticulate:
-<span>Interface</span> to ’<span>Python</span>’.”</span> <a href="https://CRAN.R-project.org/package=reticulate">https://CRAN.R-project.org/package=reticulate</a>.
+Ushey, K, J Allaire, and Y Tang. 2023. <em>Reticulate:
+<span>Interface</span> to ’<span>Python</span>’</em>. <a href="https://CRAN.R-project.org/package=reticulate">https://CRAN.R-project.org/package=reticulate</a>.
 </div>
 </div>
 </div>
