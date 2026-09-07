@@ -202,7 +202,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
     env =  .foreachGlobals;
-    rm(list=ls(name=env), pos=env)
+    #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
   }
   unregister_dopar()
   
@@ -245,6 +245,7 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   parallel::stopCluster(cl)
   unregister_dopar()
+  foreach::registerDoSEQ()
   
   ##saving list objects
   returnobj=list(tmap.orig,TFCE.orig, TFCE.max,tail)

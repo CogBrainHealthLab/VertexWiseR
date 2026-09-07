@@ -193,7 +193,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   #activate parallel processing
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); env =  .foreachGlobals;
-    rm(list=ls(name=env), pos=env)
+    #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
   }
   unregister_dopar()
   
@@ -251,6 +251,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   parallel::stopCluster(cl)
   unregister_dopar()
+  foreach::registerDoSEQ()
   
   ##saving list objects
   returnobj=list(tmap.orig,
@@ -372,7 +373,7 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
     unregister_dopar = function() {
       .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
       env =  .foreachGlobals;
-      rm(list=ls(name=env), pos=env)
+      #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
     }
     unregister_dopar()
     
@@ -424,6 +425,8 @@ TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
   }
   parallel::stopCluster(cl)
   unregister_dopar()
+  foreach::registerDoSEQ()
+  
   return(tfce_step_values.all)
 }
 ############################################################################################################################
