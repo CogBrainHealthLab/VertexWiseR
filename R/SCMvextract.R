@@ -159,7 +159,7 @@ SCMvextract=function(sdirpath="./", outputdir, template, measure = 'thickness', 
   #extract vtk scalars for each subject and subcortical region
   for (sub in 1:NROW(sublist))
   {
-    if (silent==FALSE){message(paste0("Extracting ", sublist[sub], "\'s ", metric," data... [",sub,"/", NROW(sublist),"]"))}
+    if (silent==FALSE){message(paste0("Extracting ", sublist[sub], "\'s ", measure," data... [",sub,"/", NROW(sublist),"]"))}
     #narrow down lists to particular subject
     lh.filelist.sub=lh.filelist[grep(paste0(sublist[sub],'/'),lh.filelist)]
     rh.filelist.sub=rh.filelist[grep(paste0(sublist[sub],'/'),rh.filelist)]
