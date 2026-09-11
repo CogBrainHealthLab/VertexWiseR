@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 3"
 author: "Charly H. A. Billaud"
-date: "2026-09-02"
+date: "2026-09-10"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 3}
@@ -83,7 +83,7 @@ model_caudate_thickness$cluster_level_results
 model_caudate_curvature$cluster_level_results
 ```
 
-Since [SubCortexMesh v.1.1.0](https://subcortexmesh.readthedocs.io/en/latest/atlases.html), anatomical sub-parcellations are also available for surfaces in fsaverage space, and give more specific location in regions' nuclei or subfields. VertexWiseR can use them with the argument 'atlas=2' (the caudate nuclei do not have such precise parcellations, so we show it for the thalami):
+Since [SubCortexMesh v.1.1.0](https://subcortexmesh.readthedocs.io/en/latest/atlases.html), anatomical sub-parcellations are also available for surfaces in fsaverage space, and give more specific location in regions' nuclei or subfields. VertexWiseR can use them with the argument 'atlas=2' (the caudate nuclei do not have subparcellations, so we show it for the thalami):
 
 ```{r, results = 'hide'}
 for (surf_data in c('thalamus_thickness', 'thalamus_curvature'))

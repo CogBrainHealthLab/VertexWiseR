@@ -18,7 +18,7 @@ scm_database_check=function(template){
   if (missing(template)) {
     stop('A template argument must be provided ("fsaverage" or "fslfirst").')
   }
-  if (template=='fsaverage'){datsize='19.9'}
+  if (template=='fsaverage'){datsize='20.0'}
   else if (template=='fslfirst'){datsize='17.3'}
   else {stop(paste0(template,' is not a recognized template. Options are "fsaverage" or "fslfirst".'))}
   

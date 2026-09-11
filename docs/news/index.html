@@ -52,11 +52,19 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.5.3" id="vertexwiser-v153">VertexWiseR v1.5.3<a class="anchor" aria-label="anchor" href="#vertexwiser-v153"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.5.4" id="vertexwiser-v154-tbc">VertexWiseR v1.5.4 (TBC)<a class="anchor" aria-label="anchor" href="#vertexwiser-v154-tbc"></a></h2>
+<div class="section level3">
+<h3 id="fixes-1-5-4">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-5-4"></a></h3>
+<ul><li>The label mapping for the allaseg surface was wrong labels in the cluster summaries and plot_surf3d when the 1.5.3 atlas was introduced. The maps downloadable on github were updated and plot_surf3d fixed to show the right name when hovering the cursor.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.3" id="vertexwiser-v153">VertexWiseR v1.5.3<a class="anchor" aria-label="anchor" href="#vertexwiser-v153"></a></h2><p class="text-muted">CRAN release: 2026-09-03</p>
 <div class="section level3">
 <h3 id="new-features-1-5-3">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-5-3"></a></h3>
 <ul><li>Since SubCortexMesh v1.1.0, some subcortical ROIs (in fsaverage space) also have <a href="https://subcortexmesh.readthedocs.io/en/1.1.0/atlases.html" class="external-link">atlas sub-parcellations</a>. They can be selected as descriptive region labels in the outputs of RFT and TFCE models, as well as in the hovering information in plotsurf_3d() (atlas=1 for default base ROI, atlas=2 for the anatomical atlas). This works with the thalamus, hippocampus, amygdala, ventral DC, pallidum, cerebellum and brain-stem. The “Example analyses with VertexWiseR - Example 3” vignette shows an example of it.</li>
-</ul></div>
+</ul><p>To get the most up-to-date maps for SubCortexMesh objects, users need to remove: extdatadir=system.file(‘extdata/scm_database/’, package=‘VertexWiseR’). VertexWiseR will then prompt users to download them again from Github whenever they try to analyse SubCortexMesh’s subcortical regions. Example 3 was also fixed accordingly.</p>
+</div>
 <div class="section level3">
 <h3 id="fixes-1-5-3">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1-5-3"></a></h3>
 <ul><li>The installable version of Miniconda in VWRfirstrun() has been updated to fix compatibility issue with BrainStat’s dependencies. It now installs Miniconda binaries for Python 3.10.</li>

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Charly H. A. Billaud" />
 
-<meta name="date" content="2026-09-02" />
+<meta name="date" content="2026-09-10" />
 
 <title>Example analyses with VertexWiseR - Example 3</title>
 
@@ -364,7 +364,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Example analyses with VertexWiseR - Example
 3</h1>
 <h4 class="author">Charly H. A. Billaud</h4>
-<h4 class="date">2026-09-02</h4>
+<h4 class="date">2026-09-10</h4>
 
 
 
@@ -486,8 +486,8 @@ region and each metric:</p>
 v.1.1.0</a>, anatomical sub-parcellations are also available for
 surfaces in fsaverage space, and give more specific location in regions’
 nuclei or subfields. VertexWiseR can use them with the argument
-‘atlas=2’ (the caudate nuclei do not have such precise parcellations, so
-we show it for the thalami):</p>
+‘atlas=2’ (the caudate nuclei do not have subparcellations, so we show
+it for the thalami):</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="cf">for</span> (surf_data <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;thalamus_thickness&#39;</span>, <span class="st">&#39;thalamus_curvature&#39;</span>))</span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>{   </span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>model<span class="ot">=</span><span class="fu">RFT_vertex_analysis</span>(<span class="at">model =</span> <span class="fu">as.factor</span>(beh_data<span class="sc">$</span>group),</span>
@@ -501,18 +501,28 @@ we show it for the thalami):</p>
 ## [1] &quot;No significant clusters&quot;
 ## 
 ## $`Negative contrast`
-##   clusid nverts      P     X     Y     Z tstat                                    region
-## 1      1    213 &lt;0.001 106.1 132.1 163.4 -3.05              Thalamus_Pulvinar-Inferior_R
-## 2      2    186 &lt;0.001 153.8 128.7 163.5 -3.62                Thalamus_Pulvinar-Medial_L
-## 3      3    162  0.001 132.3 133.0 148.4 -3.55    Thalamus_Centromedian-Parafascicular_L
-## 4      4    127  0.002 115.3 118.5 161.0 -3.35                Thalamus_Pulvinar-Medial_R
-## 5      5    171  0.002 136.0 112.5 141.9 -3.20 Thalamus_Laterodorsal-Lateral-Posterior_L</code></pre>
+##   clusid nverts      P     X     Y     Z tstat
+## 1      1    213 &lt;0.001 106.1 132.1 163.4 -3.05
+## 2      2    186 &lt;0.001 153.8 128.7 163.5 -3.62
+## 3      3    162  0.001 132.3 133.0 148.4 -3.55
+## 4      4    127  0.002 115.3 118.5 161.0 -3.35
+## 5      5    171  0.002 136.0 112.5 141.9 -3.20
+##                                      region
+## 1              Thalamus_Pulvinar-Inferior_R
+## 2                Thalamus_Pulvinar-Medial_L
+## 3    Thalamus_Centromedian-Parafascicular_L
+## 4                Thalamus_Pulvinar-Medial_R
+## 5 Thalamus_Laterodorsal-Lateral-Posterior_L</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>model_thalamus_curvature<span class="sc">$</span>cluster_level_results</span></code></pre></div>
 <pre><code>## $`Positive contrast`
-##   clusid nverts      P     X     Y     Z tstat                                 region
-## 1      1    119 &lt;0.001 139.1 113.9 135.3  3.45             Thalamus_Ventral-Lateral_L
-## 2      2     62  0.005 134.0 130.5 154.0  4.13 Thalamus_Centromedian-Parafascicular_L
-## 3      3     45  0.014 153.0 133.0 157.5  3.60           Thalamus_Pulvinar-Inferior_L
+##   clusid nverts      P     X     Y     Z tstat
+## 1      1    119 &lt;0.001 139.1 113.9 135.3  3.45
+## 2      2     62  0.005 134.0 130.5 154.0  4.13
+## 3      3     45  0.014 153.0 133.0 157.5  3.60
+##                                   region
+## 1             Thalamus_Ventral-Lateral_L
+## 2 Thalamus_Centromedian-Parafascicular_L
+## 3           Thalamus_Pulvinar-Inferior_L
 ## 
 ## $`Negative contrast`
 ##   clusid nverts      P     X     Y     Z tstat                        region
@@ -572,35 +582,35 @@ dataset and run the same analysis:</p>
 <span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="at">surf_data =</span> allaseg_thickness)</span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>allaseg_model<span class="sc">$</span>cluster_level_results</span></code></pre></div>
 <pre><code>## $`Positive contrast`
-##   clusid nverts      P     X     Y     Z tstat              region
-## 1      1    363 &lt;0.001 121.1 137.6 125.2  3.62        left-caudate
-## 2      2    157 &lt;0.001 144.8 136.5 137.8  3.31      right-amygdala
-## 3      3    312  0.002 113.0 135.4 155.4  2.76          brain-stem
-## 4      4    176  0.005 147.9 131.4 158.3  3.14      right-amygdala
-## 5      5    111  0.006  92.6 137.9 136.2  2.89       left-amygdala
-## 6      6    160  0.008 107.3 131.5 159.0  3.18        left-caudate
-## 7      7   1344  0.015 150.0 179.1 167.6  2.91 left-accumbens-area
-## 8      8     65  0.015 100.6 133.1 136.3  3.10       left-amygdala
-## 9      9    620  0.028  99.8 170.5 167.9  2.94      right-amygdala
+##   clusid nverts      P     X     Y     Z tstat                  region
+## 1      1    363 &lt;0.001 121.1 137.6 125.2  3.62         right-ventraldc
+## 2      2    157 &lt;0.001 144.8 136.5 137.8  3.31          left-ventraldc
+## 3      3    312  0.002 113.0 135.4 155.4  2.76              brain-stem
+## 4      4    176  0.005 147.9 131.4 158.3  3.14          left-ventraldc
+## 5      5    111  0.006  92.6 137.9 136.2  2.89           right-putamen
+## 6      6    160  0.008 107.3 131.5 159.0  3.18         right-ventraldc
+## 7      7   1344  0.015 150.0 179.1 167.6  2.91  left-cerebellum-cortex
+## 8      8     65  0.015 100.6 133.1 136.3  3.10           right-putamen
+## 9      9    620  0.028  99.8 170.5 167.9  2.94 right-cerebellum-cortex
 ## 
 ## $`Negative contrast`
-##    clusid nverts      P     X     Y     Z tstat              region
-## 1       1   2062 &lt;0.001 128.2 134.8 177.7 -3.22 left-accumbens-area
-## 2       2    223 &lt;0.001 125.7 135.9 136.1 -4.36        left-caudate
-## 3       3   1757 &lt;0.001 104.5 148.0 171.7 -3.10      right-amygdala
-## 4       4    213 &lt;0.001 106.1 132.1 163.4 -3.05      right-amygdala
-## 5       5    186  0.001 153.8 128.7 163.5 -3.62       left-amygdala
-## 6       6     77  0.001 112.9 133.0 116.7 -3.44       left-amygdala
-## 7       7     99  0.005 151.4 134.2 150.0 -3.44      right-amygdala
-## 8       8    162  0.007 132.3 133.0 148.4 -3.55       left-amygdala
-## 9       9    120  0.008 150.5 160.0 186.3 -3.58 left-accumbens-area
-## 10     10   1605  0.014 171.1 174.7 204.5 -4.07 left-accumbens-area
-## 11     11     92  0.014 100.9 136.2 145.3 -3.73        left-caudate
-## 12     12    127  0.016 115.3 118.5 161.0 -3.35      right-amygdala
-## 13     13    171  0.022 136.0 112.5 141.9 -3.20       left-amygdala
-## 14     14     74  0.029 107.3 120.9 116.1 -2.93       left-amygdala
-## 15     15     96  0.031 106.3 147.3 151.8 -3.38       left-amygdala
-## 16     16     68  0.035 106.2 134.8 141.4 -3.26        left-caudate</code></pre>
+##    clusid nverts      P     X     Y     Z tstat                  region
+## 1       1   2062 &lt;0.001 128.2 134.8 177.7 -3.22  left-cerebellum-cortex
+## 2       2    223 &lt;0.001 125.7 135.9 136.1 -4.36         right-ventraldc
+## 3       3   1757 &lt;0.001 104.5 148.0 171.7 -3.10 right-cerebellum-cortex
+## 4       4    213 &lt;0.001 106.1 132.1 163.4 -3.05          right-thalamus
+## 5       5    186  0.001 153.8 128.7 163.5 -3.62           left-thalamus
+## 6       6     77  0.001 112.9 133.0 116.7 -3.44           right-caudate
+## 7       7     99  0.005 151.4 134.2 150.0 -3.44          left-ventraldc
+## 8       8    162  0.007 132.3 133.0 148.4 -3.55           left-thalamus
+## 9       9    120  0.008 150.5 160.0 186.3 -3.58  left-cerebellum-cortex
+## 10     10   1605  0.014 171.1 174.7 204.5 -4.07  left-cerebellum-cortex
+## 11     11     92  0.014 100.9 136.2 145.3 -3.73         right-ventraldc
+## 12     12    127  0.016 115.3 118.5 161.0 -3.35          right-thalamus
+## 13     13    171  0.022 136.0 112.5 141.9 -3.20           left-thalamus
+## 14     14     74  0.029 107.3 120.9 116.1 -2.93           right-caudate
+## 15     15     96  0.031 106.3 147.3 151.8 -3.38       right-hippocampus
+## 16     16     68  0.035 106.2 134.8 141.4 -3.26         right-ventraldc</code></pre>
 <p>We can plot the subcortices together the same way:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>allasegplot<span class="ot">=</span><span class="fu">plot_surf</span>(</span>
 <span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="at">surf_data=</span>allaseg_model<span class="sc">$</span>thresholded_tstat_map,</span>
@@ -758,30 +768,30 @@ NA, like that:</p>
 <span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  <span class="at">surf_data =</span> allaseg_thickness)</span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>allaseg_model_nocerebellum<span class="sc">$</span>cluster_level_results</span></code></pre></div>
 <pre><code>## $`Positive contrast`
-##   clusid nverts      P     X     Y     Z tstat         region
-## 1      1    363 &lt;0.001 121.1 137.6 125.2  3.62   left-caudate
-## 2      2    157 &lt;0.001 144.8 136.5 137.8  3.31 right-amygdala
-## 3      3    312  0.002 113.0 135.4 155.4  2.76     brain-stem
-## 4      4    176  0.004 147.9 131.4 158.3  3.14 right-amygdala
-## 5      5    111  0.005  92.6 137.9 136.2  2.89  left-amygdala
-## 6      6    160  0.007 107.3 131.5 159.0  3.18   left-caudate
-## 7      7     65  0.013 100.6 133.1 136.3  3.10  left-amygdala
+##   clusid nverts      P     X     Y     Z tstat          region
+## 1      1    363 &lt;0.001 121.1 137.6 125.2  3.62 right-ventraldc
+## 2      2    157 &lt;0.001 144.8 136.5 137.8  3.31  left-ventraldc
+## 3      3    312  0.002 113.0 135.4 155.4  2.76      brain-stem
+## 4      4    176  0.004 147.9 131.4 158.3  3.14  left-ventraldc
+## 5      5    111  0.005  92.6 137.9 136.2  2.89   right-putamen
+## 6      6    160  0.007 107.3 131.5 159.0  3.18 right-ventraldc
+## 7      7     65  0.013 100.6 133.1 136.3  3.10   right-putamen
 ## 
 ## $`Negative contrast`
-##    clusid nverts      P     X     Y     Z tstat               region
-## 1       1    223 &lt;0.001 125.7 135.9 136.1 -4.36         left-caudate
-## 2       2    213 &lt;0.001 106.1 132.1 163.4 -3.05       right-amygdala
-## 3       3    186  0.001 153.8 128.7 163.5 -3.62        left-amygdala
-## 4       4     77  0.001 112.9 133.0 116.7 -3.44        left-amygdala
-## 5       5     99  0.004 151.4 134.2 150.0 -3.44       right-amygdala
-## 6       6    162  0.006 132.3 133.0 148.4 -3.55        left-amygdala
-## 7       7     92  0.012 100.9 136.2 145.3 -3.73         left-caudate
-## 8       8    127  0.013 115.3 118.5 161.0 -3.35       right-amygdala
-## 9       9    171  0.019 136.0 112.5 141.9 -3.20        left-amygdala
-## 10     10     74  0.025 107.3 120.9 116.1 -2.93        left-amygdala
-## 11     11     96  0.027 106.3 147.3 151.8 -3.38        left-amygdala
-## 12     12     68   0.03 106.2 134.8 141.4 -3.26         left-caudate
-## 13     13    105  0.046 148.3 147.9 152.0 -3.17 right-accumbens-area</code></pre>
+##    clusid nverts      P     X     Y     Z tstat            region
+## 1       1    223 &lt;0.001 125.7 135.9 136.1 -4.36   right-ventraldc
+## 2       2    213 &lt;0.001 106.1 132.1 163.4 -3.05    right-thalamus
+## 3       3    186  0.001 153.8 128.7 163.5 -3.62     left-thalamus
+## 4       4     77  0.001 112.9 133.0 116.7 -3.44     right-caudate
+## 5       5     99  0.004 151.4 134.2 150.0 -3.44    left-ventraldc
+## 6       6    162  0.006 132.3 133.0 148.4 -3.55     left-thalamus
+## 7       7     92  0.012 100.9 136.2 145.3 -3.73   right-ventraldc
+## 8       8    127  0.013 115.3 118.5 161.0 -3.35    right-thalamus
+## 9       9    171  0.019 136.0 112.5 141.9 -3.20     left-thalamus
+## 10     10     74  0.025 107.3 120.9 116.1 -2.93     right-caudate
+## 11     11     96  0.027 106.3 147.3 151.8 -3.38 right-hippocampus
+## 12     12     68   0.03 106.2 134.8 141.4 -3.26   right-ventraldc
+## 13     13    105  0.046 148.3 147.9 152.0 -3.17  left-hippocampus</code></pre>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References:</h2>

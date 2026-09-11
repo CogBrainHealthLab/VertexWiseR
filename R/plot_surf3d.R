@@ -178,7 +178,8 @@ plot_surf3d=function(surf_data, surf_color="grey", cmap, limits, atlas=1, hemi="
                             cmap=cmap,
                             transparent_bg=transparent_bg,
                             orientation_labels=orientation_labels,
-                            smooth_mesh=smooth_mesh)
+                            smooth_mesh=smooth_mesh,
+                            atlas)
     return(fig)
     
   } else
@@ -471,7 +472,7 @@ mesh_smoother <- function(coords, tri, n_iter=as.integer(0))
 ############################################################################################################################
 
 #special function for all subcortices merged together
-plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,cmap,plot_grid,transparent_bg,orientation_labels,smooth_mesh)
+plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,cmap,plot_grid,transparent_bg,orientation_labels,smooth_mesh, atlas)
 {
   
   ##Smmoothing of surface if applicable
@@ -487,30 +488,32 @@ plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,c
   face_vals_overlay <- face_vals[face.stat.non0.idx]
   
   #function to create mesh at X distance spacing factor
-  roi_distancer <- function(coords, tri, face_vals, roi_ids, roi_names, distfactor=0) {
-
+  roi_distancer <- function(coords, tri, face_vals, group_ids, label_ids, roi_names, distfactor=0) {
+    
     #Get centroid across all ROIs, and each ROI's centroid
     global_centroid <- colMeans(coords)
-    centroids <- t(sapply(unique(roi_ids), function(r) colMeans(coords[roi_ids == r, , drop=FALSE])))
+    uniq_groups <- sort(unique(group_ids))
+    centroids <- t(sapply(uniq_groups, function(r) colMeans(coords[group_ids == r, , drop=FALSE])))
+    rownames(centroids) <- as.character(uniq_groups)
     
     #create coordinates as a function of their distance (distfactor)
     #from the global centroid
     spaced_coords <- coords
-    for (r in unique(roi_ids)) {
-      direction=centroids[r, ] - global_centroid #offset from global ctr
+    for (r in uniq_groups) {
+      direction=centroids[as.character(r), ] - global_centroid #offset from global ctr
       #gets the length of distance (Euclidean norm)
       #we use it to normalize the spacing based on how far are the ROIs
       norm=sqrt(sum(direction^2)) 
-      direction=direction / norm 
+      if (norm > 0) direction=direction / norm else direction=c(0,0,0)
       #apply spacing and reassign new coordinates
       translation <- direction * distfactor
-      idx = which(roi_ids == r)
+      idx = which(group_ids == r)
       spaced_coords[idx, ] <- coords[idx, , drop=FALSE] + 
         matrix(translation, nrow=length(idx), ncol=3, byrow=TRUE)
     }
     
     #hovering function to show ROI labels
-    hover_labels <- roi_names[roi_ids]
+    hover_labels <- roi_names[label_ids]
     
     #create 1 mesh at distance iteration
     return(
@@ -528,7 +531,7 @@ plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,c
         colorscale = cmap,
         text = hover_labels, 
         hoverinfo = "text+intensity"
-        )
+      )
     )
   }
   
@@ -538,13 +541,32 @@ plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,c
   meshframes <- lapply(dist_vals, function(distf) {
     # full mesh for grey base (all faces, just for coordinates)
     base <- roi_distancer(coords, tri, rep(0, nrow(tri)),
-                           ROImap@data[,1], ROImap@atlases$ROI, distf)
+                          group_ids = ROImap@data[,1],
+                          label_ids = ROImap@data[,atlas],
+                          roi_names = ROImap@atlases[[atlas]],
+                          distfactor = distf)
     base$intensity <- NULL; base$colorscale <- NULL; base$cmin <- NULL;
     base$cmax <- NULL; base$facecolor <- rep(surf_color, nrow(tri))
     # filtered mesh for overlay
     overlay <- roi_distancer(coords, tri_overlay, face_vals_overlay,
-                              ROImap@data[,1], ROImap@atlases$ROI, distf)
-    list(base=base, overlay=overlay, frame=distf)
+                             group_ids = ROImap@data[,1],
+                             label_ids = ROImap@data[,atlas],
+                             roi_names = ROImap@atlases[[atlas]],
+                             distfactor = distf)
+    #dedicated vertex-wise trace, just for hover labels.
+    #indexes them on vertex instead of cells
+    labels <- list(
+      type = "mesh3d",
+      x = base$x, y = base$y, z = base$z,
+      i = base$i, j = base$j, k = base$k,
+      intensitymode = "vertex",
+      intensity = rep(0, length(base$x)),
+      opacity = 0,
+      showscale = FALSE,
+      text = base$text,
+      hoverinfo = "text"
+    )
+    list(base=base, overlay=overlay, labels=labels, frame=distf)
   })
 
   #build animation frames by assigning each new mesh 
@@ -567,9 +589,22 @@ plotsurf_3d_allmerged=function(surf_data, surf_color, coords,tri,ROImap,limits,c
     cmin = meshframes[[1]]$overlay$cmin,
     cmax = meshframes[[1]]$overlay$cmax
   )
+  ## invisible trace carrying hover labels only
+  fig <- plotly::add_trace(
+    fig,
+    type = "mesh3d",
+    x = meshframes[[1]]$labels$x, y = meshframes[[1]]$labels$y, z = meshframes[[1]]$labels$z,
+    i = meshframes[[1]]$labels$i, j = meshframes[[1]]$labels$j, k = meshframes[[1]]$labels$k,
+    intensitymode = "vertex",
+    intensity = meshframes[[1]]$labels$intensity,
+    opacity = 0,
+    showscale = FALSE,
+    text = meshframes[[1]]$labels$text,
+    hoverinfo = "text"
+  )
   
   fig$x$frames <- lapply(meshframes, function(tr) {
-    list(name = tr$frame, traces = list(0, 1), data = list(tr$base, tr$overlay))
+    list(name = tr$frame, traces = list(0, 1, 2), data = list(tr$base, tr$overlay, tr$labels))
   })
   
   fig$x$layout$sliders <- list(list(
