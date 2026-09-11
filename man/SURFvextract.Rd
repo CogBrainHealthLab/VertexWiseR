@@ -20,14 +20,14 @@ SURFvextract(
 
 \item{template}{A string object containing the name of surface template (available: 'fsaverage5', 'fsaverage6'). Default is fsaverage5.}
 
-\item{measure}{A string object containing the name of the measure of interest. Options include thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness. Note that non-standard surface measures stored in "surf/" also work, provided the full name and extension following lh./rh. is given (e.g., "w-g.pct.mgh" for grey-white matter contrast).}
+\item{measure}{A string object containing the name of the measure of interest. Options include thickness, curv, sulc, area, and volume (for freesurfer 7.4.1 or later). Default is thickness. Note that non-standard surface measures stored in FreeSurfer's ‘surf/’ directories also work, provided the full name and extension following lh./rh. is given (e.g., "w-g.pct.mgh" for grey-white matter contrast).}
 
 \item{subj_ID}{A logical object stating whether to include subject IDs (folder names in the subjects directory) as a first column to the output matrix. Default is TRUE.}
 
 \item{fshomepath}{An optional string object containing the path to the FreeSurfer installation directory. This makes sure R accesses FreeSurfer if the system environment variables are not inherited — as would be the case if you are running the function from RStudio.}
 }
 \value{
-A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
+A .RDS file with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x V vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
 Extracts whole-brain vertex-wise surface-based measures for each subject in a 'FreeSurfer' output subjects directory, resamples the data to a common surface template, and stores it as a .rds file. This function requires the 'FreeSurfer' environment to be preset in the unix environment and a 'FreeSurfer' license key.

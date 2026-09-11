@@ -18,11 +18,11 @@
 #' - Only one random regressor can be given and must be indicated as '(1|variable_name)'.
 #' @param formula_dataset An optional data.frame object containing the independent variables to be used with the formula (the IV names in the formula must match their column names in the dataset).
 #' @param inverse A boolean object stating whether to set the surface data as predictor of the contrast variable, instead of as dependent variable (default is FALSE). Other covariates in the model remain independent variables. Formula cannot be modified (with surf_data as predictor) to trigger inverse. This makes modelling substantially slower.
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
-#' @param nperm A numeric integer object specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
-#' @param tail A numeric integer object specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
-#' @param nthread A numeric integer object specifying the number of CPU threads to allocate 
-#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this result in surf_data being smoothed twice.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract(), FSLRvextract(), or SCMvextract() output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
+#' @param nperm An integer specifying the number of permutations generated for the subsequent thresholding procedures (default = 100)
+#' @param tail An integer specifying whether to test a one-sided positive (1), one-sided negative (-1) or two-sided (2) hypothesis
+#' @param nthread An integer specifying the number of CPU threads to allocate 
+#' @param smooth_FWHM A numeric vector object specifying the desired smoothing width in mm. It should not be specified if the surf_data has been smoothed previously with smooth_surf(), because this results in surf_data being smoothed twice.
 #' @param perm_type A string object specifying whether to permute the rows ("row"), between subjects ("between"), within subjects ("within") or between and within subjects ("within_between") for random subject effects. Default is "row". 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'

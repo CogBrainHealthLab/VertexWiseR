@@ -16,7 +16,7 @@ DTSERIESvextract(dtseries, filename, silent = FALSE, VWR_check = TRUE)
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A .RDSfile containing a surface data matrix object, with N time-point x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a time point in order and contains the left to right hemispheres' vertex-wise values.
+A .RDS file containing a surface data matrix object, with N time-point x V vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a time point in order and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
 Extracts vertex-wise surface-based CIFTI dense time-series data from an individual dtseries .nii file from HCP, fMRIprep or XCP-D preprocessed directories, and stores it as a single .RDS file.

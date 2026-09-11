@@ -2,7 +2,7 @@
 #'
 #' @description Smooths surface data at defined full width at half maximum (FWHM) as per the corresponding template of surface data
 #'
-#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also Hipvextract(), SURFvextract() or FSLRvextract output formats. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
+#' @param surf_data A N x V matrix object containing the surface data (N row for each subject, V for each vertex), in fsaverage5 (20484 vertices), fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal (14524 vertices) space. See also SCMvextract() for subcortical regions. Alternatively, a string object containing the path to the surface object (.rds file) outputted by extraction functions may be given.
 #' @param FWHM A numeric vector object containing the desired smoothing width in mm 
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #'

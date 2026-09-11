@@ -80,7 +80,7 @@ Default cmap is set to \code{"Reds"} for positive values, \code{"Blues_r"} for n
 Outputs the plot as a .png image
 }
 \description{
-Plots surface data in a grid with one or multiple rows in a .png file
+Plots surface data in a grid with one row in a .png file as in plot_surf(), with parameters to overlay two maps on top of eachother.
 }
 \examples{
 #simulate t-map

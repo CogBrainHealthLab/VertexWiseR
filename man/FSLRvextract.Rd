@@ -35,7 +35,7 @@ FSLRvextract(
 \item{VWR_check}{A boolean object specifying whether to check and validate system requirements. Default is TRUE.}
 }
 \value{
-A .RDSfile with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
+A .RDS file with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x V vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values.
 }
 \description{
 Extracts vertex-wise surface-based measures for each subject from sMRIprep, fMRIprep, ASLprep, HCP processing or XCP-D preprocessed directories, and stores it as a single .RDS file.

@@ -7,7 +7,7 @@
 #' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
 #' @param VWR_check A boolean object specifying whether to check and validate system requirements. Default is TRUE.
 #' 
-#' @returns A .RDSfile containing a surface data matrix object, with N time-point x M vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a time point in order and contains the left to right hemispheres' vertex-wise values.
+#' @returns A .RDS file containing a surface data matrix object, with N time-point x V vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a time point in order and contains the left to right hemispheres' vertex-wise values.
 #' @examples
 #' #demo cifti dtseries from openneuro
 #' #(ds005012, sub-18_ses-1_task-mid, run-01, 
