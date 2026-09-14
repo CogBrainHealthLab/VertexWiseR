@@ -43,13 +43,18 @@ Imports:
     grid,
     igraph,
     methods,
+    mori,
     parallel,
     plotly,
     png,
     rappdirs,
+    Rcpp (>= 1.0.0),
     RColorBrewer,
     reticulate,
     stats,
     stringr,
     tools,
     utils
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo

@@ -51,6 +51,8 @@
 #' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
 #' @importFrom reticulate import r_to_py py_save_object py_load_object
+#' @importFrom mori share
+#' @importFrom Rcpp evalCpp
 #' @importFrom foreach foreach 
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
@@ -93,9 +95,11 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   model_summary=model_check(model=model, contrast=contrast, 
                             random=random, surf_data=surf_data,
                             smooth_FWHM=smooth_FWHM)
-  model=model_summary$model;
-  contrast=model_summary$contrast;
+  model=as.matrix(model_summary$model);
+  contrast=as.numeric(model_summary$contrast);
   surf_data=model_summary$surf_data;
+  colno = model_summary$colno
+  
   if (!is.null(model_summary$random)) {random=model_summary$random}
 
   #check length of CT data and load the appropriate edgelist files
@@ -178,12 +182,50 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   reticulate::py_save_object(model.fit,filename = paste0(temp.dir,"/modelfit.pickle"))
   
   #fit model
-  SLM$fit(model.fit,surf_data[,inc.vert.idx])
+  # Fit the observed full model.
+  SLM$fit(model.fit,surf_data[, inc.vert.idx, drop = FALSE])
+  
+  # Reduced model: remove the tested predictor, retaining nuisance
+  # predictors, an intercept, and the original random-effect structure.
+  X_null_input = cbind(1,model[, -colno, drop = FALSE])
+  
+  terms_null = MixedEffect(ran = as.factor(random),fix = X_null_input,"_check_categorical" = FALSE)
+  
+  fit_null = SLM(model = terms_null,
+                 contrast = rep(1, nrow(model)),
+                 correction = "None",
+                 cluster_threshold = 1,
+                 data_dir = data_dir,
+                 inverse = FALSE)
+  
+  # For inverse analysis, the behavioral contrast is the response.
+  Y_null = if (!inverse) {
+    surf_data[, inc.vert.idx, drop = FALSE]
+  } else {
+    matrix(contrast, ncol = 1L)
+  }
+  
+  fit_null$fit(Y_null)
+  
+  # Obtain fixed-effects predictions in the ORIGINAL observation scale.
+  X_null_fit = as.matrix(fit_null$X)
+  
+  beta_null = matrix(as.numeric(fit_null$coef),nrow = ncol(X_null_fit),ncol = ncol(Y_null))
+  
+  fitted_null = X_null_fit %*% beta_null
+  residuals_null = Y_null - fitted_null
+  
+  if (any(!is.finite(fitted_null)) ||
+      any(!is.finite(residuals_null))) {
+    stop("Reduced-model predictions or residuals are nonfinite.")
+  }
+  
+  rm(fit_null, terms_null, X_null_input,X_null_fit, beta_null, Y_null)
   
   #compute unpermuted TFCE stats
   tmap.orig=rep(0,n_vert)
   tmap.orig[inc.vert.idx]=as.numeric(model.fit$t)  
-  TFCE.orig=TFCE.multicore(tmap.orig,tail=tail,nthread=ceiling(nthread/2), envir=environment(), edgelist=edgelist) #divide by 2 because more threads made things slower
+  TFCE.orig=TFCE(tmap.orig,tail=tail,edgelist=edgelist)
   
   end=Sys.time()
   
@@ -198,7 +240,23 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   else if(perm_type=="between") {for (perm in 1:nperm)  {permseq[,perm]=perm_between(random)}} 
   else if(perm_type=="row") {for (perm in 1:nperm)  {permseq[,perm]=sample.int(NROW(model))}}
   
-  #activate parallel processing
+  ##activate parallel processing
+    # Convert read-only inputs to shared-memory objects.
+    if (!requireNamespace("mori", quietly = TRUE)) {
+      stop("Install mori before running the shared-memory analysis.")
+    }
+    
+    fitted_null = share(fitted_null)
+    residuals_null = share(residuals_null)
+    permseq = share(permseq)
+    edgelist = share(edgelist)
+    model = share(model)
+    random = share(random)
+    inc.vert.idx = share(inc.vert.idx)
+  
+  # Original surface values are only needed as predictors in inverse mode.
+  surf_data = if (inverse) share(surf_data) else NULL
+  
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
     env =  .foreachGlobals;
@@ -209,7 +267,16 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   cl=parallel::makeCluster(nthread)
   doParallel::registerDoParallel(cl)
   #preload variables for the cluster workers
-  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","temp.dir"), envir=environment())
+  parallel::clusterExport(cl,c("edgelist", "surf_data", "permseq","temp.dir",
+                               "fitted_null", "residuals_null",
+                               "inc.vert.idx", "n_vert", "inverse",
+                               "model", "colno", "random", "data_dir"),
+                          envir = environment())
+  # Register mori's ALTREP serialization support before receiving objects.
+  parallel::clusterEvalQ(cl, {
+    loadNamespace("mori")
+    NULL
+  })
   parallel::clusterEvalQ(cl, {
     #makes sure python instance per parallel job is restricted to 1 thread
     #these are picked by NumPy upon reticulate initialization
@@ -231,16 +298,71 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   #fitting permuted model and extracting max-TFCE values in parallel streams
   start=Sys.time()
-  TFCE.max <- foreach::foreach(perm=1:nperm, .combine="c",.options.snow = opts)  %dopar%
-    {
-      #load previously saved model
-      modelfit=reticulate::py_load_object(filename = paste0(temp.dir,"/modelfit.pickle"))
+  TFCE.max <- foreach::foreach(
+    perm = seq_len(nperm),
+    .combine = "c",
+    .options.snow = opts,
+    .packages = c("VertexWiseR", "reticulate", "mori"),
+    .noexport = c(
+      "edgelist", "surf_data", "permseq","temp.dir",
+      "fitted_null", "residuals_null",
+      "inc.vert.idx", "n_vert", "inverse",
+      "model", "colno", "random", "data_dir"
+    ),
+    .errorhandling = "stop"
+  ) %dopar% {
+    
+    idx = permseq[, perm]
+    
+    # Freedman-Lane: permute marginal residuals and restore
+    # the original nuisance predictions.
+    Y_perm = fitted_null +residuals_null[idx, , drop = FALSE]
+    
+    if (!inverse) {
       
-      #fit model to permuted data
-      modelfit$fit(surf_data[permseq[, perm], inc.vert.idx])
-      return(max(abs(suppressWarnings(TFCE(data = modelfit$t,tail = tail,
-                                           edgelist=edgelist)))))
+      # Reload the original, unfitted full-model specification.
+      modelfit = reticulate::py_load_object(filename =  paste0(temp.dir,"/modelfit.pickle"))
+      modelfit$fit(Y_perm)
+      
+    } else {
+      
+      # The custom SLM inverse implementation obtains its response
+      # from the model column matching contrast.
+      # Therefore replace BOTH with the resampled response.
+      model_perm = model
+      model_perm[, colno] = as.numeric(Y_perm)
+      
+      terms_perm = MixedEffect(ran = as.factor(random),fix = model_perm,"_check_categorical" = FALSE)
+      
+      modelfit = SLM(
+        model = terms_perm,
+        contrast = as.numeric(Y_perm),
+        correction = "None",
+        cluster_threshold = 1,
+        data_dir = data_dir,
+        inverse = TRUE)
+      
+      # Surface predictors remain unchanged.
+      modelfit$fit(surf_data[, inc.vert.idx, drop = FALSE])
     }
+    
+    t_included = as.numeric(modelfit$t)
+    
+    if (length(t_included) != length(inc.vert.idx) ||
+        any(!is.finite(t_included))) {
+      stop("Invalid t-statistics in permutation ", perm)
+    }
+    
+    # Restore the FULL vertex layout before using the full-mesh edgelist.
+    tmap_perm = numeric(n_vert)
+    tmap_perm[inc.vert.idx] = t_included
+    
+    tfce_perm = TFCE(data = tmap_perm,tail = tail,edgelist = edgelist)
+    
+    if (any(!is.finite(tfce_perm))) {stop("Nonfinite TFCE in permutation ", perm)}
+    
+    max(abs(tfce_perm))
+  }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   parallel::stopCluster(cl)

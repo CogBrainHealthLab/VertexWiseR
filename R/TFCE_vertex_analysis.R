@@ -49,6 +49,7 @@
 #' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
 #' @importFrom reticulate import r_to_py
+#' @importFrom Rcpp evalCpp
 #' @importFrom foreach foreach %dopar%
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
@@ -179,9 +180,41 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   start=Sys.time()
   message("Estimating unpermuted TFCE image...")
   
-  TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=environment(), edgelist=edgelist))
-  remove(mod)
+  TFCE.orig=TFCE(data = tmap.orig,tail = tail,edgelist=edgelist)
+  if (!inverse) remove(mod)
   
+   ##Freedman-Lane preparation: fit the reduced model once
+  # model has already been checked/recoded.
+  # Remove the contrast column, retaining the intercept and nuisance predictors.
+  X_null = data.matrix(cbind(1, model[, -colno, drop = FALSE]))
+
+  if (!inverse) {
+    # Ordinary regression: surface values are the responses.
+    Y_null = as.matrix(surf_data)
+    invmodel = NULL  # Ensures this name exists for clusterExport().
+  } else {
+    # Inverse regression: contrast is the response.
+    Y_null = as.numeric(contrast)
+  }
+
+  mod.null = stats::.lm.fit(x = X_null, y = Y_null)
+
+  if (mod.null$rank != ncol(X_null)) {
+    stop("The reduced nuisance model is rank deficient.")
+  }
+
+  residuals_null = mod.null$residuals
+
+  if (!inverse) {
+    residuals_null = matrix(residuals_null,nrow = nrow(surf_data),ncol = ncol(surf_data))
+  } else {
+    residuals_null = as.numeric(residuals_null)
+  }
+
+  # .lm.fit() does not return fitted.values.
+  fitted_null = Y_null - residuals_null
+  rm(mod.null, Y_null, X_null)
+
   end=Sys.time()
   message(paste("Completed in",round(difftime(end,start, units="secs"),1),"secs\nEstimating permuted TFCE images...\n",sep=" "))
   
@@ -191,6 +224,21 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   for (perm in 1:nperm)  {permseq[,perm]=sample.int(NROW(model))}
   
   #activate parallel processing
+  fitted_null = share(fitted_null)
+  residuals_null = share(residuals_null)
+  permseq = share(permseq)
+  edgelist = share(edgelist)
+  model = share(model)
+  
+  if (inverse) {
+    # Inverse regression needs the original surface predictors.
+    surf_data = share(surf_data)
+    invmodel = share(invmodel)
+  } else {
+    # Forward permutations use fitted values and residuals instead.
+    surf_data = NULL
+  }
+  
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); env =  .foreachGlobals;
     #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
@@ -201,7 +249,12 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   
   doParallel::registerDoParallel(cl)
   #preload variables for the cluster workers
-  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","contrast"), envir=environment())
+  parallel::clusterEvalQ(cl, {
+    loadNamespace("mori")
+    NULL
+  })
+  parallel::clusterExport(cl,c("edgelist", "surf_data", "permseq", "model", "invmodel","inverse", "colno", "fitted_null", "residuals_null"),
+  envir = environment())
   `%dopar%` = foreach::`%dopar%`
   
   #progress bar
@@ -213,40 +266,59 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   ##fitting permuted regression model and extracting t-stats in parallel streams
   start=Sys.time()
   
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="c", .options.snow = opts)  %dopar%
-    {
-      ##commented out alternative method of permutation— permuting only the contrast variable
-      #model.permuted=model
-      #model.permuted[,colno]=model.permuted[permseq[,perm],colno] ##permute only the contrast
-      #mod.permuted=lm(surf_data~data.matrix(model.permuted))
-      
-      #permuted model
-      #if inverse, contrast will be a DV, and vertex-wise surface data an IV
-      if (inverse==FALSE)
-      {
-        mod.permuted=.lm.fit(y=surf_data[permseq[,perm],],
-                             x=data.matrix(cbind(1,model)))
-        tmap=extract.t(mod.permuted,colno+1)
+  TFCE.max = foreach::foreach(
+    perm = seq_len(nperm),
+    .combine = "c",
+    .packages = c("VertexWiseR", "mori"),
+    .noexport = c(
+      "edgelist", "surf_data", "permseq", "model", "invmodel",
+      "inverse", "colno", "fitted_null", "residuals_null"
+    ),
+    .options.snow = opts,
+    .errorhandling = "stop"
+  ) %dopar% {
+
+  idx = permseq[, perm]
+  if (!inverse) {
+
+    # Freedman-Lane: shuffle residual images together across participants,
+    # then restore each participant's original nuisance prediction.
+    Y_perm = fitted_null +residuals_null[idx, , drop = FALSE]
+    X_full = data.matrix(cbind(1, model))
+
+    mod.permuted = stats::.lm.fit(x = X_full,y = Y_perm)
+
+    if (mod.permuted$rank != ncol(X_full)) {stop("Full model is rank deficient.")}
+
+    tmap = extract.t(mod.permuted,colno + 1L)
+
+  } else {
+
+    # Inverse regression: resample the behavioural response's residuals.
+    # Surface values remain fixed predictors.
+    Y_perm = fitted_null + residuals_null[idx]
+
+    tmap = numeric(ncol(surf_data))
+
+    for (vert in seq_len(ncol(surf_data))) {
+      X_full = data.matrix(cbind(1, invmodel, surf_data[, vert]))
+
+      invmod.permuted = stats::.lm.fit(x = X_full,y = Y_perm)
+
+      if (invmod.permuted$rank != ncol(X_full)) {
+        stop(
+          "Inverse model is rank deficient at vertex ", vert,
+          ". Exclude non-estimable vertices with a consistent mask."
+        )
       }
-      else
-      { 
-        #inverse models, vertex by vertex
-        tmap=c()
-        for (vert in 1:ncol(surf_data)) 
-        { #one lm for every vertex
-          vertmodel.permuted=cbind(invmodel,surf_data[,vert])
-          invmod.permuted=.lm.fit(y=contrast[permseq[,perm]],
-                               x=data.matrix(cbind(1,vertmodel.permuted)))
-          tmap=c(tmap,extract.t(invmod.permuted,colno+1))
-        }
-      }
-      
-      . <- model.permuted <- NULL #visible binding needed if commented out 
-      remove(mod.permuted,model.permuted)
-      return(max(abs(suppressWarnings(TFCE(data = tmap,
-                                           tail = tail,
-                                           edgelist=edgelist)))))
+
+      # Surface predictor is the LAST column of the inverse design.
+      tmap[vert] = extract.t(invmod.permuted,ncol(X_full))
     }
+  }
+
+  max(abs(TFCE(data = tmap,tail = tail,edgelist = edgelist)))
+}
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))
   parallel::stopCluster(cl)
@@ -268,167 +340,167 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
 ############################################################################################################################
 ############################################################################################################################
 
-##TFCE single core— for estimating permuted TFCE statistics
-##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
-TFCE=function(data,tail=tail,edgelist)
-{
-  
-  #selecting tail type
-  if (tail==2) 
-  {
-    signs = c(-1, 1)
-    max_score = max(abs(data),na.rm = TRUE)
-  } else if(tail==1)
-  {
-    signs = 1
-    max_score = max(data,na.rm = TRUE)
-  } else if(tail==-1)
-  {
-    signs = -1
-    max_score = max(-data,na.rm = TRUE)
-  }
-  
-  #define TFCE parameters
-  step=max_score / 100 #calculating number of steps for TFCE estimation
-  score_threshs = seq(step, max_score, by = step) #Set based on determined step size
-  n_threshs=length(score_threshs)
-
-  #loop across different signs(i.e., for two tailed test)
-  for (sign.idx in 1:length(signs)) 
-  {
-    temp_data = data * signs[sign.idx]
-    tfce=matrix(0,nrow=n_threshs, ncol=length(temp_data))
-    
-    #loop across different score_threshs values for TFCE estimation
-    for(thresh.no in 1:n_threshs)
-    {
-      temp_data[temp_data < score_threshs[thresh.no]] = 0
-      if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
-      {
-        if (thresh.no>1)
-        {
-          if(length(clust.dat[[3]])<3)
-          {
-            clust.dat[[3]]=matrix(clust.dat[[3]],ncol = 2)
-          }
-          clust.dat=getClusters(temp_data,clust.dat[[3]])
-        } else
-        {
-          clust.dat=getClusters(temp_data,edgelist)  
-        }
-        
-        if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
-        {
-          non_zero_inds = which(clust.dat[[1]] >0)
-          labeled_non_zero = clust.dat[[1]][non_zero_inds]
-          cluster_tfces = signs[sign.idx] * clust.dat[[2]] * (score_threshs[thresh.no] ^ 2) #using the E=1 , H=2 paramters for 2D (vertex-wise data)
-          tfce_step_values = rep(0, length(clust.dat[[1]]))
-          tfce[thresh.no,non_zero_inds] = cluster_tfces[labeled_non_zero]
-          remove(non_zero_inds,cluster_tfces,tfce_step_values, labeled_non_zero)
-        }
-      }
-    }
-    remove(clust.dat)
-    #combine results from positive and negative tails if necessary 
-    if(sign.idx==1){tfce_step_values.all=colSums(tfce)}
-    else if (sign.idx==2){tfce_step_values.all=tfce_step_values.all+colSums(tfce)}
-    remove(tfce)
-  }
-  return(tfce_step_values.all)
-}
+# ##TFCE single core— for estimating permuted TFCE statistics
+# ##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
+# TFCE=function(data,tail=tail,edgelist)
+# {
+#   
+#   #selecting tail type
+#   if (tail==2) 
+#   {
+#     signs = c(-1, 1)
+#     max_score = max(abs(data),na.rm = TRUE)
+#   } else if(tail==1)
+#   {
+#     signs = 1
+#     max_score = max(data,na.rm = TRUE)
+#   } else if(tail==-1)
+#   {
+#     signs = -1
+#     max_score = max(-data,na.rm = TRUE)
+#   }
+#   
+#   #define TFCE parameters
+#   step=max_score / 100 #calculating number of steps for TFCE estimation
+#   score_threshs = seq(step, max_score, by = step) #Set based on determined step size
+#   n_threshs=length(score_threshs)
+# 
+#   #loop across different signs(i.e., for two tailed test)
+#   for (sign.idx in 1:length(signs)) 
+#   {
+#     temp_data = data * signs[sign.idx]
+#     tfce=matrix(0,nrow=n_threshs, ncol=length(temp_data))
+#     
+#     #loop across different score_threshs values for TFCE estimation
+#     for(thresh.no in 1:n_threshs)
+#     {
+#       temp_data[temp_data < score_threshs[thresh.no]] = 0
+#       if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
+#       {
+#         if (thresh.no>1)
+#         {
+#           if(length(clust.dat[[3]])<3)
+#           {
+#             clust.dat[[3]]=matrix(clust.dat[[3]],ncol = 2)
+#           }
+#           clust.dat=getClusters(temp_data,clust.dat[[3]])
+#         } else
+#         {
+#           clust.dat=getClusters(temp_data,edgelist)  
+#         }
+#         
+#         if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
+#         {
+#           non_zero_inds = which(clust.dat[[1]] >0)
+#           labeled_non_zero = clust.dat[[1]][non_zero_inds]
+#           cluster_tfces = signs[sign.idx] * clust.dat[[2]] * (score_threshs[thresh.no] ^ 2) #using the E=1 , H=2 paramters for 2D (vertex-wise data)
+#           tfce_step_values = rep(0, length(clust.dat[[1]]))
+#           tfce[thresh.no,non_zero_inds] = cluster_tfces[labeled_non_zero]
+#           remove(non_zero_inds,cluster_tfces,tfce_step_values, labeled_non_zero)
+#         }
+#       }
+#     }
+#     remove(clust.dat)
+#     #combine results from positive and negative tails if necessary 
+#     if(sign.idx==1){tfce_step_values.all=colSums(tfce)}
+#     else if (sign.idx==2){tfce_step_values.all=tfce_step_values.all+colSums(tfce)}
+#     remove(tfce)
+#   }
+#   return(tfce_step_values.all)
+# }
 ############################################################################################################################
 ############################################################################################################################
 
 ##TFCE multicore— for estimating unpermuted TFCE statistics
 ##adapted from nilearn python library: https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8
-TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
-{
-  
-  #selecting tail type
-  if (tail==2) 
-  {
-    signs = c(-1, 1)
-    max_score = max(abs(data),na.rm = TRUE)
-  } else if(tail==1)
-  {
-    signs = 1
-    max_score = max(data,na.rm = TRUE)
-  } else if(tail==-1)
-  {
-    signs = -1
-    max_score = max(-data,na.rm = TRUE)
-  }
-  
-  #define TFCE parameters
-  step=max_score / 100 #calculating number of steps for TFCE estimation
-  score_threshs = seq(step, max_score, by = step) #Set based on determined step size
-  
-  #loop across different signs(i.e., for two tailed test)
-  for (sign.idx in 1:length(signs)) 
-  {
-    temp_data = data * signs[sign.idx]
-    tfce=rep(0,length(temp_data))
-    
-    #activate parallel processing
-    unregister_dopar = function() {
-      .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
-      env =  .foreachGlobals;
-      #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
-    }
-    unregister_dopar()
-    
-    cl=parallel::makeCluster(nthread)
-    parallel::clusterExport(cl, c("edgelist"), envir=envir)
-    doParallel::registerDoParallel(cl)
-    `%dopar%` = foreach::`%dopar%`
-    
-    #Solves the "no visible binding for global variable" issue
-    . <- thresh.no <- NULL 
-    internalenv <- new.env()
-    assign("thresh.no", thresh.no, envir = internalenv)
-    
-    #parallel loop across different score_threshs values for TFCE estimation
-    tfce=foreach::foreach(thresh.no=1:length(score_threshs), .combine="rbind")  %dopar%
-      {
-        temp_data[temp_data < score_threshs[thresh.no]] = 0
-        if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
-        {
-          clust.dat=getClusters(temp_data,edgelist)
-          if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
-          {
-            non_zero_inds = which(clust.dat[[1]] >0)
-            labeled_non_zero = clust.dat[[1]][non_zero_inds]
-            cluster_tfces = signs[sign.idx] * clust.dat[[2]] * (score_threshs[thresh.no] ^ 2)
-            tfce_step_values = rep(0, length(clust.dat[[1]]))
-            tfce_step_values[non_zero_inds] = cluster_tfces[labeled_non_zero]
-            return(tfce_step_values)
-          }
-        }
-      }
-    #suppressWarnings(closeAllConnections())
-    
-    #combine results from positive and negative tails if necessary 
-    if(length(tfce)>length(temp_data))
-    {
-      tfce=colSums(tfce)
-    } else if(length(tfce)==0)
-    {
-      tfce=0
-    }
-    if(sign.idx==1)
-    {
-      tfce_step_values.all=tfce
-    } else if (sign.idx==2)
-    {
-      tfce_step_values.all=tfce_step_values.all+tfce
-    }
-  }
-  parallel::stopCluster(cl)
-  unregister_dopar()
-  foreach::registerDoSEQ()
-  
-  return(tfce_step_values.all)
-}
+# TFCE.multicore=function(data,tail=tail,nthread,envir,edgelist)
+# {
+#   
+#   #selecting tail type
+#   if (tail==2) 
+#   {
+#     signs = c(-1, 1)
+#     max_score = max(abs(data),na.rm = TRUE)
+#   } else if(tail==1)
+#   {
+#     signs = 1
+#     max_score = max(data,na.rm = TRUE)
+#   } else if(tail==-1)
+#   {
+#     signs = -1
+#     max_score = max(-data,na.rm = TRUE)
+#   }
+#   
+#   #define TFCE parameters
+#   step=max_score / 100 #calculating number of steps for TFCE estimation
+#   score_threshs = seq(step, max_score, by = step) #Set based on determined step size
+#   
+#   #loop across different signs(i.e., for two tailed test)
+#   for (sign.idx in 1:length(signs)) 
+#   {
+#     temp_data = data * signs[sign.idx]
+#     tfce=rep(0,length(temp_data))
+#     
+#     #activate parallel processing
+#     unregister_dopar = function() {
+#       .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
+#       env =  .foreachGlobals;
+#       #rm(list=ls(name=env), pos=env) #handled by foreach::registerDoSEQ()
+#     }
+#     unregister_dopar()
+#     
+#     cl=parallel::makeCluster(nthread)
+#     parallel::clusterExport(cl, c("edgelist"), envir=envir)
+#     doParallel::registerDoParallel(cl)
+#     `%dopar%` = foreach::`%dopar%`
+#     
+#     #Solves the "no visible binding for global variable" issue
+#     . <- thresh.no <- NULL 
+#     internalenv <- new.env()
+#     assign("thresh.no", thresh.no, envir = internalenv)
+#     
+#     #parallel loop across different score_threshs values for TFCE estimation
+#     tfce=foreach::foreach(thresh.no=1:length(score_threshs), .combine="rbind")  %dopar%
+#       {
+#         temp_data[temp_data < score_threshs[thresh.no]] = 0
+#         if(length(which(temp_data>0))>1) #if less than 2 vertices, skip the following steps
+#         {
+#           clust.dat=getClusters(temp_data,edgelist)
+#           if (clust.dat[[2]][1]!="noclusters") #if no clusters, skip the following steps
+#           {
+#             non_zero_inds = which(clust.dat[[1]] >0)
+#             labeled_non_zero = clust.dat[[1]][non_zero_inds]
+#             cluster_tfces = signs[sign.idx] * clust.dat[[2]] * (score_threshs[thresh.no] ^ 2)
+#             tfce_step_values = rep(0, length(clust.dat[[1]]))
+#             tfce_step_values[non_zero_inds] = cluster_tfces[labeled_non_zero]
+#             return(tfce_step_values)
+#           }
+#         }
+#       }
+#     #suppressWarnings(closeAllConnections())
+#     
+#     #combine results from positive and negative tails if necessary 
+#     if(length(tfce)>length(temp_data))
+#     {
+#       tfce=colSums(tfce)
+#     } else if(length(tfce)==0)
+#     {
+#       tfce=0
+#     }
+#     if(sign.idx==1)
+#     {
+#       tfce_step_values.all=tfce
+#     } else if (sign.idx==2)
+#     {
+#       tfce_step_values.all=tfce_step_values.all+tfce
+#     }
+#   }
+#   parallel::stopCluster(cl)
+#   unregister_dopar()
+#   foreach::registerDoSEQ()
+#   
+#   return(tfce_step_values.all)
+# }
 ############################################################################################################################
 ############################################################################################################################
 #' @title Thresholding TFCE output
@@ -569,7 +641,10 @@ TFCE_threshold=function(TFCEoutput, p=0.05, atlas=1, k=20, VWR_check = TRUE)
   ##generating p map
   tfce.p=rep(NA,n_vert)
   TFCEoutput$t_stat[is.na(TFCEoutput$t_stat)]=0
-  for (vert in 1:n_vert)  {tfce.p[vert]=length(which(TFCEoutput$TFCE.max>abs(TFCEoutput$TFCE.orig[vert])))/nperm}
+  for (vert in seq_len(n_vert)) 
+  {
+  tfce.p[vert] =(1 + sum(TFCEoutput$TFCE.max >=abs(TFCEoutput$TFCE.orig[vert]))) / (nperm + 1)
+  }
   
   ##generating thresholded t-stat map
   TFCEoutput$t_stat[is.na(TFCEoutput$t_stat)]=0
