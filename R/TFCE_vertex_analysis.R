@@ -237,7 +237,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
           vertmodel.permuted=cbind(invmodel,surf_data[,vert])
           invmod.permuted=.lm.fit(y=contrast[permseq[,perm]],
                                x=data.matrix(cbind(1,vertmodel.permuted)))
-          tmap=c(tmap,extract.t(invmod.permuted,colno+1))
+          tmap=c(tmap,extract.t(invmod.permuted,ncol(vertmodel.permuted)+1))
         }
       }
       
