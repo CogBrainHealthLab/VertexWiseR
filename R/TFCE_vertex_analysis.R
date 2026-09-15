@@ -54,7 +54,7 @@
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom doSNOW registerDoSNOW
-#' @importFrom stats .lm.fit complete.cases cor
+#' @importFrom stats complete.cases cor
 #' @importFrom utils download.file install.packages installed.packages setTxtProgressBar txtProgressBar getFromNamespace
 #' @export
 
@@ -157,22 +157,30 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
                               nrow=nrow(surf_data)))}
   }
   
-  ##unpermuted model
-  model=data.matrix(model)
-  #if inverse, contrast will be a DV, and vertex-wise surface data an IV
-  if (inverse==FALSE)
-  {
-    mod=.lm.fit(y=surf_data,x=data.matrix(cbind(1,model)))
-    tmap.orig=extract.t(mod,colno+1)
-  } else
-  { 
-    #inverse models, vertex by vertex
-    tmap.orig=c()
-    for (vert in 1:ncol(surf_data)) 
-    { #one lm for every vertex
-      vertmodel=cbind(invmodel,surf_data[,vert])
-      invmod=.lm.fit(y=contrast,x=data.matrix(cbind(1,vertmodel)))
-      tmap.orig=c(tmap.orig, extract.t(invmod, ncol(vertmodel)+1))
+  ## Unpermuted model
+  model = data.matrix(model)
+  if (!inverse) {
+    mod = lm_fast(
+      X = data.matrix(cbind(1, model)),
+      Y = surf_data
+    )
+    
+    tmap.orig = as.numeric(mod[colno + 1L, ])
+    
+  } else {
+    # Inverse models have a different design matrix at each vertex.
+    tmap.orig = numeric(ncol(surf_data))
+    
+    for (vert in seq_len(ncol(surf_data))) {
+      X_full = data.matrix(cbind(1, invmodel, surf_data[, vert]))
+      
+      invmod = lm_fast(
+        X = X_full,
+        Y = contrast
+      )
+      
+      # The surface predictor is the last design column.
+      tmap.orig[vert] = invmod[ncol(X_full), 1L]
     }
   }
   
@@ -197,22 +205,18 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     Y_null = as.numeric(contrast)
   }
 
-  mod.null = stats::.lm.fit(x = X_null, y = Y_null)
-
-  if (mod.null$rank != ncol(X_null)) {
-    stop("The reduced nuisance model is rank deficient.")
-  }
-
-  residuals_null = mod.null$residuals
-
-  if (!inverse) {
-    residuals_null = matrix(residuals_null,nrow = nrow(surf_data),ncol = ncol(surf_data))
-  } else {
+  mod.null = lm_fast(X = X_null,Y = Y_null,return_coefficients = TRUE)
+  
+  # Reconstruct nuisance predictions and residuals.
+  fitted_null = X_null %*% mod.null$coefficients
+  residuals_null = as.matrix(Y_null) - fitted_null
+  
+  if (inverse) {
+    # Keep vectors for inverse-model permutation indexing.
+    fitted_null = as.numeric(fitted_null)
     residuals_null = as.numeric(residuals_null)
   }
-
-  # .lm.fit() does not return fitted.values.
-  fitted_null = Y_null - residuals_null
+  
   rm(mod.null, Y_null, X_null)
 
   end=Sys.time()
@@ -286,11 +290,8 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     Y_perm = fitted_null +residuals_null[idx, , drop = FALSE]
     X_full = data.matrix(cbind(1, model))
 
-    mod.permuted = stats::.lm.fit(x = X_full,y = Y_perm)
-
-    if (mod.permuted$rank != ncol(X_full)) {stop("Full model is rank deficient.")}
-
-    tmap = extract.t(mod.permuted,colno + 1L)
+    mod.permuted = lm_fast(X = X_full,Y = Y_perm)
+    tmap = as.numeric(mod.permuted[colno + 1L, ])
 
   } else {
 
@@ -303,17 +304,22 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     for (vert in seq_len(ncol(surf_data))) {
       X_full = data.matrix(cbind(1, invmodel, surf_data[, vert]))
 
-      invmod.permuted = stats::.lm.fit(x = X_full,y = Y_perm)
-
-      if (invmod.permuted$rank != ncol(X_full)) {
-        stop(
-          "Inverse model is rank deficient at vertex ", vert,
-          ". Exclude non-estimable vertices with a consistent mask."
-        )
-      }
-
-      # Surface predictor is the LAST column of the inverse design.
-      tmap[vert] = extract.t(invmod.permuted,ncol(X_full))
+      invmod.permuted = tryCatch(
+        lm_fast(
+          X = X_full,
+          Y = Y_perm
+        ),
+        error = function(e) {
+          stop(
+            "Inverse model failed at vertex ", vert, ": ",
+            conditionMessage(e),
+            call. = FALSE
+          )
+        }
+      )
+      
+      # Surface predictor is the last design column.
+      tmap[vert] = invmod.permuted[ncol(X_full), 1L]
     }
   }
 

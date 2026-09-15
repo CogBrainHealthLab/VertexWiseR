@@ -11,6 +11,21 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// lm_multi_t_cpp
+Rcpp::RObject lm_multi_t_cpp(const arma::mat& X, const arma::mat& Y, int block_size, double tol, bool return_coefficients);
+RcppExport SEXP _VertexWiseR_lm_multi_t_cpp(SEXP XSEXP, SEXP YSEXP, SEXP block_sizeSEXP, SEXP tolSEXP, SEXP return_coefficientsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< int >::type block_size(block_sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type return_coefficients(return_coefficientsSEXP);
+    rcpp_result_gen = Rcpp::wrap(lm_multi_t_cpp(X, Y, block_size, tol, return_coefficients));
+    return rcpp_result_gen;
+END_RCPP
+}
 // fast_rint_reg_multi_y_cpp
 Rcpp::List fast_rint_reg_multi_y_cpp(const arma::mat& Y, const arma::mat& X, const arma::uvec& group_offsets, const arma::uvec& group_sizes, double gamma_max, double tol, int max_iter, int grid_size);
 RcppExport SEXP _VertexWiseR_fast_rint_reg_multi_y_cpp(SEXP YSEXP, SEXP XSEXP, SEXP group_offsetsSEXP, SEXP group_sizesSEXP, SEXP gamma_maxSEXP, SEXP tolSEXP, SEXP max_iterSEXP, SEXP grid_sizeSEXP) {
@@ -44,6 +59,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_VertexWiseR_lm_multi_t_cpp", (DL_FUNC) &_VertexWiseR_lm_multi_t_cpp, 5},
     {"_VertexWiseR_fast_rint_reg_multi_y_cpp", (DL_FUNC) &_VertexWiseR_fast_rint_reg_multi_y_cpp, 8},
     {"_VertexWiseR_TFCE_cpp_impl", (DL_FUNC) &_VertexWiseR_TFCE_cpp_impl, 3},
     {NULL, NULL, 0}
