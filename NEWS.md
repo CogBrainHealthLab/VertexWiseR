@@ -1,8 +1,16 @@
-# VertexWiseR v1.5.4 (TBC)
+# VertexWiseR v1.5.5 (TBC)
+
+## NEW FEATURES
+
+* Extraction functions now fails prematurely if the filename argument given has a non-existent path, instead of failing after the full matrix is built.
+* Silent parameter and end messaging added to HIPvextract().
+
+# VertexWiseR v1.5.4
 
 ## FIXES
 
-* The label mapping for the allaseg surface was wrong labels in the cluster summaries and plot_surf3d when the 1.5.3 atlas was introduced. The maps downloadable on github were updated and plot_surf3d fixed to show the right name when hovering the cursor. 
+* The label mapping for the allaseg surface had the wrong labels in the cluster summaries and plot_surf3d() when the 1.5.3 atlas was introduced. The maps downloadable on github were updated and plot_surf3d() fixed to show the right parcellation name when hovering the cursor. Other regions remain unaffected. To get the most up-to-date maps for SubCortexMesh objects if downloaded already, users need to remove it: extdatadir=system.file('extdata/scm_database/', package='VertexWiseR').
+* Fix for TFCE models with the "inverse=TRUE" option. Permutated models were not indexing systematically the right contrast variable when producing a random t-map at each permutation. This did not apply for RFT or the mixed models.
 
 # VertexWiseR v1.5.3
 

@@ -55,7 +55,8 @@ DTSERIESvextract=function(dtseries, filename, silent=FALSE, VWR_check = TRUE)
     warning(paste0('No filename argument was given. The matrix object "dtseries" will be saved in R temporary directory (tempdir(): ', tempdir(), ').\n'))
     filename=paste0(tempdir(),'/dtseries.rds')
   }
-
+  if (!dir.exists(dirname(filename))) {stop('The directory path to the given filename could not be found.')}
+  
   #import nibabel package
   reticulate::import("nibabel")
   #Solves the "no visible binding for global variable" issue

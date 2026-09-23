@@ -54,6 +54,7 @@ SURFvextract=function(sdirpath="./", filename, template='fsaverage5', measure = 
     warning(paste0('No filename argument was given. The matrix object brain_', measure,'.rds will be saved in the R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/brain_',measure,'.rds')
   }
+  if (!dir.exists(dirname(filename))) {stop('The directory path to the given filename could not be found.')}
 
 #check if sdirpath contains last slash (will fail in unix if not)
 if (substr(sdirpath, nchar(sdirpath), nchar(sdirpath)) != '/')

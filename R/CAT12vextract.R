@@ -41,9 +41,10 @@ CAT12vextract=function(sdirpath="./", filename, measure='thickness', subj_ID = T
 
   ## filename check
   if (missing("filename") & silent==FALSE) {
-    warning(paste0('No filename argument was given. The matrix object "CAT12_', measure,'.rds" will be saved in R temporary directory (tempdir()).\n'))
+    warning(paste0('No filename argument was given. The matrix object CAT12_', measure,'.rds will be saved in the R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/CAT12_', measure,'.rds')
   }
+  if (!dir.exists(dirname(filename))) {stop('The directory path to the given filename could not be found.')}
   
   ## Identify mesh files
     filelist=list.files(path = sdirpath, pattern="mesh.*\\.gii$", 

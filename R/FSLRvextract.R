@@ -55,6 +55,7 @@ FSLRvextract=function(sdirpath="./", filename, dscalar, subj_ID = TRUE, silent=F
     warning(paste0('No filename argument was given. The matrix object "fslr32k.rds" will be saved in R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/fslr32k.rds')
   }
+  if (!dir.exists(dirname(filename))) {stop('The directory path to the given filename could not be found.')}
   
   ## get filelists and subject lists
   filelist=list.files(pattern=dscalar, recursive=TRUE)

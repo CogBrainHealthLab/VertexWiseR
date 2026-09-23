@@ -7,6 +7,7 @@
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'hip_measure.rds' in the R temporary directory (tempdir()).
 #' @param measure A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.
 #' @param subj_ID A logical object stating whether to return a list object containing both subject ID and data matrix.
+#' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
 #'
 #' @returns A .RDS file with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x V vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' hippocampal vertex-wise values.
 #' @examples
@@ -15,17 +16,18 @@
 #' @importFrom gifti readgii
 #' @export
 
-HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRUE)
+HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRUE, silent=FALSE)
 {
   oldwd <- getwd()
   
   if (!file.exists(sdirpath)) { stop('The path indicated in sdirpath could not be found.')}
   setwd(sdirpath)
   
-  if (missing("filename")) {
+  if (missing("filename") & silent==FALSE) {
     warning(paste0('No filename argument was given. The matrix object hip_', measure,'.rds will be saved in the R temporary directory (tempdir(): ', basename(tempdir()),').\n'))
     filename=paste0(tempdir(),'/hip_',measure,'.rds')
   }
+  if (!dir.exists(dirname(filename))) {stop('The directory path to the given filename could not be found.')}
   
   ## get filelists and subject lists
   lh.filelist=list.files(pattern=paste("_hemi-L_space-T1w_den-0p5mm_label-hipp_",measure,".shape.gii",sep=""), recursive=TRUE)
@@ -59,6 +61,8 @@ HIPvextract=function(sdirpath="./", filename, measure="thickness", subj_ID = TRU
   } 
 
 setwd(oldwd) #will restore user's working directory path on function break
+
+if(silent==FALSE) {message(paste0("Saving output as ", filename))}
 saveRDS(hip_dat, file=filename)
 return(hip_dat)
 }
