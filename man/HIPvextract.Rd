@@ -4,7 +4,13 @@
 \alias{HIPvextract}
 \title{HIPvextract}
 \usage{
-HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
+HIPvextract(
+  sdirpath = "./",
+  filename,
+  measure = "thickness",
+  subj_ID = TRUE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{sdirpath}{A string object containing the path to the 'HippUnfold' subjects directory. Default is the current working directory ("./").}
@@ -14,6 +20,8 @@ HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
 \item{measure}{A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.}
 
 \item{subj_ID}{A logical object stating whether to return a list object containing both subject ID and data matrix.}
+
+\item{silent}{A logical object to determine whether messages will be silenced. Set to 'FALSE' by default}
 }
 \value{
 A .RDS file with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a data matrix object. The matrix has N subjects x V vertices dimensions and can be readily used by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' hippocampal vertex-wise values.
