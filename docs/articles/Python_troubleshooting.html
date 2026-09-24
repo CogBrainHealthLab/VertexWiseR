@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Charly H. A.
 Billaud, Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-09-02</h4>
       
 
       <div class="d-none name"><code>Python_troubleshooting.Rmd</code></div>
@@ -95,11 +95,11 @@ Billaud, Junhong Yu</h4>
     
 <p>VertexWiseR uses Python functions from various toolboxes that can
 flexibly be called and executed in R using the <em>reticulate</em>
-package <span class="citation">(Ushey, Allaire, and Tang 2023)</span>.
-As of version &lt; 1.41.0 reticulate favours creating a virtual
-environment, where the python version and specific packages needed for
-VertexWiseR can be stored, leaving any other system installations
-intact. This is also the option we recommend. The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
+package <span class="citation">(Ushey et al. 2023)</span>. As of version
+&lt; 1.41.0 reticulate favours creating a virtual environment, where the
+python version and specific packages needed for VertexWiseR can be
+stored, leaving any other system installations intact. This is also the
+option we recommend. The <a href="https://rstudio.github.io/reticulate/articles/python_packages.html" class="external-link">reticulate
 documentation</a> explains:</p>
 <blockquote>
 <p>When installing Python packages it’s best practice to isolate them
@@ -235,6 +235,12 @@ installation they would like VertexWiseR to use instead. The
 non-conda Python library is to be used. Alternatively, users may choose
 to completely remove the <code>.Renviron</code> and redefine the path as
 described in section 3a.</p>
+<p>Miniconda must also be uninstalled if the default path was
+chosen:</p>
+<pre><code><span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/miniconda_uninstall.html" class="external-link">miniconda_uninstall</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
+<p>Which should remove the directory printed by
+reticulate::miniconda_path(). If it did not work, delete it
+manually.</p>
 <ul>
 <li><strong>If the user created an ephemeral virtual
 environment</strong></li>
@@ -243,17 +249,17 @@ environment</strong></li>
 installation proposed by VWRfirstrun(), which calls
 reticulate::py_require(). The path to such environment is accessible
 with that command line:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span><span class="st">"reticulate"</span>, <span class="st">"cache"</span><span class="op">)</span></span></code></pre></div>
 <p>To stop using this environment, users may choose to clear the cache
 completely:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span><span class="st">"reticulate"</span>, <span class="st">"cache"</span><span class="op">)</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>If they do not wish to get rid of the previous virtual environment,
 users will have to modify and/or remove the VIRTUAL_ENV variable which
 has been stored in the <code>.Renviron</code> file, in the standard path
 generated via:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">R_user_dir</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'VertexWiseR'</span><span class="op">)</span></span></code></pre></div>
 <p>This variable is automatically removed when the virtual environment
 can no longer be found in the cache, but will automatically be used by
@@ -292,10 +298,10 @@ ignore.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References:<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-ushey_reticulate_2023" class="csl-entry">
-Ushey, K, J Allaire, and Y Tang. 2023. <span>“Reticulate:
-<span>Interface</span> to ’<span>Python</span>’.”</span> <a href="https://CRAN.R-project.org/package=reticulate" class="external-link">https://CRAN.R-project.org/package=reticulate</a>.
+Ushey, K, J Allaire, and Y Tang. 2023. <em>Reticulate:
+<span>Interface</span> to ’<span>Python</span>’</em>. <a href="https://CRAN.R-project.org/package=reticulate" class="external-link">https://CRAN.R-project.org/package=reticulate</a>.
 </div>
 </div>
 </div>

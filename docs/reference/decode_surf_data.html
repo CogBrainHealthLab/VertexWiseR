@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +83,7 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The <a href="https://nimare.readthedocs.io/en/stable/index.html" class="external-link">'NiMARE'</a> python module is used for the imaging decoding and is imported via the reticulate package. The function also downloads the <a href="https://github.com/neurosynth/neurosynth-data" class="external-link">'Neurosynth' database</a> in the package's inst/extdata directory (~8 Mb) for the analysis.</p>
+    <p>An internal image decoding is used, reproducing the <a href="https://nimare.readthedocs.io/en/stable/index.html" class="external-link">'NiMARE'</a> python module's ROIAssociationDecoder  in base R. The function also downloads the <a href="https://github.com/neurosynth/neurosynth-data" class="external-link">'Neurosynth' database</a> in the package's inst/extdata directory (converted to .RDS, ~7.2 MB) for the analysis.</p>
     </div>
 
     <div class="section level2">
@@ -92,16 +92,16 @@
 <span class="r-in"><span><span class="va">decoding</span> <span class="op">=</span> <span class="fu">decode_surf_data</span><span class="op">(</span><span class="va">CTv</span>, <span class="st">'positive'</span>, VWR_check<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Converting and interpolating the surface data ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ✓ </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Correlating input image with images in the neurosynth database. This may take a while ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Correlating input image with images in the neurosynth database. This may take a while ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ✓ </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">decoding</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         keyword     r</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 195    encoding 0.052</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 538   retrieval 0.051</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 311    language 0.046</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 510 recognition 0.044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 202    episodic 0.043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 381       motor 0.041</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        keyword     r</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 449       pain 0.037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20      adults 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   autonomic 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111   decision 0.033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 194    empathy 0.031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 198 engagement 0.030</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

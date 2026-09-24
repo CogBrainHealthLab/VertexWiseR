@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,9 +203,9 @@ fMRIprep, ASLprep or XCP-D<a class="anchor" aria-label="anchor" href="#id2"></a>
 <p>FSLRvextract() extracts cortical data in FSLR32k surface space from
 Human Connectome Project (HCP) <span class="citation">(Van Essen et al.
 2013)</span>, sMRIprep <span class="citation">(Esteban et al.
-2021)</span> (and outputs derived from it such as fMRIprep <span class="citation">(Esteban et al. 2019)</span> and ASLprep <span class="citation">(Adebimpe et al. 2022)</span>) preprocessing output
-directories, as well as XCP-D <span class="citation">(Mehta et al.
-2024)</span> postprocessing output directories.</p>
+2021)</span> (and outputs derived from it such as fMRIprep <span class="citation">(Esteban et al. 2019)</span> and ASLprep <span class="citation">(<span class="nocase">Adebimpe et al.</span>
+2022)</span>) preprocessing output directories, as well as XCP-D <span class="citation">(<span class="nocase">Mehta et al.</span> 2024)</span>
+postprocessing output directories.</p>
 <p>For demonstration, we provide a subsample of 2 participants from the
 <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">SPRENG
 dataset</a> <span class="citation">(Spreng et al. 2022)</span>, after
@@ -252,10 +252,8 @@ subject’s surface data across N time points.</p>
 <h2 id="id3">Extracting cortical surface data: from CAT12<a class="anchor" aria-label="anchor" href="#id3"></a>
 </h2>
 <p>CAT12vextract() was implemented in version 1.2.0 and can extract
-surface preprocessed with the CAT12 <span class="citation">(Gaser et al.
-2024)</span> surface based morphometry pipeline. The function requires
-reticulate <span class="citation">(Ushey, Allaire, and Tang 2023)</span>
-to run.</p>
+surface preprocessed with the CAT12 <span class="citation">(<span class="nocase">Gaser et al.</span> 2024)</span> surface based
+morphometry pipeline. The function requires reticulate <span class="citation">(Ushey et al. 2023)</span> to run.</p>
 <p>For demonstration, we provide again a subsample of 2 participants
 from the <a href="https://openneuro.org/datasets/ds003592/versions/1.0.13" class="external-link">SPRENG
 dataset</a> <span class="citation">(Spreng et al. 2022)</span>, after
@@ -319,6 +317,7 @@ HIPvextract() can be run as follows:</p>
 <span>            filename<span class="op">=</span><span class="st">"hippocampal_surf.rds"</span>,</span>
 <span>            measure<span class="op">=</span><span class="st">"thickness"</span>,</span>
 <span>            subj_ID <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
+<pre><code><span><span class="co">## Saving output as hippocampal_surf.rds</span></span></code></pre>
 <p>The following arguments can be used:<br>
 - sdirpath: Path to the preprocessed subjects directory.<br>
 - filename: Name of the saved .rds output (can include a specific path
@@ -331,14 +330,14 @@ and data matrix instead of just the matrix (TRUE OR FALSE). Default is
 TRUE.</p>
 <p>Note that when subjects directories have multiple sessions, the
 matrix object will contain N rows per participant and per session.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub-season101_ses-1" "sub-season101_ses-2" "sub-season101_ses-3"</span></span>
 <span><span class="co">## [4] "sub-season102_ses-1" "sub-season102_ses-2" "sub-season102_ses-3"</span></span></code></pre>
 <p>Here the matrix has 6 rows for 2 particiants with 3 sessions each;
 and 14,524 columns (the hippocampal thickness values in every vertex of
 the CITI168 surface).</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hipp_surf</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]     6 14524</span></span></code></pre>
 </div>
@@ -362,7 +361,7 @@ after preprocessing them via FreeSurfer’s recon-all pipeline, and
 computing their surface data using SubCortexMesh, keeping all output
 .vtk files.</p>
 <p>To extract and collate the data of the two participants:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subcortical_Tv</span> <span class="op">=</span> <span class="fu"><a href="../reference/SCMvextract.html">SCMvextract</a></span><span class="op">(</span></span>
 <span>  sdirpath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">demodata</span>,<span class="st">'/sudmex_conn_surf_data_subcortexmesh/'</span><span class="op">)</span>, </span>
 <span>  outputdir <span class="op">=</span> <span class="st">"subcortical_matrices"</span>,</span>
@@ -372,10 +371,10 @@ computing their surface data using SubCortexMesh, keeping all output
 <span>  subj_ID <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  silent<span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Checking for VertexWiseR system requirements ...</span></span></code></pre>
-<pre><code><span><span class="co">## Extracting sub-001's data... [1/2]</span></span></code></pre>
+<pre><code><span><span class="co">## Extracting sub-001's thickness data... [1/2]</span></span></code></pre>
 <pre><code><span><span class="co">## =&gt; caudate</span></span></code></pre>
 <pre><code><span><span class="co">## =&gt; thalamus</span></span></code></pre>
-<pre><code><span><span class="co">## Extracting sub-002's data... [2/2]</span></span></code></pre>
+<pre><code><span><span class="co">## Extracting sub-002's thickness data... [2/2]</span></span></code></pre>
 <pre><code><span><span class="co">## =&gt; caudate</span></span></code></pre>
 <pre><code><span><span class="co">## =&gt; thalamus</span></span></code></pre>
 <pre><code><span><span class="co">## Saving data to subcortical_matrices...</span></span></code></pre>
@@ -401,41 +400,37 @@ Default is FALSE.</p>
 each subcortical area, bilateral when applicable) are saved inside the
 path indicated in “outputdir”, and returned together in a single list
 object:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">subcortical_Tv</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "caudate"  "thalamus"</span></span></code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subcortical_Tv</span><span class="op">[[</span><span class="st">'caudate'</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sub_list</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "sub-001" "sub-002"</span></span></code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">subcortical_Tv</span><span class="op">[[</span><span class="st">'caudate'</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">surf_obj</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]    2 6940</span></span></code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">subcortical_Tv</span><span class="op">[[</span><span class="st">'thalamus'</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">surf_obj</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1]    2 7768</span></span></code></pre>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References:<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-adebimpe2022aslprep" class="csl-entry">
-Adebimpe, Azeez, Maxwell Bertolero, Sudipto Dolui, Matthew Cieslak,
-Kristin Murtha, Erica B Baller, Bradley Boeve, et al. 2022.
-<span>“ASLPrep: A Platform for Processing of Arterial Spin Labeled MRI
-and Quantification of Regional Brain Perfusion.”</span> <em>Nature
-Methods</em> 19 (6): 683–86. <a href="https://doi.org/10.1038/s41592-022-01458-7" class="external-link">https://doi.org/10.1038/s41592-022-01458-7</a>.
+<span class="nocase">Adebimpe, Azeez, Maxwell Bertolero, Sudipto Dolui,
+et al.</span> 2022. <span>“ASLPrep: A Platform for Processing of
+Arterial Spin Labeled MRI and Quantification of Regional Brain
+Perfusion.”</span> <em>Nature Methods</em> 19 (6): 683–86. <a href="https://doi.org/10.1038/s41592-022-01458-7" class="external-link">https://doi.org/10.1038/s41592-022-01458-7</a>.
 </div>
 <div id="ref-dekraker_evaluation_2023" class="csl-entry">
-DeKraker, Jordan, Nicola Palomero-Gallagher, Olga Kedo, Neda
-Ladbon-Bernasconi, Sascha EA Muenzing, Markus Axer, Katrin Amunts, Ali R
-Khan, Boris C Bernhardt, and Alan C Evans. 2023. <span>“Evaluation of
-Surface-Based Hippocampal Registration Using Ground-Truth Subfield
-Definitions.”</span> Edited by Anna C Schapiro and Laura L Colgin.
-<em>eLife</em> 12 (November): RP88404. <a href="https://doi.org/10.7554/eLife.88404" class="external-link">https://doi.org/10.7554/eLife.88404</a>.
+DeKraker, Jordan, Nicola Palomero-Gallagher, Olga Kedo, et al. 2023.
+<span>“Evaluation of Surface-Based Hippocampal Registration Using
+Ground-Truth Subfield Definitions.”</span> <em>eLife</em> 12 (November):
+RP88404. <a href="https://doi.org/10.7554/eLife.88404" class="external-link">https://doi.org/10.7554/eLife.88404</a>.
 </div>
 <div id="ref-esteban_fmriprep_2019" class="csl-entry">
-Esteban, Oscar, Christopher J. Markiewicz, Ross W. Blair, Craig A.
-Moodie, A. Ilkay Isik, Asier Erramuzpe, James D. Kent, et al. 2019.
+Esteban, Oscar, Christopher J. Markiewicz, Ross W. Blair, et al. 2019.
 <span>“<span class="nocase">fMRIPrep</span>: A Robust Preprocessing
 Pipeline for Functional <span>MRI</span>.”</span> <em>Nature
 Methods</em> 16 (1): 111–16. <a href="https://doi.org/10.1038/s41592-018-0235-4" class="external-link">https://doi.org/10.1038/s41592-018-0235-4</a>.
@@ -443,39 +438,37 @@ Methods</em> 16 (1): 111–16. <a href="https://doi.org/10.1038/s41592-018-0235-
 <div id="ref-esteban2021smriprep" class="csl-entry">
 Esteban, Oscar, Christopher J Markiewicz, Ross Blair, Russell A
 Poldrack, and Krzysztof J Gorgolewski. 2021. <span>“sMRIPrep: Structural
-MRI PREProcessing Workflows.”</span> <em>Zenodo</em>. <a href="https://doi.org/10.5281/zenodo.2650521" class="external-link">https://doi.org/10.5281/zenodo.2650521</a>.
+MRI PREProcessing Workflows.”</span> <em>Zenodo</em>, ahead of print. <a href="https://doi.org/10.5281/zenodo.2650521" class="external-link">https://doi.org/10.5281/zenodo.2650521</a>.
 </div>
 <div id="ref-fink_two-week_2021" class="csl-entry">
-Fink, Andreas, Karl Koschutnig, Thomas Zussner, Corinna M.
-Perchtold-Stefan, Christian Rominger, Mathias Benedek, and Ilona
-Papousek. 2021. <span>“A Two-Week Running Intervention Reduces Symptoms
-Related to Depression and Increases Hippocampal Volume in Young
-Adults.”</span> <em>Cortex</em> 144 (November): 70–81. <a href="https://doi.org/10.1016/j.cortex.2021.08.010" class="external-link">https://doi.org/10.1016/j.cortex.2021.08.010</a>.
+Fink, Andreas, Karl Koschutnig, Thomas Zussner, et al. 2021. <span>“A
+Two-Week Running Intervention Reduces Symptoms Related to Depression and
+Increases Hippocampal Volume in Young Adults.”</span> <em>Cortex</em>
+144 (November): 70–81. <a href="https://doi.org/10.1016/j.cortex.2021.08.010" class="external-link">https://doi.org/10.1016/j.cortex.2021.08.010</a>.
 </div>
 <div id="ref-fischl_freesurfer_2012" class="csl-entry">
 Fischl, Bruce. 2012. <span>“<span>FreeSurfer</span>.”</span>
 <em>NeuroImage</em> 62 (2): 774–81. <a href="https://doi.org/10.1016/j.neuroimage.2012.01.021" class="external-link">https://doi.org/10.1016/j.neuroimage.2012.01.021</a>.
 </div>
 <div id="ref-PMID:28485734" class="csl-entry">
-Garza-Villarreal, EA, MM Chakravarty, B Hansen, SF Eskildsen, GA
-Devenyi, D Castillo-Padilla, T Balducci, et al. 2017. <span>“The Effect
-of Crack Cocaine Addiction and Age on the Microstructure and Morphology
-of the Human Striatum and Thalamus Using Shape Analysis and Fast
-Diffusion Kurtosis Imaging.”</span> <em>Translational Psychiatry</em> 7
-(5): e1122. <a href="https://doi.org/10.1038/tp.2017.92" class="external-link">https://doi.org/10.1038/tp.2017.92</a>.
+Garza-Villarreal, EA, MM Chakravarty, B Hansen, et al. 2017. <span>“The
+Effect of Crack Cocaine Addiction and Age on the Microstructure and
+Morphology of the Human Striatum and Thalamus Using Shape Analysis and
+Fast Diffusion Kurtosis Imaging.”</span> <em>Translational
+Psychiatry</em> 7 (5): e1122. <a href="https://doi.org/10.1038/tp.2017.92" class="external-link">https://doi.org/10.1038/tp.2017.92</a>.
 </div>
 <div id="ref-gaser_cat_2024" class="csl-entry">
-Gaser, Christian, Robert Dahnke, Paul M Thompson, Florian Kurth, Eileen
-Luders, and the Alzheimer’s Disease Neuroimaging Initiative. 2024.
+<span class="nocase">Gaser, Christian, Robert Dahnke, Paul M Thompson,
+Florian Kurth, Eileen Luders, and
+the Alzheimer’s Disease Neuroimaging Initiative</span>. 2024.
 <span>“<span>CAT</span>: A Computational Anatomy Toolbox for the
 Analysis of Structural <span>MRI</span> Data.”</span>
 <em>GigaScience</em> 13 (January): giae049. <a href="https://doi.org/10.1093/gigascience/giae049" class="external-link">https://doi.org/10.1093/gigascience/giae049</a>.
 </div>
 <div id="ref-mehta2024xcp" class="csl-entry">
-Mehta, Kahini, Taylor Salo, Thomas J Madison, Azeez Adebimpe, Danielle S
-Bassett, Max Bertolero, Matthew Cieslak, et al. 2024. <span>“XCP-d: A
-Robust Pipeline for the Post-Processing of fMRI Data.”</span>
-<em>Imaging Neuroscience</em> 2: 1–26. <a href="https://doi.org/10.1162/imag_a_00257" class="external-link">https://doi.org/10.1162/imag_a_00257</a>.
+<span class="nocase">Mehta, Kahini, Taylor Salo, Thomas J Madison, et
+al.</span> 2024. <span>“XCP-d: A Robust Pipeline for the Post-Processing
+of fMRI Data.”</span> <em>Imaging Neuroscience</em> 2: 1–26. <a href="https://doi.org/10.1162/imag_a_00257" class="external-link">https://doi.org/10.1162/imag_a_00257</a>.
 </div>
 <div id="ref-PATENAUDE2011907" class="csl-entry">
 Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark
@@ -484,15 +477,14 @@ Subcortical Brain Segmentation.”</span> <em>NeuroImage</em> 56 (3):
 907–22. <a href="https://doi.org/10.1016/j.neuroimage.2011.02.046" class="external-link">https://doi.org/10.1016/j.neuroimage.2011.02.046</a>.
 </div>
 <div id="ref-spreng_neurocognitive_2022" class="csl-entry">
-Spreng, R. Nathan, Roni Setton, Udi Alter, Benjamin N. Cassidy, Bri
-Darboh, Elizabeth DuPre, Karin Kantarovich, et al. 2022.
+Spreng, R. Nathan, Roni Setton, Udi Alter, et al. 2022.
 <span>“Neurocognitive Aging Data Release with Behavioral, Structural and
 Multi-Echo Functional <span>MRI</span> Measures.”</span> <em>Scientific
 Data</em> 9 (1): 119. <a href="https://doi.org/10.1038/s41597-022-01231-7" class="external-link">https://doi.org/10.1038/s41597-022-01231-7</a>.
 </div>
 <div id="ref-ushey_reticulate_2023" class="csl-entry">
-Ushey, K, J Allaire, and Y Tang. 2023. <span>“Reticulate:
-<span>Interface</span> to ’<span>Python</span>’.”</span> <a href="https://CRAN.R-project.org/package=reticulate" class="external-link">https://CRAN.R-project.org/package=reticulate</a>.
+Ushey, K, J Allaire, and Y Tang. 2023. <em>Reticulate:
+<span>Interface</span> to ’<span>Python</span>’</em>. <a href="https://CRAN.R-project.org/package=reticulate" class="external-link">https://CRAN.R-project.org/package=reticulate</a>.
 </div>
 <div id="ref-van_essen_wu-minn_2013" class="csl-entry">
 Van Essen, David C., Stephen M. Smith, Deanna M. Barch, Timothy E. J.
