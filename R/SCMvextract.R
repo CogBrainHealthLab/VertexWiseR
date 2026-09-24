@@ -29,7 +29,7 @@
 #' @returns A directory containing - for each pair of bilateral subcortical regions separately - .RDS files, each with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a surface data matrix object. Each matrix has N subjects x V vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values (except for the Brain Stem).
 #' @examples
 #' SCMvextract(sdirpath = "subcortexmesh_output_metrics", 
-#' outputdir=paste0(tempdir(), "\\subcortices"), template='fsaverage', measure="surfarea") 
+#' outputdir=paste0(tempdir(), "\\subcortices"), template='fsaverage', measure="surfarea", VWR_check=FALSE) 
 #' @importFrom reticulate import
 #' @importFrom stringr str_extract
 #' @export 

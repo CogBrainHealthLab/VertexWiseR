@@ -59,5 +59,5 @@ Number of vertices in the (bilateral) matrix for each region-of-interest:
 }
 \examples{
 SCMvextract(sdirpath = "subcortexmesh_output_metrics", 
-outputdir=paste0(tempdir(), "\\\\subcortices"), template='fsaverage', measure="surfarea") 
+outputdir=paste0(tempdir(), "\\\\subcortices"), template='fsaverage', measure="surfarea", VWR_check=FALSE) 
 }
