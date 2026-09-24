@@ -1,7 +1,8 @@
-# VertexWiseR v1.5.5 (TBC)
+# VertexWiseR v1.6.0 (TBC)
 
 ## NEW FEATURES
 
+* New decode_surf_data() function now uses internal R data and code to do the decoding. It was tested on Example 1, yielding identical results for less than half the original duration.
 * Extraction functions now fails prematurely if the filename argument given has a non-existent path, instead of failing after the full matrix is built.
 * Silent parameter and end messaging added to HIPvextract().
 
