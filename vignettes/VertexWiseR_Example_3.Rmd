@@ -178,7 +178,7 @@ plot_surf3d(surf_data = allaseg_model$thresholded_tstat_map,
 ```
 
 ```{r, echo=FALSE, fig.align="center", out.width="100%", fig.alt="Significant clusters after RFT correction across all ASeg  subcortices, 3D plot (screenshot)"}
-knitr::include_graphics('allaseg_plotsurf3d.jpg')
+knitr::include_graphics('allaseg_plotsurf3d.png')
 ```
 
 (This is just a screenshot)
