@@ -2,15 +2,19 @@
 
 ## NEW FEATURES
 
-* New decode_surf_data() function now uses internal R data and code to do the decoding. It was tested on Example 1, yielding identical results for less than half the original duration.
-* Extraction functions now fails prematurely if the filename argument given has a non-existent path, instead of failing after the full matrix is built.
+* New decode_surf_data() function now uses internal R data and code to do the decoding, reproducing NiMARE's ROIAssociationDecoder without calling the python module. It was tested on Example 1, yielding identical results for less than half the original duration.
+* SCMvextract() is now much faster with more preloaded tables/lists and a different way of extracting the scalars
 * Silent parameter and end messaging added to HIPvextract().
+
+## FIXES
+
+* Extraction functions now fail prematurely if the filename argument given has a non-existent path, instead of failing after the full matrix is built.
 
 # VertexWiseR v1.5.4
 
 ## FIXES
 
-* The label mapping for the allaseg surface had the wrong labels in the cluster summaries and plot_surf3d() when the 1.5.3 atlas was introduced. The maps downloadable on github were updated and plot_surf3d() fixed to show the right parcellation name when hovering the cursor. Other regions remain unaffected. To get the most up-to-date maps for SubCortexMesh objects if downloaded already, users need to remove it: extdatadir=system.file('extdata/scm_database/', package='VertexWiseR').
+* The label mapping for the allaseg surface had the wrong labels in the cluster summaries and plot_surf3d() when the 1.5.3 atlas was introduced. The maps downloadable on github were updated and plot_surf3d() fixed to show the right parcellation name when hovering the cursor. Other regions remain unaffected. To get the most up-to-date maps for SubCortexMesh objects if downloaded already, users need to remove and reinstall VertexWiseR entirely or remove the template data located in `system.file('extdata/scm_database/', package='VertexWiseR')`.
 * Fix for TFCE models with the "inverse=TRUE" option. Permutated models were not indexing systematically the right contrast variable when producing a random t-map at each permutation. This did not apply for RFT or the mixed models.
 
 # VertexWiseR v1.5.3
