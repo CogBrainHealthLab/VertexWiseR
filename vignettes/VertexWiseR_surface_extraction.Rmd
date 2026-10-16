@@ -166,7 +166,7 @@ hipp_surf=HIPvextract(sdirpath=paste0(demodata,
 The following arguments can be used: \
 - sdirpath: Path to the preprocessed subjects directory. \
 - filename: Name of the saved .rds output (can include a specific path to it). \
-- measure: The name of the surface-based measure of interest computed [in HippUnfold](https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics). That includes 'thickness','curvature','gyrification' and 'surfarea'. Default is 'thickness'. \
+- measure: The name of the surface-based measure of interest computed [in HippUnfold](https://hippunfold.khanlab.ca/en/main/outputs/output_files.html). That includes 'thickness','curvature','gyrification' and 'surfarea'. Default is 'thickness'. \
 - subj_ID: Whether to obtain a list object containing both subject ID and data matrix instead of just the matrix (TRUE OR FALSE). Default is TRUE.
 
 Note that when subjects directories have multiple sessions, the matrix object will contain N rows per participant and per session.

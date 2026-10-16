@@ -126,7 +126,7 @@ In the above results, the clusters that appear under the `Positive contrast` sec
 
 -   `tstat`: t statistic of the vertex with the highest t-stat in the cluster
 
--   `region`: the region this highest t-stat vertex is located in. Here, it is determined/labelled using the [Desikan atlas](https://surfer.nmr.mgh.harvard.edu/ftp/articles/desikan06-parcellation.pdf)
+-   `region`: the region this highest t-stat vertex is located in. Here, it is determined/labelled using the [Desikan atlas](https://web.archive.org/web/20261003215309/https://surfer.nmr.mgh.harvard.edu/ftp/articles/desikan06-parcellation.pdf)
 
 #### Plotting
 

@@ -5,7 +5,7 @@
 #'
 #' @param sdirpath A string object containing the path to the 'HippUnfold' subjects directory. Default is the current working directory ("./").
 #' @param filename A string object containing the desired name of the output RDS file. Default is 'hip_measure.rds' in the R temporary directory (tempdir()).
-#' @param measure A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics}{the 'HippUnfold' documentation}). Default is thickness.
+#' @param measure A string object containing the name of the measure of interest. Options are 'thickness','curvature','gyrification' and 'surfarea' (For more information see \href{https://hippunfold.khanlab.ca/en/main/outputs/output_files.html}{the 'HippUnfold' documentation}). Default is thickness.
 #' @param subj_ID A logical object stating whether to return a list object containing both subject ID and data matrix.
 #' @param silent A logical object to determine whether messages will be silenced. Set to 'FALSE' by default
 #'

@@ -16,7 +16,7 @@ SCMvextract(
 )
 }
 \arguments{
-\item{sdirpath}{A string object containing the path to the 'SubCortexMesh' surface metrics directory, containing surface-based metrics (.vtk files). Default is the current working directory ("./").}
+\item{sdirpath}{A string object containing the path to the 'SubCortexMesh' surface metrics directory, containing subjects subdirectories, each with surface-based metrics for each region (.vtk files). Default is the current working directory ("./").}
 
 \item{outputdir}{A string object containing the path of the directory where all ROI RDS files will be stored. Default is 'subcortices' in the R temporary directory (tempdir()).}
 
@@ -59,5 +59,8 @@ Number of vertices in the (bilateral) matrix for each region-of-interest:
 }
 \examples{
 SCMvextract(sdirpath = "subcortexmesh_output_metrics", 
-outputdir=paste0(tempdir(), "\\\\subcortices"), template='fsaverage', measure="surfarea", VWR_check=FALSE) 
+            outputdir=paste0(tempdir(), "\\\\subcortices"), 
+            template='fsaverage', 
+            measure="surfarea", 
+            VWR_check=FALSE) 
 }

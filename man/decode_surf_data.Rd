@@ -20,7 +20,7 @@ A data.frame object listing the keywords and their Pearson's R values
 Correlates the significant clusters of an earlier vertex-wise analysis with a database of task-based fMRI and voxel-based morphometric statistical maps and associate them with relevant key words. Decoding currently works with surfaces in fsaverage5 space only."
 }
 \details{
-An internal image decoding is used, reproducing the \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module's ROIAssociationDecoder  in base R. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (converted to .RDS, ~7.2 MB) for the analysis.
+An internal image decoding is used, reproducing the \href{https://nimare.readthedocs.io/en/stable/index.html}{'NiMARE'} python module's ROIAssociationDecoder in base R. The function also downloads the \href{https://github.com/neurosynth/neurosynth-data}{'Neurosynth' database} in the package's inst/extdata directory (converted to .RDS, ~7.2 MB) for the analysis.
 }
 \examples{
 CTv = rbinom(20484, 1, 0.001) 

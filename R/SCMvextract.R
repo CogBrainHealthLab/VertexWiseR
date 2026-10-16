@@ -29,9 +29,13 @@
 #' @returns A directory containing - for each pair of bilateral subcortical regions separately - .RDS files, each with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a surface data matrix object. Each matrix has N subjects x V vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values (except for the Brain Stem).
 #' @examples
 #' SCMvextract(sdirpath = "subcortexmesh_output_metrics", 
-#' outputdir=paste0(tempdir(), "\\subcortices"), template='fsaverage', measure="surfarea", VWR_check=FALSE) 
+#'             outputdir=paste0(tempdir(), "\\subcortices"), 
+#'             template='fsaverage', 
+#'             measure="surfarea", 
+#'             VWR_check=FALSE) 
 #' @importFrom reticulate import
 #' @importFrom stringr str_extract
+#' @importFrom stats setNames
 #' @export 
 SCMvextract=function(sdirpath="./", outputdir, template, measure = 'thickness', roilabel, subj_ID = TRUE, silent=FALSE, VWR_check=TRUE) 
 { 
@@ -120,8 +124,8 @@ SCMvextract=function(sdirpath="./", outputdir, template, measure = 'thickness', 
   bstem_by_sub <- split(bstem.filelist, stringr::str_extract(bstem.filelist, "sub-[^/]+"))
   allmerged_by_sub <- split(allmerged.filelist, stringr::str_extract(allmerged.filelist, "sub-[^/]+"))
   #precompute available volume paths to avoid searching every time
-  roi_lookup_lh <- lapply(lh_by_sub, function(x) {setNames(x, stringr::str_extract(x, paste0("(?<=left-).+?(?=_", measure, ")")))})
-  roi_lookup_rh <- lapply(rh_by_sub, function(x) {setNames(x, stringr::str_extract(x, paste0("(?<=right-).+?(?=_", measure, ")")))})
+  roi_lookup_lh <- lapply(lh_by_sub, function(x) {stats::setNames(x, stringr::str_extract(x, paste0("(?<=left-).+?(?=_", measure, ")")))})
+  roi_lookup_rh <- lapply(rh_by_sub, function(x) {stats::setNames(x, stringr::str_extract(x, paste0("(?<=right-).+?(?=_", measure, ")")))})
   roi_lookup_bstem <- lapply(bstem_by_sub, function(x) file.path(sdirpath, x))
   roi_lookup_allmerged <- lapply(allmerged_by_sub, function(x) file.path(sdirpath, x))
   

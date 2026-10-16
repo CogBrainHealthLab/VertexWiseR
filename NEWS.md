@@ -1,4 +1,4 @@
-# VertexWiseR v1.6.0 (TBC)
+# VertexWiseR v1.5.5
 
 ## NEW FEATURES
 
