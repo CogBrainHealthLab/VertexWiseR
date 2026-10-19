@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 3"
 author: "Charly H. A. Billaud"
-date: "2026-09-10"
+date: "2026-10-19"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 3}
@@ -35,6 +35,8 @@ aseg_CTv = SCMvextract(sdirpath = 'surface_metrics/',
                         template='fsaverage',
                         subj_ID = TRUE)
 ```
+
+⚠️ Note that if the SubCortexMesh output contains merged surface objects such as "allaseg" or "allfslfirst", they will also be extracted along with the individual regions, unless it is specified in the `roilabel` argument (e.g., if `roilabel="allaseg"`, only the merged subcortices will be extracted).
 
 ## Example analysis on the thalamus and caudate nuclei
 
