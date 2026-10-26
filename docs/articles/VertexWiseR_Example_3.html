@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Charly H. A.
 Billaud</h4>
             
-            <h4 data-toc-skip class="date">2026-09-10</h4>
+            <h4 data-toc-skip class="date">2026-10-19</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_Example_3.Rmd</code></div>
@@ -127,12 +127,21 @@ extraction functions</a>, generating compact (bilateral) matrices for
 all applicable subcortical surfaces. Here is an example of code which
 was run to obtain the demo data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">aseg_CTv</span> <span class="op">=</span> <span class="fu"><a href="../reference/SCMvextract.html">SCMvextract</a></span><span class="op">(</span>sdirpath <span class="op">=</span> <span class="st">'surface_metrics/'</span>, </span>
-<span>                        outputdir <span class="op">=</span> <span class="st">"aseg_matrices/"</span>,</span>
-<span>                        measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'thickness'</span>,<span class="st">'curvature'</span><span class="op">)</span>, </span>
-<span>                        roilabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'thalamus'</span>,<span class="st">'caudate'</span><span class="op">)</span>, </span>
-<span>                        template<span class="op">=</span><span class="st">'fsaverage'</span>,</span>
-<span>                        subj_ID <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">metric</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'thickness'</span>,<span class="st">'curvature'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">{</span></span>
+<span>  <span class="va">subcortical_m</span><span class="op">=</span><span class="fu"><a href="../reference/SCMvextract.html">SCMvextract</a></span><span class="op">(</span>sdirpath <span class="op">=</span> <span class="st">'surface_metrics/'</span>, </span>
+<span>                            outputdir <span class="op">=</span> <span class="st">"aseg_matrices/"</span>,</span>
+<span>                            measure <span class="op">=</span> <span class="va">metric</span>, </span>
+<span>                            roilabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'thalamus'</span>,<span class="st">'caudate'</span><span class="op">)</span>, </span>
+<span>                            template<span class="op">=</span><span class="st">'fsaverage'</span>,</span>
+<span>                            subj_ID <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>⚠️ Note that if the SubCortexMesh output contains merged surface
+objects such as “allaseg” or “allfslfirst”, they will also be extracted
+along with the individual regions, unless it is specified in the
+<code>roilabel</code> argument (e.g., if
+<code>roilabel="allaseg"</code>, only the merged subcortices will be
+extracted).</p>
 </div>
 <div class="section level2">
 <h2 id="example-analysis-on-the-thalamus-and-caudate-nuclei">Example analysis on the thalamus and caudate nuclei<a class="anchor" aria-label="anchor" href="#example-analysis-on-the-thalamus-and-caudate-nuclei"></a>

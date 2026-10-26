@@ -399,12 +399,15 @@ extracted by VertexWiseR as in the other <a href="https://cogbrainhealthlab.gith
 extraction functions</a>, generating compact (bilateral) matrices for
 all applicable subcortical surfaces. Here is an example of code which
 was run to obtain the demo data:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>aseg_CTv <span class="ot">=</span> <span class="fu">SCMvextract</span>(<span class="at">sdirpath =</span> <span class="st">&#39;surface_metrics/&#39;</span>, </span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>                        <span class="at">outputdir =</span> <span class="st">&quot;aseg_matrices/&quot;</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>                        <span class="at">measure =</span> <span class="fu">c</span>(<span class="st">&#39;thickness&#39;</span>,<span class="st">&#39;curvature&#39;</span>), </span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                        <span class="at">roilabel =</span> <span class="fu">c</span>(<span class="st">&#39;thalamus&#39;</span>,<span class="st">&#39;caudate&#39;</span>), </span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                        <span class="at">template=</span><span class="st">&#39;fsaverage&#39;</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>                        <span class="at">subj_ID =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">for</span> (metric <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;thickness&#39;</span>,<span class="st">&#39;curvature&#39;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>{</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  subcortical_m<span class="ot">=</span><span class="fu">SCMvextract</span>(<span class="at">sdirpath =</span> <span class="st">&#39;surface_metrics/&#39;</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                            <span class="at">outputdir =</span> <span class="st">&quot;aseg_matrices/&quot;</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                            <span class="at">measure =</span> metric, </span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>                            <span class="at">roilabel =</span> <span class="fu">c</span>(<span class="st">&#39;thalamus&#39;</span>,<span class="st">&#39;caudate&#39;</span>), </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>                            <span class="at">template=</span><span class="st">&#39;fsaverage&#39;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>                            <span class="at">subj_ID =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>}</span></code></pre></div>
 <p>⚠️ Note that if the SubCortexMesh output contains merged surface
 objects such as “allaseg” or “allfslfirst”, they will also be extracted
 along with the individual regions, unless it is specified in the

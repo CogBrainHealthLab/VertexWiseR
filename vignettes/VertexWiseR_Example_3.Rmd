@@ -28,12 +28,15 @@ Analysis and manipulation of the subcortical surfaces require additional utility
 SubCortexMesh's surface metric output in template space can be extracted by VertexWiseR as in the other [surface extraction functions](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_surface_extraction.html), generating compact (bilateral) matrices for all applicable subcortical surfaces. Here is an example of code which was run to obtain the demo data:
 
 ```{r, eval=FALSE}
-aseg_CTv = SCMvextract(sdirpath = 'surface_metrics/', 
-                        outputdir = "aseg_matrices/",
-                        measure = c('thickness','curvature'), 
-                        roilabel = c('thalamus','caudate'), 
-                        template='fsaverage',
-                        subj_ID = TRUE)
+for (metric in c('thickness','curvature'))
+{
+  subcortical_m=SCMvextract(sdirpath = 'surface_metrics/', 
+                            outputdir = "aseg_matrices/",
+                            measure = metric, 
+                            roilabel = c('thalamus','caudate'), 
+                            template='fsaverage',
+                            subj_ID = TRUE)
+}
 ```
 
 ⚠️ Note that if the SubCortexMesh output contains merged surface objects such as "allaseg" or "allfslfirst", they will also be extracted along with the individual regions, unless it is specified in the `roilabel` argument (e.g., if `roilabel="allaseg"`, only the merged subcortices will be extracted).

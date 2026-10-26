@@ -185,28 +185,36 @@ SCMvextract=function(sdirpath="./", outputdir, template, measure = 'thickness', 
     for (vol in 1:NROW(subcortical_list))
     {
       vol_label=subcortical_list[vol]
-      if (silent==FALSE){message(paste0('=> ', vol_label))}
       
       if (! vol_label %in% c('brain-stem',allmerged))
       {
         if (length(grep(vol_label,lh.filelist.sub)) != 0 ){
+          if (silent==FALSE){message(paste0('=> ', vol_label))}
           lh_vtk_path <- file.path(sdirpath, roi_lookup_lh[[sublist[sub]]][[vol_label]])
           rh_vtk_path <- file.path(sdirpath, roi_lookup_rh[[sublist[sub]]][[vol_label]])
           lh=vtk_getscalar(lh_vtk_path)
           rh=vtk_getscalar(rh_vtk_path)
           scm_matrices[[vol_label]][sub,]=c(lh,rh)
+        } else {
+          if (silent==FALSE){message(paste0('/!\ ', vol_label, ' missing'))}
         }
       } else if (vol_label=='brain-stem')
       {
         bstem_path <- roi_lookup_bstem[[sublist[sub]]]
         if (length(bstem_path) != 0 ){
+          if (silent==FALSE){message(paste0('=> ', vol_label))}
           scm_matrices[[vol_label]][sub,]=vtk_getscalar(bstem_path[1])
+        } else {
+          if (silent==FALSE){message(paste0('/!\ ', vol_label, ' missing'))}
         }
       } else if (vol_label == allmerged)
       {  
         allmerged_path <- roi_lookup_allmerged[[sublist[sub]]]
         if (length(allmerged_path) != 0 ){
+          if (silent==FALSE){message(paste0('=> ', vol_label))}
           scm_matrices[[vol_label]][sub,]=vtk_getscalar(allmerged_path[1])
+        } else {
+          if (silent==FALSE){message(paste0('/!\ ', vol_label, ' missing'))}
         }
       }
     }   
