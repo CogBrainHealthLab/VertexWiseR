@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Charly Billaud,
 Junhong Yu</h4>
             
-            <h4 data-toc-skip class="date">2026-03-23</h4>
+            <h4 data-toc-skip class="date">2026-10-27</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_surface_extraction.Rmd</code></div>
@@ -322,7 +322,7 @@ HIPvextract() can be run as follows:</p>
 - sdirpath: Path to the preprocessed subjects directory.<br>
 - filename: Name of the saved .rds output (can include a specific path
 to it).<br>
-- measure: The name of the surface-based measure of interest computed <a href="https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics" class="external-link">in
+- measure: The name of the surface-based measure of interest computed <a href="https://hippunfold.khanlab.ca/en/main/outputs/output_files.html" class="external-link">in
 HippUnfold</a>. That includes ‘thickness’,‘curvature’,‘gyrification’ and
 ‘surfarea’. Default is ‘thickness’.<br>
 - subj_ID: Whether to obtain a list object containing both subject ID
@@ -346,7 +346,8 @@ the CITI168 surface).</p>
 </h2>
 <p>SCMvextract() extracts subcortical data based on FreeSurfer ASeg
 <span class="citation">(Fischl 2012)</span> or FSL FIRST <span class="citation">(Patenaude et al. 2011)</span> volumetric subcortical
-segmentations, converted to surfaces via the python pipeline from <a href="https://github.com/chabld/SubCortexMesh" class="external-link">SubCortexMesh</a>.
+segmentations, as well as CIFTI subcortical grayordinates <span class="citation">(<span class="nocase">Glasser et al.</span>
+2013)</span>, converted to surfaces via the python pipeline from <a href="https://github.com/chabld/SubCortexMesh" class="external-link">SubCortexMesh</a>.
 SCMvextract() does not require any system requirement, but further
 plotting and modelling will require downloading associated template data
 (the package will prompt you automatically or you may do it directly by
@@ -464,6 +465,12 @@ the Alzheimer’s Disease Neuroimaging Initiative</span>. 2024.
 <span>“<span>CAT</span>: A Computational Anatomy Toolbox for the
 Analysis of Structural <span>MRI</span> Data.”</span>
 <em>GigaScience</em> 13 (January): giae049. <a href="https://doi.org/10.1093/gigascience/giae049" class="external-link">https://doi.org/10.1093/gigascience/giae049</a>.
+</div>
+<div id="ref-glasser2013minimal" class="csl-entry">
+<span class="nocase">Glasser, Matthew F, Stamatios N Sotiropoulos, J
+Anthony Wilson, et al.</span> 2013. <span>“The Minimal Preprocessing
+Pipelines for the Human Connectome Project.”</span> <em>Neuroimage</em>
+80: 105–24.
 </div>
 <div id="ref-mehta2024xcp" class="csl-entry">
 <span class="nocase">Mehta, Kahini, Taylor Salo, Thomas J Madison, et

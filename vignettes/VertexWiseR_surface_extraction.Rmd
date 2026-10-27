@@ -1,7 +1,7 @@
 ---
 title: "Extracting surface data in VertexWiseR"
 author: "Charly Billaud, Junhong Yu"
-date: "2026-03-23"
+date: "2026-10-27"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Extracting surface data in VertexWiseR}
@@ -183,7 +183,7 @@ dim(hipp_surf[[2]])
 
 ## Extracting subcortical surface data: from SubCortexMesh {#id5}
 
-SCMvextract() extracts subcortical data based on FreeSurfer ASeg [@fischl_freesurfer_2012] or FSL FIRST [@PATENAUDE2011907] volumetric subcortical segmentations, converted to surfaces via the python pipeline from [SubCortexMesh](https://github.com/chabld/SubCortexMesh). SCMvextract() does not require any system requirement, but further plotting and modelling will require downloading associated template data (the package will prompt you automatically or you may do it directly by typing `VertexWiseR:::scm_database_check(template='fsaverage')`, with 'fsaverage' for FreeSurfer template data or 'fslfirst' for FSL FIRST template data).
+SCMvextract() extracts subcortical data based on FreeSurfer ASeg [@fischl_freesurfer_2012] or FSL FIRST [@PATENAUDE2011907] volumetric subcortical segmentations, as well as CIFTI subcortical grayordinates [@glasser2013minimal], converted to surfaces via the python pipeline from [SubCortexMesh](https://github.com/chabld/SubCortexMesh). SCMvextract() does not require any system requirement, but further plotting and modelling will require downloading associated template data (the package will prompt you automatically or you may do it directly by typing `VertexWiseR:::scm_database_check(template='fsaverage')`, with 'fsaverage' for FreeSurfer template data or 'fslfirst' for FSL FIRST template data).
 
 For demonstration, we provide a subsample of 2 participants from the [SUDMEX_CONN](https://openneuro.org/datasets/ds003346/versions/1.1.2) dataset [@PMID:28485734], after preprocessing them via FreeSurfer's recon-all pipeline, and computing their surface data using SubCortexMesh, keeping all output .vtk files.
 

@@ -36,7 +36,7 @@ SCMvextract(
 A directory containing - for each pair of bilateral subcortical regions separately - .RDS files, each with a list containing 1. the list of subject IDs (first element) and 2. a surface data matrix object (second element), or only a surface data matrix object. Each matrix has N subjects x V vertices dimensions and can be used readily by VertexWiseR statistical analysis functions. Each row corresponds to a subject (in the order they are listed in the folder) and contains the left to right hemispheres' vertex-wise values (except for the Brain Stem).
 }
 \description{
-Extracts surface-based measures from the python toolbox "SubCortexMesh" in each subject. These can be based on FreeSurfer ASeg or FSL FIRST subcortical segmentations. SCMvextract() reads through the metrics .vtk files outputted by SubCortexMesh (surface_metrics/ directory), extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres when applicable, for each (selected) subcortical region.
+Extracts surface-based measures from the python toolbox "SubCortexMesh" in each subject. These can be based on FreeSurfer ASeg or FSL FIRST subcortical segmentations, as well as CIFTI subcortical grayordinates. SCMvextract() reads through the metrics .vtk files outputted by SubCortexMesh (surface_metrics/ or surface_metrics_cifti/ directory), extracts the vertex-wise values, and stores them as a .rds file, merging left and right hemispheres when applicable, for each (selected) subcortical region.
 }
 \details{
 The function looks for standard subject folder names (starting "sub-") and surface file names as defined by SubCortexMesh (starting "left-","right-", or "brain-stem"). SCMvextract() requires reticulate and python to read the .vtk files.

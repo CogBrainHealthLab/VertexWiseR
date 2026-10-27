@@ -1,7 +1,7 @@
 ---
 title: "Example analyses with VertexWiseR - Example 3"
 author: "Charly H. A. Billaud"
-date: "2026-10-19"
+date: "2026-10-27"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Example analyses with VertexWiseR - Example 3}
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(dev = "jpeg", warning = FALSE, message = FALSE, dpi = 70)
 library(VertexWiseR)
 ```
 
-This article introduces vertex-wise statistical modelling of subcortical surfaces available since update v1.5.0. The subcortical surfaces it is currently compatible with are either based on the FSL FIRST [@PATENAUDE2011907] or on the FreeSurfer "ASeg" [@fischl_freesurfer_2012] subcortical volumetric segmentations. The volumes are converted to 3D meshes and surface-based metrics (thickness, surface area, curvature) produced using the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh). VertexWiseR can extract the surface measures obtained with the latter package.
+This article introduces vertex-wise statistical modelling of subcortical surfaces available since update v1.5.0. The subcortical surfaces it is currently compatible with are either derived from FSL FIRST [@PATENAUDE2011907] or FreeSurfer "ASeg" [@fischl_freesurfer_2012] subcortical volumetric segmentations, as well as ASeg-based CIFTI subcortical grayordinates [@glasser2013minimal]. The volumes are converted to 3D meshes and surface-based metrics (thickness, surface area, curvature) produced using the python module [SubCortexMesh](https://github.com/chabld/SubCortexMesh). VertexWiseR can extract the surface measures obtained with the latter package.
 
 ## Requirements
 

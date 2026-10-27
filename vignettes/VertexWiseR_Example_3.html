@@ -371,12 +371,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <hr />
 <p>This article introduces vertex-wise statistical modelling of
 subcortical surfaces available since update v1.5.0. The subcortical
-surfaces it is currently compatible with are either based on the FSL
-FIRST <span class="citation">(Patenaude et al. 2011)</span> or on the
+surfaces it is currently compatible with are either derived from FSL
+FIRST <span class="citation">(Patenaude et al. 2011)</span> or
 FreeSurfer “ASeg” <span class="citation">(Fischl 2012)</span>
-subcortical volumetric segmentations. The volumes are converted to 3D
-meshes and surface-based metrics (thickness, surface area, curvature)
-produced using the python module <a href="https://github.com/chabld/SubCortexMesh">SubCortexMesh</a>.
+subcortical volumetric segmentations, as well as ASeg-based CIFTI
+subcortical grayordinates <span class="citation">(<span class="nocase">Glasser et al.</span> 2013)</span>. The volumes are
+converted to 3D meshes and surface-based metrics (thickness, surface
+area, curvature) produced using the python module <a href="https://github.com/chabld/SubCortexMesh">SubCortexMesh</a>.
 VertexWiseR can extract the surface measures obtained with the latter
 package.</p>
 <div id="requirements" class="section level2">
@@ -524,10 +525,14 @@ it for the thalami):</p>
 ## 5 Thalamus_Laterodorsal-Lateral-Posterior_L</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>model_thalamus_curvature<span class="sc">$</span>cluster_level_results</span></code></pre></div>
 <pre><code>## $`Positive contrast`
-##   clusid nverts      P     X     Y     Z tstat                                 region
-## 1      1    119 &lt;0.001 139.1 113.9 135.3  3.45             Thalamus_Ventral-Lateral_L
-## 2      2     62  0.005 134.0 130.5 154.0  4.13 Thalamus_Centromedian-Parafascicular_L
-## 3      3     45  0.014 153.0 133.0 157.5  3.60           Thalamus_Pulvinar-Inferior_L
+##   clusid nverts      P     X     Y     Z tstat
+## 1      1    119 &lt;0.001 139.1 113.9 135.3  3.45
+## 2      2     62  0.005 134.0 130.5 154.0  4.13
+## 3      3     45  0.014 153.0 133.0 157.5  3.60
+##                                   region
+## 1             Thalamus_Ventral-Lateral_L
+## 2 Thalamus_Centromedian-Parafascicular_L
+## 3           Thalamus_Pulvinar-Inferior_L
 ## 
 ## $`Negative contrast`
 ##   clusid nverts      P     X     Y     Z tstat                        region
@@ -811,6 +816,12 @@ Effect of Crack Cocaine Addiction and Age on the Microstructure and
 Morphology of the Human Striatum and Thalamus Using Shape Analysis and
 Fast Diffusion Kurtosis Imaging.”</span> <em>Translational
 Psychiatry</em> 7 (5): e1122. <a href="https://doi.org/10.1038/tp.2017.92">https://doi.org/10.1038/tp.2017.92</a>.
+</div>
+<div id="ref-glasser2013minimal" class="csl-entry">
+<span class="nocase">Glasser, Matthew F, Stamatios N Sotiropoulos, J
+Anthony Wilson, et al.</span> 2013. <span>“The Minimal Preprocessing
+Pipelines for the Human Connectome Project.”</span> <em>Neuroimage</em>
+80: 105–24.
 </div>
 <div id="ref-PATENAUDE2011907" class="csl-entry">
 Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark

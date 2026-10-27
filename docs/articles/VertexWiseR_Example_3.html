@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">Charly H. A.
 Billaud</h4>
             
-            <h4 data-toc-skip class="date">2026-10-19</h4>
+            <h4 data-toc-skip class="date">2026-10-27</h4>
       
 
       <div class="d-none name"><code>VertexWiseR_Example_3.Rmd</code></div>
@@ -96,12 +96,13 @@ Billaud</h4>
 <hr>
 <p>This article introduces vertex-wise statistical modelling of
 subcortical surfaces available since update v1.5.0. The subcortical
-surfaces it is currently compatible with are either based on the FSL
-FIRST <span class="citation">(Patenaude et al. 2011)</span> or on the
+surfaces it is currently compatible with are either derived from FSL
+FIRST <span class="citation">(Patenaude et al. 2011)</span> or
 FreeSurfer “ASeg” <span class="citation">(Fischl 2012)</span>
-subcortical volumetric segmentations. The volumes are converted to 3D
-meshes and surface-based metrics (thickness, surface area, curvature)
-produced using the python module <a href="https://github.com/chabld/SubCortexMesh" class="external-link">SubCortexMesh</a>.
+subcortical volumetric segmentations, as well as ASeg-based CIFTI
+subcortical grayordinates <span class="citation">(<span class="nocase">Glasser et al.</span> 2013)</span>. The volumes are
+converted to 3D meshes and surface-based metrics (thickness, surface
+area, curvature) produced using the python module <a href="https://github.com/chabld/SubCortexMesh" class="external-link">SubCortexMesh</a>.
 VertexWiseR can extract the surface measures obtained with the latter
 package.</p>
 <div class="section level2">
@@ -565,6 +566,12 @@ Effect of Crack Cocaine Addiction and Age on the Microstructure and
 Morphology of the Human Striatum and Thalamus Using Shape Analysis and
 Fast Diffusion Kurtosis Imaging.”</span> <em>Translational
 Psychiatry</em> 7 (5): e1122. <a href="https://doi.org/10.1038/tp.2017.92" class="external-link">https://doi.org/10.1038/tp.2017.92</a>.
+</div>
+<div id="ref-glasser2013minimal" class="csl-entry">
+<span class="nocase">Glasser, Matthew F, Stamatios N Sotiropoulos, J
+Anthony Wilson, et al.</span> 2013. <span>“The Minimal Preprocessing
+Pipelines for the Human Connectome Project.”</span> <em>Neuroimage</em>
+80: 105–24.
 </div>
 <div id="ref-PATENAUDE2011907" class="csl-entry">
 Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark
