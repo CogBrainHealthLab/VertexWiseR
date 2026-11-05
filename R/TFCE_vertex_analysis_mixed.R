@@ -5,9 +5,22 @@
 ############################################################################################################################
 #' @title Vertex-wise analysis with threshold-free cluster enhancement (mixed effect)
 #'
-#' @description Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
+#' @description Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast. Permutation
 #' 
-#' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}. 
+#' @details 
+#' This implements the Freedman–Lane nuisance-adjustment strategy used
+#' by FSL's \code{randomise}, while adapting the TFCE method from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}. 
+#' 
+#' The permutation procedure extends the Freedman–Lane approach to the
+#' homogeneous random-intercept model fitted by this function. A reduced mixed
+#' model is fitted after removing the `contrast` while
+#' retaining all nuisance fixed effects and the original random-intercept
+#' structure.
+#'
+#' Marginal residuals are calculated by subtracting the reduced model's
+#' fixed-effects fitted values from the outcome. Predicted random effects are
+#' not subtracted, so the residuals retain the random-effect contribution.
+#' The full mixed model is then refitted, including re-estimation of its variance components.
 #' 
 #' @param model An N X P data.frame object containing N rows for each subject and P columns for each predictor included in the model.This data.frame should not include the random effects variable.
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
@@ -50,6 +63,7 @@
 #' #formula_dataset=demodata, surf_data=CTv, tail=1, 
 #' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
+#' @importFrom mori share
 #' @importFrom reticulate import r_to_py py_save_object py_load_object
 #' @importFrom foreach foreach 
 #' @importFrom parallel makeCluster stopCluster
@@ -60,7 +74,7 @@
 
 ##Main function
 
-TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="row", VWR_check=TRUE)
+TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dataset, inverse=FALSE, surf_data, nperm=100, tail=2, nthread=10, smooth_FWHM, perm_type="within_between", VWR_check=TRUE)
 {
   #gets surface matrix if is surf_data is a list or path
   surf_data=get_surf_obj(surf_data)
@@ -198,6 +212,45 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   else if(perm_type=="between") {for (perm in 1:nperm)  {permseq[,perm]=perm_between(random)}} 
   else if(perm_type=="row") {for (perm in 1:nperm)  {permseq[,perm]=sample.int(NROW(model))}}
   
+  # Fit the nuisance-only MIXED model, retaining the random intercept.
+  colno=model_summary$colno
+  nuisance=as.data.frame(data.matrix(model)[, -colno, drop=FALSE])
+  nuisance=cbind(Intercept=rep(1, nrow(surf_data)), nuisance)
+  
+  null_terms=MixedEffect(ran=as.factor(random),
+                         fix=nuisance,
+                         add_intercept=FALSE,
+                         "_check_categorical"=FALSE)
+  
+  null_fit=SLM(model=null_terms,
+               contrast=rep(1, nrow(surf_data)),
+               correction="None",
+               data_dir=data_dir,
+               inverse=FALSE)
+  
+  Y0 = if (!inverse) {
+    surf_data[, inc.vert.idx, drop=FALSE]
+  } else {
+    matrix(as.numeric(contrast), ncol=1L)
+  }
+  
+  null_fit$fit(Y0)
+  
+  # Marginal residuals: retain the random-effect contribution.
+  fitted0=as.matrix(null_fit$X) %*% as.matrix(null_fit$coef)
+  residuals0=Y0 - fitted0
+  
+  fitted0=mori::share(fitted0)
+  
+  if (!inverse) {
+    surf_data=mori::share(residuals0)
+  } else {
+    contrast=mori::share(as.numeric(residuals0))
+    surf_data=mori::share(surf_data)
+  }
+  
+  rm(Y0, residuals0, nuisance, null_terms, null_fit)
+  
   #activate parallel processing
   unregister_dopar = function() {
     .foreachGlobals <- utils::getFromNamespace(".foreachGlobals", "foreach"); 
@@ -208,8 +261,15 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   cl=parallel::makeCluster(nthread)
   doParallel::registerDoParallel(cl)
+  
   #preload variables for the cluster workers
-  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","temp.dir"), envir=environment())
+  parallel::clusterEvalQ(cl, {
+    loadNamespace("mori")
+    NULL
+  })
+  
+  worker_vars=c("edgelist", "surf_data", "permseq", "temp.dir","fitted0", "contrast", "model", "random", "colno","inverse", "data_dir", "inc.vert.idx", "n_vert")
+  parallel::clusterExport(cl, worker_vars, envir=environment())
   parallel::clusterEvalQ(cl, {
     #makes sure python instance per parallel job is restricted to 1 thread
     #these are picked by NumPy upon reticulate initialization
@@ -231,15 +291,43 @@ TFCE_vertex_analysis_mixed=function(model,contrast, random, formula, formula_dat
   
   #fitting permuted model and extracting max-TFCE values in parallel streams
   start=Sys.time()
-  TFCE.max <- foreach::foreach(perm=1:nperm, .combine="c",.options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm,
+                            .combine="c",
+                            .options.snow=opts,
+                            .packages="mori",
+                            .noexport=c(worker_vars, "SLM", "MixedEffect", "model.fit", "terms")) %dopar%
     {
-      #load previously saved model
-      modelfit=reticulate::py_load_object(filename = paste0(temp.dir,"/modelfit.pickle"))
+      if (!inverse) {
+        modelfit=reticulate::py_load_object(filename=paste0(temp.dir, "/modelfit.pickle"))
+        
+        # surf_data now contains marginal residuals at included vertices.
+        modelfit$fit(fitted0 + surf_data[permseq[, perm], , drop=FALSE])
+      } else {
+        # contrast now contains the inverse-outcome marginal residuals.
+        outcome_perm=as.numeric(fitted0) +contrast[permseq[, perm]]
+        model_perm=as.data.frame(model)
+        model_perm[, colno]=outcome_perm
+        
+        MixedEffect_worker=get("MixedEffect", envir=.GlobalEnv)
+        SLM_worker=get("SLM", envir=.GlobalEnv)
+        
+        modelfit=SLM_worker(model=MixedEffect_worker(ran=as.factor(random),fix=model_perm,"_check_categorical"=FALSE),
+                            contrast=outcome_perm,
+                            correction="None",
+                            cluster_threshold=1,
+                            data_dir=data_dir,
+                            inverse=TRUE)
+        
+        modelfit$fit(surf_data[, inc.vert.idx, drop=FALSE])
+      }
       
-      #fit model to permuted data
-      modelfit$fit(surf_data[permseq[, perm], inc.vert.idx])
-      return(max(abs(suppressWarnings(TFCE(data = modelfit$t,tail = tail,
-                                           edgelist=edgelist)))))
+      # Match the full-surface edgelist.
+      tmap=numeric(n_vert)
+      tmap[inc.vert.idx]=as.numeric(modelfit$t)
+      
+      return(max(abs(suppressWarnings(
+        TFCE(data=tmap, tail=tail, edgelist=edgelist)
+      ))))
     }
   end=Sys.time()
   message(paste("\nCompleted in ",round(difftime(end, start, units='mins'),1)," minutes \n",sep=""))

@@ -7,8 +7,17 @@
 #'
 #' @description Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
 #' 
-#' @details This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}. 
+#' @details 
+#' This implements the Freedman–Lane nuisance-adjustment strategy used
+#' by FSL's \code{randomise}, while adapting the TFCE method from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}. 
 #' 
+#' A reduced linear model is fitted using an intercept and all nuisance
+#' predictors, excluding the `contrast`. For each permutation,
+#' residuals from this reduced model are shuffled across observations and
+#' added back to its fitted values. The full linear model is then refitted
+#' to obtain the t-statistic for the tested predictor at each vertex.
+#' 
+#'
 #' @param model An N X P data.frame object containing N rows for each subject and P columns for each predictor included in the model
 #' @param contrast A N x 1 numeric vector or object containing the values of the predictor of interest. Its length should equal the number of subjects in model (and can be a single column from model). The t-stat and TFCE maps will be estimated only for this predictor.
 #' @param formula An optional string or formula object describing the predictors to be fitted against the surface data, replacing the model, contrast, or random arguments. If this argument is used, the formula_dataset argument must also be provided.
@@ -48,6 +57,7 @@
 #' #formula_dataset=demodata, surf_data=CTv, tail=1, 
 #' #nperm=5, nthread = 2, VWR_check=FALSE) 
 #'
+#' @importFrom mori share
 #' @importFrom reticulate import r_to_py
 #' @importFrom foreach foreach %dopar%
 #' @importFrom parallel makeCluster stopCluster
@@ -180,7 +190,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   message("Estimating unpermuted TFCE image...")
   
   TFCE.orig=suppressWarnings(TFCE.multicore(data = tmap.orig,tail = tail,nthread=nthread, envir=environment(), edgelist=edgelist))
-  remove(mod)
+  if (!inverse) rm(mod)
   
   end=Sys.time()
   message(paste("Completed in",round(difftime(end,start, units="secs"),1),"secs\nEstimating permuted TFCE images...\n",sep=" "))
@@ -189,6 +199,22 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   #generating permutation sequences  
   permseq=matrix(NA, nrow=NROW(model), ncol=nperm)
   for (perm in 1:nperm)  {permseq[,perm]=sample.int(NROW(model))}
+  
+  # Freedman–Lane: fit the nuisance-only model once.
+  nuisance=data.matrix(cbind(1, model[, -colno, drop = FALSE]))
+  
+  if (!inverse) {
+    residuals0=qr.resid(qr(nuisance), surf_data)
+    fitted0=mori::share(surf_data - residuals0)
+    surf_data=mori::share(residuals0)
+  } else {
+    residuals0=qr.resid(qr(nuisance), as.numeric(contrast))
+    fitted0=mori::share(as.numeric(contrast) - residuals0)
+    contrast=mori::share(residuals0)
+    surf_data=mori::share(surf_data)
+  }
+  
+  rm(nuisance, residuals0)
   
   #activate parallel processing
   unregister_dopar = function() {
@@ -201,7 +227,11 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   
   doParallel::registerDoParallel(cl)
   #preload variables for the cluster workers
-  parallel::clusterExport(cl, c("edgelist","surf_data","permseq","contrast"), envir=environment())
+  parallel::clusterEvalQ(cl, {
+    loadNamespace("mori")
+    NULL
+    })
+  parallel::clusterExport(cl,c("edgelist", "surf_data", "permseq", "contrast", "fitted0"),envir = environment())
   `%dopar%` = foreach::`%dopar%`
   
   #progress bar
@@ -213,7 +243,11 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   ##fitting permuted regression model and extracting t-stats in parallel streams
   start=Sys.time()
   
-  TFCE.max=foreach::foreach(perm=1:nperm, .combine="c", .options.snow = opts)  %dopar%
+  TFCE.max=foreach::foreach(perm=1:nperm,
+                            .combine="c",
+                            .options.snow=opts,
+                            .packages="mori",
+                            .noexport=c("edgelist", "surf_data", "permseq", "contrast", "fitted0")) %dopar%
     {
       ##commented out alternative method of permutation— permuting only the contrast variable
       #model.permuted=model
@@ -224,8 +258,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
       #if inverse, contrast will be a DV, and vertex-wise surface data an IV
       if (inverse==FALSE)
       {
-        mod.permuted=.lm.fit(y=surf_data[permseq[,perm],],
-                             x=data.matrix(cbind(1,model)))
+        mod.permuted=.lm.fit(y=fitted0 + surf_data[permseq[,perm], , drop=FALSE],x=data.matrix(cbind(1,model)))
         tmap=extract.t(mod.permuted,colno+1)
       }
       else
@@ -235,8 +268,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
         for (vert in 1:ncol(surf_data)) 
         { #one lm for every vertex
           vertmodel.permuted=cbind(invmodel,surf_data[,vert])
-          invmod.permuted=.lm.fit(y=contrast[permseq[,perm]],
-                               x=data.matrix(cbind(1,vertmodel.permuted)))
+          invmod.permuted=.lm.fit(y=fitted0 + contrast[permseq[,perm]],x=data.matrix(cbind(1,vertmodel.permuted)))
           tmap=c(tmap,extract.t(invmod.permuted,ncol(vertmodel.permuted)+1))
         }
       }

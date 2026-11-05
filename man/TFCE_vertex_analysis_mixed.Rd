@@ -16,7 +16,7 @@ TFCE_vertex_analysis_mixed(
   tail = 2,
   nthread = 10,
   smooth_FWHM,
-  perm_type = "row",
+  perm_type = "within_between",
   VWR_check = TRUE
 )
 }
@@ -56,10 +56,22 @@ TFCE_vertex_analysis_mixed(
 A list object containing the t-stat and the TFCE statistical maps which can then be subsequently thresholded using TFCE_threshold()
 }
 \description{
-Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
+Fits a linear mixed effects model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast. Permutation
 }
 \details{
-This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{'Nilearn' Python library}.
+This implements the Freedman–Lane nuisance-adjustment strategy used
+by FSL's \code{randomise}, while adapting the TFCE method from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}.
+
+The permutation procedure extends the Freedman–Lane approach to the
+homogeneous random-intercept model fitted by this function. A reduced mixed
+model is fitted after removing the \code{contrast} while
+retaining all nuisance fixed effects and the original random-intercept
+structure.
+
+Marginal residuals are calculated by subtracting the reduced model's
+fixed-effects fitted values from the outcome. Predicted random effects are
+not subtracted, so the residuals retain the random-effect contribution.
+The full mixed model is then refitted, including re-estimation of its variance components.
 }
 \examples{
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))[1:5,]

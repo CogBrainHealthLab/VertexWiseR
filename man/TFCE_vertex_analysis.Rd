@@ -53,7 +53,14 @@ A list object containing the t-stat and the TFCE statistical maps which can then
 Fits a linear model with the cortical or hippocampal surface data as the predicted outcome, and returns t-stat and threshold-free cluster enhancement (TFCE) statistical maps for the selected contrast.
 }
 \details{
-This TFCE method is adapted from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}.
+This implements the Freedman–Lane nuisance-adjustment strategy used
+by FSL's \code{randomise}, while adapting the TFCE method from the \href{https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8}{ 'Nilearn' Python library}.
+
+A reduced linear model is fitted using an intercept and all nuisance
+predictors, excluding the \code{contrast}. For each permutation,
+residuals from this reduced model are shuffled across observations and
+added back to its fitted values. The full linear model is then refitted
+to obtain the t-statistic for the tested predictor at each vertex.
 }
 \examples{
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds',
