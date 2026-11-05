@@ -2,11 +2,12 @@
 
 ## NEW FEATURES
 
-* The Freedman–Lane nuisance-adjustment approach, that is used in FSL GLM, is now implemented in `TFCE_vertex_analysis()` and `TFCE_vertex_analysis_mixed()`. 
+* The Freedman–Lane nuisance-adjustment approach, that is used in FSL GLM, is now implemented in the permutation loops of `TFCE_vertex_analysis()` and `TFCE_vertex_analysis_mixed()` to
+  better reflect the null hypothesis that the contrast has no effect after accounting for the nuisance covariates. 
   Briefly, a reduced linear model is fitted using an intercept and all nuisance predictors, excluding the `contrast`. For each permutation, 
   residuals from this reduced model are shuffled across observations and added back to its fitted values. The full linear model is then refitted 
-  to obtain the t-statistic for the tested predictor at each vertex. This nuisance-adjustment approach, in our testing, generally results slightly larger clusters.
-* `within_beween` is not set as the default argument for `perm_type` in `TFCE_vertex_analysis_mixed()`
+  to obtain the t-statistic for the tested predictor at each vertex.
+* `within_beween` is now set as the default argument for `perm_type` in `TFCE_vertex_analysis_mixed()`
 * `mori:share` has been implemented to enable multiple parallel workers to access a shared data object within parallelized permutation loops, eliminating redundant
   RAM copies.This should greatly minimize the memory footprint when multiple parallel workers are used.
 
