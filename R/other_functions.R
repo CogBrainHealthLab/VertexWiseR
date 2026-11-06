@@ -104,7 +104,8 @@
 
 ## Efficient way to extract t statistics from linear regression models to speed up the permutation process
 ## adapted from https://stackoverflow.com/questions/15820623/obtain-t-statistic-for-regression-coefficients-of-an-mlm-object-returned-by-l
-extract.t=function(mod,row)
+
+extract_t=function(mod,row)
 {
   p = mod$rank
   df.residual=NROW(mod$residuals)-NROW(mod$coefficients)

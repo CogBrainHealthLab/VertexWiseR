@@ -172,7 +172,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
   if (inverse==FALSE)
   {
     mod=.lm.fit(y=surf_data,x=data.matrix(cbind(1,model)))
-    tmap.orig=extract.t(mod,colno+1)
+    tmap.orig=extract_t(mod,colno+1)
   } else
   { 
     #inverse models, vertex by vertex
@@ -181,7 +181,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
     { #one lm for every vertex
       vertmodel=cbind(invmodel,surf_data[,vert])
       invmod=.lm.fit(y=contrast,x=data.matrix(cbind(1,vertmodel)))
-      tmap.orig=c(tmap.orig, extract.t(invmod, ncol(vertmodel)+1))
+      tmap.orig=c(tmap.orig, extract_t(invmod, ncol(vertmodel)+1))
     }
   }
   
@@ -259,7 +259,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
       if (inverse==FALSE)
       {
         mod.permuted=.lm.fit(y=fitted0 + surf_data[permseq[,perm], , drop=FALSE],x=data.matrix(cbind(1,model)))
-        tmap=extract.t(mod.permuted,colno+1)
+        tmap=extract_t(mod.permuted,colno+1)
       }
       else
       { 
@@ -269,7 +269,7 @@ TFCE_vertex_analysis=function(model,contrast, formula, formula_dataset, inverse=
         { #one lm for every vertex
           vertmodel.permuted=cbind(invmodel,surf_data[,vert])
           invmod.permuted=.lm.fit(y=fitted0 + contrast[permseq[,perm]],x=data.matrix(cbind(1,vertmodel.permuted)))
-          tmap=c(tmap,extract.t(invmod.permuted,ncol(vertmodel.permuted)+1))
+          tmap=c(tmap,extract_t(invmod.permuted,ncol(vertmodel.permuted)+1))
         }
       }
       
