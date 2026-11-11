@@ -13,7 +13,7 @@ fs6_to_fs5_map
 
 ### `fs6_to_fs5_map`
 
-An array of 81924 integers ()
+An array of 81924 integers
 
 - vertices:
 

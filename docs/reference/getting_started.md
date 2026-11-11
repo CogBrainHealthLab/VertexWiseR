@@ -20,4 +20,15 @@ getting_started(demo_data = TRUE)
 
 ``` r
 getting_started()
+#> Welcome to VertexWiseR's demo!
+#> 
+#> Available tutorials (will open in Rstudio's Help panel): 
+#> 
+#> 1: Extracting surface data in VertexWiseR
+#> 2: Example analyses with VertexWiseR - Example 1
+#> 3: Example analyses with VertexWiseR - Example 2
+#> 4: Example analyses with VertexWiseR - Example 3
+#> 5: Overlaying plots and transparent thresholding
+#> 6: Python troubleshooting
+#> 
 ```

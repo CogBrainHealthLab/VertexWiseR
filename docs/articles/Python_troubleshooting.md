@@ -2,11 +2,11 @@
 
 VertexWiseR uses Python functions from various toolboxes that can
 flexibly be called and executed in R using the *reticulate* package
-(Ushey, Allaire, and Tang 2023). As of version \< 1.41.0 reticulate
-favours creating a virtual environment, where the python version and
-specific packages needed for VertexWiseR can be stored, leaving any
-other system installations intact. This is also the option we recommend.
-The [reticulate
+(Ushey et al. 2023). As of version \< 1.41.0 reticulate favours creating
+a virtual environment, where the python version and specific packages
+needed for VertexWiseR can be stored, leaving any other system
+installations intact. This is also the option we recommend. The
+[reticulate
 documentation](https://rstudio.github.io/reticulate/articles/python_packages.html)
 explains:
 
@@ -79,6 +79,7 @@ ignore a previous Python installation, users can set the
 workspace) before running the function:
 
 ``` r
+
 Sys.setenv(RETICULATE_PYTHON=NA)
 VWRfirstrun()
 ```
@@ -105,6 +106,7 @@ by entering their Python’s directory path into the [following
 functions](https://rstudio.github.io/reticulate/reference/use_python.html):
 
 ``` r
+
 #replace each word between brackets with the relevant path
 reticulate::use_python(python)
 reticulate::use_virtualenv(virtualenv)
@@ -120,6 +122,7 @@ other packages to be downloaded/installed if they are missing. To check
 the Python installation that is being used, users can run:
 
 ``` r
+
 reticulate::py_config()
 ```
 
@@ -148,6 +151,7 @@ The paths to these installations are saved inside the `.Renviron` file,
 in the standard path generated via:
 
 ``` r
+
 tools::R_user_dir(package='VertexWiseR')
 ```
 
@@ -155,6 +159,7 @@ Within the `.Renviron` file, the environment variables will be written
 in this manner:
 
 ``` r
+
 RETICULATE_MINICONDA_PATH="C:/path_to_miniconda/"
 RETICULATE_PYTHON_FALLBACK="C:/path_to_miniconda/"
 RETICULATE_PYTHON="C:/path_to_miniconda/python.exe"
@@ -168,6 +173,13 @@ Python library is to be used. Alternatively, users may choose to
 completely remove the `.Renviron` and redefine the path as described in
 section 3a.
 
+Miniconda must also be uninstalled if the default path was chosen:
+
+    reticulate::miniconda_uninstall() 
+
+Which should remove the directory printed by
+reticulate::miniconda_path(). If it did not work, delete it manually.
+
 - **If the user created an ephemeral virtual environment**
 
 This is in the case that users chose the virtual environment
@@ -176,6 +188,7 @@ reticulate::py_require(). The path to such environment is accessible
 with that command line:
 
 ``` r
+
 tools::R_user_dir("reticulate", "cache")
 ```
 
@@ -183,6 +196,7 @@ To stop using this environment, users may choose to clear the cache
 completely:
 
 ``` r
+
 unlink(tools::R_user_dir("reticulate", "cache"), recursive = TRUE)
 ```
 
@@ -192,6 +206,7 @@ has been stored in the `.Renviron` file, in the standard path generated
 via:
 
 ``` r
+
 tools::R_user_dir(package='VertexWiseR')
 ```
 
@@ -226,5 +241,5 @@ optional. Simply choose/click No/Cancel to ignore.
 
 ## References:
 
-Ushey, K, J Allaire, and Y Tang. 2023. “Reticulate: Interface to
-’Python’.” <https://CRAN.R-project.org/package=reticulate>.
+Ushey, K, J Allaire, and Y Tang. 2023. *Reticulate: Interface to
+’Python’*. <https://CRAN.R-project.org/package=reticulate>.

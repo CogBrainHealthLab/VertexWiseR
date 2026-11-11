@@ -55,9 +55,9 @@ CAT12vextract(
 
 ## Value
 
-A .RDSfile with a list containing 1. the list of subject IDs (first
+A .RDS file with a list containing 1. the list of subject IDs (first
 element) and 2. a surface data matrix object (second element), or only a
-data matrix object. The matrix has N subjects x M vertices dimensions
+data matrix object. The matrix has N subjects x V vertices dimensions
 and can be readily used by VertexWiseR statistical analysis functions.
 Each row corresponds to a subject (in the order they are listed in the
 folder) and contains the left to right hemispheres' vertex-wise values.
@@ -79,5 +79,5 @@ filename='thickness.rds',
 measure='thickness', 
 subj_ID = TRUE, 
 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
+#> No mesh .gii files for thickness could be found in the set sdirpath
 ```

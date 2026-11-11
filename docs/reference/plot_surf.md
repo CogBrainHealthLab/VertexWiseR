@@ -137,5 +137,4 @@ filename=paste0(tempdir(),"/output.png"),
 title = 'Cortical thickness', 
 surface = 'inflated', cmap = 'Blues',
 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
 ```

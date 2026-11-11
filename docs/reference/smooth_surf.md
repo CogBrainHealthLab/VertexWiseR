@@ -16,10 +16,10 @@ smooth_surf(surf_data, FWHM, VWR_check = TRUE)
   A N x V matrix object containing the surface data (N row for each
   subject, V for each vertex), in fsaverage5 (20484 vertices),
   fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal
-  (14524 vertices) space. See also Hipvextract(), SURFvextract() or
-  FSLRvextract output formats. Alternatively, a string object containing
-  the path to the surface object (.rds file) outputted by extraction
-  functions may be given.
+  (14524 vertices) space. See also SCMvextract() for subcortical
+  regions. Alternatively, a string object containing the path to the
+  surface object (.rds file) outputted by extraction functions may be
+  given.
 
 - FWHM:
 
@@ -42,5 +42,4 @@ surf_data = readRDS(file = url(paste0("https://github.com",
 "FINK_Tv_ses13.rds?raw=TRUE")))[1:3,]
 
 surf_data_smoothed=smooth_surf(surf_data, 10, VWR_check=FALSE);
-#> Non-interactive sessions need requirement checks
 ```

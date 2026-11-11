@@ -4,9 +4,10 @@
 
 This article introduces vertex-wise statistical modelling of subcortical
 surfaces available since update v1.5.0. The subcortical surfaces it is
-currently compatible with are either based on the FSL FIRST (Patenaude
-et al. 2011) or on the FreeSurfer “ASeg” (Fischl 2012) subcortical
-volumetric segmentations. The volumes are converted to 3D meshes and
+currently compatible with are either derived from FSL FIRST (Patenaude
+et al. 2011) or FreeSurfer “ASeg” (Fischl 2012) subcortical volumetric
+segmentations, as well as ASeg-based CIFTI subcortical grayordinates
+(Glasser et al. 2013). The volumes are converted to 3D meshes and
 surface-based metrics (thickness, surface area, curvature) produced
 using the python module
 [SubCortexMesh](https://github.com/chabld/SubCortexMesh). VertexWiseR
@@ -33,13 +34,23 @@ surfaces. Here is an example of code which was run to obtain the demo
 data:
 
 ``` r
-aseg_CTv = SCMvextract(sdirpath = 'surface_metrics/', 
-                        outputdir = "aseg_matrices/",
-                        measure = c('thickness','curvature'), 
-                        roilabel = c('thalamus','caudate'), 
-                        template='fsaverage',
-                        subj_ID = TRUE)
+
+for (metric in c('thickness','curvature'))
+{
+  subcortical_m=SCMvextract(sdirpath = 'surface_metrics/', 
+                            outputdir = "aseg_matrices/",
+                            measure = metric, 
+                            roilabel = c('thalamus','caudate'), 
+                            template='fsaverage',
+                            subj_ID = TRUE)
+}
 ```
+
+⚠️ Note that if the SubCortexMesh output contains merged surface objects
+such as “allaseg” or “allfslfirst”, they will also be extracted along
+with the individual regions, unless it is specified in the `roilabel`
+argument (e.g., if `roilabel="allaseg"`, only the merged subcortices
+will be extracted).
 
 ## Example analysis on the thalamus and caudate nuclei
 
@@ -54,6 +65,7 @@ The demo data (~216 MB) can be downloaded from the package’s github
 repository with the following function:
 
 ``` r
+
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
 demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 ```
@@ -63,6 +75,7 @@ and caudate nuclei were extracted. The surface data can be loaded that
 way:
 
 ``` r
+
 thalamus_thickness = readRDS(file=paste0(demodata,"/SUDMEX_CONN_thalamus_thickness.rds"))
 thalamus_curvature = readRDS(file=paste0(demodata,"/SUDMEX_CONN_thalamus_curvature.rds"))
 
@@ -74,17 +87,19 @@ To load the corresponding behavioural data (all subjects
 indiscriminately):
 
 ``` r
+
 beh_data = readRDS(paste0(demodata,"/SUDMEX_CONN_behdata.rds"))
 ```
 
 Here, we are interested in the effect of group (cocaine use disorder
 (CUD) versus control) on the thalami and caudate nuclei (replicating a
-similar analysis that was done by (Xu, Xu, and Guo 2023)). We can run a
+similar analysis that was done by (Xu et al. 2023)). We can run a
 vertex-wise analysis model with random field theory-based cluster
 correction, testing for the effect of group on each region and each
 metric:
 
 ``` r
+
 for (surf_data in c('thalamus_thickness', 'thalamus_curvature',
                     'caudate_thickness', 'caudate_curvature'))
 {   
@@ -96,6 +111,7 @@ assign(paste0('model_',surf_data),model)
 ```
 
 ``` r
+
 model_thalamus_thickness$cluster_level_results
 ```
 
@@ -111,6 +127,7 @@ model_thalamus_thickness$cluster_level_results
     ## 5      5    171  0.002 136.0 112.5 141.9 -3.20  Left Thalamus
 
 ``` r
+
 model_thalamus_curvature$cluster_level_results
 ```
 
@@ -128,6 +145,7 @@ model_thalamus_curvature$cluster_level_results
     ## 4      4     85  0.031 128.0 122.5 142.7 -3.96 Right Thalamus
 
 ``` r
+
 model_caudate_thickness$cluster_level_results
 ```
 
@@ -141,6 +159,7 @@ model_caudate_thickness$cluster_level_results
     ## 3      3     74  0.046 119.5 128.7 110.0 -3.61 Right Caudate
 
 ``` r
+
 model_caudate_curvature$cluster_level_results
 ```
 
@@ -151,9 +170,75 @@ model_caudate_curvature$cluster_level_results
     ##   clusid nverts    P     X     Y     Z tstat        region
     ## 1      1     72 0.01 121.3 132.2 116.7 -3.63 Right Caudate
 
-We can plot them together in one summary plot by binding the maps:
+Since [SubCortexMesh
+v.1.1.0](https://subcortexmesh.readthedocs.io/en/latest/atlases.html),
+anatomical sub-parcellations are also available for surfaces in
+fsaverage space, and give more specific location in regions’ nuclei or
+subfields. VertexWiseR can use them with the argument ‘atlas=2’ (the
+caudate nuclei do not have subparcellations, so we show it for the
+thalami):
 
 ``` r
+
+for (surf_data in c('thalamus_thickness', 'thalamus_curvature'))
+{   
+model=RFT_vertex_analysis(model = as.factor(beh_data$group),
+                          contrast = as.factor(beh_data$group),
+                          surf_data = get(surf_data),
+                          atlas=2) #anatomical atlas, applicable for fsaverage SCM data
+assign(paste0('model_',surf_data),model)
+}
+```
+
+``` r
+
+model_thalamus_thickness$cluster_level_results
+```
+
+    ## $`Positive contrast`
+    ## [1] "No significant clusters"
+    ## 
+    ## $`Negative contrast`
+    ##   clusid nverts      P     X     Y     Z tstat
+    ## 1      1    213 <0.001 106.1 132.1 163.4 -3.05
+    ## 2      2    186 <0.001 153.8 128.7 163.5 -3.62
+    ## 3      3    162  0.001 132.3 133.0 148.4 -3.55
+    ## 4      4    127  0.002 115.3 118.5 161.0 -3.35
+    ## 5      5    171  0.002 136.0 112.5 141.9 -3.20
+    ##                                      region
+    ## 1              Thalamus_Pulvinar-Inferior_R
+    ## 2                Thalamus_Pulvinar-Medial_L
+    ## 3    Thalamus_Centromedian-Parafascicular_L
+    ## 4                Thalamus_Pulvinar-Medial_R
+    ## 5 Thalamus_Laterodorsal-Lateral-Posterior_L
+
+``` r
+
+model_thalamus_curvature$cluster_level_results
+```
+
+    ## $`Positive contrast`
+    ##   clusid nverts      P     X     Y     Z tstat
+    ## 1      1    119 <0.001 139.1 113.9 135.3  3.45
+    ## 2      2     62  0.005 134.0 130.5 154.0  4.13
+    ## 3      3     45  0.014 153.0 133.0 157.5  3.60
+    ##                                   region
+    ## 1             Thalamus_Ventral-Lateral_L
+    ## 2 Thalamus_Centromedian-Parafascicular_L
+    ## 3           Thalamus_Pulvinar-Inferior_L
+    ## 
+    ## $`Negative contrast`
+    ##   clusid nverts      P     X     Y     Z tstat                        region
+    ## 1      1    119 <0.001 143.5 116.7 133.0 -3.57    Thalamus_Ventral-Lateral_L
+    ## 2      2     72  0.024 122.5 116.9 154.3 -4.19    Thalamus_Pulvinar-Medial_R
+    ## 3      3     63  0.025 135.0 126.6 159.2 -3.42    Thalamus_Pulvinar-Medial_L
+    ## 4      4     85  0.031 128.0 122.5 142.7 -3.96 Thalamus_Mediodorsal-Medial_R
+
+We can plot the model results together in one summary plot by binding
+the maps:
+
+``` r
+
 thalamusmaps=rbind(model_thalamus_thickness$thresholded_tstat_map,
                   model_thalamus_curvature$thresholded_tstat_map)
 
@@ -162,6 +247,7 @@ caudatemaps= rbind(model_caudate_thickness$thresholded_tstat_map,
 ```
 
 ``` r
+
 thalamusplot=plot_surf(thalamusmaps, 
           filename='SUDMEX_CONN_thalamus_tstatmaps.png',
           title=c('Thickness','Curvature'),
@@ -170,9 +256,10 @@ thalamusplot=plot_surf(thalamusmaps,
 ```
 
 ![Significant clusters after RFT correction on the
-thalamus](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-8-1.png)
+thalamus](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-10-1.png)
 
 ``` r
+
 caudateplot=plot_surf(caudatemaps, 
           filename='SUDMEX_CONN_caudate_tstatmaps.png',
           title=c('Thickness','Curvature'), 
@@ -181,7 +268,7 @@ caudateplot=plot_surf(caudatemaps,
 ```
 
 ![Significant clusters after RFT correction on the caudate
-nuclei](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-9-1.png)
+nuclei](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-11-1.png)
 
 The outcome shows that compared to controls, CUD patients had decreases
 in thickness of the bilateral thalami, and various shapes alterations in
@@ -203,6 +290,7 @@ the “allaseg” can be outputted in SubCortexMesh’s surface_metrics/
 directory, and extracted via SCMvextract():
 
 ``` r
+
 allaseg_thickness_data = SCMvextract(sdirpath = 'surface_metrics/', 
                                      outputdir = "sudmex_conn_surf_data_scm/", 
                                      measure = 'thickness', 
@@ -216,6 +304,7 @@ As an example, we provide the “allaseg” thickness for the same dataset
 and run the same analysis:
 
 ``` r
+
 allaseg_thickness = readRDS(file=paste0(demodata,"/SUDMEX_CONN_allaseg_thickness.rds"))
 allaseg_model=RFT_vertex_analysis(
   model = as.factor(beh_data$group),
@@ -224,6 +313,7 @@ allaseg_model=RFT_vertex_analysis(
 ```
 
 ``` r
+
 allaseg_model$cluster_level_results
 ```
 
@@ -261,6 +351,7 @@ allaseg_model$cluster_level_results
 We can plot the subcortices together the same way:
 
 ``` r
+
 allasegplot=plot_surf(
   surf_data=allaseg_model$thresholded_tstat_map,
   filename='SUDMEX_CONN_allaseg_tstatmaps.png',
@@ -270,7 +361,7 @@ allasegplot=plot_surf(
 ```
 
 ![Significant clusters after RFT correction across all ASeg subcortices,
-2D plot](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-13-1.png)
+2D plot](VertexWiseR_Example_3_files/figure-html/unnamed-chunk-15-1.png)
 
 Since some regions may be harder to see in the 2d plot, plot_surf3d()
 function has a special interactive slider for the “all merged” surface
@@ -278,12 +369,13 @@ in the GUI that allows spacing out each regions from each other (this
 only applies to the merged surfaces):
 
 ``` r
+
 plot_surf3d(surf_data = allaseg_model$thresholded_tstat_map,
             surf_color = 'grey', smooth_mesh = 50)
 ```
 
 ![Significant clusters after RFT correction across all ASeg subcortices,
-3D plot (screenshot)](allaseg_plotsurf3d.jpg)
+3D plot (screenshot)](allaseg_plotsurf3d.png)
 
 (This is just a screenshot)
 
@@ -322,6 +414,7 @@ analysis, they can follow the cumulative vertex count and set them to
 NA, like that:
 
 ``` r
+
 allaseg_thickness$surf_obj[,c((15552+1):35102,(58816+1):78480)]=NA
 
 allaseg_model_nocerebellum=RFT_vertex_analysis(
@@ -331,6 +424,7 @@ allaseg_model_nocerebellum=RFT_vertex_analysis(
 ```
 
 ``` r
+
 allaseg_model_nocerebellum$cluster_level_results
 ```
 
@@ -365,12 +459,15 @@ allaseg_model_nocerebellum$cluster_level_results
 Fischl, Bruce. 2012. “FreeSurfer.” *NeuroImage* 62 (2): 774–81.
 <https://doi.org/10.1016/j.neuroimage.2012.01.021>.
 
-Garza-Villarreal, EA, MM Chakravarty, B Hansen, SF Eskildsen, GA
-Devenyi, D Castillo-Padilla, T Balducci, et al. 2017. “The Effect of
-Crack Cocaine Addiction and Age on the Microstructure and Morphology of
-the Human Striatum and Thalamus Using Shape Analysis and Fast Diffusion
-Kurtosis Imaging.” *Translational Psychiatry* 7 (5): e1122.
+Garza-Villarreal, EA, MM Chakravarty, B Hansen, et al. 2017. “The Effect
+of Crack Cocaine Addiction and Age on the Microstructure and Morphology
+of the Human Striatum and Thalamus Using Shape Analysis and Fast
+Diffusion Kurtosis Imaging.” *Translational Psychiatry* 7 (5): e1122.
 <https://doi.org/10.1038/tp.2017.92>.
+
+Glasser, Matthew F, Stamatios N Sotiropoulos, J Anthony Wilson, et al.
+2013. “The Minimal Preprocessing Pipelines for the Human Connectome
+Project.” *Neuroimage* 80: 105–24.
 
 Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark
 Jenkinson. 2011. “A Bayesian Model of Shape and Appearance for

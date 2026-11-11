@@ -13,6 +13,7 @@ status](https://www.r-pkg.org/badges/version/VertexWiseR)](https://cran.r-projec
 VertexWiseR can be installed and loaded using the following code in R:
 
 ``` r
+
 install.packages('VertexWiseR')
 library(VertexWiseR)
 
@@ -31,13 +32,14 @@ analyses that can be downloaded when setting up VertexWiseR. For
 reticulate to work properly, a Python environment must be installed —
 the default choice in VertexWiseR is to let reticulate (*v*1.41.0)
 create an ephemeral Python virtual environment using [UV and
-py_require()](https://posit.co/blog/reticulate-1-41/).[¹](#fn1)
+py_require()](https://posit.co/blog/reticulate-1-41).[^1]
 
 A function can be run to download and install all the system
 requirements (Python environment, BrainStat, BrainStat’s
 fsaverage/parcellation templates):
 
 ``` r
+
 VWRfirstrun()
 ```
 
@@ -48,6 +50,7 @@ navigated through using the following function, which also helps user
 download demo data:
 
 ``` r
+
 getting_started()
 ```
 
@@ -60,6 +63,7 @@ For this example, we use Spreng and colleagues’ neurocognitive aging
 ds003592](https://openneuro.org/datasets/ds003592/versions/1.0.13):
 
 ``` r
+
 demodata = readRDS(system.file('demo_data/SPRENG_behdata_site1.rds', package = 'VertexWiseR'))
 ```
 
@@ -84,6 +88,7 @@ from the Spreng dataset was as follows (the sdirpath is just an
 example):
 
 ``` r
+
 SURFvextract(sdirpath = "spreng_freesurfer_subjectsdir/", filename = "SPRENG_CTv.rds", measure = "thickness") 
 ```
 
@@ -92,6 +97,7 @@ included in the VertexWiseR git repository and can be loaded with the
 following code:
 
 ``` r
+
 SPRENG_CTv=readRDS(file=url("https://github.com/CogBrainHealthLab/VertexWiseR/blob/main/inst/demo_data/SPRENG_CTv_site1.rds?raw=TRUE"))
 ```
 
@@ -103,6 +109,7 @@ be done as an option for RFT_vertex_analysis() which will be discussed
 below. Here, we smooth it before the analysis at 10 mm:
 
 ``` r
+
 SPRENG_CTv = smooth_surf(SPRENG_CTv, 10)
 ```
 
@@ -118,6 +125,7 @@ influence on CT. We thus select those two variables and save them into a
 new data.frame called `all_pred`.
 
 ``` r
+
 all_pred=demodata[,c("sex","age")]
 head(all_pred)
 ```
@@ -143,6 +151,7 @@ with which to label the significant clusters can also be set
 The second line displays the results.
 
 ``` r
+
 results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$age, surf_data = SPRENG_CTv, atlas = 1)
 print(results$cluster_level_results)
 ```
@@ -173,11 +182,12 @@ positively with your `contrast` variable, vice-versa for the
 
 - `region`: the region this highest t-stat vertex is located in. Here,
   it is determined/labelled using the [Desikan
-  atlas](https://surfer.nmr.mgh.harvard.edu/ftp/articles/desikan06-parcellation.pdf)
+  atlas](https://web.archive.org/web/20261003215309/https://surfer.nmr.mgh.harvard.edu/ftp/articles/desikan06-parcellation.pdf)
 
 #### Plotting
 
 ``` r
+
 plot_surf(surf_data = results$thresholded_tstat_map, filename = 'sigcluster.png', surface = 'inflated', cmap = 'seismic')
 ```
 
@@ -233,6 +243,7 @@ average CT is saved into a new variable `sig_avCT` within the `demodata`
 dataframe.
 
 ``` r
+
 demodata$sig_avCT=SPRENG_CTv %*% results$pos_mask/sum(results$pos_mask)
 head(demodata$sig_avCT)
 ```
@@ -248,6 +259,7 @@ head(demodata$sig_avCT)
 As a sanity check, these mean CT values should correlate with `age`
 
 ``` r
+
 cor.test(demodata$sig_avCT,demodata$age)
 ```
 
@@ -303,6 +315,7 @@ decode_surf_data() function.
 ### Load and prepare data
 
 ``` r
+
 #filter out old participants
 dat_beh=demodata[demodata$agegroup=="Y",]
 dat_CT=SPRENG_CTv[demodata$agegroup=="Y",]
@@ -322,6 +335,7 @@ head(all_pred)
 ### Vertex-wise analysis
 
 ``` r
+
 results=RFT_vertex_analysis(model = all_pred, contrast =all_pred$sex, surf_data = dat_CT)
 results$cluster_level_results
 ```
@@ -340,6 +354,7 @@ results$cluster_level_results
     ## [1] "No significant clusters"
 
 ``` r
+
 plot_surf(surf_data = results$thresholded_tstat_map,filename = "sexdiff.png")
 ```
 
@@ -369,6 +384,7 @@ VWRfirstrun(requirement=‘neurosynth’) to assist you with the data’s
 installation.
 
 ``` r
+
 keywords=decode_surf_data(surf_data=results$thresholded_tstat_map, contrast = "positive")
 ```
 
@@ -379,6 +395,7 @@ keywords=decode_surf_data(surf_data=results$thresholded_tstat_map, contrast = "p
     ##✓    
 
 ``` r
+
 print(keywords[1:10,])
 ```
 
@@ -409,6 +426,7 @@ and [paletteer](https://CRAN.R-project.org/package=paletteer) packages.
 You can set the size of the keyword to vary according to its r value:
 
 ``` r
+
 #install.packages("wordcloud","paletteer")
 library(wordcloud)
 library(paletteer)
@@ -429,9 +447,7 @@ These keywords may not be very accurate but they should give a rough
 idea for interpreting your results. Take note that these keywords are
 specific to the positive clusters.
 
-------------------------------------------------------------------------
-
-1.  Note: Alternatively, `Miniconda` — a lightweight version of Python
+[^1]: Note: Alternatively, `Miniconda` — a lightweight version of Python
     -, or a suitable version of Python can be installed. A pop-up/prompt
     from reticulate asking ‘Would you like to create a default Python
     environment for the reticulate package?’ may appear. Clicking Yes

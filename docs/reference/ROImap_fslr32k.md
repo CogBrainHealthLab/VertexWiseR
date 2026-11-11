@@ -16,7 +16,7 @@ ROImap_fslr32k
 
 ### `ROImap_fslr32k`
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 
 - vertices:
 

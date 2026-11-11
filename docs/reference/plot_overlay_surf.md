@@ -1,6 +1,7 @@
 # Surface overlay plotter
 
-Plots surface data in a grid with one or multiple rows in a .png file
+Plots surface data in a grid with one row in a .png file as in
+plot_surf(), with parameters to overlay two maps on top of eachother.
 
 ## Usage
 
@@ -200,5 +201,4 @@ plot_overlay_surf(surf_data_1=background,
                 title="Significant effects",
                 overlay_boundaries=TRUE,
                 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
 ```

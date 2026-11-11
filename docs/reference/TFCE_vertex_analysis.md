@@ -72,32 +72,31 @@ TFCE_vertex_analysis(
   A N x V matrix object containing the surface data (N row for each
   subject, V for each vertex), in fsaverage5 (20484 vertices),
   fsaverage6 (81924 vertices), fslr32k (64984 vertices) or hippocampal
-  (14524 vertices) space. See also Hipvextract(), SURFvextract() or
-  FSLRvextract output formats. Alternatively, a string object containing
-  the path to the surface object (.rds file) outputted by extraction
-  functions may be given.
+  (14524 vertices) space. See also Hipvextract(), SURFvextract(),
+  FSLRvextract(), or SCMvextract() output formats. Alternatively, a
+  string object containing the path to the surface object (.rds file)
+  outputted by extraction functions may be given.
 
 - nperm:
 
-  A numeric integer object specifying the number of permutations
-  generated for the subsequent thresholding procedures (default = 100)
+  An integer specifying the number of permutations generated for the
+  subsequent thresholding procedures (default = 100)
 
 - tail:
 
-  A numeric integer object specifying whether to test a one-sided
-  positive (1), one-sided negative (-1) or two-sided (2) hypothesis
+  An integer specifying whether to test a one-sided positive (1),
+  one-sided negative (-1) or two-sided (2) hypothesis
 
 - nthread:
 
-  A numeric integer object specifying the number of CPU threads to
-  allocate
+  An integer specifying the number of CPU threads to allocate
 
 - smooth_FWHM:
 
-  A numeric vector object specifying the desired smoothing width in mm.
-  It should not be specified if the surf_data has been smoothed
-  previously with smooth_surf(), because this result in surf_data being
-  smoothed twice.
+  A numeric vector specifying the desired smoothing width in mm. It
+  should not be specified if the surf_data has been smoothed previously
+  with smooth_surf(), because this results in surf_data being smoothed
+  twice.
 
 - VWR_check:
 
@@ -111,8 +110,16 @@ can then be subsequently thresholded using TFCE_threshold()
 
 ## Details
 
-This TFCE method is adapted from the ['Nilearn' Python
+This implements the Freedman–Lane nuisance-adjustment strategy used by
+FSL's `randomise`, while adapting the TFCE method from the ['Nilearn'
+Python
 library](https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8).
+
+A reduced linear model is fitted using an intercept and all nuisance
+predictors, excluding the `contrast`. For each permutation, residuals
+from this reduced model are shuffled across observations and added back
+to its fitted values. The full linear model is then refitted to obtain
+the t-statistic for the tested predictor at each vertex.
 
 ## See also
 
@@ -132,7 +139,13 @@ CTv = readRDS(file = url(paste0("https://github.com",
 TFCEpos=TFCE_vertex_analysis(model=demodata[,c("sex","age")], 
 contrast=demodata[,"age"], surf_data=CTv, tail=1, 
 nperm=5, nthread = 2, VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
+#> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis
+#> smooth_FWHM argument was not given. surf_data will not be smoothed here.
+#> Estimating unpermuted TFCE image...
+#> Completed in 5.5 secs
+#> Estimating permuted TFCE images...
+#>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%
+#> Error in {    if (inverse == FALSE) {        mod.permuted = .lm.fit(y = fitted0 + surf_data[permseq[,             perm], , drop = FALSE], x = data.matrix(cbind(1,             model)))        tmap = extract_t(mod.permuted, colno + 1)    }    else {        tmap = c()        for (vert in 1:ncol(surf_data)) {            vertmodel.permuted = cbind(invmodel, surf_data[,                 vert])            invmod.permuted = .lm.fit(y = fitted0 + contrast[permseq[,                 perm]], x = data.matrix(cbind(1, vertmodel.permuted)))            tmap = c(tmap, extract_t(invmod.permuted, ncol(vertmodel.permuted) +                 1))        }    }    . <- model.permuted <- NULL    remove(mod.permuted, model.permuted)    return(max(abs(suppressWarnings(TFCE(data = tmap, tail = tail,         edgelist = edgelist)))))}: task 2 failed - "could not find function "extract_t""
 
 #To threshold the results, you may then run:
 #results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)

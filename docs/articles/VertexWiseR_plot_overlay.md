@@ -15,6 +15,7 @@ be downloaded from the package’s github repository with the following
 function:
 
 ``` r
+
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
 demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 ```
@@ -29,6 +30,7 @@ example](https://cogbrainhealthlab.github.io/VertexWiseR/index.html) ,
 selecting young adults:
 
 ``` r
+
 SPRENG_CTv = readRDS(file=paste0(demodata,"/SPRENG_CTv_site1.rds"))
 dat_beh = readRDS(paste0(demodata,'/SPRENG_behdata_site1.rds'))
 #only young adults
@@ -41,6 +43,7 @@ SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10, VWR_check = T)
 We test the effect of sex on cortical thickness in the sample:
 
 ``` r
+
 #preparing model data
 predictors=dat_beh[,c("site","age","sex")]
 #running the model
@@ -72,6 +75,7 @@ unthresholded t-maps, and can be plotted individually as follows.
 Unthresholded t-map:
 
 ``` r
+
 plot_surf(surf_data = results$tstat_map,
           filename = "sexdiff_nothresh.png",
           show.plot.window=TRUE)
@@ -83,6 +87,7 @@ map](VertexWiseR_plot_overlay_files/figure-html/unnamed-chunk-4-1.png)
 Thresholded (significant) t-map:
 
 ``` r
+
 plot_surf(surf_data = results$thresholded_tstat_map,
           filename = "sexdiff_thresh.png",
           show.plot.window=TRUE)
@@ -107,6 +112,7 @@ We reduce the alpha opacity of the background surface to highlight the
 surface on top:
 
 ``` r
+
 plot_overlay_surf(model_output=results,
                   #To specify maps manually:
                   #surf_data_1=results$tstat_map,
@@ -133,6 +139,7 @@ independent ranges of values (which is the default if the limits==‘same’
 option is not provided):
 
 ``` r
+
 plot_overlay_surf(model_output=results, 
                   cmap_1='RdBu_r', cmap_2='hot_r',
                   alpha_1=1, alpha_2=1,
@@ -152,6 +159,7 @@ the results from the first analysis in [Example
 2](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_2.html):
 
 ``` r
+
 FINK_Tv_ses13 = readRDS(file=paste0(demodata,"/FINK_Tv_ses13.rds"))
 dat_beh_ses13 = readRDS(paste0(demodata,"/FINK_behdata_ses13.rds"))
 model2_RFT=RFT_vertex_analysis(
@@ -166,6 +174,7 @@ model2_RFT=RFT_vertex_analysis(
 Plotted in the same manner:
 
 ``` r
+
 plot_overlay_surf(model_output=model2_RFT, 
                   cmap_1='RdBu_r', cmap_2='RdBu_r',
                   colorbar_1=FALSE, colorbar_2=TRUE,
@@ -192,6 +201,7 @@ We reproduce the results from the example analysis in [the dedicated
 vignette](https://cogbrainhealthlab.github.io/VertexWiseR/articles/VertexWiseR_Example_3.html):
 
 ``` r
+
 beh_data = readRDS(paste0(demodata,"/SUDMEX_CONN_behdata.rds"))
 thalamus_thickness = readRDS(file=paste0(demodata,"/SUDMEX_CONN_thalamus_thickness.rds"))
 model_thalamus_thickness=RFT_vertex_analysis(
@@ -203,6 +213,7 @@ model_thalamus_thickness=RFT_vertex_analysis(
 Plotted in the same manner:
 
 ``` r
+
 plot_overlay_surf(model_thalamus_thickness, 
                   colorbar_1=F, 
                   filename = 'overlay_plot_thalamus.png',
@@ -218,7 +229,6 @@ plots](VertexWiseR_plot_overlay_files/figure-html/unnamed-chunk-11-1.png)
 
 ## References:
 
-Taylor, Paul A, Himanshu Aggarwal, Peter Bandettini, Marco Barilari,
-Molly Bright, Cesar Caballero-Gaudes, Vince Calhoun, et al. 2025. “Go
+Taylor, Paul A, Himanshu Aggarwal, Peter Bandettini, et al. 2025. “Go
 Figure: Transparency in Neuroscience Images Preserves Context and
 Clarifies Interpretation.” *arXiv Preprint arXiv:2504.07824*.

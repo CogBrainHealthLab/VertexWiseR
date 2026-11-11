@@ -22,10 +22,11 @@ TFCE_threshold(TFCEoutput, p = 0.05, atlas = 1, k = 20, VWR_check = TRUE)
 
 - atlas:
 
-  A numeric integer object corresponding to the atlas of interest.
-  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100,
-  5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument
-  is ignored for hippocampal surfaces.
+  An integer corresponding to the atlas of interest. 1=Desikan,
+  2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200,
+  6=Schaefer-400. Set to `1` by default. This argument is ignored for
+  hippocampal surfaces. For applicable SubCortexMesh surfaces, 1=default
+  base ROI, 2=anatomical atlas.
 
 - k:
 
@@ -50,7 +51,13 @@ model1_TFCE=readRDS(file = url(paste0("https://github.com/CogBrainHealthLab",
 
 TFCEanalysis_output=TFCE_threshold(model1_TFCE, p=0.05, atlas=1,
 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
 TFCEanalysis_output$cluster_level_results
-#> NULL
+#> $`Positive contrast`
+#> [1] "No significant clusters"
+#> 
+#> $`Negative contrasts`
+#>   clusid nverts      P   X     Y     Z tstat              region
+#> 1      1   8098 <0.001  47   4.0 -16.6 12.64 rh-superiortemporal
+#> 2      2   7728 <0.001 -34 -25.7  16.2 14.23           lh-insula
+#> 
 ```

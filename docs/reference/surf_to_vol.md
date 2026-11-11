@@ -35,5 +35,5 @@ A .nii volume file
 ``` r
 CTv = runif(20484,min=0, max=100);
 surf_to_vol(CTv, filename = paste0(tempdir(),'/volume.nii'), VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
+#> C:\Users\CHARLY~1.BIL\AppData\Local\Temp\RtmpyCCMwt/volume.nii
 ```

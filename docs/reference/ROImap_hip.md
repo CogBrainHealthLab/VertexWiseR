@@ -14,7 +14,7 @@ ROImap_hip
 
 ### `ROImap_hip`
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 
 - vertices:
 

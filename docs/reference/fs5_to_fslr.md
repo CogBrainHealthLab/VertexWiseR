@@ -30,5 +30,4 @@ A matrix object containing vertex-wise surface data mapped in fslr space
 ``` r
 CTv = runif(20484,min=0, max=100);
 CTv_fslr = fs5_to_fslr(CTv);
-#> Error in fs5_to_fslr(CTv): could not find function "fs5_to_fslr"
 ```

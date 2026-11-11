@@ -12,7 +12,7 @@ fslr_to_fs5_map
 
 ### `fslr_to_fs5_map`
 
-An array of 64984 integers ()
+An array of 64984 integers
 
 - vertices:
 

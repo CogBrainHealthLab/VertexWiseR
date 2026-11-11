@@ -12,7 +12,7 @@ hip_points_cells
 
 ### `hip_points_cells`
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 
 - vertices:
 

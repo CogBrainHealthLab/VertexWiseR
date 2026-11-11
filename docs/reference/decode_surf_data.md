@@ -35,18 +35,29 @@ A data.frame object listing the keywords and their Pearson's R values
 
 ## Details
 
-The ['NiMARE'](https://nimare.readthedocs.io/en/stable/index.html)
-python module is used for the imaging decoding and is imported via the
-reticulate package. The function also downloads the ['Neurosynth'
+An internal image decoding is used, reproducing the
+['NiMARE'](https://nimare.readthedocs.io/en/stable/index.html) python
+module's ROIAssociationDecoder in base R. The function also downloads
+the ['Neurosynth'
 database](https://github.com/neurosynth/neurosynth-data) in the
-package's inst/extdata directory (~8 Mb) for the analysis.
+package's inst/extdata directory (converted to .RDS, ~7.2 MB) for the
+analysis.
 
 ## Examples
 
 ``` r
 CTv = rbinom(20484, 1, 0.001) 
 decoding = decode_surf_data(CTv, 'positive', VWR_check=FALSE);
-#> Non-interactive sessions need requirement checks
+#> Converting and interpolating the surface data ... 
+#> ✓ 
+#> Correlating input image with images in the neurosynth database. This may take a while ... 
+#> ✓ 
 head(decoding)
-#> NULL
+#>         keyword     r
+#> 195    encoding 0.052
+#> 538   retrieval 0.051
+#> 311    language 0.046
+#> 510 recognition 0.044
+#> 202    episodic 0.043
+#> 381       motor 0.041
 ```

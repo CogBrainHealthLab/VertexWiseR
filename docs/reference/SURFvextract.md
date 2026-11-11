@@ -45,9 +45,9 @@ SURFvextract(
   A string object containing the name of the measure of interest.
   Options include thickness, curv, sulc, area, and volume (for
   freesurfer 7.4.1 or later). Default is thickness. Note that
-  non-standard surface measures stored in "surf/" also work, provided
-  the full name and extension following lh./rh. is given (e.g.,
-  "w-g.pct.mgh" for grey-white matter contrast).
+  non-standard surface measures stored in FreeSurfer's ‘surf/’
+  directories also work, provided the full name and extension following
+  lh./rh. is given (e.g., "w-g.pct.mgh" for grey-white matter contrast).
 
 - subj_ID:
 
@@ -64,9 +64,9 @@ SURFvextract(
 
 ## Value
 
-A .RDSfile with a list containing 1. the list of subject IDs (first
+A .RDS file with a list containing 1. the list of subject IDs (first
 element) and 2. a surface data matrix object (second element), or only a
-data matrix object. The matrix has N subjects x M vertices dimensions
+data matrix object. The matrix has N subjects x V vertices dimensions
 and can be used readily by VertexWiseR statistical analysis functions.
 Each row corresponds to a subject (in the order they are listed in the
 folder) and contains the left to right hemispheres' vertex-wise values.

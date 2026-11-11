@@ -7,10 +7,12 @@ prompting the user to install dependencies, in order to allow analyses
 to work.
 
 ``` r
+
 install.packages("VertexWiseR") 
 ```
 
 ``` r
+
 library(VertexWiseR)
 ```
 
@@ -18,6 +20,7 @@ VWRfirstrun() checks all system requiremements for specific functions,
 and gives the opportunity to download and install each of them.
 
 ``` r
+
 VWRfirstrun()
 ```
 
@@ -36,6 +39,7 @@ downloaded from the package’s github repository with the following
 function:
 
 ``` r
+
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
 demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 ```
@@ -44,18 +48,21 @@ Here is the command line which was originally used to extract the
 surface:
 
 ``` r
+
 #SURFvextract(sdirpath = SUBJECTS_DIR, filename = "SPRENG_CTv", template='fsaverage5', measure = 'thickness', subj_ID = T)
 ```
 
 To load the demo thickness matrix:
 
 ``` r
+
 SPRENG_CTv = readRDS(file=paste0(demodata,"/SPRENG_CTv_site1.rds"))
 ```
 
 To smooth the surface data:
 
 ``` r
+
 SPRENG_CTv_smoothed = smooth_surf(SPRENG_CTv, 10)
 ```
 
@@ -63,6 +70,7 @@ To load the demo behavioural data (for participants in site 1,
 SPRENG_behdata_site1.csv):
 
 ``` r
+
 dat_beh=readRDS(paste0(demodata,'/SPRENG_behdata_site1.rds'))
 ```
 
@@ -71,11 +79,13 @@ cluster correction, testing for the effect of age, controlling for sex,
 on CT:
 
 ``` r
+
 model1_RFT=RFT_vertex_analysis(model = dat_beh[,c("sex","age")], 
   contrast = dat_beh[,"age"], surf_data = SPRENG_CTv_smoothed, p = 0.05)
 ```
 
 ``` r
+
 model1_RFT$cluster_level_results
 ```
 
@@ -93,6 +103,7 @@ enhancement-based cluster correction, testing for the effect of age,
 controlling for sex, on CT; with 1000 permutations:
 
 ``` r
+
 model1_TFCE=TFCE_vertex_analysis(model= dat_beh[,c("sex","age")], 
                                  contrast = dat_beh[,"age"],
                                  surf_data=SPRENG_CTv_smoothed,
@@ -103,6 +114,7 @@ TFCEoutput = TFCE_threshold(model1_TFCE, p=0.05)
 ```
 
 ``` r
+
 TFCEoutput$cluster_level_results
 ```
 
@@ -112,11 +124,12 @@ TFCEoutput$cluster_level_results
     ## $`Negative contrasts`
     ##   clusid nverts      P   X     Y     Z tstat              region
     ## 1      1   8098 <0.001  47   4.0 -16.6 12.64 rh-superiortemporal
-    ## 2      2   7617 <0.001 -34 -25.7  16.2 14.23           lh-insula
+    ## 2      2   7728 <0.001 -34 -25.7  16.2 14.23           lh-insula
 
 To plot the results of both models on an inflated fsaverage5 surface:
 
 ``` r
+
 tmaps = rbind(model1_RFT$thresholded_tstat_map, TFCEoutput$thresholded_tstat_map)
 plot_surf(surf_data = tmaps, 
           filename ='SPRENG_tstatmaps.png', 
@@ -134,25 +147,26 @@ To run meta-analytic decoding of the significant negative clusters (the
 neurosynth dataset needs to be installed as VWRfirstrun() allows):
 
 ``` r
+
 surf_decoding=decode_surf_data(TFCEoutput$thresholded_tstat_map, contrast="negative")
 ```
 
 ``` r
+
 head(surf_decoding)
 ```
 
     ##        keyword     r
     ## 538  retrieval 0.065
     ## 202   episodic 0.059
-    ## 348     memory 0.053
+    ## 348     memory 0.054
     ## 198 engagement 0.048
     ## 332 linguistic 0.048
     ## 439      older 0.047
 
 ## References:
 
-Spreng, R. Nathan, Roni Setton, Udi Alter, Benjamin N. Cassidy, Bri
-Darboh, Elizabeth DuPre, Karin Kantarovich, et al. 2022. “Neurocognitive
+Spreng, R. Nathan, Roni Setton, Udi Alter, et al. 2022. “Neurocognitive
 Aging Data Release with Behavioral, Structural and Multi-Echo Functional
 MRI Measures.” *Scientific Data* 9 (1): 119.
 <https://doi.org/10.1038/s41597-022-01231-7>.

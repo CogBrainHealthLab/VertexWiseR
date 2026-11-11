@@ -34,8 +34,8 @@ DTSERIESvextract(dtseries, filename, silent = FALSE, VWR_check = TRUE)
 
 ## Value
 
-A .RDSfile containing a surface data matrix object, with N time-point x
-M vertices dimensions and can be readily used by VertexWiseR statistical
+A .RDS file containing a surface data matrix object, with N time-point x
+V vertices dimensions and can be readily used by VertexWiseR statistical
 analysis functions. Each row corresponds to a time point in order and
 contains the left to right hemispheres' vertex-wise values.
 
@@ -63,7 +63,9 @@ dtseries=paste0(tempdir(),
              "/demo_91k_bold.dtseries.nii"), 
 silent=FALSE,
 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
+#> Warning: No filename argument was given. The matrix object "dtseries" will be saved in R temporary directory (tempdir(): C:\Users\CHARLY~1.BIL\AppData\Local\Temp\RtmpyCCMwt).
+#> Saving output as C:\Users\CHARLY~1.BIL\AppData\Local\Temp\RtmpyCCMwt/dtseries.rds
+#> done!
 
 ##visualizing e.g. the first 4 frames of the fMRI volume
 #plot_surf(sub_dtseries[c(1,10,20,40),], 

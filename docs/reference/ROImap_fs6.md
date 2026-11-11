@@ -16,7 +16,7 @@ ROImap_fs6
 
 ### `ROImap_fs6`
 
-A list object with two data frame objects: ()
+A list object with two data frame objects:
 
 - vertices:
 

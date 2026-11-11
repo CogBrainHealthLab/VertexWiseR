@@ -7,7 +7,13 @@ file.
 ## Usage
 
 ``` r
-HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
+HIPvextract(
+  sdirpath = "./",
+  filename,
+  measure = "thickness",
+  subj_ID = TRUE,
+  silent = FALSE
+)
 ```
 
 ## Arguments
@@ -27,7 +33,7 @@ HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
   A string object containing the name of the measure of interest.
   Options are 'thickness','curvature','gyrification' and 'surfarea' (For
   more information see [the 'HippUnfold'
-  documentation](https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics)).
+  documentation](https://hippunfold.khanlab.ca/en/main/outputs/output_files.html)).
   Default is thickness.
 
 - subj_ID:
@@ -35,11 +41,16 @@ HIPvextract(sdirpath = "./", filename, measure = "thickness", subj_ID = TRUE)
   A logical object stating whether to return a list object containing
   both subject ID and data matrix.
 
+- silent:
+
+  A logical object to determine whether messages will be silenced. Set
+  to 'FALSE' by default
+
 ## Value
 
-A .RDSfile with a list containing 1. the list of subject IDs (first
+A .RDS file with a list containing 1. the list of subject IDs (first
 element) and 2. a surface data matrix object (second element), or only a
-data matrix object. The matrix has N subjects x M vertices dimensions
+data matrix object. The matrix has N subjects x V vertices dimensions
 and can be readily used by VertexWiseR statistical analysis functions.
 Each row corresponds to a subject (in the order they are listed in the
 folder) and contains the left to right hemispheres' hippocampal

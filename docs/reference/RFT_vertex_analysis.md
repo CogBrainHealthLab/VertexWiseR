@@ -92,16 +92,17 @@ RFT_vertex_analysis(
 
 - atlas:
 
-  A numeric integer object corresponding to the atlas of interest.
-  1=Desikan, 2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100,
-  5=Schaefer-200, 6=Schaefer-400. Set to `1` by default. This argument
-  is ignored for hippocampal surfaces.
+  An integer corresponding to the atlas of interest. 1=Desikan,
+  2=Destrieux-148, 3=Glasser-360, 4=Schaefer-100, 5=Schaefer-200,
+  6=Schaefer-400. Set to `1` by default. This argument is ignored for
+  hippocampal surfaces. For applicable SubCortexMesh surfaces, 1=default
+  base ROI, 2=anatomical atlas.
 
 - smooth_FWHM:
 
   A numeric vector object specifying the desired smoothing width in mm.
   It should not be specified if the surf_data has been smoothed
-  previously with smooth_surf(), because this result in surf_data being
+  previously with smooth_surf(), because this results in surf_data being
   smoothed twice.
 
 - VWR_check:
@@ -134,7 +135,7 @@ Output definitions:
 - `X, Y and Z`: MNI coordinates of the vertex with the highest
   t-statistic in the cluster.
 
-- `tstat`: t statistic of the vertex with the highest t-statistic in the
+- `tstat`: t-statistic of the vertex with the highest t-statistic in the
   cluster
 
 - `region`: the region this highest -statistic vertex is located in, as
@@ -157,7 +158,8 @@ CTv = readRDS(file = url(paste0("https://github.com",
 vertexwise_model=RFT_vertex_analysis(model=demodata[,c("sex","age")], 
 contrast=demodata[,"age"], surf_data = CTv, atlas=1,p = 0.05, 
 VWR_check=FALSE)
-#> Non-interactive sessions need requirement checks
+#> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis
+#> smooth_FWHM argument was not given. surf_data will not be smoothed here.
 
 #Description of the output:
 #vertexwise_model$cluster_level_results

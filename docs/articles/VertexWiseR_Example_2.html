@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,7 +166,7 @@ on hippocampal thickness, with subject ID as a random variable:</p>
 <code class="sourceCode R"><span><span class="va">TFCEoutput</span><span class="op">$</span><span class="va">cluster_level_results</span></span></code></pre></div>
 <pre><code><span><span class="co">## $`Positive contrast`</span></span>
 <span><span class="co">##   clusid nverts     P     X    Y   Z tstat      region</span></span>
-<span><span class="co">## 1      1     73 0.033 -13.3 27.5 1.3  4.14 L Subiculum</span></span>
+<span><span class="co">## 1      1     92 0.034 -13.3 27.5 1.3  4.14 L Subiculum</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $`Negative contrasts`</span></span>
 <span><span class="co">## [1] "No significant clusters"</span></span></code></pre>
@@ -279,32 +279,32 @@ value</p>
 <span><span class="co">## Formula: clustCTTFCE ~ session + group + session * group + (1 | participant_id)</span></span>
 <span><span class="co">##    Data: dat_beh_ses13</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## REML criterion at convergence: -272.9</span></span>
+<span><span class="co">## REML criterion at convergence: -274.8</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Scaled residuals: </span></span>
 <span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">## -1.50112 -0.45415 -0.05631  0.49916  1.71410 </span></span>
+<span><span class="co">## -1.50399 -0.46424 -0.05043  0.51059  1.73359 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Random effects:</span></span>
 <span><span class="co">##  Groups         Name        Variance  Std.Dev.</span></span>
-<span><span class="co">##  participant_id (Intercept) 0.0048047 0.06932 </span></span>
-<span><span class="co">##  Residual                   0.0005989 0.02447 </span></span>
+<span><span class="co">##  participant_id (Intercept) 0.0047374 0.06883 </span></span>
+<span><span class="co">##  Residual                   0.0005836 0.02416 </span></span>
 <span><span class="co">## Number of obs: 96, groups:  participant_id, 48</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Fixed effects:</span></span>
 <span><span class="co">##                Estimate Std. Error        df t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">## (Intercept)    1.134943   0.011549 66.462361  98.275  &lt; 2e-16 ***</span></span>
-<span><span class="co">## session       -0.003589   0.002517 46.000000  -1.426 0.160692    </span></span>
-<span><span class="co">## group         -0.009920   0.011549 66.462361  -0.859 0.393452    </span></span>
-<span><span class="co">## session:group  0.010234   0.002517 46.000000   4.065 0.000186 ***</span></span>
+<span><span class="co">## (Intercept)    1.135744   0.011452 66.260544  99.178  &lt; 2e-16 ***</span></span>
+<span><span class="co">## session       -0.003388   0.002485 46.000000  -1.363 0.179370    </span></span>
+<span><span class="co">## group         -0.009593   0.011452 66.260544  -0.838 0.405204    </span></span>
+<span><span class="co">## session:group  0.010058   0.002485 46.000000   4.048 0.000196 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Correlation of Fixed Effects:</span></span>
 <span><span class="co">##             (Intr) sessin group </span></span>
-<span><span class="co">## session     -0.436              </span></span>
+<span><span class="co">## session     -0.434              </span></span>
 <span><span class="co">## group       -0.125  0.054       </span></span>
-<span><span class="co">## session:grp  0.054 -0.125 -0.436</span></span></code></pre>
+<span><span class="co">## session:grp  0.054 -0.125 -0.434</span></span></code></pre>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References:<a class="anchor" aria-label="anchor" href="#references"></a>

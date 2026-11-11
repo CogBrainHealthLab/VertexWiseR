@@ -1,6 +1,102 @@
 # Changelog
 
+## VertexWiseR v1.6.0
+
+CRAN release: 2026-11-10
+
+### NEW FEATURES
+
+- The Freedman–Lane nuisance-adjustment approach, that is used in FSL
+  GLM, is now implemented in the permutation loops of
+  [`TFCE_vertex_analysis()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis.md)
+  and
+  [`TFCE_vertex_analysis_mixed()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis_mixed.md)
+  to better reflect the null hypothesis that the contrast has no effect
+  after accounting for the nuisance covariates. Briefly, a reduced
+  linear model is fitted using an intercept and all nuisance predictors,
+  excluding the `contrast`. For each permutation, residuals from this
+  reduced model are shuffled across observations and added back to its
+  fitted values. The full linear model is then refitted to obtain the
+  t-statistic for the tested predictor at each vertex.
+- `within_beween` is now set as the default argument for `perm_type` in
+  [`TFCE_vertex_analysis_mixed()`](https://cogbrainhealthlab.github.io/VertexWiseR/reference/TFCE_vertex_analysis_mixed.md)
+- `mori:share` has been implemented to enable multiple parallel workers
+  to access a shared data object within parallelized permutation loops,
+  eliminating redundant RAM copies. This should greatly minimize the
+  memory footprint when multiple parallel workers are used.
+
+## VertexWiseR v1.5.5
+
+CRAN release: 2026-10-16
+
+### NEW FEATURES
+
+- New decode_surf_data() function now uses internal R data and code to
+  do the decoding, reproducing NiMARE’s ROIAssociationDecoder without
+  calling the python module. It was tested on Example 1, yielding
+  identical results for less than half the original duration.
+- SCMvextract() is now much faster with more preloaded tables/lists and
+  a different way of extracting the scalars
+- Silent parameter and end messaging added to HIPvextract().
+
+### FIXES
+
+- Extraction functions now fail prematurely if the filename argument
+  given has a non-existent path, instead of failing after the full
+  matrix is built.
+
+## VertexWiseR v1.5.4
+
+CRAN release: 2026-09-16
+
+### FIXES
+
+- The label mapping for the allaseg surface had the wrong labels in the
+  cluster summaries and plot_surf3d() when the 1.5.3 atlas was
+  introduced. The maps downloadable on github were updated and
+  plot_surf3d() fixed to show the right parcellation name when hovering
+  the cursor. Other regions remain unaffected. To get the most
+  up-to-date maps for SubCortexMesh objects if downloaded already, users
+  need to remove and reinstall VertexWiseR entirely or remove the
+  template data located in
+  `system.file('extdata/scm_database/', package='VertexWiseR')`.
+- Fix for TFCE models with the “inverse=TRUE” option. Permutated models
+  were not indexing systematically the right contrast variable when
+  producing a random t-map at each permutation. This did not apply for
+  RFT or the mixed models.
+
+## VertexWiseR v1.5.3
+
+CRAN release: 2026-09-03
+
+### NEW FEATURES
+
+- Since SubCortexMesh v1.1.0, some subcortical ROIs (in fsaverage space)
+  also have [atlas
+  sub-parcellations](https://subcortexmesh.readthedocs.io/en/1.1.0/atlases.html).
+  They can be selected as descriptive region labels in the outputs of
+  RFT and TFCE models, as well as in the hovering information in
+  plotsurf_3d() (atlas=1 for default base ROI, atlas=2 for the
+  anatomical atlas). This works with the thalamus, hippocampus,
+  amygdala, ventral DC, pallidum, cerebellum and brain-stem. The
+  “Example analyses with VertexWiseR - Example 3” vignette shows an
+  example of it.
+
+To get the most up-to-date maps for SubCortexMesh objects, users need to
+remove: extdatadir=system.file(‘extdata/scm_database/’,
+package=‘VertexWiseR’). VertexWiseR will then prompt users to download
+them again from Github whenever they try to analyse SubCortexMesh’s
+subcortical regions. Example 3 was also fixed accordingly.
+
+### FIXES
+
+- The installable version of Miniconda in VWRfirstrun() has been updated
+  to fix compatibility issue with BrainStat’s dependencies. It now
+  installs Miniconda binaries for Python 3.10.
+
 ## VertexWiseR v1.5.2
+
+CRAN release: 2026-06-25
 
 ### NEW FEATURES
 
@@ -294,7 +390,7 @@ CRAN release: 2025-03-10
 
 ### NEW FEATURES
 
-- Reticulate’s [last update](https://posit.co/blog/reticulate-1-41/)
+- Reticulate’s [last update](https://posit.co/blog/reticulate-1-41)
   allows users to install ephemeral Python environments with UV instead
   of requiring a stable Python/Miniconda installation. If users create
   their own with py_require() before running VertexWiseR, such

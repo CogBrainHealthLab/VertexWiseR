@@ -31,5 +31,4 @@ space
 ``` r
 surf_data = runif(64984,min=0, max=100);
 fs5_data=fslr_to_fs5(surf_data)
-#> Error in fslr_to_fs5(surf_data): could not find function "fslr_to_fs5"
 ```

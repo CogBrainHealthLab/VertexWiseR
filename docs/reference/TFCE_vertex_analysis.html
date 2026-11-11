@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">VertexWiseR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,7 +130,13 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This TFCE method is adapted from the <a href="https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8" class="external-link"> 'Nilearn' Python library</a>.</p>
+    <p>This implements the Freedman–Lane nuisance-adjustment strategy used
+by FSL's <code>randomise</code>, while adapting the TFCE method from the <a href="https://github.com/nilearn/nilearn/blob/main/nilearn/mass_univariate/_utils.py#L7C8-L7C8" class="external-link"> 'Nilearn' Python library</a>.</p>
+<p>A reduced linear model is fitted using an intercept and all nuisance
+predictors, excluding the <code>contrast</code>. For each permutation,
+residuals from this reduced model are shuffled across observations and
+added back to its fitted values. The full linear model is then refitted
+to obtain the t-statistic for the tested predictor at each vertex.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -151,23 +157,22 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The binary variable 'sex' will be recoded with F=0 and M=1 for the analysis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> smooth_FWHM argument was not given. surf_data will not be smoothed here.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating unpermuted TFCE image...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 6 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 5.5 secs</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating permuted TFCE images...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 
-  |                                                                                    
-  |                                                                              |   0%
-  |                                                                                    
-  |================                                                              |  20%
-  |                                                                                    
-  |===============================                                               |  40%
-  |                                                                                    
-  |===============================================                               |  60%
-  |                                                                                    
-  |==============================================================                |  80%
-  |                                                                                    
-  |==============================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Completed in 0.1 minutes </span>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |==============                                                        |  20%
+  |                                                                            
+  |============================                                          |  40%
+  |                                                                            
+  |==========================================                            |  60%
+  |                                                                            
+  |========================================================              |  80%
+  |                                                                            
+  |======================================================================| 100%</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in {    if (inverse == FALSE) {        mod.permuted = .lm.fit(y = fitted0 + surf_data[permseq[,             perm], , drop = FALSE], x = data.matrix(cbind(1,             model)))        tmap = extract_t(mod.permuted, colno + 1)    }    else {        tmap = c()        for (vert in 1:ncol(surf_data)) {            vertmodel.permuted = cbind(invmodel, surf_data[,                 vert])            invmod.permuted = .lm.fit(y = fitted0 + contrast[permseq[,                 perm]], x = data.matrix(cbind(1, vertmodel.permuted)))            tmap = c(tmap, extract_t(invmod.permuted, ncol(vertmodel.permuted) +                 1))        }    }    . &lt;- model.permuted &lt;- NULL    remove(mod.permuted, model.permuted)    return(max(abs(suppressWarnings(TFCE(data = tmap, tail = tail,         edgelist = edgelist)))))}:</span> task 2 failed - "could not find function "extract_t""</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#To threshold the results, you may then run:</span></span></span>
 <span class="r-in"><span><span class="co">#results=TFCE_threshold(TFCEpos, p=0.05, atlas=1)</span></span></span>

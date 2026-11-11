@@ -43,6 +43,7 @@ be downloaded from the package’s github repository with the following
 function:
 
 ``` r
+
 #This will save the demo_data directory in a temporary directory (tempdir(), but you can change it to your own path)
 demodata=VertexWiseR:::dl_demo(path=tempdir(), quiet=TRUE)
 ```
@@ -68,6 +69,7 @@ subsample’s size.
 We give the following code as example:
 
 ``` r
+
 SPRENG_CTv = SURFvextract(
   sdirpath = paste0(demodata,'/spreng_surf_data_freesurfer'), 
   filename = "SPRENG_CTv.rds",
@@ -96,6 +98,7 @@ Here is an example of surface matrix object, extracted from FreeSurfer
 preprocessing of the all site 1 participants:
 
 ``` r
+
 SPRENG_CTv = readRDS(
   file = paste0(demodata,"/SPRENG_CTv_site1.rds"))
 dim(SPRENG_CTv)
@@ -136,6 +139,7 @@ FSLRvextract() gets the data from .dscalar.nii files associated with the
 specified measure (e.g. thickness, curv), and can extract it as follows:
 
 ``` r
+
 dat_fslr32k=FSLRvextract(
   sdirpath=paste0(demodata,"/spreng_surf_data/"),
   filename="dat_fslr32k.rds",
@@ -181,8 +185,8 @@ subject’s surface data across N time points.
 
 CAT12vextract() was implemented in version 1.2.0 and can extract surface
 preprocessed with the CAT12 (Gaser et al. 2024) surface based
-morphometry pipeline. The function requires reticulate (Ushey, Allaire,
-and Tang 2023) to run.
+morphometry pipeline. The function requires reticulate (Ushey et al.
+2023) to run.
 
 For demonstration, we provide again a subsample of 2 participants from
 the [SPRENG
@@ -196,6 +200,7 @@ CAT12vextract() extracts surface data resampled to 32k meshes (with or
 without smoothing) and can be used as in this example:
 
 ``` r
+
 CATsurf=CAT12vextract(
   sdirpath=paste0(demodata,"/SPRENG_CAT12_subsample"),
   filename='CAT12_thickness.rds', 
@@ -229,6 +234,7 @@ Accordingly, the matrix will contained 2 rows (for 2 participants) and
 of the 32k mesh):
 
 ``` r
+
 #The surface object contains the surface matrix and the list of subjects ID (and session number if applicable)
 names(CATsurf)
 ```
@@ -236,6 +242,7 @@ names(CATsurf)
     ## [1] "sub_list" "surf_obj"
 
 ``` r
+
 #The surface matrix dimensions:
 dim(CATsurf$surf_obj)
 ```
@@ -258,6 +265,7 @@ To extract and collate the data of the two participants, HIPvextract()
 can be run as follows:
 
 ``` r
+
 hipp_surf=HIPvextract(sdirpath=paste0(demodata,
                                       "/fink_surf_data"),
             filename="hippocampal_surf.rds",
@@ -265,13 +273,15 @@ hipp_surf=HIPvextract(sdirpath=paste0(demodata,
             subj_ID = TRUE) 
 ```
 
+    ## Saving output as hippocampal_surf.rds
+
 The following arguments can be used:  
 - sdirpath: Path to the preprocessed subjects directory.  
 - filename: Name of the saved .rds output (can include a specific path
 to it).  
 - measure: The name of the surface-based measure of interest computed
 [in
-HippUnfold](https://hippunfold.readthedocs.io/en/latest/outputs/output_files.html#surface-metrics).
+HippUnfold](https://hippunfold.khanlab.ca/en/main/outputs/output_files.html).
 That includes ‘thickness’,‘curvature’,‘gyrification’ and ‘surfarea’.
 Default is ‘thickness’.  
 - subj_ID: Whether to obtain a list object containing both subject ID
@@ -282,6 +292,7 @@ Note that when subjects directories have multiple sessions, the matrix
 object will contain N rows per participant and per session.
 
 ``` r
+
 hipp_surf[[1]]
 ```
 
@@ -293,6 +304,7 @@ Here the matrix has 6 rows for 2 particiants with 3 sessions each; and
 CITI168 surface).
 
 ``` r
+
 dim(hipp_surf[[2]])
 ```
 
@@ -302,7 +314,8 @@ dim(hipp_surf[[2]])
 
 SCMvextract() extracts subcortical data based on FreeSurfer ASeg (Fischl
 2012) or FSL FIRST (Patenaude et al. 2011) volumetric subcortical
-segmentations, converted to surfaces via the python pipeline from
+segmentations, as well as CIFTI subcortical grayordinates (Glasser et
+al. 2013), converted to surfaces via the python pipeline from
 [SubCortexMesh](https://github.com/chabld/SubCortexMesh). SCMvextract()
 does not require any system requirement, but further plotting and
 modelling will require downloading associated template data (the package
@@ -320,6 +333,7 @@ SubCortexMesh, keeping all output .vtk files.
 To extract and collate the data of the two participants:
 
 ``` r
+
 subcortical_Tv = SCMvextract(
   sdirpath = paste0(demodata,'/sudmex_conn_surf_data_subcortexmesh/'), 
   outputdir = "subcortical_matrices",
@@ -332,13 +346,13 @@ subcortical_Tv = SCMvextract(
 
     ## Checking for VertexWiseR system requirements ...
 
-    ## Extracting sub-001's data... [1/2]
+    ## Extracting sub-001's thickness data... [1/2]
 
     ## => caudate
 
     ## => thalamus
 
-    ## Extracting sub-002's data... [2/2]
+    ## Extracting sub-002's thickness data... [2/2]
 
     ## => caudate
 
@@ -372,24 +386,28 @@ path indicated in “outputdir”, and returned together in a single list
 object:
 
 ``` r
+
 names(subcortical_Tv)
 ```
 
     ## [1] "caudate"  "thalamus"
 
 ``` r
+
 subcortical_Tv[['caudate']]$sub_list
 ```
 
     ## [1] "sub-001" "sub-002"
 
 ``` r
+
 dim(subcortical_Tv[['caudate']]$surf_obj)
 ```
 
     ## [1]    2 6940
 
 ``` r
+
 dim(subcortical_Tv[['thalamus']]$surf_obj)
 ```
 
@@ -397,44 +415,37 @@ dim(subcortical_Tv[['thalamus']]$surf_obj)
 
 ## References:
 
-Adebimpe, Azeez, Maxwell Bertolero, Sudipto Dolui, Matthew Cieslak,
-Kristin Murtha, Erica B Baller, Bradley Boeve, et al. 2022. “ASLPrep: A
-Platform for Processing of Arterial Spin Labeled MRI and Quantification
-of Regional Brain Perfusion.” *Nature Methods* 19 (6): 683–86.
-<https://doi.org/10.1038/s41592-022-01458-7>.
+Adebimpe, Azeez, Maxwell Bertolero, Sudipto Dolui, et al. 2022.
+“ASLPrep: A Platform for Processing of Arterial Spin Labeled MRI and
+Quantification of Regional Brain Perfusion.” *Nature Methods* 19 (6):
+683–86. <https://doi.org/10.1038/s41592-022-01458-7>.
 
-DeKraker, Jordan, Nicola Palomero-Gallagher, Olga Kedo, Neda
-Ladbon-Bernasconi, Sascha EA Muenzing, Markus Axer, Katrin Amunts, Ali R
-Khan, Boris C Bernhardt, and Alan C Evans. 2023. “Evaluation of
-Surface-Based Hippocampal Registration Using Ground-Truth Subfield
-Definitions.” Edited by Anna C Schapiro and Laura L Colgin. *eLife* 12
-(November): RP88404. <https://doi.org/10.7554/eLife.88404>.
+DeKraker, Jordan, Nicola Palomero-Gallagher, Olga Kedo, et al. 2023.
+“Evaluation of Surface-Based Hippocampal Registration Using Ground-Truth
+Subfield Definitions.” *eLife* 12 (November): RP88404.
+<https://doi.org/10.7554/eLife.88404>.
 
-Esteban, Oscar, Christopher J. Markiewicz, Ross W. Blair, Craig A.
-Moodie, A. Ilkay Isik, Asier Erramuzpe, James D. Kent, et al. 2019.
+Esteban, Oscar, Christopher J. Markiewicz, Ross W. Blair, et al. 2019.
 “fMRIPrep: A Robust Preprocessing Pipeline for Functional MRI.” *Nature
 Methods* 16 (1): 111–16. <https://doi.org/10.1038/s41592-018-0235-4>.
 
 Esteban, Oscar, Christopher J Markiewicz, Ross Blair, Russell A
 Poldrack, and Krzysztof J Gorgolewski. 2021. “sMRIPrep: Structural MRI
-PREProcessing Workflows.” *Zenodo*.
+PREProcessing Workflows.” *Zenodo*, ahead of print.
 <https://doi.org/10.5281/zenodo.2650521>.
 
-Fink, Andreas, Karl Koschutnig, Thomas Zussner, Corinna M.
-Perchtold-Stefan, Christian Rominger, Mathias Benedek, and Ilona
-Papousek. 2021. “A Two-Week Running Intervention Reduces Symptoms
-Related to Depression and Increases Hippocampal Volume in Young Adults.”
-*Cortex* 144 (November): 70–81.
-<https://doi.org/10.1016/j.cortex.2021.08.010>.
+Fink, Andreas, Karl Koschutnig, Thomas Zussner, et al. 2021. “A Two-Week
+Running Intervention Reduces Symptoms Related to Depression and
+Increases Hippocampal Volume in Young Adults.” *Cortex* 144 (November):
+70–81. <https://doi.org/10.1016/j.cortex.2021.08.010>.
 
 Fischl, Bruce. 2012. “FreeSurfer.” *NeuroImage* 62 (2): 774–81.
 <https://doi.org/10.1016/j.neuroimage.2012.01.021>.
 
-Garza-Villarreal, EA, MM Chakravarty, B Hansen, SF Eskildsen, GA
-Devenyi, D Castillo-Padilla, T Balducci, et al. 2017. “The Effect of
-Crack Cocaine Addiction and Age on the Microstructure and Morphology of
-the Human Striatum and Thalamus Using Shape Analysis and Fast Diffusion
-Kurtosis Imaging.” *Translational Psychiatry* 7 (5): e1122.
+Garza-Villarreal, EA, MM Chakravarty, B Hansen, et al. 2017. “The Effect
+of Crack Cocaine Addiction and Age on the Microstructure and Morphology
+of the Human Striatum and Thalamus Using Shape Analysis and Fast
+Diffusion Kurtosis Imaging.” *Translational Psychiatry* 7 (5): e1122.
 <https://doi.org/10.1038/tp.2017.92>.
 
 Gaser, Christian, Robert Dahnke, Paul M Thompson, Florian Kurth, Eileen
@@ -443,24 +454,26 @@ A Computational Anatomy Toolbox for the Analysis of Structural MRI
 Data.” *GigaScience* 13 (January): giae049.
 <https://doi.org/10.1093/gigascience/giae049>.
 
-Mehta, Kahini, Taylor Salo, Thomas J Madison, Azeez Adebimpe, Danielle S
-Bassett, Max Bertolero, Matthew Cieslak, et al. 2024. “XCP-d: A Robust
-Pipeline for the Post-Processing of fMRI Data.” *Imaging Neuroscience*
-2: 1–26. <https://doi.org/10.1162/imag_a_00257>.
+Glasser, Matthew F, Stamatios N Sotiropoulos, J Anthony Wilson, et al.
+2013. “The Minimal Preprocessing Pipelines for the Human Connectome
+Project.” *Neuroimage* 80: 105–24.
+
+Mehta, Kahini, Taylor Salo, Thomas J Madison, et al. 2024. “XCP-d: A
+Robust Pipeline for the Post-Processing of fMRI Data.” *Imaging
+Neuroscience* 2: 1–26. <https://doi.org/10.1162/imag_a_00257>.
 
 Patenaude, Brian, Stephen M. Smith, David N. Kennedy, and Mark
 Jenkinson. 2011. “A Bayesian Model of Shape and Appearance for
 Subcortical Brain Segmentation.” *NeuroImage* 56 (3): 907–22.
 <https://doi.org/10.1016/j.neuroimage.2011.02.046>.
 
-Spreng, R. Nathan, Roni Setton, Udi Alter, Benjamin N. Cassidy, Bri
-Darboh, Elizabeth DuPre, Karin Kantarovich, et al. 2022. “Neurocognitive
+Spreng, R. Nathan, Roni Setton, Udi Alter, et al. 2022. “Neurocognitive
 Aging Data Release with Behavioral, Structural and Multi-Echo Functional
 MRI Measures.” *Scientific Data* 9 (1): 119.
 <https://doi.org/10.1038/s41597-022-01231-7>.
 
-Ushey, K, J Allaire, and Y Tang. 2023. “Reticulate: Interface to
-’Python’.” <https://CRAN.R-project.org/package=reticulate>.
+Ushey, K, J Allaire, and Y Tang. 2023. *Reticulate: Interface to
+’Python’*. <https://CRAN.R-project.org/package=reticulate>.
 
 Van Essen, David C., Stephen M. Smith, Deanna M. Barch, Timothy E. J.
 Behrens, Essa Yacoub, and Kamil Ugurbil. 2013. “The WU-Minn Human
